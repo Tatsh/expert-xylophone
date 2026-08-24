@@ -120,6 +120,7 @@ static UIColor *MusicViewCoverColor(void) {
 
 // The base-view fade opacities used by the show/hide animations.
 static const CGFloat kBaseViewAlphaVisible = 1.0;
+static const CGFloat kBaseViewAlphaHidden = 0.0;
 
 // The BPM digit column is at most three digits wide.
 enum { kBpmDigitCount = 3 };
@@ -1640,7 +1641,7 @@ enum { kDetMbgPlainIndex = 3 };
     __weak RBMusicView *weakSelf2 = self;
     [UIView animateWithDuration:g_dMascotMessageAnimDuration
         delay:g_dMascotMoveAnimDuration
-        options:UIViewAnimationOptionCurveEaseOut
+        options:UIViewAnimationOptionLayoutSubviews
         animations:^{
           /** @ghidraAddress 0xd50a0 (ShowBaseViewAlphaBlockInvoke) */
           weakSelf1.baseView.alpha = kBaseViewAlphaVisible;
@@ -1678,7 +1679,11 @@ enum { kDetMbgPlainIndex = 3 };
     [UIView animateWithDuration:kMusicViewCoverFadeDuration
         animations:^{
           /** @ghidraAddress 0xd5a50 (ResetMusicViewBackgroundBlockInvoke) */
-          weakSelf0.backgroundColor = UIColor.clearColor;
+          weakSelf0.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
+          weakSelf0.baseView.alpha = kBaseViewAlphaHidden;
+          if (weakSelf0.firstInfoView != nil) {
+              weakSelf0.firstInfoView.alpha = kBaseViewAlphaHidden;
+          }
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0xd5b88 (PlaySelectedMusicBlockInvoke) */
