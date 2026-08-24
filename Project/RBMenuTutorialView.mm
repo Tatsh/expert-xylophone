@@ -960,53 +960,60 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 // in with a bound-scale group; no content-view move.
 - (void)revealBubbleOnly {
     /** @ghidraAddress 0x13de2c */
-    CAAnimationGroup *windowGroup = [CAAnimationGroup animation];
-    CAKeyframeAnimation *windowFade = [RBAnimationFactory createFadeAnimWithFromValue:0.0
-                                                                              toValue:1.0
-                                                                                delay:0.0
-                                                                             duration:0.5];
-    CAKeyframeAnimation *windowScale = [RBAnimationFactory createScaleAnimWithFromValue:0.0
-                                                                                toValue:1.0
-                                                                                      X:NO
-                                                                                      Y:YES
-                                                                                  delay:0.0
-                                                                               duration:0.3];
-    CAKeyframeAnimation *windowBound = [RBAnimationFactory createBoundAnimWithX:NO
-                                                                              Y:YES
-                                                                          delay:0.3
-                                                                       duration:0.2];
-    windowGroup.animations = @[ windowFade, windowScale, windowBound ];
-    windowGroup.duration = 0.5;
-    windowGroup.removedOnCompletion = NO;
-    windowGroup.fillMode = kCAFillModeForwards;
-
+    // De-inlined from -startAnimation:; the binary emits all three reveal arms inside that one
+    // routine, so this helper and its siblings share its address rather than having one of their
+    // own.
+    // The bound-bob group is the pastel bubble's, not the window's: the binary builds it first and
+    // hands it to -pastelLayer, and it is the group that carries the delegate.
     CAAnimationGroup *pastelGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *pastelFade = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                               toValue:1.0
                                                                                 delay:0.0
-                                                                             duration:0.3];
+                                                                             duration:0.1];
     CAKeyframeAnimation *pastelScale = [RBAnimationFactory createScaleAnimWithFromValue:0.0
+                                                                                toValue:1.0
+                                                                                      X:NO
+                                                                                      Y:YES
+                                                                                  delay:0.0
+                                                                               duration:0.2];
+    CAKeyframeAnimation *pastelBound = [RBAnimationFactory createBoundAnimWithX:NO
+                                                                              Y:YES
+                                                                          delay:0.2
+                                                                       duration:0.3];
+    pastelGroup.animations = @[ pastelFade, pastelScale, pastelBound ];
+    pastelGroup.duration = 0.5;
+    pastelGroup.removedOnCompletion = NO;
+    pastelGroup.fillMode = kCAFillModeForwards;
+
+    CAAnimationGroup *windowGroup = [CAAnimationGroup animation];
+    CAKeyframeAnimation *windowFade = [RBAnimationFactory createFadeAnimWithFromValue:0.0
+                                                                              toValue:1.0
+                                                                                delay:0.0
+                                                                             duration:0.1];
+    CAKeyframeAnimation *windowScale = [RBAnimationFactory createScaleAnimWithFromValue:0.0
                                                                                 toValue:1.0
                                                                                       X:YES
                                                                                       Y:NO
                                                                                   delay:0.0
-                                                                               duration:0.3];
-    pastelGroup.animations = @[ pastelFade, pastelScale ];
-    pastelGroup.duration = 0.3;
-    pastelGroup.removedOnCompletion = NO;
-    pastelGroup.fillMode = kCAFillModeForwards;
+                                                                               duration:0.2];
+    windowGroup.animations = @[ windowFade, windowScale ];
+    windowGroup.duration = 0.2;
+    windowGroup.removedOnCompletion = NO;
+    windowGroup.fillMode = kCAFillModeForwards;
 
     CAAnimationGroup *messageGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *messageFade = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                                toValue:1.0
-                                                                                 delay:0.3
-                                                                              duration:0.2];
+                                                                                 delay:0.2
+                                                                              duration:0.1];
     messageGroup.animations = @[ messageFade ];
+    // The fade must finish at the group end (0.2 + 0.1); starting it at 0.3 would place it exactly
+    // at the boundary, so the clip would drop it and the text would never appear.
     messageGroup.duration = 0.3;
     messageGroup.removedOnCompletion = NO;
     messageGroup.fillMode = kCAFillModeForwards;
 
-    windowGroup.delegate = self;
+    pastelGroup.delegate = self;
     [self.messageWindowLayer addAnimation:windowGroup forKey:nil];
     [self.pastelLayer addAnimation:pastelGroup forKey:nil];
     [self.messageLayer addAnimation:messageGroup forKey:nil];
@@ -1016,27 +1023,29 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 // bubble.
 - (void)revealBubbleAndMessage {
     /** @ghidraAddress 0x13de2c */
+    // De-inlined from -startAnimation:, as with the other reveal arms.
     CAAnimationGroup *messageGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *messageFadeOut = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                                   toValue:0.0
                                                                                     delay:0.0
-                                                                                 duration:0.3];
+                                                                                 duration:0.2];
     CAKeyframeAnimation *messageFadeIn = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                                  toValue:1.0
-                                                                                   delay:0.3
-                                                                                duration:0.2];
+                                                                                   delay:0.2
+                                                                                duration:0.1];
     messageGroup.animations = @[ messageFadeOut, messageFadeIn ];
-    messageGroup.duration = 0.5;
+    // The group runs exactly as long as its last animation ends: 0.2 + 0.1.
+    messageGroup.duration = 0.3;
     messageGroup.removedOnCompletion = NO;
     messageGroup.fillMode = kCAFillModeForwards;
 
     CAAnimationGroup *pastelGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *pastelBound = [RBAnimationFactory createBoundAnimWithX:NO
                                                                               Y:YES
-                                                                          delay:0.2
-                                                                       duration:0.2];
+                                                                          delay:0.1
+                                                                       duration:0.3];
     pastelGroup.animations = @[ pastelBound ];
-    pastelGroup.duration = 0.5;
+    pastelGroup.duration = 0.4;
     pastelGroup.removedOnCompletion = NO;
     pastelGroup.fillMode = kCAFillModeForwards;
 
@@ -1050,19 +1059,22 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 // content-view layer from its current position to the target frame.
 - (void)revealBubbleMessageAndMove:(CGRect)targetFrame {
     /** @ghidraAddress 0x13de2c */
+    // De-inlined from -startAnimation:, as with the other reveal arms. This is the arm every
+    // music-select step that nudges the content view takes.
     CGPoint contentOrigin = CGPointMake(self.contentView.x, self.contentView.y);
 
     CAAnimationGroup *messageGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *messageFadeOut = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                                   toValue:0.0
                                                                                     delay:0.0
-                                                                                 duration:0.3];
+                                                                                 duration:0.4];
     CAKeyframeAnimation *messageFadeIn = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                                  toValue:1.0
-                                                                                   delay:0.2
-                                                                                duration:0.2];
+                                                                                   delay:0.6
+                                                                                duration:0.1];
     messageGroup.animations = @[ messageFadeOut, messageFadeIn ];
-    messageGroup.duration = 0.5;
+    // The text fades in only after the window has finished its scale swap: 0.6 + 0.1.
+    messageGroup.duration = 0.7;
     messageGroup.removedOnCompletion = NO;
     messageGroup.fillMode = kCAFillModeForwards;
 
@@ -1084,7 +1096,9 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
                                                                           delay:0.5
                                                                        duration:0.3];
     pastelGroup.animations = @[ pastelScaleUp, pastelScaleDown, pastelBound ];
-    pastelGroup.duration = 0.3;
+    // A CAAnimationGroup clips its children to its own duration, so this must reach the end of the
+    // bound bob (0.5 + 0.3) or the bubble is frozen shrunk by the forwards fill.
+    pastelGroup.duration = 0.8;
     pastelGroup.removedOnCompletion = NO;
     pastelGroup.fillMode = kCAFillModeForwards;
 
@@ -1093,16 +1107,18 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
                                                                                   toValue:0.0
                                                                                         X:YES
                                                                                         Y:NO
-                                                                                    delay:0.2
+                                                                                    delay:0.1
                                                                                  duration:0.2];
     CAKeyframeAnimation *windowScaleDown = [RBAnimationFactory createScaleAnimWithFromValue:0.0
                                                                                     toValue:1.0
                                                                                           X:YES
                                                                                           Y:NO
-                                                                                      delay:0.5
+                                                                                      delay:0.4
                                                                                    duration:0.2];
     windowGroup.animations = @[ windowScaleUp, windowScaleDown ];
-    windowGroup.duration = 0.3;
+    // Must reach the end of the scale restore (0.4 + 0.2). A shorter duration clips the restore
+    // away, and the forwards fill then leaves the quote box collapsed to zero width for good.
+    windowGroup.duration = 0.6;
     windowGroup.removedOnCompletion = NO;
     windowGroup.fillMode = kCAFillModeForwards;
 
@@ -1119,16 +1135,20 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     [self.messageWindowLayer addAnimation:windowGroup forKey:nil];
     [self.messageLayer addAnimation:messageGroup forKey:nil];
 
-    // Move the content view itself to the target frame after a short delay.
+    // Snap the content view to the target frame once the bubble has finished shrinking. The move is
+    // effectively instant (0.01s) rather than a visible slide.
     __weak UIView *weakContentView = self.contentView;
-    [UIView animateWithDuration:0.3
-                          delay:0.5
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                       /** @ghidraAddress 0x13f784 */
-                       weakContentView.frame = targetFrame;
-                     }
-                     completion:nil];
+    [UIView animateWithDuration:0.01
+        delay:0.3
+        options:UIViewAnimationOptionCurveLinear
+        animations:^{
+          /** @ghidraAddress 0x13f784 */
+          weakContentView.frame = targetFrame;
+        }
+        completion:^(BOOL finished) {
+          // The binary passes an empty global block here rather than nil.
+          (void)finished;
+        }];
 }
 
 - (void)resetAnimation:(CGRect)targetFrame {
