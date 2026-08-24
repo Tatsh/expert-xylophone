@@ -25,6 +25,13 @@ namespace {
 // The scale converting a unit-interval alpha to the byte range (@ghidraAddress 0x2eed00).
 constexpr float kAlphaByteScale = 255.0f;
 
+// The constructor's seeds: both play-colour alpha bytes opaque, the burst size at unit scale, and
+// both banks' effect type set to the disabled value (@ghidraAddress 0x176e4c, 0x176e58, and the
+// eight-byte _memset_pattern16 from 0x30ca80 at 0x176e7c).
+constexpr unsigned char kPlayColorAlphaFull = 0xff;
+constexpr float kInitialEffectSize = 1.0f;
+constexpr int kInitialEffectType = 0x14;
+
 // The fixed anchor and size, in points, every explosion sprite draws with (@ghidraAddress 0x30bf28
 // anchor, 0x30bf2c size).
 constexpr float kEffectAnchor = 84.0f;
@@ -59,10 +66,16 @@ ExplosionEffectLayer::ExplosionEffectLayer() {
     for (int nBank = 0; nBank < kBankCount; ++nBank) {
         m_apSprites[nBank] = nullptr;
         m_aSpriteCapacity[nBank] = 0;
+        // Process reads this as every burst's sprite alpha, so leaving it zero makes each burst
+        // fully transparent and no explosion is ever seen.
+        m_aPlayColorAlpha[nBank] = kPlayColorAlphaFull;
+        m_aEffectType[nBank] = kInitialEffectType;
         for (int nSlot = 0; nSlot < kSlotsPerBank; ++nSlot) {
             m_aBanks[nBank][nSlot] = EffectEntry{};
         }
     }
+    // The sprite scale until the user setting arrives; zero would draw every burst at no size.
+    m_flEffectSize = kInitialEffectSize;
 }
 
 /** @ghidraAddress 0x176ed0 */
@@ -208,8 +221,8 @@ constexpr float kBurstLifetime = 400.0f;
 // The mirror rotation applied to a bank that does not match the current play colour (pi), and none
 // for the matching bank (@ghidraAddress 0x30ca90 = {pi, 0}).
 constexpr float kBurstMirrorRotation = 3.1415927f;
-// The effect type value that disables a bank.
-constexpr int kEffectTypeOff = 0x14;
+// The effect type value that disables a bank (the same value the constructor seeds).
+constexpr int kEffectTypeOff = kInitialEffectType;
 } // namespace
 
 /** @ghidraAddress 0x177260 */

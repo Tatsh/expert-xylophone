@@ -39,8 +39,8 @@ constexpr int kLaneSlotGroup[PauseGaugeLayer::kLaneSlotCount] = {
 // The theme code for which the parts slot binds the shared parts atlas (the second, parts, slot).
 constexpr int kPartsSlot = 1;
 
-// The pause-scene states TaskExecute dispatches on: load the sprites, open the menu, run the
-// per-frame show step, then die.
+// The pause-scene states the per-frame callback dispatches on: load the sprites, open the menu, run
+// the per-frame show step, then die.
 constexpr int kStateLoad = 0;
 constexpr int kStateShowMenu = 1;
 constexpr int kStateExecShow = 2;
@@ -233,8 +233,8 @@ bool PauseGaugeLayer::CheckPointInRect(float flX, float flY, unsigned int nLaneI
 }
 
 namespace {
-// The two-player lane whose gauge dims when no pastel bonus is active on the Limelight/Colette
-// themes, and the slot-index bases the arrow and single-sprite emits use.
+// The lane whose gauge dims while a pastel bonus IS active on the Limelight/Colette themes, and
+// the slot-index bases the arrow and single-sprite emits use.
 constexpr unsigned int kSecondPlayerLane = 1;
 constexpr unsigned int kArrowSlotBase = 4;    // left/right arrow slot = lane + 4.
 constexpr unsigned int kCenterSlotBase = 7;   // centre element slot = lane + 7.
@@ -256,11 +256,12 @@ void PauseGaugeLayer::RenderForLane(unsigned int nLaneIndex) {
     unsigned int nAlpha = lane.bDimmed ? 0x80 : kOpaqueAlpha;
 
     const int nThema = RBUserSettingData.sharedInstance.thema;
-    // The Limelight and Colette themes dim the 2P lane unless a pastel bonus is active.
+    // The Limelight and Colette themes dim the Exit lane while a pastel bonus is active, matching
+    // HandleExit, which refuses to exit under exactly that condition.
     unsigned int nLaneAlpha = nAlpha;
     if (nThema == RBUserSettingDataThemeLimelight || nThema == RBUserSettingDataThemeColette) {
         const bool bPastelBonus = GameSystem::GetGameSystem()->GetPastelBonusType() != 0;
-        nLaneAlpha = (bPastelBonus || nLaneIndex != kSecondPlayerLane) ? nAlpha : 0x80;
+        nLaneAlpha = (bPastelBonus && nLaneIndex == kSecondPlayerLane) ? 0x80 : nAlpha;
     }
 
     const S_VECTOR2 center{lane.flCenterX, lane.flCenterY};
@@ -397,7 +398,10 @@ void PauseGaugeLayer::ExecShow() {
                 break;
             }
         }
-    } else {
+    }
+    // A second, sequential test rather than an else: the binary falls straight through from a
+    // successful acquisition into the drag block on the very same frame.
+    if (m_nSelectedTouchId != kNoSelectedTouch) {
         // An item is being dragged: track its touch and highlight/commit it.
         TouchPoint *pTouch = pTouches->FindTouchById(m_nSelectedTouchId);
         if (pTouch == nullptr) {
@@ -446,7 +450,8 @@ void PauseGaugeLayer::ExecShow() {
 }
 
 /** @ghidraAddress 0x150b38 */
-void PauseGaugeLayer::TaskExecute() {
+void PauseGaugeLayer::OnFrame(int nElapsedMs) {
+    (void)nElapsedMs; // The state machine ignores the frame delta; 0x150b38 never reads x1.
     switch (m_nState) {
     case kStateLoad:
         LoadSprites();
@@ -463,12 +468,6 @@ void PauseGaugeLayer::TaskExecute() {
     default:
         assert(0);
     }
-}
-
-/** @ghidraAddress 0x1508b0 */
-void PauseGaugeLayer::OnFrame(int nElapsedMs) {
-    (void)
-        nElapsedMs; // The pause gauge does no per-frame work; its sprites are rendered externally.
 }
 
 /** @ghidraAddress 0x150e58 */

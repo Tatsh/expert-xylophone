@@ -102,13 +102,6 @@ public:
     void ClearCharging();
 
     /**
-     * @brief The per-frame task callback: a no-op for the pause gauge (its rendering is driven
-     * externally).
-     * @ghidraAddress 0x1508b0
-     */
-    void OnFrame(int nElapsedMs) override;
-
-    /**
      * @brief Hit-tests a point against a lane's pause-gauge rectangle.
      *
      * The rectangle is centred on the lane's geometry centre, sized from the per-device size table
@@ -180,9 +173,13 @@ public:
      *
      * State 0 loads the sprites, state 1 opens the pause menu, state 2 runs the per-frame show
      * step, and state 3 flags the layer dead so the next dispatch destroys it.
+     *
+     * This is the class's per-frame task callback: it occupies the task node's virtual slot in the
+     * binary's vtable, so the listener dispatch runs the state machine every frame. It ignores the
+     * frame delta.
      * @ghidraAddress 0x150b38
      */
-    void TaskExecute();
+    void OnFrame(int nElapsedMs) override;
 
 private:
     /**

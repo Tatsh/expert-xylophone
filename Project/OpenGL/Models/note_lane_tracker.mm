@@ -131,8 +131,9 @@ int NoteLaneTracker::AssignNoteLane(
 /** @ghidraAddress 0x149178 */
 void NoteLaneTracker::ReserveNoteLane(
     int nTimeStart, int nDuration, int nPlayer, int nLane, bool bSpread) {
-    // Only the first three lane groups are reservable.
-    if (nLane > 2) {
+    // Only the first three lane groups are reservable; the binary's test is unsigned, so a
+    // negative colour tone is rejected here too (the b.hi at 0x14918c).
+    if (static_cast<unsigned int>(nLane) > 2) {
         return;
     }
     const int nTimeEnd = nDuration + nTimeStart;

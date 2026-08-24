@@ -2486,8 +2486,11 @@ float NoteModel::GetLaneX() const {
     return GetNoteLaneFraction(nKind, nLane) * GameSystem::GetGameSystem()->GetSheetInsetHalfX();
 }
 
+// The binary reaches this through its __mod_init_func table (the pointer at 0x358cb8), so dyld runs
+// it at image load and nothing calls it by name. Without the constructor attribute the lane table
+// stays zero-initialised and every note's across-field X collapses to the centre line.
 /** @ghidraAddress 0x136afc */
-void InitNoteLaneTable() {
+__attribute__((constructor)) void InitNoteLaneTable() {
     // The six across-field lane fractions are symmetric about the centre lane (which is zero).
     g_noteLaneTable.flLaneSpread = 288.0f;
     g_noteLaneTable.flWideLaneLeft = -0.888889f;
@@ -2572,10 +2575,11 @@ float NoteModel::GetVirtualBoundY(int nBand) {
 
 namespace {
 
-// The five-entry lane-fraction lookup the activation pass builds on the stack: the three left lane
-// fractions, the zero centre lane, and the first right lane fraction. It is an inlined
-// GetNoteLaneFraction over the ordinary lane kind.
-constexpr int kActivationLaneCount = 5;
+// The ten-entry lane-fraction lookup the activation pass builds on the stack: the seven ordinary
+// lane fractions (the centre one zero) followed by three zero slots. It is an inlined
+// GetNoteLaneFraction over the ordinary lane kind. The slide path indexes it by a slide point's
+// target, which runs to 9, so the trailing slots are reachable.
+constexpr int kActivationLaneCount = 10;
 constexpr int kActivationCenterLane = 3;
 
 // The lane the activation pass falls back to when the note has no chart record.
@@ -2627,13 +2631,19 @@ constexpr int kRivalModeOtherReplay = 2;
 // The hold-note kind that leaves an activated note's shot direction undirected.
 constexpr int kHoldKindHeld = 1;
 
-// Builds the activation pass's five-entry lane-fraction lookup.
+// Builds the activation pass's ten-entry lane-fraction lookup. The binary writes the three trailing
+// zeros only on the slide arm, which is the only arm that reads them.
 inline void BuildActivationLaneFractions(float (&aFractions)[kActivationLaneCount]) {
     aFractions[0] = g_noteLaneTable.flLaneFrac0;
     aFractions[1] = g_noteLaneTable.flLaneFrac1;
     aFractions[2] = g_noteLaneTable.flLaneFrac2;
     aFractions[kActivationCenterLane] = 0.0f;
     aFractions[4] = g_noteLaneTable.flLaneFrac4;
+    aFractions[5] = g_noteLaneTable.flLaneFrac5;
+    aFractions[6] = g_noteLaneTable.flLaneFrac6;
+    aFractions[7] = 0.0f;
+    aFractions[8] = 0.0f;
+    aFractions[9] = 0.0f;
 }
 
 } // namespace
