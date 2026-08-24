@@ -67,6 +67,28 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The archive path under the Caches directory.
  */
 + (NSString *)getPathFromPurchesedOldDirectory:(int)musicID;
+#ifdef ENABLE_PATCHES
+/**
+ * @brief The directories a drop-in archive may be placed in, in search order.
+ *
+ * Present only in a patched build. The writable locations come first, so an archive placed in one
+ * of them overrides a file of the same name shipped in the bundle, and the bundle is searched last
+ * because it is the only one a non-jailbroken install cannot write to.
+ *
+ * @return @c Library/Private&nbsp;Documents, @c Documents, @c Library/Caches, then the @c .app.
+ */
++ (NSArray<NSString *> *)archiveSearchDirectories;
+/**
+ * @brief Where the archive with this identifier actually lives.
+ *
+ * Present only in a patched build. Songs and extend notes share the @c %09d.rb naming, so this
+ * resolves either kind.
+ *
+ * @param musicID The tune or extend-note identifier.
+ * @return The first path that exists, or @c nil when the archive is in none of them.
+ */
++ (nullable NSString *)resolveArchivePath:(int)musicID;
+#endif
 
 #pragma mark Purchased music
 

@@ -19,6 +19,7 @@
 #import "MusicDataExtend.h"
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
+#import "RBMusicManager.h"
 #import "StoreExtendNoteInfo.h"
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
@@ -309,8 +310,15 @@ static const int kClientNoteEntriesPerPage = 20;
 
     for (NSDictionary *entry in self.purchasedExtendNoteDictionaries) {
         NSNumber *extendNoteID = entry[kPurchasedNoteKeyExtID];
+#ifdef ENABLE_PATCHES
+        // Extend-note archives use the same %09d.rb naming as songs, so they resolve through the
+        // same drop-in search: Private Documents, Documents, Caches, then the bundle.
+        NSString *path = [RBMusicManager resolveArchivePath:extendNoteID.intValue];
+        if (path != nil) {
+#else
         NSString *path = [RBExtendNoteManager getPathFromPurchased:extendNoteID.intValue];
         if ([NSFileManager isFileExist:path]) {
+#endif
             MusicDataExtend *data = [MusicDataExtend dataWithPath:path dictionary:entry];
             if (data) {
                 [entries addObject:data];

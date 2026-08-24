@@ -456,6 +456,7 @@ worktree
 woverloaded
 wpointer
 wrange
+writable
 wshadow
 wundeclared
 wunreachable

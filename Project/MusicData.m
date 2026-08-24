@@ -412,7 +412,12 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
         MusicDataExtend *extend = extendData[0];
         data.spData = extend;
         data.difficultySpecial = extend.difficulty - kLevelMinimum;
+#ifdef ENABLE_PATCHES
+        // Resolve through the drop-in search rather than the purchased directory alone.
+        NSString *extendPath = [RBMusicManager resolveArchivePath:extend.ExtMusicID];
+#else
         NSString *extendPath = [RBMusicManager getPathFromPurchesed:extend.ExtMusicID];
+#endif
         data.ExtMusicData = [MusicData dataWithPath:extendPath ID:extend.ExtMusicID];
     }
 

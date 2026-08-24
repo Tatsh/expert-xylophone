@@ -88,15 +88,27 @@ the three-entry table.
 
 ### Drop-in songs and extend notes
 
-**Files:** `Project/RBMusicManager.m` — `-reconcilePurchasedMusics`, called from
-`-loadPurchasedMusics` (0x6b020); `Project/RBExtendNoteManager.{h,m}` —
-`-addDiscoveredExtendNote:musicID:level:`
+**Files:** `Project/RBMusicManager.{h,m}` — `+archiveSearchDirectories`, `+resolveArchivePath:`,
+`-reconcilePurchasedMusics` (from `-loadPurchasedMusics`, 0x6b020) and `-createMusicDataArray`
+(0x6c18c); `Project/RBExtendNoteManager.{h,m}` — `-addDiscoveredExtendNote:musicID:level:` and
+`-createExtendNoteDataArray` (0x1834ec); `Project/MusicData.m` — `+dataWithPath:ID:` (0x5ee64)
 
 Songs and extend notes only ever arrive by purchase: the store writes an entry into `mulist` or
 `nolist` and downloads the matching `%09d.rb`. An archive copied in by hand is invisible, because
-nothing lists it. The patch reconciles both lists against the archives actually on disk on every
-load — registering anything unlisted, and forgetting entries whose archive has gone — so dropping a
-file into the purchased directory is enough to make it appear next launch.
+nothing lists it, and the binary looks for it in one or two fixed places. The patch adds a single
+search order — `Library/Private Documents`, `Documents`, `Library/Caches`, then the `.app` itself —
+used both to find drop-in archives and to resolve one for playback, and reconciles both lists
+against what is actually on disk on every load, registering anything unlisted and forgetting
+entries whose archive has gone. Writable locations come first so a drop-in overrides a bundled file
+of the same name; `Library/Caches` is in the list because the binary already falls back to it as its
+legacy download directory, and omitting it would make a legacy install's songs look missing and get
+dropped from `mulist`.
+
+Resolving has to change in three places or a discovered archive would be listed and then fail to
+load, since none of the original lookups consult `Documents` or the bundle: `-createMusicDataArray`
+for songs, `-createExtendNoteDataArray` for notes, and the extend lookup inside `+dataWithPath:ID:`.
+An unpatched build keeps each original lookup exactly — bundle only for the preinstalled songs,
+purchased-then-legacy for `mulist`, and purchased only for `nolist`.
 
 Telling the two kinds apart is the whole problem, because they are indistinguishable by name or by
 format: both are `%09d.rb` in the same directory, and an extend note is read by the ordinary

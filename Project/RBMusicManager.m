@@ -202,6 +202,9 @@ static BOOL RBArchiveEntryCRC(NSString *archivePath, NSString *entryName, uint32
 // Every canonical %09d.rb identifier in one directory. A name that is not exactly nine digits is
 // ignored, so only archives the loaders can actually resolve by identifier are considered.
 static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *outIDs) {
+    if (directory == nil) {
+        return;
+    }
     NSArray<NSString *> *names = [NSFileManager.defaultManager contentsOfDirectoryAtPath:directory
                                                                                    error:NULL];
     NSCharacterSet *nonDigits = NSCharacterSet.decimalDigitCharacterSet.invertedSet;
@@ -218,19 +221,29 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     }
 }
 
-// Where an archive with this identifier actually lives, or nil when it is nowhere.
+// The directories a drop-in archive may be placed in, in the order they are searched. The writable
+// locations come first so a file put there overrides one of the same name shipped in the bundle,
+// and the bundle comes last because it is the only one a non-jailbroken install cannot write to.
+// Extend-note archives use the same %09d.rb naming, so this resolves either kind.
++ (NSArray<NSString *> *)archiveSearchDirectories {
+    return @[
+        GetPrivateDocumentsPath(),      // Library/Private Documents, where purchases land
+        GetDocumentsDirectoryPath(),    // Documents, reachable over iTunes file sharing
+        GetCachesDirectoryPath(),       // Library/Caches, the binary's legacy download directory
+        NSBundle.mainBundle.bundlePath, // the .app itself
+    ];
+}
+
 + (NSString *)resolveArchivePath:(int)musicID {
-    NSString *path = [RBMusicManager getPathFromPurchesed:musicID];
-    if ([NSFileManager isFileExist:path]) {
-        return path;
-    }
-    path = [RBMusicManager getPathFromPurchesedOldDirectory:musicID];
-    if ([NSFileManager isFileExist:path]) {
-        return path;
-    }
-    path = [RBMusicManager getPathFromBundle:musicID];
-    if (path != nil && [NSFileManager isFileExist:path]) {
-        return path;
+    NSString *filename = [RBMusicManager getMusicDataFilename:musicID];
+    for (NSString *directory in [RBMusicManager archiveSearchDirectories]) {
+        if (directory == nil) {
+            continue;
+        }
+        NSString *path = [directory stringByAppendingPathComponent:filename];
+        if ([NSFileManager isFileExist:path]) {
+            return path;
+        }
     }
     return nil;
 }
@@ -265,8 +278,9 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     }
 
     NSMutableSet<NSNumber *> *presentIDs = [NSMutableSet set];
-    RBCollectArchiveIDs(GetPrivateDocumentsPath(), presentIDs);
-    RBCollectArchiveIDs(GetCachesDirectoryPath(), presentIDs);
+    for (NSString *directory in [RBMusicManager archiveSearchDirectories]) {
+        RBCollectArchiveIDs(directory, presentIDs);
+    }
 
     BOOL musicListChanged = NO;
     BOOL noteListChanged = NO;
@@ -491,12 +505,19 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
 
     for (NSDictionary *entry in self.purchasedMusicDictionaries) {
         NSNumber *musicID = entry[kPurchasedMusicKeyID];
+#ifdef ENABLE_PATCHES
+        // Search every drop-in directory, not just the two the binary knows, so an archive placed
+        // in Documents or in the bundle plays rather than merely appearing in the list.
+        NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
+        const BOOL exists = path != nil;
+#else
         NSString *path = [RBMusicManager getPathFromPurchesed:musicID.intValue];
         BOOL exists = [NSFileManager isFileExist:path];
         if (!exists) {
             path = [RBMusicManager getPathFromPurchesedOldDirectory:musicID.intValue];
             exists = [NSFileManager isFileExist:path];
         }
+#endif
         if (exists) {
             MusicData *data = [MusicData dataWithPath:path ID:musicID.intValue];
             if (data) {
