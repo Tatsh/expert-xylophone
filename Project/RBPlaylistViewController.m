@@ -91,6 +91,8 @@ static const CGFloat kTitleFontSizePad = 18.0;
 // the phone mascot-message width.
 static const CGFloat kSortSegmentHeight = 30.0;
 static const CGFloat kSortLabelFontSize = 14.0;
+// UIKit's own segmented-control title size, restated so the patched path can vary only the weight.
+static const CGFloat kSortSegmentFontSize = 13.0;
 
 // The system version at which the navigation bar switched from tintColor to barTintColor.
 static const CGFloat kBarTintColorMinSystemVersion = 7.0;
@@ -233,22 +235,29 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
 #ifdef ENABLE_PATCHES
     // UISegmentedControl's private subview hierarchy changed after this binary shipped: its
     // children are no longer segment objects and do not implement -isSelected, so sending it
-    // raises an unrecognised-selector exception and aborts the app as this view appears. iOS 13's
-    // selectedSegmentTintColor and the per-state title attributes give the same appearance: the
-    // selected segment filled in the current sort's colour, the other lettered in the opposite one.
+    // raises an unrecognised-selector exception and aborts the app as this view appears.
+    //
+    // The four arms above reduce to one rule: the MUSIC segment always letters in musicColor and
+    // ARTIST always in artistColor, whichever is selected. Since exactly one segment is selected,
+    // giving the selected state the current sort's colour and the normal state the other one
+    // reproduces that per-segment colouring through the per-state API. Both segments keep a white
+    // background; only the selected one is emboldened.
     UIColor *selectedColor = (selected == kMenuItemSortMusic) ? self.musicColor : self.artistColor;
     UIColor *normalColor = (selected == kMenuItemSortMusic) ? self.artistColor : self.musicColor;
     if (@available(iOS 13.0, *)) {
-        self.segmentedControl.selectedSegmentTintColor = selectedColor;
+        self.segmentedControl.selectedSegmentTintColor = UIColor.whiteColor;
         self.segmentedControl.backgroundColor = UIColor.whiteColor;
-    } else {
-        self.segmentedControl.tintColor = selectedColor;
     }
-    [self.segmentedControl setTitleTextAttributes:@{NSForegroundColorAttributeName : normalColor}
+    [self.segmentedControl setTitleTextAttributes:@{
+        NSForegroundColorAttributeName : normalColor,
+        NSFontAttributeName : [UIFont systemFontOfSize:kSortSegmentFontSize]
+    }
                                          forState:UIControlStateNormal];
-    [self.segmentedControl
-        setTitleTextAttributes:@{NSForegroundColorAttributeName : UIColor.whiteColor}
-                      forState:UIControlStateSelected];
+    [self.segmentedControl setTitleTextAttributes:@{
+        NSForegroundColorAttributeName : selectedColor,
+        NSFontAttributeName : [UIFont boldSystemFontOfSize:kSortSegmentFontSize]
+    }
+                                         forState:UIControlStateSelected];
 #else
     for (id segment in self.segmentedControl.subviews) {
         BOOL isSelected = [segment isSelected];

@@ -229,10 +229,14 @@ Three places where a modern UIKit no longer reproduces what the shipped build dr
 `-setTintColor:`, unguarded (the `-isSelected` send is at `0x924f8`, branched on by the `cbz w0` at
 `0x924fc`). `UISegmentedControl` was rebuilt on a visual-provider architecture, so its children are
 background and label views that do not implement `-isSelected`. Sending it aborted the app, and the
-guard that stopped the crash also skipped every subview, leaving the segments untinted. The patch
-uses iOS 13's `selectedSegmentTintColor` and per-state title attributes instead, which reproduce the
-binary's four-arm result: the selected segment filled in the current sort's colour, the other
-lettered in the opposite one.
+guard that stopped the crash also skipped every subview, leaving the segments untinted.
+
+The binary's four arms reduce to one rule: the MUSIC segment always letters in `musicColor` and
+ARTIST always in `artistColor`, whichever is selected. Because exactly one segment is selected at a
+time, the per-state API reproduces that per-segment colouring — the selected state carries the
+current sort's colour and the normal state the other one. Both segments keep a white background,
+with `selectedSegmentTintColor` set to white so the modern fill does not appear, and the selected
+title is emboldened at UIKit's own segment title size.
 
 The popover's sort row lives in the navigation controller's toolbar. The appearance proxies
 installed for `UINavigationBar` and `UITabBar` had no `UIToolbar` counterpart, so the toolbar kept
