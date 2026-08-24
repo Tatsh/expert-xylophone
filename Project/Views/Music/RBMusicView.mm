@@ -901,11 +901,18 @@ enum { kDetMbgPlainIndex = 3 };
                               kDifficultyPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
         MusicSelectedBase:self];
     [self.settingScroll addSubview:self.difficultyView];
-    self.speedView = [[RBMusicSpeedView alloc]
-            initWithFrame:CGRectMake(
-                              kSpeedPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
-        MusicSelectedBase:self];
-    [self.settingScroll addSubview:self.speedView];
+    // The speed page is the pad's alone. The idiom test at 0xceaa8 skips straight to the CPU view
+    // at 0xcee20 on the phone, which is why the pages below renumber rather than leaving a gap: the
+    // narrow layout has no page 2 to leave. Creating it unconditionally put it at the same page
+    // index the phone gives the CPU view, stacking the two in the same slot. Nothing reads the view
+    // on the phone either, since -playGame only asks it for a speed under IsPad().
+    if (isPad) {
+        self.speedView = [[RBMusicSpeedView alloc]
+                initWithFrame:CGRectMake(
+                                  kSpeedPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
+            MusicSelectedBase:self];
+        [self.settingScroll addSubview:self.speedView];
+    }
 
     // The CPU and other sub-view pages split by iPad idiom (IsPad at 0xceaa8): 3 and 4 on the wide
     // layout, 2 and 3 on the narrow one.
