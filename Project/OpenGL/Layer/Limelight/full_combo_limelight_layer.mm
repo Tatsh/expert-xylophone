@@ -269,7 +269,7 @@ constexpr float kAlphaScale = 255.0f;
 constexpr float kSideRotation[kSideCount] = {3.1415927f, 0.0f};
 
 // The thirteen screen X positions the column sprites stand on (@ghidraAddress 0x305330, 0x305334,
-// 0x305338, 0x306240, 0x306244, 0x305348, 0x30534c, 0x3053fc, 0x305358, 0x30535c, 0x3062a8,
+// 0x305338, 0x306240, 0x306244, 0x305348, 0x30534c, 0x3053fc, 0x305358, 0x30535c, 0x3052a8,
 // 0x305364, and 0x2f8550). The layer converts each to a layout-relative offset by subtracting its
 // own width.
 constexpr float kColumnScreenX[] = {
@@ -283,7 +283,7 @@ constexpr float kColumnScreenX[] = {
     524.0f,
     334.0f,
     134.0f,
-    1000.0f,
+    644.0f,
     424.0f,
     384.0f,
 };

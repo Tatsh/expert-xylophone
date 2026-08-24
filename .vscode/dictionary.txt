@@ -65,7 +65,6 @@ casource
 catlist
 cavoice
 cbnz
-cbz
 ccflags
 ccmp
 ccontext
@@ -74,7 +73,6 @@ cdevice
 centered
 cfstr
 cfstring
-cfstrings
 cfurl
 cfuuid
 chache
@@ -86,7 +84,6 @@ classicthemelayer
 classlist
 codegen
 codepoint
-codepoints
 codesign
 color
 colors
@@ -104,7 +101,6 @@ csel
 cset
 cstring
 ctask
-cutoff
 dakuten
 dashcam
 datablock
@@ -134,7 +130,6 @@ difd
 dios
 directorys
 disasm
-ditto
 djsilverberg
 djtaka
 djyoshitaka
@@ -144,7 +139,6 @@ dplatform
 drbpdbg
 dresources
 dsym
-dysymtab
 eagl
 eeac
 encp
@@ -152,7 +146,6 @@ endforeach
 enginecrypto
 engineglobals
 engineruntime
-eor
 errno
 esbenp
 expl
@@ -162,7 +155,6 @@ extitem
 extmusicinfo
 extmusiclist
 extraout
-extreloff
 fabsf
 fadd
 falied
@@ -199,7 +191,6 @@ gamesystem
 ghidra
 ghidra's
 gles
-gluint
 grage
 graphviz
 halfwidth
@@ -210,21 +201,12 @@ hira
 hnbt
 howtoplay
 ibgm
-idat
-iend
 ifdef
 ifndef
 ifrm
 igles
-ihdr
-iibb
 immediates
-immhi
-immlo
-immr
-imms
 incomp
-indirectsymoff
 infomation
 initalize
 initilize
@@ -239,9 +221,9 @@ interp
 inttypes
 iphoneos
 ishot
-ispad
 ithm
 ivar
+ivar\'s
 ivars
 iwyu
 jefoujgjfs
@@ -249,7 +231,6 @@ jinglebell
 jinja
 jsonnet
 jsonschema
-katakana
 keta
 keysound
 konaminet
@@ -259,7 +240,6 @@ layouted
 ldrb
 ldrh
 ldrsb
-ldrsw
 leetal
 lelist
 leveltables
@@ -306,11 +286,8 @@ musicinfo
 musicselect
 mypy
 nbobhfs
-ndebug
 nekomata
-nextrel
 nilled
-nindirectsyms
 nolist
 nonatomic
 nonlocalized
@@ -350,7 +327,6 @@ playerfieldlayer
 playfieldlayerbase
 playtimer
 plid
-plumesign
 podspec
 popn
 popups
@@ -364,7 +340,6 @@ pycache
 pyinstaller
 pylock
 pyproject
-qqqii
 qrispy
 qual
 quavre
@@ -404,9 +379,9 @@ ringanimation
 ripgreprc
 rodata
 roundf
-rsrc
 rtti
 rturl
+sbclaude
 schemafile
 scorefor
 screenview
@@ -414,7 +389,6 @@ scvtf
 sdiv
 seiya
 selref
-sequester
 serialcode
 serialiser
 sheetlayer
@@ -427,7 +401,6 @@ smulh
 snapcraft
 sota
 soundeffectmanager
-sourceable
 sourcei
 srand
 ssize
@@ -445,7 +418,6 @@ strm
 strobing
 stur
 subarray
-subdata
 subentities
 subview
 subview's
@@ -456,12 +428,10 @@ superview's
 supportedi
 sxth
 sxtw
-symtab
 sysctlbyname
 tabletennis
 tatsh
 tbnz
-tbz
 teardown
 tentei
 texel
@@ -491,8 +461,6 @@ unconfigured
 undecryptable
 undraft
 undrafted
-unfilter
-unfoldable
 ungated
 unichar
 unlockmusic

@@ -819,10 +819,86 @@ void LimelightResultLayer::SetPhoneInstancerTextureAndScale(unsigned int nPhoneI
 // @ghidraAddress 0x3d9100
 PartsDataRecord g_aLimelightPartsPad[kLimelightPartsRecordBound] = {};
 
-// Its phone counterpart, likewise zero storage in __common filled at runtime. The header declares
-// both, but only the pad table had a definition.
+// The phone parts table is baked read-only data in __TEXT,__const (0x1002ec690-0x100310887), not
+// __common: the load-time initialiser at 0x12af9c only stores into 0x3d9100-0x3da8e8,
+// 0x3da8f0-0x3dbe90 and 0x3ddd90-0x3de008, and its only reads from this page stop at 0x307ce0.
+// The binary holds 142 records here (0x307cf0-0x308a40), matching the 0x8e bound in
+// getPartsData_Phone at 0x1238d0; the accessor at 0x123838 still bounds both tables at 255, so the
+// remaining entries stay zero.
 // @ghidraAddress 0x307cf0
-PartsDataRecord g_aLimelightPartsPhone[kLimelightPartsRecordBound] = {};
+PartsDataRecord g_aLimelightPartsPhone[kLimelightPartsRecordBound] = {
+    {1, 0.0f, 0.0f, 1024.0f, 1024.0f, 0}, {1, 0.0f, 0.0f, 57.0f, 20.0f, 1},
+    {1, 0.0f, 0.0f, 9.0f, 9.0f, 2},       {1, 0.0f, 0.0f, 1.0f, 9.0f, 3},
+    {1, 0.0f, 0.0f, 9.0f, 1.0f, 4},       {1, 0.0f, 0.0f, 1.0f, 1.0f, 5},
+    {1, 0.0f, 0.0f, 9.0f, 9.0f, 6},       {1, 0.0f, 0.0f, 1.0f, 9.0f, 7},
+    {1, 0.0f, 0.0f, 9.0f, 1.0f, 8},       {1, 0.0f, 0.0f, 1.0f, 1.0f, 9},
+    {1, 0.0f, 0.0f, 15.0f, 17.0f, 10},    {1, 0.0f, 0.0f, 1.0f, 17.0f, 11},
+    {1, 0.0f, 0.0f, 1.0f, 1.0f, 12},      {1, 0.0f, 0.0f, 1.0f, 1.0f, 13},
+    {1, 0.0f, 0.0f, 48.0f, 8.0f, 14},     {1, 0.0f, 0.0f, 30.0f, 8.0f, 15},
+    {1, 0.0f, 0.0f, 26.0f, 8.0f, 16},     {1, 0.0f, 0.0f, 164.0f, 8.0f, 17},
+    {1, 0.0f, 0.0f, 6.0f, 8.0f, 18},      {1, 0.0f, 0.0f, 38.0f, 8.0f, 19},
+    {1, 0.0f, 0.0f, 38.0f, 8.0f, 20},     {1, 0.0f, 0.0f, 38.0f, 8.0f, 21},
+    {1, 0.0f, 0.0f, 38.0f, 8.0f, 22},     {1, 0.0f, 0.0f, 4.0f, 6.0f, 23},
+    {1, 0.0f, 0.0f, 4.0f, 6.0f, 24},      {1, 0.0f, 0.0f, 4.0f, 6.0f, 25},
+    {1, 0.0f, 0.0f, 4.0f, 6.0f, 26},      {1, 0.0f, 0.0f, 4.0f, 6.0f, 27},
+    {1, 0.0f, 0.0f, 4.0f, 6.0f, 28},      {1, 0.0f, 0.0f, 4.0f, 6.0f, 29},
+    {1, 0.0f, 0.0f, 4.0f, 6.0f, 30},      {1, 0.0f, 0.0f, 4.0f, 6.0f, 31},
+    {1, 0.0f, 0.0f, 4.0f, 6.0f, 32},      {1, 0.0f, 0.0f, 4.0f, 6.0f, 33},
+    {1, 0.0f, 0.0f, 6.0f, 6.0f, 34},      {1, 0.0f, 0.0f, 6.0f, 6.0f, 35},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 36},    {1, 0.0f, 0.0f, 20.0f, 24.0f, 37},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 38},    {1, 0.0f, 0.0f, 20.0f, 24.0f, 39},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 40},    {1, 0.0f, 0.0f, 20.0f, 24.0f, 41},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 42},    {1, 0.0f, 0.0f, 20.0f, 24.0f, 43},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 44},    {1, 0.0f, 0.0f, 20.0f, 24.0f, 45},
+    {1, 13.0f, 12.0f, 26.0f, 24.0f, 46},  {1, 10.0f, 12.0f, 20.0f, 24.0f, 47},
+    {1, 13.0f, 12.0f, 26.0f, 24.0f, 48},  {1, 20.0f, 12.0f, 40.0f, 24.0f, 49},
+    {1, 20.0f, 12.0f, 40.0f, 24.0f, 50},  {1, 20.0f, 12.0f, 40.0f, 24.0f, 51},
+    {1, 0.0f, 0.0f, 50.0f, 6.0f, 52},     {1, 0.0f, 0.0f, 26.0f, 10.0f, 53},
+    {1, 0.0f, 0.0f, 26.0f, 10.0f, 54},    {1, 0.0f, 0.0f, 33.0f, 10.0f, 55},
+    {1, 0.0f, 0.0f, 33.0f, 10.0f, 56},    {1, 0.0f, 0.0f, 6.0f, 8.0f, 57},
+    {1, 0.0f, 0.0f, 6.0f, 8.0f, 58},      {1, 0.0f, 0.0f, 6.0f, 8.0f, 59},
+    {1, 0.0f, 0.0f, 6.0f, 8.0f, 60},      {1, 0.0f, 0.0f, 6.0f, 8.0f, 61},
+    {1, 0.0f, 0.0f, 6.0f, 8.0f, 62},      {1, 0.0f, 0.0f, 6.0f, 8.0f, 63},
+    {1, 0.0f, 0.0f, 6.0f, 8.0f, 64},      {1, 0.0f, 0.0f, 6.0f, 8.0f, 65},
+    {1, 0.0f, 0.0f, 6.0f, 8.0f, 66},      {1, 0.0f, 0.0f, 2.0f, 8.0f, 67},
+    {1, 0.0f, 0.0f, 4.0f, 8.0f, 68},      {1, 0.0f, 0.0f, 8.0f, 8.0f, 69},
+    {1, 0.0f, 0.0f, 6.0f, 8.0f, 70},      {1, 13.0f, 4.0f, 26.0f, 8.0f, 71},
+    {1, 13.0f, 4.0f, 26.0f, 8.0f, 72},    {1, 13.0f, 4.0f, 26.0f, 8.0f, 73},
+    {1, 13.0f, 4.0f, 26.0f, 8.0f, 74},    {1, 18.0f, 4.0f, 36.0f, 8.0f, 75},
+    {1, 18.0f, 4.0f, 36.0f, 8.0f, 76},    {1, 13.0f, 4.0f, 26.0f, 8.0f, 77},
+    {1, 30.0f, 4.0f, 60.0f, 8.0f, 78},    {1, 30.0f, 4.0f, 60.0f, 8.0f, 79},
+    {1, 30.0f, 4.0f, 60.0f, 8.0f, 80},    {1, 30.0f, 4.0f, 60.0f, 8.0f, 81},
+    {1, 33.0f, 4.0f, 66.0f, 8.0f, 82},    {1, 18.0f, 4.0f, 36.0f, 8.0f, 83},
+    {1, 46.0f, 4.0f, 92.0f, 8.0f, 84},    {1, 0.0f, 0.0f, 8.0f, 1.0f, 85},
+    {1, 0.0f, 0.0f, 60.0f, 18.0f, 86},    {1, 0.0f, 0.0f, 1.0f, 18.0f, 87},
+    {1, 0.0f, 0.0f, 27.0f, 18.0f, 88},    {1, 0.0f, 0.0f, 42.0f, 36.0f, 89},
+    {1, 0.0f, 0.0f, 1.0f, 36.0f, 90},     {1, 59.0f, 8.0f, 118.0f, 16.0f, 91},
+    {1, 0.0f, 0.0f, 100.0f, 24.0f, 92},   {1, 0.0f, 0.0f, 100.0f, 24.0f, 93},
+    {1, 0.0f, 0.0f, 34.0f, 24.0f, 94},    {1, 30.0f, 6.0f, 60.0f, 12.0f, 95},
+    {1, 3.0f, 3.0f, 6.0f, 6.0f, 96},      {1, 33.0f, 6.0f, 66.0f, 12.0f, 97},
+    {1, 0.0f, 0.0f, 100.0f, 12.0f, 123},  {1, 0.0f, 0.0f, 100.0f, 12.0f, 98},
+    {1, 0.0f, 0.0f, 50.0f, 50.0f, 99},    {1, 0.0f, 0.0f, 16.0f, 16.0f, 100},
+    {1, 0.0f, 0.0f, 16.0f, 16.0f, 101},   {1, 0.0f, 0.0f, 20.0f, 24.0f, 102},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 103},   {1, 0.0f, 0.0f, 20.0f, 24.0f, 104},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 105},   {1, 0.0f, 0.0f, 20.0f, 24.0f, 106},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 107},   {1, 0.0f, 0.0f, 20.0f, 24.0f, 108},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 109},   {1, 0.0f, 0.0f, 20.0f, 24.0f, 110},
+    {1, 0.0f, 0.0f, 20.0f, 24.0f, 111},   {1, 0.0f, 0.0f, 16.0f, 20.0f, 112},
+    {1, 0.0f, 0.0f, 16.0f, 20.0f, 113},   {1, 0.0f, 0.0f, 16.0f, 20.0f, 114},
+    {1, 0.0f, 0.0f, 16.0f, 20.0f, 115},   {1, 0.0f, 0.0f, 16.0f, 20.0f, 116},
+    {1, 0.0f, 0.0f, 16.0f, 20.0f, 117},   {1, 0.0f, 0.0f, 16.0f, 20.0f, 118},
+    {1, 0.0f, 0.0f, 16.0f, 20.0f, 119},   {1, 0.0f, 0.0f, 16.0f, 20.0f, 120},
+    {1, 0.0f, 0.0f, 16.0f, 20.0f, 121},   {1, 0.0f, 0.0f, 4.0f, 20.0f, 122},
+    {1, 0.0f, 0.0f, 74.0f, 11.0f, 124},   {1, 0.0f, 0.0f, 74.0f, 11.0f, 125},
+    {1, 0.0f, 0.0f, 74.0f, 11.0f, 126},   {1, 0.0f, 0.0f, 74.0f, 11.0f, 127},
+    {1, 0.0f, 0.0f, 10.0f, 10.0f, 128},   {1, 0.0f, 0.0f, 8.0f, 9.0f, 129},
+    {1, 0.0f, 0.0f, 8.0f, 9.0f, 130},     {1, 0.0f, 0.0f, 8.0f, 9.0f, 131},
+    {1, 0.0f, 0.0f, 8.0f, 9.0f, 132},     {1, 0.0f, 0.0f, 8.0f, 9.0f, 133},
+    {1, 0.0f, 0.0f, 8.0f, 9.0f, 134},     {1, 0.0f, 0.0f, 8.0f, 9.0f, 135},
+    {1, 0.0f, 0.0f, 8.0f, 9.0f, 136},     {1, 0.0f, 0.0f, 8.0f, 9.0f, 137},
+    {1, 0.0f, 0.0f, 8.0f, 9.0f, 138},     {1, 0.0f, 0.0f, 8.0f, 9.0f, 139},
+    {1, 0.0f, 0.0f, 8.0f, 9.0f, 140},     {1, 0.0f, 0.0f, 2.0f, 9.0f, 141},
+};
 
 /** @ghidraAddress 0x123838 */
 PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) {
@@ -6279,6 +6355,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPartsPad[1].flHeight = 60.0f;
         g_aLimelightPositionPhoneState[0].flWidth = g_aLimelightPartsPad[1].flWidth;
         g_aLimelightPositionPhoneState[0].flHeight = g_aLimelightPartsPad[1].flHeight;
+        g_aLimelightPositionPhoneState[0].flHeight = g_aLimelightPartsPad[1].flHeight;
         g_aLimelightPositionPhoneState[2].nAnchorMode = 0;
         g_aLimelightPositionPhoneState[3].flX = 589.0f;
         g_aLimelightPositionPhoneState[3].flY = 898.0f;
@@ -6404,284 +6481,556 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPartsPad[1].flWidth = 242.0f;
         g_aLimelightPartsPad[1].flHeight = 60.0f;
         g_aLimelightPartsPad[4].flX = g_aLimelightPartsPad[3].flX;
+        g_aLimelightPartsPad[4].flY = g_aLimelightPartsPad[3].flY;
         g_aLimelightPartsPad[4].flWidth = g_aLimelightPartsPad[3].flWidth;
+        g_aLimelightPartsPad[4].flHeight = g_aLimelightPartsPad[3].flHeight;
         g_aLimelightPartsPad[8].flX = g_aLimelightPartsPad[7].flX;
+        g_aLimelightPartsPad[8].flY = g_aLimelightPartsPad[7].flY;
         g_aLimelightPartsPad[8].flWidth = g_aLimelightPartsPad[7].flWidth;
+        g_aLimelightPartsPad[8].flHeight = g_aLimelightPartsPad[7].flHeight;
         g_aLimelightPartsPad[11].flX = g_aLimelightPartsPad[9].flX;
+        g_aLimelightPartsPad[11].flY = g_aLimelightPartsPad[9].flY;
         g_aLimelightPartsPad[11].flWidth = g_aLimelightPartsPad[9].flWidth;
+        g_aLimelightPartsPad[11].flHeight = g_aLimelightPartsPad[9].flHeight;
         g_aLimelightPartsPad[12].flX = g_aLimelightPartsPad[3].flX;
+        g_aLimelightPartsPad[12].flY = g_aLimelightPartsPad[3].flY;
         g_aLimelightPartsPad[12].flWidth = g_aLimelightPartsPad[3].flWidth;
+        g_aLimelightPartsPad[12].flHeight = g_aLimelightPartsPad[3].flHeight;
         g_aLimelightPartsPad[15].flX = g_aLimelightPartsPad[14].flX;
+        g_aLimelightPartsPad[15].flY = g_aLimelightPartsPad[14].flY;
         g_aLimelightPartsPad[15].flWidth = g_aLimelightPartsPad[14].flWidth;
+        g_aLimelightPartsPad[15].flHeight = g_aLimelightPartsPad[14].flHeight;
         g_aLimelightPartsPad[16].flX = g_aLimelightPartsPad[7].flX;
+        g_aLimelightPartsPad[16].flY = g_aLimelightPartsPad[7].flY;
         g_aLimelightPartsPad[16].flWidth = g_aLimelightPartsPad[7].flWidth;
+        g_aLimelightPartsPad[16].flHeight = g_aLimelightPartsPad[7].flHeight;
         g_aLimelightPartsPad[17].flX = g_aLimelightPartsPad[7].flX;
+        g_aLimelightPartsPad[17].flY = g_aLimelightPartsPad[7].flY;
         g_aLimelightPartsPad[17].flWidth = g_aLimelightPartsPad[7].flWidth;
+        g_aLimelightPartsPad[17].flHeight = g_aLimelightPartsPad[7].flHeight;
         g_aLimelightPartsPad[20].flX = g_aLimelightPartsPad[9].flX;
+        g_aLimelightPartsPad[20].flY = g_aLimelightPartsPad[9].flY;
         g_aLimelightPartsPad[20].flWidth = g_aLimelightPartsPad[9].flWidth;
+        g_aLimelightPartsPad[20].flHeight = g_aLimelightPartsPad[9].flHeight;
         g_aLimelightPartsPad[25].flX = g_aLimelightPartsPad[22].flX;
+        g_aLimelightPartsPad[25].flY = g_aLimelightPartsPad[22].flY;
         g_aLimelightPartsPad[25].flWidth = g_aLimelightPartsPad[22].flWidth;
+        g_aLimelightPartsPad[25].flHeight = g_aLimelightPartsPad[22].flHeight;
         g_aLimelightPartsPad[27].flX = g_aLimelightPartsPad[24].flX;
+        g_aLimelightPartsPad[27].flY = g_aLimelightPartsPad[24].flY;
         g_aLimelightPartsPad[27].flWidth = g_aLimelightPartsPad[24].flWidth;
+        g_aLimelightPartsPad[27].flHeight = g_aLimelightPartsPad[24].flHeight;
         g_aLimelightPartsPad[30].flX = g_aLimelightPartsPad[28].flX;
+        g_aLimelightPartsPad[30].flY = g_aLimelightPartsPad[28].flY;
         g_aLimelightPartsPad[30].flWidth = g_aLimelightPartsPad[28].flWidth;
+        g_aLimelightPartsPad[30].flHeight = g_aLimelightPartsPad[28].flHeight;
         g_aLimelightPartsPad[31].flX = g_aLimelightPartsPad[28].flX;
+        g_aLimelightPartsPad[31].flY = g_aLimelightPartsPad[28].flY;
         g_aLimelightPartsPad[31].flWidth = g_aLimelightPartsPad[28].flWidth;
+        g_aLimelightPartsPad[31].flHeight = g_aLimelightPartsPad[28].flHeight;
         g_aLimelightPartsPad[39].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[39].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[39].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[39].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[40].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[40].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[40].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[40].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[41].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[41].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[41].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[41].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[43].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[43].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[43].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[43].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[44].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[44].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[44].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[44].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[46].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[46].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[46].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[46].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[48].flX = g_aLimelightPartsPad[47].flX;
+        g_aLimelightPartsPad[48].flY = g_aLimelightPartsPad[47].flY;
         g_aLimelightPartsPad[48].flWidth = g_aLimelightPartsPad[47].flWidth;
+        g_aLimelightPartsPad[48].flHeight = g_aLimelightPartsPad[47].flHeight;
         g_aLimelightPartsPad[49].flX = g_aLimelightPartsPad[47].flX;
+        g_aLimelightPartsPad[49].flY = g_aLimelightPartsPad[47].flY;
         g_aLimelightPartsPad[49].flWidth = g_aLimelightPartsPad[47].flWidth;
+        g_aLimelightPartsPad[49].flHeight = g_aLimelightPartsPad[47].flHeight;
         g_aLimelightPartsPad[51].flX = g_aLimelightPartsPad[47].flX;
+        g_aLimelightPartsPad[51].flY = g_aLimelightPartsPad[47].flY;
         g_aLimelightPartsPad[51].flWidth = g_aLimelightPartsPad[47].flWidth;
+        g_aLimelightPartsPad[51].flHeight = g_aLimelightPartsPad[47].flHeight;
         g_aLimelightPartsPad[52].flX = g_aLimelightPartsPad[47].flX;
+        g_aLimelightPartsPad[52].flY = g_aLimelightPartsPad[47].flY;
         g_aLimelightPartsPad[52].flWidth = g_aLimelightPartsPad[47].flWidth;
+        g_aLimelightPartsPad[52].flHeight = g_aLimelightPartsPad[47].flHeight;
         g_aLimelightPartsPad[54].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[54].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[54].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[54].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[55].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[55].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[55].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[55].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[56].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[56].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[56].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[56].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[57].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[57].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[57].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[57].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[59].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[59].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[59].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[59].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[60].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[60].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[60].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[60].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[62].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[62].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[62].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[62].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[64].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[64].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[64].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[64].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[65].flX = g_aLimelightPartsPad[38].flX;
+        g_aLimelightPartsPad[65].flY = g_aLimelightPartsPad[38].flY;
         g_aLimelightPartsPad[65].flWidth = g_aLimelightPartsPad[38].flWidth;
+        g_aLimelightPartsPad[65].flHeight = g_aLimelightPartsPad[38].flHeight;
         g_aLimelightPartsPad[70].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[70].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[70].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[70].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[71].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[71].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[71].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[71].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[72].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[72].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[72].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[72].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[73].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[73].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[73].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[73].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[75].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[75].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[75].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[75].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[76].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[76].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[76].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[76].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[78].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[78].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[78].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[78].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[79].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[79].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[79].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[79].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[80].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[80].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[80].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[80].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[81].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[81].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[81].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[81].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[83].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[83].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[83].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[83].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[84].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[84].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[84].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[84].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[86].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[86].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[86].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[86].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[87].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[87].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[87].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[87].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[89].flX = g_aLimelightPartsPad[88].flX;
+        g_aLimelightPartsPad[89].flY = g_aLimelightPartsPad[88].flY;
         g_aLimelightPartsPad[89].flWidth = g_aLimelightPartsPad[88].flWidth;
+        g_aLimelightPartsPad[89].flHeight = g_aLimelightPartsPad[88].flHeight;
         g_aLimelightPartsPad[92].flX = g_aLimelightPartsPad[91].flX;
+        g_aLimelightPartsPad[92].flY = g_aLimelightPartsPad[91].flY;
         g_aLimelightPartsPad[92].flWidth = g_aLimelightPartsPad[91].flWidth;
+        g_aLimelightPartsPad[92].flHeight = g_aLimelightPartsPad[91].flHeight;
         g_aLimelightPartsPad[99].flX = g_aLimelightPartsPad[97].flX;
+        g_aLimelightPartsPad[99].flY = g_aLimelightPartsPad[97].flY;
         g_aLimelightPartsPad[99].flWidth = g_aLimelightPartsPad[97].flWidth;
+        g_aLimelightPartsPad[99].flHeight = g_aLimelightPartsPad[97].flHeight;
         g_aLimelightPartsPad[100].flX = g_aLimelightPartsPad[97].flX;
+        g_aLimelightPartsPad[100].flY = g_aLimelightPartsPad[97].flY;
         g_aLimelightPartsPad[100].flWidth = g_aLimelightPartsPad[97].flWidth;
+        g_aLimelightPartsPad[100].flHeight = g_aLimelightPartsPad[97].flHeight;
         g_aLimelightPartsPad[103].flX = g_aLimelightPartsPad[102].flX;
+        g_aLimelightPartsPad[103].flY = g_aLimelightPartsPad[102].flY;
         g_aLimelightPartsPad[103].flWidth = g_aLimelightPartsPad[102].flWidth;
+        g_aLimelightPartsPad[103].flHeight = g_aLimelightPartsPad[102].flHeight;
         g_aLimelightPartsPad[104].flX = g_aLimelightPartsPad[102].flX;
+        g_aLimelightPartsPad[104].flY = g_aLimelightPartsPad[102].flY;
         g_aLimelightPartsPad[104].flWidth = g_aLimelightPartsPad[102].flWidth;
+        g_aLimelightPartsPad[104].flHeight = g_aLimelightPartsPad[102].flHeight;
         g_aLimelightPartsPad[107].flX = g_aLimelightPartsPad[105].flX;
+        g_aLimelightPartsPad[107].flY = g_aLimelightPartsPad[105].flY;
         g_aLimelightPartsPad[107].flWidth = g_aLimelightPartsPad[105].flWidth;
+        g_aLimelightPartsPad[107].flHeight = g_aLimelightPartsPad[105].flHeight;
         g_aLimelightPartsPad[108].flX = g_aLimelightPartsPad[105].flX;
+        g_aLimelightPartsPad[108].flY = g_aLimelightPartsPad[105].flY;
         g_aLimelightPartsPad[108].flWidth = g_aLimelightPartsPad[105].flWidth;
+        g_aLimelightPartsPad[108].flHeight = g_aLimelightPartsPad[105].flHeight;
         g_aLimelightPartsPad[110].flX = g_aLimelightPartsPad[105].flX;
+        g_aLimelightPartsPad[110].flY = g_aLimelightPartsPad[105].flY;
         g_aLimelightPartsPad[110].flWidth = g_aLimelightPartsPad[105].flWidth;
+        g_aLimelightPartsPad[110].flHeight = g_aLimelightPartsPad[105].flHeight;
         g_aLimelightPartsPad[111].flX = g_aLimelightPartsPad[105].flX;
+        g_aLimelightPartsPad[111].flY = g_aLimelightPartsPad[105].flY;
         g_aLimelightPartsPad[111].flWidth = g_aLimelightPartsPad[105].flWidth;
+        g_aLimelightPartsPad[111].flHeight = g_aLimelightPartsPad[105].flHeight;
         g_aLimelightPartsPad[112].flX = g_aLimelightPartsPad[105].flX;
+        g_aLimelightPartsPad[112].flY = g_aLimelightPartsPad[105].flY;
         g_aLimelightPartsPad[112].flWidth = g_aLimelightPartsPad[105].flWidth;
+        g_aLimelightPartsPad[112].flHeight = g_aLimelightPartsPad[105].flHeight;
         g_aLimelightPartsPad[113].flX = g_aLimelightPartsPad[105].flX;
+        g_aLimelightPartsPad[113].flY = g_aLimelightPartsPad[105].flY;
         g_aLimelightPartsPad[113].flWidth = g_aLimelightPartsPad[105].flWidth;
+        g_aLimelightPartsPad[113].flHeight = g_aLimelightPartsPad[105].flHeight;
         g_aLimelightPartsPad[116].flX = g_aLimelightPartsPad[105].flX;
+        g_aLimelightPartsPad[116].flY = g_aLimelightPartsPad[105].flY;
         g_aLimelightPartsPad[116].flWidth = g_aLimelightPartsPad[105].flWidth;
+        g_aLimelightPartsPad[116].flHeight = g_aLimelightPartsPad[105].flHeight;
         g_aLimelightPartsPad[119].flX = g_aLimelightPartsPad[118].flX;
+        g_aLimelightPartsPad[119].flY = g_aLimelightPartsPad[118].flY;
         g_aLimelightPartsPad[119].flWidth = g_aLimelightPartsPad[118].flWidth;
+        g_aLimelightPartsPad[119].flHeight = g_aLimelightPartsPad[118].flHeight;
         g_aLimelightPartsPad[120].flX = g_aLimelightPartsPad[118].flX;
+        g_aLimelightPartsPad[120].flY = g_aLimelightPartsPad[118].flY;
         g_aLimelightPartsPad[120].flWidth = g_aLimelightPartsPad[118].flWidth;
+        g_aLimelightPartsPad[120].flHeight = g_aLimelightPartsPad[118].flHeight;
         g_aLimelightPartsPad[121].flX = g_aLimelightPartsPad[118].flX;
+        g_aLimelightPartsPad[121].flY = g_aLimelightPartsPad[118].flY;
         g_aLimelightPartsPad[121].flWidth = g_aLimelightPartsPad[118].flWidth;
+        g_aLimelightPartsPad[121].flHeight = g_aLimelightPartsPad[118].flHeight;
         g_aLimelightPartsPad[126].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[126].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[126].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[126].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[127].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[127].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[127].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[127].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[128].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[128].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[128].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[128].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[129].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[129].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[129].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[129].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[131].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[131].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[131].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[131].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[132].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[132].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[132].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[132].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[136].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[136].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[136].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[136].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[137].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[137].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[137].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[137].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[139].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[139].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[139].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[139].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[140].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[140].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[140].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[140].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[142].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[142].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[142].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[142].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[143].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[143].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[143].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[143].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[144].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[144].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[144].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[144].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[147].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[147].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[147].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[147].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[148].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[148].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[148].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[148].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[150].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[150].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[150].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[150].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[151].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[151].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[151].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[151].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[152].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[152].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[152].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[152].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[153].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[153].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[153].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[153].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[155].flX = g_aLimelightPartsPad[124].flX;
+        g_aLimelightPartsPad[155].flY = g_aLimelightPartsPad[124].flY;
         g_aLimelightPartsPad[155].flWidth = g_aLimelightPartsPad[124].flWidth;
+        g_aLimelightPartsPad[155].flHeight = g_aLimelightPartsPad[124].flHeight;
         g_aLimelightPartsPad[156].flWidth = g_aLimelightPartsPad[134].flWidth;
+        g_aLimelightPartsPad[156].flHeight = g_aLimelightPartsPad[134].flHeight;
         g_aLimelightPartsPad[158].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[158].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[158].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[158].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[159].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[159].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[159].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[159].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[160].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[160].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[160].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[160].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[161].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[161].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[161].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[161].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[163].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[163].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[163].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[163].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[164].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[164].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[164].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[164].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[166].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[166].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[166].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[166].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[167].flWidth = g_aLimelightPartsPad[145].flWidth;
+        g_aLimelightPartsPad[167].flHeight = g_aLimelightPartsPad[145].flHeight;
         g_aLimelightPartsPad[169].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[169].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[169].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[169].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[171].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[171].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[171].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[171].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[172].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[172].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[172].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[172].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[174].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[174].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[174].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[174].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[175].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[175].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[175].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[175].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[176].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[176].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[176].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[176].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[177].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[177].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[177].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[177].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[179].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[179].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[179].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[179].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[180].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[180].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[180].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[180].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[182].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[182].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[182].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[182].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[183].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[183].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[183].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[183].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[184].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[184].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[184].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[184].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[185].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[185].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[185].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[185].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[187].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[187].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[187].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[187].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[188].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[188].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[188].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[188].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[190].flX = g_aLimelightPartsPad[168].flX;
+        g_aLimelightPartsPad[190].flY = g_aLimelightPartsPad[168].flY;
         g_aLimelightPartsPad[190].flWidth = g_aLimelightPartsPad[168].flWidth;
+        g_aLimelightPartsPad[190].flHeight = g_aLimelightPartsPad[168].flHeight;
         g_aLimelightPartsPad[191].flX = g_aLimelightPartsPad[135].flX;
+        g_aLimelightPartsPad[191].flY = g_aLimelightPartsPad[135].flY;
         g_aLimelightPartsPad[191].flWidth = g_aLimelightPartsPad[135].flWidth;
+        g_aLimelightPartsPad[191].flHeight = g_aLimelightPartsPad[135].flHeight;
         g_aLimelightPartsPad[196].flX = g_aLimelightPartsPad[195].flX;
+        g_aLimelightPartsPad[196].flY = g_aLimelightPartsPad[195].flY;
         g_aLimelightPartsPad[196].flWidth = g_aLimelightPartsPad[195].flWidth;
+        g_aLimelightPartsPad[196].flHeight = g_aLimelightPartsPad[195].flHeight;
         g_aLimelightPartsPad[201].flX = g_aLimelightPartsPad[200].flX;
+        g_aLimelightPartsPad[201].flY = g_aLimelightPartsPad[200].flY;
         g_aLimelightPartsPad[201].flWidth = g_aLimelightPartsPad[200].flWidth;
+        g_aLimelightPartsPad[201].flHeight = g_aLimelightPartsPad[200].flHeight;
         g_aLimelightPartsPad[208].flX = g_aLimelightPartsPad[24].flX;
+        g_aLimelightPartsPad[208].flY = g_aLimelightPartsPad[24].flY;
         g_aLimelightPartsPad[208].flWidth = g_aLimelightPartsPad[24].flWidth;
+        g_aLimelightPartsPad[208].flHeight = g_aLimelightPartsPad[24].flHeight;
         g_aLimelightPartsPad[209].flX = g_aLimelightPartsPad[206].flX;
+        g_aLimelightPartsPad[209].flY = g_aLimelightPartsPad[206].flY;
         g_aLimelightPartsPad[209].flWidth = g_aLimelightPartsPad[206].flWidth;
+        g_aLimelightPartsPad[209].flHeight = g_aLimelightPartsPad[206].flHeight;
         g_aLimelightPartsPad[211].flX = g_aLimelightPartsPad[24].flX;
+        g_aLimelightPartsPad[211].flY = g_aLimelightPartsPad[24].flY;
         g_aLimelightPartsPad[211].flWidth = g_aLimelightPartsPad[24].flWidth;
+        g_aLimelightPartsPad[211].flHeight = g_aLimelightPartsPad[24].flHeight;
         g_aLimelightPartsPad[216].flX = g_aLimelightPartsPad[215].flX;
+        g_aLimelightPartsPad[216].flY = g_aLimelightPartsPad[215].flY;
         g_aLimelightPartsPad[216].flWidth = g_aLimelightPartsPad[215].flWidth;
+        g_aLimelightPartsPad[216].flHeight = g_aLimelightPartsPad[215].flHeight;
         g_aLimelightPartsPad[217].flX = g_aLimelightPartsPad[215].flX;
+        g_aLimelightPartsPad[217].flY = g_aLimelightPartsPad[215].flY;
         g_aLimelightPartsPad[217].flWidth = g_aLimelightPartsPad[215].flWidth;
+        g_aLimelightPartsPad[217].flHeight = g_aLimelightPartsPad[215].flHeight;
         g_aLimelightPartsPad[219].flX = g_aLimelightPartsPad[215].flX;
+        g_aLimelightPartsPad[219].flY = g_aLimelightPartsPad[215].flY;
         g_aLimelightPartsPad[219].flWidth = g_aLimelightPartsPad[215].flWidth;
+        g_aLimelightPartsPad[219].flHeight = g_aLimelightPartsPad[215].flHeight;
         g_aLimelightPartsPad[220].flX = g_aLimelightPartsPad[215].flX;
+        g_aLimelightPartsPad[220].flY = g_aLimelightPartsPad[215].flY;
         g_aLimelightPartsPad[220].flWidth = g_aLimelightPartsPad[215].flWidth;
+        g_aLimelightPartsPad[220].flHeight = g_aLimelightPartsPad[215].flHeight;
         g_aLimelightPartsPad[222].flX = g_aLimelightPartsPad[215].flX;
+        g_aLimelightPartsPad[222].flY = g_aLimelightPartsPad[215].flY;
         g_aLimelightPartsPad[222].flWidth = g_aLimelightPartsPad[215].flWidth;
+        g_aLimelightPartsPad[222].flHeight = g_aLimelightPartsPad[215].flHeight;
         g_aLimelightPartsPad[223].flX = g_aLimelightPartsPad[215].flX;
+        g_aLimelightPartsPad[223].flY = g_aLimelightPartsPad[215].flY;
         g_aLimelightPartsPad[223].flWidth = g_aLimelightPartsPad[215].flWidth;
+        g_aLimelightPartsPad[223].flHeight = g_aLimelightPartsPad[215].flHeight;
         g_aLimelightPartsPad[224].flX = g_aLimelightPartsPad[215].flX;
+        g_aLimelightPartsPad[224].flY = g_aLimelightPartsPad[215].flY;
         g_aLimelightPartsPad[224].flWidth = g_aLimelightPartsPad[215].flWidth;
+        g_aLimelightPartsPad[224].flHeight = g_aLimelightPartsPad[215].flHeight;
         g_aLimelightPartsPad[227].flX = g_aLimelightPartsPad[225].flX;
+        g_aLimelightPartsPad[227].flY = g_aLimelightPartsPad[225].flY;
         g_aLimelightPartsPad[227].flWidth = g_aLimelightPartsPad[225].flWidth;
+        g_aLimelightPartsPad[227].flHeight = g_aLimelightPartsPad[225].flHeight;
         g_aLimelightPartsPad[228].flX = g_aLimelightPartsPad[225].flX;
+        g_aLimelightPartsPad[228].flY = g_aLimelightPartsPad[225].flY;
         g_aLimelightPartsPad[228].flWidth = g_aLimelightPartsPad[225].flWidth;
+        g_aLimelightPartsPad[228].flHeight = g_aLimelightPartsPad[225].flHeight;
         g_aLimelightPartsPad[230].flX = g_aLimelightPartsPad[225].flX;
+        g_aLimelightPartsPad[230].flY = g_aLimelightPartsPad[225].flY;
         g_aLimelightPartsPad[230].flWidth = g_aLimelightPartsPad[225].flWidth;
+        g_aLimelightPartsPad[230].flHeight = g_aLimelightPartsPad[225].flHeight;
         g_aLimelightPartsPad[231].flX = g_aLimelightPartsPad[225].flX;
+        g_aLimelightPartsPad[231].flY = g_aLimelightPartsPad[225].flY;
         g_aLimelightPartsPad[231].flWidth = g_aLimelightPartsPad[225].flWidth;
+        g_aLimelightPartsPad[231].flHeight = g_aLimelightPartsPad[225].flHeight;
         g_aLimelightPartsPad[232].flX = g_aLimelightPartsPad[225].flX;
+        g_aLimelightPartsPad[232].flY = g_aLimelightPartsPad[225].flY;
         g_aLimelightPartsPad[232].flWidth = g_aLimelightPartsPad[225].flWidth;
+        g_aLimelightPartsPad[232].flHeight = g_aLimelightPartsPad[225].flHeight;
         g_aLimelightPartsPad[233].flX = g_aLimelightPartsPad[225].flX;
+        g_aLimelightPartsPad[233].flY = g_aLimelightPartsPad[225].flY;
         g_aLimelightPartsPad[233].flWidth = g_aLimelightPartsPad[225].flWidth;
+        g_aLimelightPartsPad[233].flHeight = g_aLimelightPartsPad[225].flHeight;
         g_aLimelightPartsPad[238].flX = g_aLimelightPartsPad[236].flX;
+        g_aLimelightPartsPad[238].flY = g_aLimelightPartsPad[236].flY;
         g_aLimelightPartsPad[238].flWidth = g_aLimelightPartsPad[236].flWidth;
+        g_aLimelightPartsPad[238].flHeight = g_aLimelightPartsPad[236].flHeight;
         g_aLimelightPartsPad[239].flX = g_aLimelightPartsPad[236].flX;
+        g_aLimelightPartsPad[239].flY = g_aLimelightPartsPad[236].flY;
         g_aLimelightPartsPad[239].flWidth = g_aLimelightPartsPad[236].flWidth;
+        g_aLimelightPartsPad[239].flHeight = g_aLimelightPartsPad[236].flHeight;
         g_aLimelightPartsPad[241].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[241].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[241].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[241].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[243].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[243].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[243].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[243].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[244].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[244].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[244].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[244].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[246].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[246].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[246].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[246].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[247].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[247].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[247].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[247].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[248].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[248].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[248].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[248].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[249].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[249].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[249].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[249].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsPad[252].flX = g_aLimelightPartsPad[68].flX;
+        g_aLimelightPartsPad[252].flY = g_aLimelightPartsPad[68].flY;
         g_aLimelightPartsPad[252].flWidth = g_aLimelightPartsPad[68].flWidth;
+        g_aLimelightPartsPad[252].flHeight = g_aLimelightPartsPad[68].flHeight;
         g_aLimelightPartsAnchorPhone[2] = savedAnchor;
         g_aLimelightPositionPhoneStatePortrait[1].flX = g_aLimelightPositionPhoneState[1].flX;
+        g_aLimelightPositionPhoneStatePortrait[1].flY = g_aLimelightPositionPhoneState[1].flY;
         g_aLimelightPositionPhoneStatePortrait[1].flWidth =
             g_aLimelightPositionPhoneState[1].flWidth;
         g_aLimelightPositionPhoneStatePortrait[2].flX = g_aLimelightPositionPhoneState[2].flX;
+        g_aLimelightPositionPhoneStatePortrait[2].flY = g_aLimelightPositionPhoneState[2].flY;
         g_aLimelightPositionPhoneStatePortrait[2].flWidth =
             g_aLimelightPositionPhoneState[2].flWidth;
         g_aLimelightPositionPhoneStateDefault[1].flX = g_aLimelightPositionPhoneState[1].flX;
+        g_aLimelightPositionPhoneStateDefault[1].flY = g_aLimelightPositionPhoneState[1].flY;
         g_aLimelightPositionPhoneStateDefault[1].flWidth =
             g_aLimelightPositionPhoneState[1].flWidth;
         g_aLimelightPositionPhoneStateDefault[2].flX = g_aLimelightPositionPhoneState[2].flX;
+        g_aLimelightPositionPhoneStateDefault[2].flY = g_aLimelightPositionPhoneState[2].flY;
         g_aLimelightPositionPhoneStateDefault[2].flWidth =
             g_aLimelightPositionPhoneState[2].flWidth;
     }

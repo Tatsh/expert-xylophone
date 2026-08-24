@@ -27,7 +27,7 @@ const ClassicThemeSpriteTransform g_aClassicThemeSpriteTransforms[] = {
 };
 
 // The process-wide Classic-theme layer, created lazily by shared().
-static ClassicThemeLayer *g_pClassicThemeLayer = nullptr; // @ghidraAddress 0x3de7b8
+static ClassicThemeLayer *g_pClassicThemeLayer = nullptr; // @ghidraAddress 0x3dca00
 
 namespace {
 
