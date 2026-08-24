@@ -44,6 +44,16 @@ else
 PATCH_DEFINES :=
 endif
 
+# SKIP_TUTORIAL mirrors the CMake option of the same name: it suppresses the first-run walkthroughs.
+# It only takes effect alongside ENABLE_PATCHES, because the gates it removes are guarded by both;
+# enable with `make -C theos ENABLE_PATCHES=1 SKIP_TUTORIAL=1`.
+SKIP_TUTORIAL ?= 0
+ifneq ($(ENABLE_PATCHES),0)
+ifneq ($(SKIP_TUTORIAL),0)
+PATCH_DEFINES += -DSKIP_TUTORIAL=1
+endif
+endif
+
 # RBPDBG mirrors the CMake option of the same name: it compiles in the os_log diagnostics declared
 # in Project/GameSystem/src/neDebugLog.h. Off by default so a plain build matches the binary; enable
 # with `make -C theos RBPDBG=1`. The build SHA stamps the startup banner so a captured log

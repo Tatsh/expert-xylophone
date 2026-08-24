@@ -23,6 +23,15 @@ static NSString *const kDescriptionFormat =
 
 @implementation RBUnlockPackageItemData
 
+#ifdef ENABLE_PATCHES
+// Price every item at nothing, so the affordability test in -[RBUnlockView yesButtonTap:] always
+// passes whatever the theme's balance happens to be. Songs still have to be downloaded after being
+// unlocked, unlike BGMs, frames, and the rest; that is -alreadyDownload's business, not this.
+- (int)point {
+    return 0;
+}
+#endif
+
 - (void)parseDictionary:(NSDictionary *)dictionary {
     /** @ghidraAddress 0x19a168 */
     self.identity = [dictionary[kIdentityDictionaryKey] intValue];

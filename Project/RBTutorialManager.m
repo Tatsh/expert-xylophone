@@ -64,11 +64,15 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (BOOL)needStartTutorialMusicselect {
     /** @ghidraAddress 0x3578c */
+#if defined(ENABLE_PATCHES) && defined(SKIP_TUTORIAL)
+    return NO;
+#else
     if ([ScoreData totalRecordCount] >= 1) {
         return NO;
     }
     RBUserSettingData *settings = [RBUserSettingData sharedInstance];
     return [settings getTutorialStatus:RBTutorialStatusMusicSelectSeen] != kTutorialSeenValue;
+#endif
 }
 
 + (void)startTutorialMusicselect {
@@ -90,10 +94,14 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (BOOL)needStartTutorialPlay {
     /** @ghidraAddress 0x358ec */
+#if defined(ENABLE_PATCHES) && defined(SKIP_TUTORIAL)
+    return NO;
+#else
     if ([ScoreData totalRecordCount] >= 1) {
         return NO;
     }
     return [[self getInstance] currentStatus] == RBTutorialStatusPlayStart;
+#endif
 }
 
 + (BOOL)isTutorialPlay {
@@ -111,6 +119,9 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (BOOL)needStartTutorialCustomize {
     /** @ghidraAddress 0x35a40 */
+#if defined(ENABLE_PATCHES) && defined(SKIP_TUTORIAL)
+    return NO;
+#else
     if ([ScoreData totalRecordCount] >= 1) {
         return NO;
     }
@@ -119,6 +130,7 @@ enum { kTutorialStatusReportOnly = 0x12 };
     }
     RBUserSettingData *settings = [RBUserSettingData sharedInstance];
     return [settings getTutorialStatus:RBTutorialStatusCustomizeSeen] != kTutorialSeenValue;
+#endif
 }
 
 + (void)startTutorialCustomize {
@@ -144,11 +156,15 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (BOOL)needStartTutorialStore {
     /** @ghidraAddress 0x35c50 */
+#if defined(ENABLE_PATCHES) && defined(SKIP_TUTORIAL)
+    return NO;
+#else
     if ([ScoreData totalRecordCount] >= 1) {
         return NO;
     }
     RBUserSettingData *settings = [RBUserSettingData sharedInstance];
     return [settings getTutorialStatus:RBTutorialStatusStoreSeen] != kTutorialSeenValue;
+#endif
 }
 
 + (void)startTutorialStore {

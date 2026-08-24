@@ -121,6 +121,48 @@ registered in `nolist` as that song's extend note, with the parent taken from th
 Identifiers already in either list, and the three bundled songs, are skipped, which is what stops a
 song appearing twice. An unpatched build lists only what was bought.
 
+### Everything unlocked, and nothing to pay for it with
+
+**Files:** `Project/RBExperienceData.mm` — the seven `unlockWith…` queries and `-getPoint`
+(0x1bb2fc); `Project/RBUnlockPackageItemData.m` — `-point`; `Project/StoreCampaignItemInfo.m` —
+`-bUnlock`, `-termCheck`, `-checkNewUnlock`, `-checkExistPackList:packID:`
+
+The `unlockWith…` methods are queries, not actions: each walks the matching item set and reports
+whether it is there. They all report `YES` now, so every BGM, shot, explosion, frame, background,
+tune, and theme reads as owned. Nothing outside the class touches those sets, so the patch answers
+the question without writing to saved data. Alongside that, `-getPoint` reports a full purse and
+every unlock item prices at nothing. Both are patched because they are separate gates:
+`-[RBUnlockView yesButtonTap:]` compares cost against balance, and the balance is also what the
+point label draws. `-getPoint` is the right place for the balance rather than the raw `point`
+property, because the binary reads a different field per theme and answers zero on Classic — so
+patching the property would have left two themes out of three unchanged.
+
+The campaign gifts need the same treatment, and one of them exists only because of the patch above.
+The tail of `-termCheck` clears its unlock whenever `-unlockWithType:ID:` says the item was already
+granted, which in a patched build is always, so unlocking everything would have locked every
+campaign item instead. `-termCheck` now grants outright and asks for the download button, `-bUnlock`
+reports granted before it has even run, `-checkExistPackList:packID:` treats any pack as owned, and
+`-checkNewUnlock` reduces to whether the item still needs downloading. `-alreadyDownload` keeps its
+real value throughout: an unlocked tune still has to be fetched, unlike a BGM or a frame. An
+unpatched build keeps every original check.
+
+### Skipping the first-run tutorials
+
+**File:** `Project/RBTutorialManager.m` — `+needStartTutorialMusicselect` (0x3578c),
+`+needStartTutorialPlay` (0x358ec), `+needStartTutorialCustomize` (0x35a40),
+`+needStartTutorialStore` (0x35c50)
+
+These four gates decide whether each walkthrough runs. Each answers on a stored per-tutorial seen
+flag, and the play and customise ones additionally on the total record count and on whether nothing
+has been unlocked yet. Under `SKIP_TUTORIAL` all four answer `NO`, so no walkthrough ever starts.
+
+This one needs its own flag as well as `ENABLE_PATCHES`, and is guarded on both, so a patched build
+still gets the tutorials unless they are asked to go. Enable with `-DSKIP_TUTORIAL=ON` (CMake) or
+`SKIP_TUTORIAL=1` (Theos), alongside the patches flag. There is no need to also mark the tutorials
+seen in the saved settings, the way an older tweak did by writing every status key: the four
+`isTutorial…` predicates report whether a walkthrough is currently running, and with nothing ever
+started they answer `NO` on their own.
+
 ### The per-install purchased-content list key
 
 **File:** `Project/AppDelegate.mm` — `+musicListKey` (0x50cb8)

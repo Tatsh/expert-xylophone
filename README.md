@@ -119,6 +119,7 @@ Every knob is a cache entry, so all of them are overridable with `-D<name>=...`:
 | `RBPDBGINFO`                | `OFF`                          | Emit DWARF without altering the optimisation level.                                                                                                              |
 | `RBPDBG`                    | `OFF`                          | Compile in the `os_log` runtime diagnostics.                                                                                                                     |
 | `RESOURCES_DIR`             | empty                          | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts.                              |
+| `SKIP_TUTORIAL`             | `OFF`                          | Never start the first-run walkthroughs. Only takes effect alongside `ENABLE_PATCHES`.                                                                            |
 
 `RESOURCES_DIR` is the one that matters most: the repository contains no game assets, so a build
 without it produces an app that launches into nothing.

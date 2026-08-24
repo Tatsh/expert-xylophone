@@ -68,6 +68,12 @@ NS_ASSUME_NONNULL_END
 // Archive keys for each persisted field. They match the property names bar the abbreviations here.
 static NSString *const kVersionCoderKey = @"kVersionKey";
 static NSString *const kPointCoderKey = @"kPointKey";
+
+#ifdef ENABLE_PATCHES
+// The balance -getPoint reports in a patched build. RBNumberLabel splits a number into ten digit
+// slots and always draws one fractional digit, so this stays well inside what it can render.
+static const float kPatchedMaxPoint = 999999.0f;
+#endif
 static NSString *const kDataCoderKey = @"kDataKey";
 static NSString *const kPointBCoderKey = @"kPointBKey";
 static NSString *const kDataBCoderKey = @"kDataBKey";
@@ -442,72 +448,100 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 
 - (BOOL)unlockWithBGMtype:(int)type {
     /** @ghidraAddress 0x1b9f74 */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     for (NSNumber *item in self.bgmItems) {
         if (item.intValue == type) {
             return YES;
         }
     }
     return NO;
+#endif
 }
 
 - (BOOL)unlockWithShotType:(int)type {
     /** @ghidraAddress 0x1ba0c8 */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     for (NSNumber *item in self.shotItems) {
         if (item.intValue == type) {
             return YES;
         }
     }
     return NO;
+#endif
 }
 
 - (BOOL)unlockWithExprosionType:(int)type {
     /** @ghidraAddress 0x1ba21c */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     for (NSNumber *item in self.explosionItems) {
         if (item.intValue == type) {
             return YES;
         }
     }
     return NO;
+#endif
 }
 
 - (BOOL)unlockWithFrameType:(int)type {
     /** @ghidraAddress 0x1ba370 */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     for (NSNumber *item in self.frameItems) {
         if (item.intValue == type) {
             return YES;
         }
     }
     return NO;
+#endif
 }
 
 - (BOOL)unlockWithBackgroundType:(int)type {
     /** @ghidraAddress 0x1ba4c4 */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     for (NSNumber *item in self.backgroundItems) {
         if (item.intValue == type) {
             return YES;
         }
     }
     return NO;
+#endif
 }
 
 - (BOOL)unlockWithMusicID:(int)musicID {
     /** @ghidraAddress 0x1ba618 */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     for (NSNumber *item in self.musicItems) {
         if (item.intValue == musicID) {
             return YES;
         }
     }
     return NO;
+#endif
 }
 
 - (BOOL)unlockWithThemaID:(int)themaID {
     /** @ghidraAddress 0x1ba76c */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     for (NSNumber *item in self.themaItems) {
         if (item.intValue == themaID) {
             return YES;
         }
     }
     return NO;
+#endif
 }
 
 - (BOOL)unlockWithType:(int)type ID:(int)ID {
@@ -645,6 +679,12 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 
 - (float)getPoint {
     /** @ghidraAddress 0x1bb2fc */
+#ifdef ENABLE_PATCHES
+    // Report a full purse on every theme. The binary reads a different balance per theme and
+    // answers zero on Classic, so patching the raw point property would leave two of the three
+    // themes unchanged. See PATCHES.md.
+    return kPatchedMaxPoint;
+#else
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     if (thema == RBUserSettingDataThemeLimelight) {
         return self.point;
@@ -653,6 +693,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
         return self.pointB;
     }
     return 0.0f;
+#endif
 }
 
 - (void)resetPoint:(int)thema {

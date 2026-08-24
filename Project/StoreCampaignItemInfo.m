@@ -96,6 +96,13 @@ static const int kCampaignHideTypeVisible = 0;
 
 @implementation StoreCampaignItemInfo
 
+#ifdef ENABLE_PATCHES
+// Report every gift as granted even before -termCheck has run.
+- (BOOL)bUnlock {
+    return YES;
+}
+#endif
+
 #pragma mark - Initialisation
 
 /** @ghidraAddress 0x108b90 */
@@ -141,6 +148,19 @@ static const int kCampaignHideTypeVisible = 0;
 
 /** @ghidraAddress 0x109088 */
 - (BOOL)termCheck {
+#ifdef ENABLE_PATCHES
+    // Grant every gift outright. This also has to override the experience-point arm at the tail of
+    // the original, which clears _bUnlock whenever -unlockWithType:ID: reports the item as already
+    // granted — and in a patched build that always reports YES, so leaving this alone would lock
+    // every campaign item instead of unlocking it.
+    //
+    // -alreadyDownload keeps its real value: an unlocked song still has to be downloaded, unlike a
+    // BGM or a frame.
+    _bUnlock = YES;
+    _alreadyDownload = [self hasItem:self.itemType itemID:self.itemID];
+    _buttonType = kCampaignButtonInfoDownload;
+    return YES;
+#else
     _bUnlock = NO;
     _alreadyDownload = [self hasItem:self.itemType itemID:self.itemID];
 
@@ -218,10 +238,15 @@ static const int kCampaignHideTypeVisible = 0;
     }
 
     return _bUnlock;
+#endif
 }
 
 /** @ghidraAddress 0x1096c4 */
 - (BOOL)checkExistPackList:(NSArray *)checkExistPackList packID:(int)packID {
+#ifdef ENABLE_PATCHES
+    // Treat the pack as owned whatever the server said.
+    return YES;
+#else
     if (checkExistPackList == nil || checkExistPackList.count == 0) {
         return NO;
     }
@@ -231,14 +256,20 @@ static const int kCampaignHideTypeVisible = 0;
         }
     }
     return NO;
+#endif
 }
 
 /** @ghidraAddress 0x109850 */
 - (BOOL)checkNewUnlock {
+#ifdef ENABLE_PATCHES
+    // Everything is granted, so the only question left is whether it still needs downloading.
+    return !self.alreadyDownload;
+#else
     if (!self.bUnlock) {
         return NO;
     }
     return !self.alreadyDownload;
+#endif
 }
 
 /** @ghidraAddress 0x109898 */

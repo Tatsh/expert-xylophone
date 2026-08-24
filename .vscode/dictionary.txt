@@ -127,6 +127,7 @@ doxyfile
 dplatform
 drbpdbg
 dresources
+dskip
 dsym
 eagl
 encp

@@ -92,6 +92,10 @@ set(APPLILINK_URL_SANDBOX     "https://sandbox.applilink.jp" CACHE STRING "Appli
 # -DENABLE_PATCHES=ON.
 option(ENABLE_PATCHES "Compile in preservation patches (skip dead service flows)" OFF)
 
+# SKIP_TUTORIAL suppresses the first-run walkthroughs. It only takes effect alongside
+# ENABLE_PATCHES, because the gates it removes are guarded by both.
+option(SKIP_TUTORIAL "Never start the first-run tutorials (requires ENABLE_PATCHES)" OFF)
+
 # RBPDBG compiles in the optional runtime os_log diagnostics (tagged "RBPDBG"; see
 # Project/GameSystem/src/neDebugLog.h). It is NOT part of the original binary, so it
 # defaults OFF and the shipped build matches the binary. It is a plain cache option,
@@ -271,6 +275,10 @@ target_compile_definitions(rbplus PRIVATE
 # generator expression is config-agnostic, so it applies in Debug, Release, and
 # any other configuration alike.
 target_compile_definitions(rbplus PRIVATE $<$<BOOL:${ENABLE_PATCHES}>:ENABLE_PATCHES=1>)
+
+# SKIP_TUTORIAL is only meaningful with ENABLE_PATCHES, so it is defined only when both are on.
+target_compile_definitions(rbplus PRIVATE
+    $<$<AND:$<BOOL:${ENABLE_PATCHES}>,$<BOOL:${SKIP_TUTORIAL}>>:SKIP_TUTORIAL=1>)
 
 # When RBPDBG is enabled, define it for every translation unit; the generator
 # expression is config-agnostic, so it applies in Debug, Release, and any other
