@@ -1,11 +1,6 @@
-/** @file
- * The extend-note catalogue list model implementation. It downloads the extend-note catalogue in
- * pages, resolves each entry against StoreKit, parses the server dictionary into
- * @c StoreExtendNoteInfo records, and reports load progress to its delegate.
- *
- * Reconstructed from Ghidra project rb458, program rb458 (class @c RBStoreExtendNoteList, image
- * base 0x100000000). @ghidraAddress values are offsets relative to the image base.
- */
+// The extend-note catalogue list model implementation. It downloads the extend-note catalogue in
+// pages, resolves each entry against StoreKit, parses the server dictionary into
+// StoreExtendNoteInfo records, and reports load progress to its delegate.
 
 #import "RBStoreExtendNoteList.h"
 

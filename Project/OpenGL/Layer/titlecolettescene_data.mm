@@ -1,8 +1,5 @@
-/**
- * @file
- * The binary-resident part-layout and UV-rectangle tables for the theme-2 Colette title
- * screen, @c rb::TitleColetteScene.
- */
+// The binary-resident part-layout and UV-rectangle tables for the theme-2 Colette title screen,
+// rb::TitleColetteScene.
 
 #include "sprite_uv_table.h"
 #include "titlecolettescene.h"

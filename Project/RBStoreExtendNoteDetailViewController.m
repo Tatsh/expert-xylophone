@@ -1,12 +1,6 @@
-/** @file
- * The phone extend-note detail view controller implementation. It presents a single extend note's
- * artwork, labels, description, and terms link, plays the sample BGM from a tap on the artwork,
- * and drives the purchase / download action button through its hosting page controller.
- *
- * Reconstructed from Ghidra project rb458, program rb458 (class
- * @c RBStoreExtendNoteDetailViewController, image base 0x100000000). @ghidraAddress values are
- * offsets relative to the image base.
- */
+// The phone extend-note detail view controller implementation. It presents a single extend note's
+// artwork, labels, description, and terms link, plays the sample BGM from a tap on the artwork, and
+// drives the purchase / download action button through its hosting page controller.
 
 #import "RBStoreExtendNoteDetailViewController.h"
 
