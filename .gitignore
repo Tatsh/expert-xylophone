@@ -29,12 +29,10 @@
 /.gitconfig
 /.gitmodules
 /.idea
-/.ios-cmake/
 /.mcp.json
 /.profile
 /.ripgreprc
 /.sbclaude-venv/
-/.to-format.txt
 /.venv/
 /.wiswa-ci/
 /.yarn/install-state.gz

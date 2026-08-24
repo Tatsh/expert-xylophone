@@ -12,8 +12,6 @@
     '*.ipa',
     '*.ips',
     '*.rb',
-    '/.ios-cmake/',
-    '/.to-format.txt',
     '/build/',
     '/logs/',
     '/screenshots/',
