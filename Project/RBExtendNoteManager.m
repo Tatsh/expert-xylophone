@@ -280,6 +280,24 @@ static const int kClientNoteEntriesPerPage = 20;
 
 #pragma mark - Catalogue
 
+#ifdef ENABLE_PATCHES
+- (BOOL)addDiscoveredExtendNote:(int)extendNoteID musicID:(int)musicID level:(int)level {
+    for (NSDictionary *existing in self.purchasedExtendNoteDictionaries) {
+        if ([existing[kPurchasedNoteKeyExtID] intValue] == extendNoteID) {
+            return NO;
+        }
+    }
+    NSMutableDictionary *entry =
+        [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
+    entry[kPurchasedNoteKeyExtID] = @(extendNoteID);
+    entry[kPurchasedNoteKeyID] = @(musicID);
+    entry[kPurchasedNoteKeyExtLevel] = @(level);
+    [self.purchasedExtendNoteDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
+    [self setExtendNoteDataArrayDirty];
+    return YES;
+}
+#endif
+
 - (void)setExtendNoteDataArrayDirty {
     /** @ghidraAddress 0x1837e8 */
     self.extendNoteDataArrayDirtyFlag = YES;

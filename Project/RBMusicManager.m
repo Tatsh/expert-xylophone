@@ -25,6 +25,13 @@
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 
+#ifdef ENABLE_PATCHES
+// minizip's legacy unz API, for the central-directory CRC-32 the drop-in reconcile pairs archives
+// by. It is already linked into the target through the vendored SSZipArchive.
+#import "RBExtendNoteManager.h"
+#import "minizip/mz_compat.h"
+#endif
+
 // The archive filename format: a nine-digit zero-padded tune identifier with a @c .rb extension.
 // @ghidraAddress 0x337a27 (the format-string literal)
 static NSString *const kMusicDataFilenameFormat = @"%09d.rb";
@@ -68,6 +75,20 @@ static const NSUInteger kPurchaseDictionaryCapacity = 5;
 // The number of leading salt bytes prepended to the plaintext before enciphering; the same count
 // is stripped after deciphering.
 static const NSUInteger kListSaltLength = 4;
+
+#ifdef ENABLE_PATCHES
+// The archive extension and identifier width, used to recognise a canonical %09d.rb name on disk.
+static NSString *const kMusicDataFileExtension = @"rb";
+static const NSUInteger kMusicDataIDDigits = 9;
+
+// The audio entry every archive carries. An extend note is a SPECIAL chart for a song that already
+// exists, so it ships that song's audio byte for byte; the zip's own CRC-32 for this entry is what
+// pairs the two without opening either file.
+static NSString *const kArchiveAudioEntry = @"bgm";
+
+// The lowest level an archive's difficulty field can hold, mirroring MusicData's own kLevelMinimum.
+static const int kArchiveLevelMinimum = 1;
+#endif
 
 // The number of client-music entries reserved per outstanding page.
 static const int kClientMusicEntriesPerPage = 20;
@@ -154,6 +175,170 @@ static const int kClientMusicEntriesPerPage = 20;
     return YES;
 }
 
+#ifdef ENABLE_PATCHES
+
+#pragma mark - Drop-in archive discovery (ENABLE_PATCHES)
+
+// Read the CRC-32 the zip central directory records for one entry. The entry is never decompressed:
+// the value is what the archive itself stores, so two archives sharing an identical file agree here
+// no matter how either was compressed.
+static BOOL RBArchiveEntryCRC(NSString *archivePath, NSString *entryName, uint32_t *outCRC) {
+    unzFile archive = unzOpen(archivePath.fileSystemRepresentation);
+    if (archive == NULL) {
+        return NO;
+    }
+    BOOL found = NO;
+    if (unzLocateFile(archive, entryName.UTF8String, NULL) == UNZ_OK) {
+        unz_file_info info = {};
+        if (unzGetCurrentFileInfo(archive, &info, NULL, 0, NULL, 0, NULL, 0) == UNZ_OK) {
+            *outCRC = info.crc;
+            found = YES;
+        }
+    }
+    unzClose(archive);
+    return found;
+}
+
+// Every canonical %09d.rb identifier in one directory. A name that is not exactly nine digits is
+// ignored, so only archives the loaders can actually resolve by identifier are considered.
+static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *outIDs) {
+    NSArray<NSString *> *names = [NSFileManager.defaultManager contentsOfDirectoryAtPath:directory
+                                                                                   error:NULL];
+    NSCharacterSet *nonDigits = NSCharacterSet.decimalDigitCharacterSet.invertedSet;
+    for (NSString *name in names) {
+        if (![name.pathExtension isEqualToString:kMusicDataFileExtension]) {
+            continue;
+        }
+        NSString *stem = name.stringByDeletingPathExtension;
+        if (stem.length != kMusicDataIDDigits ||
+            [stem rangeOfCharacterFromSet:nonDigits].location != NSNotFound) {
+            continue;
+        }
+        [outIDs addObject:@(stem.intValue)];
+    }
+}
+
+// Where an archive with this identifier actually lives, or nil when it is nowhere.
++ (NSString *)resolveArchivePath:(int)musicID {
+    NSString *path = [RBMusicManager getPathFromPurchesed:musicID];
+    if ([NSFileManager isFileExist:path]) {
+        return path;
+    }
+    path = [RBMusicManager getPathFromPurchesedOldDirectory:musicID];
+    if ([NSFileManager isFileExist:path]) {
+        return path;
+    }
+    path = [RBMusicManager getPathFromBundle:musicID];
+    if (path != nil && [NSFileManager isFileExist:path]) {
+        return path;
+    }
+    return nil;
+}
+
+- (BOOL)reconcilePurchasedMusics {
+    RBExtendNoteManager *noteManager = [RBExtendNoteManager getInstance];
+
+    // What each list already claims. An identifier in either list is left alone: it is already
+    // provided, and re-registering it is exactly how a duplicate song appears.
+    NSMutableSet<NSNumber *> *listedMusicIDs = [NSMutableSet set];
+    for (NSDictionary *entry in self.purchasedMusicDictionaries) {
+        [listedMusicIDs addObject:entry[kPurchasedMusicKeyID]];
+    }
+    NSMutableSet<NSNumber *> *listedNoteIDs =
+        [NSMutableSet setWithArray:[noteManager getExtendNoteIDs]];
+
+    // The preinstalled songs come from the bundle through their own loop in -createMusicDataArray,
+    // so listing them here would draw each of them twice.
+    NSMutableSet<NSNumber *> *knownMusicIDs = [NSMutableSet setWithSet:listedMusicIDs];
+    [knownMusicIDs addObjectsFromArray:self.preinstallMusicIDs];
+
+    // The audio fingerprint of every song already known, so an unlisted archive carrying one of
+    // them can be recognised as that song's extend note rather than as a new song.
+    NSMutableDictionary<NSNumber *, NSNumber *> *audioCRCToMusicID =
+        [NSMutableDictionary dictionary];
+    for (NSNumber *musicID in knownMusicIDs) {
+        NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
+        uint32_t crc = 0;
+        if (path != nil && RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc)) {
+            audioCRCToMusicID[@(crc)] = musicID;
+        }
+    }
+
+    NSMutableSet<NSNumber *> *presentIDs = [NSMutableSet set];
+    RBCollectArchiveIDs(GetPrivateDocumentsPath(), presentIDs);
+    RBCollectArchiveIDs(GetCachesDirectoryPath(), presentIDs);
+
+    BOOL musicListChanged = NO;
+    BOOL noteListChanged = NO;
+    for (NSNumber *foundID in presentIDs) {
+        if ([listedMusicIDs containsObject:foundID] || [listedNoteIDs containsObject:foundID] ||
+            [knownMusicIDs containsObject:foundID]) {
+            continue;
+        }
+        NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
+        if (path == nil) {
+            continue;
+        }
+
+        uint32_t crc = 0;
+        const BOOL haveCRC = RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc);
+        NSNumber *parentMusicID = haveCRC ? audioCRCToMusicID[@(crc)] : nil;
+
+        if (parentMusicID != nil) {
+            // Same audio as a song already known, so this is that song's SPECIAL chart. Its level
+            // is the archive's own Basic field, because -sheetSpecial serves the SPECIAL chart out
+            // of the BASIC slot.
+            MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
+            if (data == nil) {
+                continue;
+            }
+            if ([noteManager addDiscoveredExtendNote:foundID.intValue
+                                             musicID:parentMusicID.intValue
+                                               level:data.difficultyBasic + kArchiveLevelMinimum]) {
+                [listedNoteIDs addObject:foundID];
+                noteListChanged = YES;
+            }
+            continue;
+        }
+
+        // No song shares its audio, so it stands on its own. Only the identifier is stored: the
+        // name, artist, and levels are read back out of the archive by -createMusicDataArray.
+        NSMutableDictionary *entry =
+            [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
+        entry[kPurchasedMusicKeyID] = foundID;
+        entry[kPurchasedMusicKeyName] = kEmptyString;
+        entry[kPurchasedMusicKeyArtist] = kEmptyString;
+        [self.purchasedMusicDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
+        [listedMusicIDs addObject:foundID];
+        // Only fingerprint it when the audio entry was actually read. Recording a failed read as
+        // CRC zero would make the next unreadable archive look like this song's extend note.
+        if (haveCRC) {
+            audioCRCToMusicID[@(crc)] = foundID;
+        }
+        musicListChanged = YES;
+    }
+
+    // Forget entries whose archive has gone, so a deleted file does not linger in the list.
+    NSUInteger before = self.purchasedMusicDictionaries.count;
+    NSIndexSet *missing = [self.purchasedMusicDictionaries
+        indexesOfObjectsPassingTest:^BOOL(NSDictionary *entry, NSUInteger index, BOOL *stop) {
+          return [RBMusicManager resolveArchivePath:[entry[kPurchasedMusicKeyID] intValue]] == nil;
+        }];
+    [self.purchasedMusicDictionaries removeObjectsAtIndexes:missing];
+    musicListChanged = musicListChanged || self.purchasedMusicDictionaries.count != before;
+
+    if (noteListChanged) {
+        [noteManager savePurchasedNotes];
+    }
+    if (musicListChanged) {
+        [self setMusicDataArrayDirty];
+        [self savePurchasedMusics];
+    }
+    return musicListChanged || noteListChanged;
+}
+
+#endif
+
 #pragma mark - Purchased music
 
 - (void)loadPurchasedMusics {
@@ -178,6 +363,10 @@ static const int kClientMusicEntriesPerPage = 20;
             [[NSMutableArray alloc] initWithCapacity:kPurchasedMusicListCapacity];
         [self setMusicDataArrayDirty];
     }
+#ifdef ENABLE_PATCHES
+    // Pick up anything dropped into the purchased directory since last launch. See PATCHES.md.
+    [self reconcilePurchasedMusics];
+#endif
 }
 
 - (void)savePurchasedMusics {

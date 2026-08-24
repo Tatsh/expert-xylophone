@@ -86,6 +86,29 @@ keeps its links in-app. With the default configuration the appended entry simply
 which a membership test does not mind. An unpatched build keeps the three literal comparisons and
 the three-entry table.
 
+### Drop-in songs and extend notes
+
+**Files:** `Project/RBMusicManager.m` — `-reconcilePurchasedMusics`, called from
+`-loadPurchasedMusics` (0x6b020); `Project/RBExtendNoteManager.{h,m}` —
+`-addDiscoveredExtendNote:musicID:level:`
+
+Songs and extend notes only ever arrive by purchase: the store writes an entry into `mulist` or
+`nolist` and downloads the matching `%09d.rb`. An archive copied in by hand is invisible, because
+nothing lists it. The patch reconciles both lists against the archives actually on disk on every
+load — registering anything unlisted, and forgetting entries whose archive has gone — so dropping a
+file into the purchased directory is enough to make it appear next launch.
+
+Telling the two kinds apart is the whole problem, because they are indistinguishable by name or by
+format: both are `%09d.rb` in the same directory, and an extend note is read by the ordinary
+`MusicData` parser with its SPECIAL chart in the BASIC slot. What separates them is that an extend
+note is a chart _for a song that already exists_, so it ships that song's audio byte for byte. The
+patch reads the CRC-32 that the zip's own central directory records for the `bgm` entry — no
+decompression, no hashing — and an unlisted archive whose audio CRC matches a known song is
+registered in `nolist` as that song's extend note, with the parent taken from the match and
+`ExtLevel` from the archive's own basic level. Everything else is a new song and goes to `mulist`.
+Identifiers already in either list, and the three bundled songs, are skipped, which is what stops a
+song appearing twice. An unpatched build lists only what was bought.
+
 ### The per-install purchased-content list key
 
 **File:** `Project/AppDelegate.mm` — `+musicListKey` (0x50cb8)

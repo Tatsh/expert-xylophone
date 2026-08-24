@@ -160,6 +160,21 @@ NS_ASSUME_NONNULL_BEGIN
  * @return An array of @c NSNumber extend-note identifiers.
  */
 - (NSMutableArray *)getExtendNoteIDs;
+#ifdef ENABLE_PATCHES
+/**
+ * @brief Register an extend note discovered on disk rather than bought from the store.
+ *
+ * Present only in a patched build, where the drop-in reconcile in @c RBMusicManager pairs an
+ * unlisted archive with the song whose audio it shares. The store fields a purchase would carry
+ * (pack identifier, comment, and the two URLs) have no offline equivalent and are left unset.
+ *
+ * @param extendNoteID The extend note's own archive identifier.
+ * @param musicID The identifier of the tune the note augments.
+ * @param level The SPECIAL difficulty, taken from the archive's own basic level.
+ * @return @c YES when the note was added, @c NO when it was already listed.
+ */
+- (BOOL)addDiscoveredExtendNote:(int)extendNoteID musicID:(int)musicID level:(int)level;
+#endif
 /**
  * @brief The extend-note identifiers of every purchased extend note augmenting @p musicID.
  * @ghidraAddress 0x183cf0
