@@ -158,9 +158,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 }
 
 /** @ghidraAddress 0x85944 */
-+ (NSURL *)packListURL:(unsigned int)offset
-                        limit:(unsigned int)limit
-                        genre:(unsigned int)genre {
++ (NSURL *)packListURL:(unsigned int)offset limit:(unsigned int)limit genre:(unsigned int)genre {
     return [NetworkUtil packListURL:offset limit:limit genre:genre];
 }
 

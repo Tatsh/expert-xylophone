@@ -67,22 +67,22 @@ static const NSInteger kFirstSupportedOrientation = 1;
 static const NSInteger kSupportedOrientationCount = 2;
 
 // Layout metrics (points), recovered from the __const double loads referenced by the disassembly.
-static const CGFloat kArtworkOrigin = 8.0;           // Artwork frame origin (x and y).
-static const CGFloat kArtworkSide = 80.0;            // @ghidraAddress 0x2ec6c8
-static const CGFloat kItemViewHeight = 140.0;        // @ghidraAddress 0x2ec6c0
-static const CGFloat kLabelBlockRightInset = -104.0; // @ghidraAddress 0x2ec6d0
-static const CGFloat kLabelBlockOriginX = 96.0;      // @ghidraAddress 0x2ec6d8
-static const CGFloat kMusicLabelHeight = 50.0;       // @ghidraAddress 0x2ec6e0
-static const CGFloat kArtistLabelOriginY = 50.0;     // Same slot as the music-label height.
-static const CGFloat kLabelRowHeight = 20.0;         // Artist and level label heights.
-static const CGFloat kLevelLabelWidthInset = -230.0; // @ghidraAddress 0x2ec6e8
-static const CGFloat kLevelLabelOriginY = 70.0;      // @ghidraAddress 0x2ec6f0
-static const CGFloat kButtonOriginXInset = -8.0;     // Added to the label block's right inset.
-static const CGFloat kButtonOriginY = 100.0;         // @ghidraAddress 0x2ec6f8
-static const CGFloat kButtonWidth = 104.0;           // @ghidraAddress 0x2ec700
-static const CGFloat kDetailWidthInset = -20.0;      // Detail-card content inset.
-static const CGFloat kDetailHeightInset = -140.0;    // @ghidraAddress 0x2ec728
-static const CGFloat kDescriptionInsetX = 10.0;      // Description text-view left inset.
+static const CGFloat kArtworkOrigin = 8.0;            // Artwork frame origin (x and y).
+static const CGFloat kArtworkSide = 80.0;             // @ghidraAddress 0x2ec6c8
+static const CGFloat kItemViewHeight = 140.0;         // @ghidraAddress 0x2ec6c0
+static const CGFloat kLabelBlockRightInset = -104.0;  // @ghidraAddress 0x2ec6d0
+static const CGFloat kLabelBlockOriginX = 96.0;       // @ghidraAddress 0x2ec6d8
+static const CGFloat kMusicLabelHeight = 50.0;        // @ghidraAddress 0x2ec6e0
+static const CGFloat kArtistLabelOriginY = 50.0;      // Same slot as the music-label height.
+static const CGFloat kLabelRowHeight = 20.0;          // Artist and level label heights.
+static const CGFloat kLevelLabelWidthInset = -230.0;  // @ghidraAddress 0x2ec6e8
+static const CGFloat kLevelLabelOriginY = 70.0;       // @ghidraAddress 0x2ec6f0
+static const CGFloat kButtonOriginXInset = -8.0;      // Added to the label block's right inset.
+static const CGFloat kButtonOriginY = 100.0;          // @ghidraAddress 0x2ec6f8
+static const CGFloat kButtonWidth = 104.0;            // @ghidraAddress 0x2ec700
+static const CGFloat kDetailWidthInset = -20.0;       // Detail-card content inset.
+static const CGFloat kDetailHeightInset = -140.0;     // @ghidraAddress 0x2ec728
+static const CGFloat kDescriptionInsetX = 10.0;       // Description text-view left inset.
 static const CGFloat kDescriptionHeightInset = -30.0; // Divider strip removed from the card.
 static const CGFloat kArtworkBorderWidth = 1.0;       // Artwork layer border width.
 static const CGFloat kArtworkShadowOffset = 2.0;      // Artwork layer shadow offset (x and y).
@@ -179,33 +179,32 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;      // Left marg
 - (void)buildItemLabels {
     const CGFloat viewWidth = self.view.bounds.size.width;
 
-    self.labelMusicName = [[UILabel alloc]
-        initWithFrame:CGRectMake(kLabelBlockOriginX,
-                                 kArtworkOrigin,
-                                 viewWidth + kLabelBlockRightInset,
-                                 kMusicLabelHeight)];
+    self.labelMusicName =
+        [[UILabel alloc] initWithFrame:CGRectMake(kLabelBlockOriginX,
+                                                  kArtworkOrigin,
+                                                  viewWidth + kLabelBlockRightInset,
+                                                  kMusicLabelHeight)];
     [self.labelMusicName setNumberOfLines:2];
     [self.labelMusicName setLineBreakMode:NSLineBreakByWordWrapping];
     [self.labelMusicName setFont:[UIFont boldSystemFontOfSize:kMusicLabelFontSize]];
     [self.labelMusicName setAutoresizingMask:kMaskFlexibleWidthTopBottom];
     [self.itemView addSubview:self.labelMusicName];
 
-    self.labelArtistName = [[UILabel alloc]
-        initWithFrame:CGRectMake(kLabelBlockOriginX,
-                                 kArtistLabelOriginY,
-                                 viewWidth + kLabelBlockRightInset,
-                                 kLabelRowHeight)];
+    self.labelArtistName =
+        [[UILabel alloc] initWithFrame:CGRectMake(kLabelBlockOriginX,
+                                                  kArtistLabelOriginY,
+                                                  viewWidth + kLabelBlockRightInset,
+                                                  kLabelRowHeight)];
     [self.labelArtistName setFont:[UIFont systemFontOfSize:kArtistLabelFontSize]];
     [self.labelArtistName setAdjustsFontSizeToFitWidth:YES];
     [self.labelArtistName setAutoresizingMask:kMaskFlexibleWidthTopBottom];
     [self.itemView addSubview:self.labelArtistName];
 
     // The level label is inset much further from the right edge than the two above it.
-    self.labelLevel = [[UILabel alloc]
-        initWithFrame:CGRectMake(kLabelBlockOriginX,
-                                 kLevelLabelOriginY,
-                                 viewWidth + kLevelLabelWidthInset,
-                                 kLabelRowHeight)];
+    self.labelLevel = [[UILabel alloc] initWithFrame:CGRectMake(kLabelBlockOriginX,
+                                                                kLevelLabelOriginY,
+                                                                viewWidth + kLevelLabelWidthInset,
+                                                                kLabelRowHeight)];
     [self.labelLevel setFont:[UIFont boldSystemFontOfSize:kLevelLabelFontSize]];
     [self.labelLevel setAdjustsFontSizeToFitWidth:YES];
     [self.labelLevel setAutoresizingMask:kMaskFlexibleWidthTopBottom];
@@ -272,8 +271,8 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;      // Left marg
 // and the terms-of-service link label.
 - (CGFloat)buildDetailCardBelow:(CGFloat)contentBottom {
     const CGFloat viewWidth = self.view.bounds.size.width;
-    self.detailView = [[UIView alloc]
-        initWithFrame:CGRectMake(0.0, kItemViewHeight, viewWidth, contentBottom)];
+    self.detailView =
+        [[UIView alloc] initWithFrame:CGRectMake(0.0, kItemViewHeight, viewWidth, contentBottom)];
     [self.detailView setOpaque:YES];
     [self.detailView setBackgroundColor:[UIColor colorWithRed:g_dTranslucentAlpha
                                                         green:g_dTranslucentAlpha
@@ -501,10 +500,9 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;      // Left marg
     [self.labelMusicName setFont:fittedFont];
 
     const CGRect musicFrame = self.labelMusicName.frame;
-    [self.labelMusicName setFrame:CGRectMake(musicFrame.origin.x,
-                                             musicFrame.origin.y,
-                                             availableWidth,
-                                             kMusicLabelHeight)];
+    [self.labelMusicName
+        setFrame:CGRectMake(
+                     musicFrame.origin.x, musicFrame.origin.y, availableWidth, kMusicLabelHeight)];
     [self.labelMusicName sizeToFit];
 
     // Snapshot the frames the two wrapped views had before -sizeToFit rewrites them.
@@ -544,10 +542,8 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;      // Left marg
                                            termsHeight)];
 
     const CGRect detailFrame = self.detailView.frame;
-    [self.detailView setFrame:CGRectMake(detailFrame.origin.x,
-                                         detailFrame.origin.y,
-                                         viewWidth,
-                                         detailHeight)];
+    [self.detailView
+        setFrame:CGRectMake(detailFrame.origin.x, detailFrame.origin.y, viewWidth, detailHeight)];
 
     [self.mainView setContentSize:CGSizeMake(self.mainView.frame.size.width,
                                              CGRectGetHeight(self.itemView.frame) +

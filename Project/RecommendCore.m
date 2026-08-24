@@ -166,14 +166,21 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 // because the shipped class metadata carries no selector for either of them.
 
 // The installed-application-list callback body for the advert-screen presentation.
-static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList, NSError *error,
-                                               NSString *adLocation, int adModel, int verticalAlign,
+static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
+                                               id appliList,
+                                               NSError *error,
+                                               NSString *adLocation,
+                                               int adModel,
+                                               int verticalAlign,
                                                id delegate);
 
 // The session-gated click-registration callback body for a first-party advert touch.
-static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *error,
-                                                 NSString *adLocation, NSString *appliId,
-                                                 NSString *creativeId, id requestCode,
+static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
+                                                 NSError *error,
+                                                 NSString *adLocation,
+                                                 NSString *appliId,
+                                                 NSString *creativeId,
+                                                 id requestCode,
                                                  id delegate);
 
 @implementation RecommendCore
@@ -587,8 +594,8 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *e
           // The rect is the base view's size placed at the origin, and the binary hands itself in
           // as the delegate rather than the caller's.
           [self openAdAreaWithParentView:baseView
-                                    rect:CGRectMake(0.0, 0.0, baseFrame.size.width,
-                                                    baseFrame.size.height)
+                                    rect:CGRectMake(
+                                             0.0, 0.0, baseFrame.size.width, baseFrame.size.height)
                                  adModel:adModel
                               adLocation:adLocation
                            verticalAlign:verticalAlign
@@ -598,8 +605,8 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *e
       } else {
           [self appliListWithCallBack:^(id _Nullable list, NSError *_Nullable error) {
             /** @ghidraAddress 0x238e84 */
-            RecommendCoreOpenAdScreenAppliList(self, list, error, adLocation, adModel,
-                                               verticalAlign, delegate);
+            RecommendCoreOpenAdScreenAppliList(
+                self, list, error, adLocation, adModel, verticalAlign, delegate);
           }];
       }
     });
@@ -607,8 +614,12 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *e
 
 // The installed-application-list callback for the advert-screen presentation.
 /** @ghidraAddress 0x238e84 */
-static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList, NSError *error,
-                                               NSString *adLocation, int adModel, int verticalAlign,
+static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
+                                               id appliList,
+                                               NSError *error,
+                                               NSString *adLocation,
+                                               int adModel,
+                                               int verticalAlign,
                                                id delegate) {
     if (error != nil || core.adScreenviewCloseFlg) {
         [core releaseAdScreenViewController];
@@ -713,7 +724,8 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
         }
         NSString *contentPath = [[RecommendAdCache getContentsPath]
             stringByAppendingPathComponent:[NSString stringWithFormat:kRecommendCoreFormatHtmlName,
-                                                                      adModel, adLocation]];
+                                                                      adModel,
+                                                                      adLocation]];
         BOOL isDirectory = NO;
         if (![[NSFileManager defaultManager] fileExistsAtPath:contentPath
                                                   isDirectory:&isDirectory]) {
@@ -1136,21 +1148,22 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
           [incentiveTypeList addObject:kRecommendCoreKeyRewardNone];
           [installFlgList addObject:installFlg];
       }
-      NSString *adType = [NSString stringWithFormat:kRecommendCoreFormatInteger,
-                                                    RecommendCoreAdTypeBanner];
-      NSString *adModel = [NSString stringWithFormat:kRecommendCoreFormatInteger,
-                                                     RecommendCoreAdModelOwnAdBase];
-      [AnalysisNetworkCore postAnalysisListRegistWithAdType:adType
-                                                   adModel:adModel
-                                                adLocation:adLocation
-                                              impressionId:impressionId
-                                               appliIdList:appliIdList
-                                            creativeIdList:creativeIdList
-                                         incentiveTypeList:incentiveTypeList
-                                            installFlgList:installFlgList
-                                                  callback:^(NSError *_Nullable registerError){
-                                                    // The binary passes a global no-op block here.
-                                                  }];
+      NSString *adType =
+          [NSString stringWithFormat:kRecommendCoreFormatInteger, RecommendCoreAdTypeBanner];
+      NSString *adModel =
+          [NSString stringWithFormat:kRecommendCoreFormatInteger, RecommendCoreAdModelOwnAdBase];
+      [AnalysisNetworkCore
+          postAnalysisListRegistWithAdType:adType
+                                   adModel:adModel
+                                adLocation:adLocation
+                              impressionId:impressionId
+                               appliIdList:appliIdList
+                            creativeIdList:creativeIdList
+                         incentiveTypeList:incentiveTypeList
+                            installFlgList:installFlgList
+                                  callback:^(NSError *_Nullable registerError){
+                                      // The binary passes a global no-op block here.
+                                  }];
     }];
 }
 
@@ -1173,8 +1186,8 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
     } else {
         [self startSessionWithCallback:^(NSError *_Nullable sessionError) {
           /** @ghidraAddress 0x23c934 */
-          RecommendCorePostAnalysisClickRegist(self, sessionError, adLocation, appliId, creativeId,
-                                               requestCode, delegate);
+          RecommendCorePostAnalysisClickRegist(
+              self, sessionError, adLocation, appliId, creativeId, requestCode, delegate);
         }];
         return;
     }
@@ -1187,9 +1200,12 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
 
 // The session-gated click-registration callback for a first-party advert touch.
 /** @ghidraAddress 0x23c934 */
-static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *error,
-                                                 NSString *adLocation, NSString *appliId,
-                                                 NSString *creativeId, id requestCode,
+static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
+                                                 NSError *error,
+                                                 NSString *adLocation,
+                                                 NSString *appliId,
+                                                 NSString *creativeId,
+                                                 id requestCode,
                                                  id delegate) {
     if (error != nil) {
         ApplilinkParameters *appParam = [[ApplilinkParameters alloc] init];
@@ -1226,7 +1242,7 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *e
     NSString *defaultScheme = record[kRecommendCoreKeyDefaultScheme];
     [AnalysisNetworkCore
         postAnalysisClickRegistWithAdType:[NSString stringWithFormat:kRecommendCoreFormatInteger,
-                                                                    RecommendCoreAdTypeBanner]
+                                                                     RecommendCoreAdTypeBanner]
                                   adModel:[NSString stringWithFormat:kRecommendCoreFormatInteger,
                                                                      RecommendCoreAdModelOwnAdBase]
                                adLocation:adLocation

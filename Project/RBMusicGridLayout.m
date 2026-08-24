@@ -11,8 +11,8 @@
 #import "RBMusicGridLayout.h"
 
 #import "RBMusicCell.h"
-#import "neDebugLog.h"
 #import "deviceenvironment.h"
+#import "neDebugLog.h"
 
 // All items live in a single section.
 static const NSInteger kGridSection = 0;

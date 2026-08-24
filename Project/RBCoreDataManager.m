@@ -83,7 +83,8 @@ static NSString *const kManagedObjectModelType = @"mom";
     /** @ghidraAddress 0x1cb4e8 */
     if (_persistentStoreCoordinator == nil) {
         NSString *directory = GetDocumentsDirectoryPath();
-        NSString *storePath = [directory stringByAppendingPathComponent:RBCoreDataManager.scoreDataFileName];
+        NSString *storePath =
+            [directory stringByAppendingPathComponent:RBCoreDataManager.scoreDataFileName];
         NSURL *storeURL = [NSURL fileURLWithPath:storePath];
         NSDictionary *options = @{
             NSMigratePersistentStoresAutomaticallyOption : [NSNumber numberWithBool:YES],

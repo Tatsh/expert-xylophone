@@ -14,7 +14,6 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-
 // The number of how-to-play instruction pages, one image per page.
 static const int kHowToPlayPageCount = 6;
 

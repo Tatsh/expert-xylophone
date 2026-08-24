@@ -536,10 +536,10 @@ enum {
 + (nullable NSError *)lotteryInterstitialWithAdLocation:(nullable NSString *)adLocation {
     NSDictionary *specList = [self getInterstitialSpecList];
     if (specList.count == 0) {
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                  kInterstitialSpecListIsZeroMessage,
-                                                  kErrorUserInfoKey,
-                                                  nil];
+        NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObjectsAndKeys:kInterstitialSpecListIsZeroMessage,
+                                                       kErrorUserInfoKey,
+                                                       nil];
         return [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kApplilinkErrorInterstitialSpecInvalid
                                    userInfo:userInfo];
@@ -556,10 +556,10 @@ enum {
         }
     }
     if (frequencyN == 0 || frequencyM == 0) {
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                  kInterstitialSpecFrequencyIsZeroMessage,
-                                                  kErrorUserInfoKey,
-                                                  nil];
+        NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObjectsAndKeys:kInterstitialSpecFrequencyIsZeroMessage,
+                                                       kErrorUserInfoKey,
+                                                       nil];
         return [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kApplilinkErrorInterstitialSpecInvalid
                                    userInfo:userInfo];

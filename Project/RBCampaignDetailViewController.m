@@ -241,11 +241,11 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.artworkView.layer.shouldRasterize = YES;
     [self.itemView addSubview:self.artworkView];
 
-    UILabel *name = [[UILabel alloc]
-        initWithFrame:CGRectMake(kTextColumnLeft,
-                                 kItemNameTop,
-                                 self.view.bounds.size.width + kTextColumnInset,
-                                 kItemNameMaxHeight)];
+    UILabel *name =
+        [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,
+                                                  kItemNameTop,
+                                                  self.view.bounds.size.width + kTextColumnInset,
+                                                  kItemNameMaxHeight)];
     self.labelItemName = name;
     self.labelItemName.numberOfLines = 2;
     self.labelItemName.lineBreakMode = NSLineBreakByWordWrapping;
@@ -255,11 +255,11 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     [self.itemView addSubview:self.labelItemName];
 
     // The artist row's top comes from the pool slot the item-name height also uses.
-    UILabel *artist = [[UILabel alloc]
-        initWithFrame:CGRectMake(kTextColumnLeft,
-                                 kItemNameMaxHeight,
-                                 self.view.bounds.size.width + kTextColumnInset,
-                                 kSecondaryLabelRowHeight)];
+    UILabel *artist =
+        [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,
+                                                  kItemNameMaxHeight,
+                                                  self.view.bounds.size.width + kTextColumnInset,
+                                                  kSecondaryLabelRowHeight)];
     self.labelArtistName = artist;
     self.labelArtistName.font = [UIFont systemFontOfSize:kSecondaryLabelFontSize];
     self.labelArtistName.adjustsFontSizeToFitWidth = YES;
@@ -267,11 +267,11 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     [self.itemView addSubview:self.labelArtistName];
 
-    UILabel *levels = [[UILabel alloc]
-        initWithFrame:CGRectMake(kTextColumnLeft,
-                                 kLevelsLabelTop,
-                                 self.view.bounds.size.width + kLevelsColumnInset,
-                                 kSecondaryLabelRowHeight)];
+    UILabel *levels =
+        [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,
+                                                  kLevelsLabelTop,
+                                                  self.view.bounds.size.width + kLevelsColumnInset,
+                                                  kSecondaryLabelRowHeight)];
     self.labelLevels = levels;
     self.labelLevels.font = [UIFont boldSystemFontOfSize:kSecondaryLabelFontSize];
     self.labelLevels.adjustsFontSizeToFitWidth = YES;
@@ -359,10 +359,8 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     [self.artworkView addGestureRecognizer:tap];
 
     CGFloat detailHeight = self.view.bounds.size.height + kDetailBlockGrowth;
-    UIView *detail = [[UIView alloc] initWithFrame:CGRectMake(0,
-                                                              kItemPanelHeight,
-                                                              self.view.bounds.size.width,
-                                                              detailHeight)];
+    UIView *detail = [[UIView alloc]
+        initWithFrame:CGRectMake(0, kItemPanelHeight, self.view.bounds.size.width, detailHeight)];
     self.detailView = detail;
     self.detailView.opaque = YES;
     self.detailView.backgroundColor = [UIColor colorWithRed:g_dTranslucentAlpha
@@ -650,9 +648,9 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
                                      self.lineView.frame.size.width,
                                      self.lineView.frame.size.height);
 
-    self.mainView.contentSize = CGSizeMake(self.mainView.frame.size.width,
-                                           self.itemView.frame.size.height +
-                                               self.detailView.frame.size.height);
+    self.mainView.contentSize =
+        CGSizeMake(self.mainView.frame.size.width,
+                   self.itemView.frame.size.height + self.detailView.frame.size.height);
 }
 
 #pragma mark - Sample playback

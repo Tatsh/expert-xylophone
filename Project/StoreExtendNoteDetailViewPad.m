@@ -31,27 +31,27 @@ static const int kNoCampaign = -1;
 
 // Layout metrics recovered from the binary's anonymous coordinate data (image-base offsets in
 // comments). These describe the pad card geometry.
-static const double kCardWidth = 650.0;           // @ghidraAddress 0x2eec30
-static const double kCardHeight = 284.0;          // @ghidraAddress 0x2eec38
-static const double kTitleBarHeight = 44.0;       // @ghidraAddress 0x2eec40
-static const double kTextColumnWidth = 420.0;     // @ghidraAddress 0x2eec60
-static const double kButtonRowY = 234.0;          // @ghidraAddress 0x2eec98
-static const double kButtonWidth = 160.0;         // @ghidraAddress 0x2eea38
-static const double kCopyrightHeight = 40.0;      // @ghidraAddress 0x2ee950
-static const double kDetailScrollHeight = 366.0;  // @ghidraAddress 0x2eecb0
-static const double kDescriptionWidth = 630.0;    // @ghidraAddress 0x2ee978
-static const double kDescriptionHeight = 316.0;   // @ghidraAddress 0x2ee928
-static const double kCopyrightOriginY = 316.0;    // @ghidraAddress 0x2ee928
-static const double kArtworkSideNarrow = 64.0;    // @ghidraAddress 0x2eecd8
-static const double kArtworkSideWide = 110.0;     // @ghidraAddress 0x2eece0
-static const double kArtworkFadeDuration = 0.2;   // @ghidraAddress 0x2eece8
-static const double kArtworkShadowOpacity = 0.6;  // @ghidraAddress 0x2ec6b8
+static const double kCardWidth = 650.0;                   // @ghidraAddress 0x2eec30
+static const double kCardHeight = 284.0;                  // @ghidraAddress 0x2eec38
+static const double kTitleBarHeight = 44.0;               // @ghidraAddress 0x2eec40
+static const double kTextColumnWidth = 420.0;             // @ghidraAddress 0x2eec60
+static const double kButtonRowY = 234.0;                  // @ghidraAddress 0x2eec98
+static const double kButtonWidth = 160.0;                 // @ghidraAddress 0x2eea38
+static const double kCopyrightHeight = 40.0;              // @ghidraAddress 0x2ee950
+static const double kDetailScrollHeight = 366.0;          // @ghidraAddress 0x2eecb0
+static const double kDescriptionWidth = 630.0;            // @ghidraAddress 0x2ee978
+static const double kDescriptionHeight = 316.0;           // @ghidraAddress 0x2ee928
+static const double kCopyrightOriginY = 316.0;            // @ghidraAddress 0x2ee928
+static const double kArtworkSideNarrow = 64.0;            // @ghidraAddress 0x2eecd8
+static const double kArtworkSideWide = 110.0;             // @ghidraAddress 0x2eece0
+static const double kArtworkFadeDuration = 0.2;           // @ghidraAddress 0x2eece8
+static const double kArtworkShadowOpacity = 0.6;          // @ghidraAddress 0x2ec6b8
 static const double kDetailBorderWhite = 143.0f / 255.0f; // @ghidraAddress 0x2ec730
-static const double kLoadingShadowAlpha = 0.4;    // @ghidraAddress 0x2ec720
-static const double kLevelColorRed = 85.0 / 255.0;       // @ghidraAddress 0x2eec78
-static const double kLevelColorGreen = 9.0f / 255.0f;   // @ghidraAddress 0x2eec80
-static const double kLevelColorBlue = 120.0 / 255.0;     // @ghidraAddress 0x2eec88
-static const double kBackgroundDimWhite = 0.863f; // @ghidraAddress 0x2eecd0
+static const double kLoadingShadowAlpha = 0.4;            // @ghidraAddress 0x2ec720
+static const double kLevelColorRed = 85.0 / 255.0;        // @ghidraAddress 0x2eec78
+static const double kLevelColorGreen = 9.0f / 255.0f;     // @ghidraAddress 0x2eec80
+static const double kLevelColorBlue = 120.0 / 255.0;      // @ghidraAddress 0x2eec88
+static const double kBackgroundDimWhite = 0.863f;         // @ghidraAddress 0x2eecd0
 // These two are single-precision in the binary, and their addresses were never recovered: neither
 // value exists as a double anywhere in __const, while both exist as floats at several addresses, so
 // the annotations they used to carry (0x2eecc0 and 0x2eecb8) named the doubles belonging to other
@@ -117,11 +117,8 @@ typedef enum {
     card.layer.shadowOpacity = 0.5;
     card.layer.shadowRadius = 1.0;
 
-    self.labelTitle =
-        [[UILabel alloc] initWithFrame:CGRectMake(10.0,
-                                                  0.0,
-                                                  self.bounds.size.width - 20.0,
-                                                  kTitleBarHeight)];
+    self.labelTitle = [[UILabel alloc]
+        initWithFrame:CGRectMake(10.0, 0.0, self.bounds.size.width - 20.0, kTitleBarHeight)];
     [self.labelTitle setBackgroundColor:UIColor.clearColor];
     [self.labelTitle setFont:[UIFont boldSystemFontOfSize:18.0]];
     [self.labelTitle setTextColor:UIColor.blackColor];
@@ -143,21 +140,24 @@ typedef enum {
     self.artworkView.layer.shouldRasterize = YES;
     [self.noteView addSubview:self.artworkView];
 
-    self.labelMusicName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 76.0, kTextColumnWidth, 28.0)];
+    self.labelMusicName =
+        [[UILabel alloc] initWithFrame:CGRectMake(195.0, 76.0, kTextColumnWidth, 28.0)];
     [self.labelMusicName setBackgroundColor:UIColor.clearColor];
     [self.labelMusicName setFont:[UIFont boldSystemFontOfSize:22.0]];
     [self.labelMusicName setAdjustsFontSizeToFitWidth:YES];
     [self.labelMusicName setMinimumScaleFactor:18.0]; // Yes, the binary passes 18.0 here.
     [self.noteView addSubview:self.labelMusicName];
 
-    self.labelArtistName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 108.0, kTextColumnWidth, 28.0)];
+    self.labelArtistName =
+        [[UILabel alloc] initWithFrame:CGRectMake(195.0, 108.0, kTextColumnWidth, 28.0)];
     [self.labelArtistName setBackgroundColor:UIColor.clearColor];
     [self.labelArtistName setFont:[UIFont systemFontOfSize:18.0]];
     [self.labelArtistName setAdjustsFontSizeToFitWidth:YES];
     [self.labelArtistName setMinimumScaleFactor:18.0];
     [self.noteView addSubview:self.labelArtistName];
 
-    self.labelLevel = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 172.0, kTextColumnWidth, 28.0)];
+    self.labelLevel =
+        [[UILabel alloc] initWithFrame:CGRectMake(195.0, 172.0, kTextColumnWidth, 28.0)];
     [self.labelLevel setBackgroundColor:UIColor.clearColor];
     [self.labelLevel setFont:[UIFont boldSystemFontOfSize:20.0]];
     [self.labelLevel setAdjustsFontSizeToFitWidth:YES];
@@ -172,8 +172,8 @@ typedef enum {
 
     const double buttonFontSize = isWide ? 18.0 : 10.0;
 
-    self.downloadBtn = [[StoreButtonView alloc]
-        initWithFrame:CGRectMake(470.0, kButtonRowY, kButtonWidth, 30.0)];
+    self.downloadBtn =
+        [[StoreButtonView alloc] initWithFrame:CGRectMake(470.0, kButtonRowY, kButtonWidth, 30.0)];
     [self.downloadBtn setDisabledColor:[UIColor colorWithWhite:g_dRBWebViewGrayViewWhite
                                                          alpha:1.0]];
     [self.downloadBtn setCornerRadius:4.0];
@@ -247,11 +247,8 @@ typedef enum {
     [self.descriptionTextView setFont:[UIFont systemFontOfSize:18.0]];
     [self.detailView addSubview:self.descriptionTextView];
 
-    self.copyrightView =
-        [[UITextView alloc] initWithFrame:CGRectMake(10.0,
-                                                     kCopyrightOriginY,
-                                                     kDescriptionWidth,
-                                                     kCopyrightHeight)];
+    self.copyrightView = [[UITextView alloc]
+        initWithFrame:CGRectMake(10.0, kCopyrightOriginY, kDescriptionWidth, kCopyrightHeight)];
     [self.copyrightView setBackgroundColor:UIColor.clearColor];
     [self.copyrightView setEditable:NO];
     [self.copyrightView setFont:[UIFont systemFontOfSize:16.0]];

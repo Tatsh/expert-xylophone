@@ -29,7 +29,8 @@ static dispatch_once_t sAllocOnceToken = 0;
 static dispatch_once_t sSharedOnceToken = 0;
 
 // The private serial queue -init synchronises its super call onto. It is created in
-// +allocWithZone:, which alloc always runs before init, so it is non-nil by the time -init reads it.
+// +allocWithZone:, which alloc always runs before init, so it is non-nil by the time -init reads
+// it.
 static dispatch_queue_t sQueue = nil;
 
 // The label the binary passes to dispatch_queue_create.

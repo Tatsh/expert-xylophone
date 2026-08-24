@@ -116,9 +116,9 @@ static const int kBlowfishKeyLength = 16;
 // The brown tint applied to the brown name-strip artwork. Each pooled constant is a single
 // precision quotient widened to double, so the divisions are spelled in float to reproduce the
 // stored bits exactly rather than the nearer double a double division would give.
-static const CGFloat kBrownTintRed = 78.0f / 255.0f;    // @ghidraAddress 0x2fcf38
-static const CGFloat kBrownTintGreen = 69.0f / 255.0f;  // @ghidraAddress 0x2fcf40
-static const CGFloat kBrownTintBlue = 58.0f / 255.0f;   // @ghidraAddress 0x2fcf48
+static const CGFloat kBrownTintRed = 78.0f / 255.0f;   // @ghidraAddress 0x2fcf38
+static const CGFloat kBrownTintGreen = 69.0f / 255.0f; // @ghidraAddress 0x2fcf40
+static const CGFloat kBrownTintBlue = 58.0f / 255.0f;  // @ghidraAddress 0x2fcf48
 
 // The opaque alpha component used for every tint colour.
 static const CGFloat kTintAlpha = 1.0;
@@ -160,8 +160,8 @@ static NSString *const g_yomiGroups[] = {
 
 // The hiragana initial labelling each katakana row.
 // @ghidraAddress 0x3ceb68
-static NSString *const g_yomiLabels[] = {@"あ", @"か", @"さ", @"た", @"な",
-                                         @"は", @"ま", @"や", @"ら", @"わ"};
+static NSString *const g_yomiLabels[] = {
+    @"あ", @"か", @"さ", @"た", @"な", @"は", @"ま", @"や", @"ら", @"わ"};
 
 // Decodes @p data into an image, preferring nil over an empty image.
 static UIImage *ImageFromData(NSData *data) {

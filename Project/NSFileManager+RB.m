@@ -11,7 +11,6 @@
 //
 
 #import "NSFileManager+RB.h"
-
 #import "deviceenvironment.h"
 
 // The minimum free space, in bytes, that @c isFreeSystemSize requires (50 MiB).
@@ -160,10 +159,10 @@ static NSString *g_pResourcePathCache = nil;
     /** @ghidraAddress 0x1ca248 */
     @synchronized([NSFileManager class]) {
         if (g_pApplicationSupportDirectoryPathCache == nil) {
-            g_pApplicationSupportDirectoryPathCache = NSSearchPathForDirectoriesInDomains(
-                                                          NSApplicationSupportDirectory,
-                                                          NSUserDomainMask, YES)
-                                                          .lastObject;
+            g_pApplicationSupportDirectoryPathCache =
+                NSSearchPathForDirectoriesInDomains(
+                    NSApplicationSupportDirectory, NSUserDomainMask, YES)
+                    .lastObject;
             g_pApplicationSupportDirectoryPathCache =
                 [[NSString alloc] initWithString:g_pApplicationSupportDirectoryPathCache];
         }

@@ -19,10 +19,9 @@
 
 #import "ApplilinkUdid.h"
 
+#import <AdSupport/ASIdentifierManager.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <Security/Security.h>
-
-#import <AdSupport/ASIdentifierManager.h>
 
 #import "ApplilinkCore.h"
 #import "ApplilinkNetworkError.h"
@@ -320,11 +319,10 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     NSString *serviceName = [ApplilinkUdid getServiceName];
     NSString *storageIndex = [ApplilinkUdid getServiceIndex:kApplilinkUdidAdStorageIndexKey];
     NSError *readError = nil;
-    NSString *record =
-        [ApplilinkUdid getUdidWithService:serviceName
-                             storageIndex:storageIndex
-                    rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeAdvertising
-                                    error:&readError];
+    NSString *record = [ApplilinkUdid getUdidWithService:serviceName
+                                            storageIndex:storageIndex
+                                   rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeAdvertising
+                                                   error:&readError];
     if (readError != nil || record == nil) {
         *error = readError;
         return [ApplilinkUdid getAdvertisingUdid];

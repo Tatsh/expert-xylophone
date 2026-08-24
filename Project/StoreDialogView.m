@@ -49,8 +49,8 @@ static const CGFloat kLabelFontSize = 18.0;
 
 // The progress bar's left inset, height, and the panel-width inset that sets its width; it sits
 // ten points below the panel's vertical centre.
-static const CGFloat kProgressLeft = 30.0;       // @ghidraAddress 0x403e000000000000
-static const CGFloat kProgressHeight = 11.0;     // @ghidraAddress 0x4026000000000000
+static const CGFloat kProgressLeft = 30.0;        // @ghidraAddress 0x403e000000000000
+static const CGFloat kProgressHeight = 11.0;      // @ghidraAddress 0x4026000000000000
 static const CGFloat kProgressWidthInset = -60.0; // @ghidraAddress 0x300fc8
 static const CGFloat kProgressCenterYOffset = 10.0;
 

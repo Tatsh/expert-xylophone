@@ -18,7 +18,6 @@
 #import "UIAlertView+RB.h"
 #import "deviceenvironment.h"
 
-
 // The web view is inset below the title bar by one title-bar height per satisfied condition: once
 // for any non-Classic theme, and once again for the iPad (wide) layout. The binary materialises the
 // pad arm as a two-entry table at 0x302d40 holding 64.0 and 32.0, and the phone arm as a select

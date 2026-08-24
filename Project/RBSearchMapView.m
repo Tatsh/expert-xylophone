@@ -68,8 +68,8 @@ static const CLLocationDegrees kSearchAreaMaxLatitude = 45.6;   // @ghidraAddres
 
 // Metres in one degree, used to turn the distance since the last request back into degrees, and
 // the distance the centre has to travel before the list is requested again.
-static const double kMetersPerDegree = 111133.3;                     // @ghidraAddress 0x301600
-static const CLLocationDegrees kRequestMoveThreshold = 0.15;         // @ghidraAddress 0x301608
+static const double kMetersPerDegree = 111133.3;             // @ghidraAddress 0x301600
+static const CLLocationDegrees kRequestMoveThreshold = 0.15; // @ghidraAddress 0x301608
 static const NSUInteger kPlottedSpotArrayCapacity = 0;
 
 // The range the spot list is always requested for. It reaches the format call as an immediate
@@ -162,18 +162,12 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     // takes the latitude up and the longitude down, south-east the reverse.
     double latitudeInset = region.span.latitudeDelta * kMapRectSpanScale;
     double longitudeInset = region.span.longitudeDelta * kMapRectSpanScale;
-    MKMapPoint topLeft =
-        MKMapPointForCoordinate(CLLocationCoordinate2DMake(region.center.latitude + latitudeInset,
-                                                           region.center.longitude -
-                                                               longitudeInset));
-    MKMapPoint bottomRight =
-        MKMapPointForCoordinate(CLLocationCoordinate2DMake(region.center.latitude - latitudeInset,
-                                                           region.center.longitude +
-                                                               longitudeInset));
-    return MKMapRectMake(topLeft.x,
-                         topLeft.y,
-                         fabs(bottomRight.x - topLeft.x),
-                         fabs(bottomRight.y - topLeft.y));
+    MKMapPoint topLeft = MKMapPointForCoordinate(CLLocationCoordinate2DMake(
+        region.center.latitude + latitudeInset, region.center.longitude - longitudeInset));
+    MKMapPoint bottomRight = MKMapPointForCoordinate(CLLocationCoordinate2DMake(
+        region.center.latitude - latitudeInset, region.center.longitude + longitudeInset));
+    return MKMapRectMake(
+        topLeft.x, topLeft.y, fabs(bottomRight.x - topLeft.x), fabs(bottomRight.y - topLeft.y));
 }
 
 #pragma mark - Lifecycle
@@ -580,7 +574,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
         [[CLLocation alloc] initWithLatitude:m_LastRegion.center.latitude
                                    longitude:m_LastRegion.center.longitude];
     CLLocation *currentCenter = [[CLLocation alloc] initWithLatitude:region.center.latitude
-                                                          longitude:region.center.longitude];
+                                                           longitude:region.center.longitude];
     if ([previousCenter distanceFromLocation:currentCenter] / kMetersPerDegree >
         kRequestMoveThreshold) {
         [self requestList:region];

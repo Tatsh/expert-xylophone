@@ -16,7 +16,6 @@
 #import "RecommendNetwork.h"
 #import "UIAlertView+RB.h"
 
-
 // The web target view's rounded-corner radius and the activity indicator's magnification.
 static const CGFloat kWebTargetCornerRadius = 7.0;
 static const CGFloat kIndicatorScale = 1.5;

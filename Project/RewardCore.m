@@ -223,9 +223,12 @@ static dispatch_queue_t gRewardCoreQueue;
                                               [RewardWebAPI
                                                   postApplicationInstallWithPriority:
                                                       kRewardInstallPriorityPasteBoard
-                                                  callback:^(NSError *pasteBoardError){
-                                                      /** @ghidraAddress 0x208094 */
-                                                  }];
+                                                                            callback:^(
+                                                                                NSError *
+                                                                                    pasteBoardError){
+                                                                                /** @ghidraAddress
+                                                                                   0x208094 */
+                                                                            }];
                                           }
                                           [RewardCore sharedInstance].initializeFlg = 1;
                                           callback(nil);

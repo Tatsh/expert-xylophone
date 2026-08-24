@@ -7,7 +7,6 @@
 #import "ApplilinkConsts.h"
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkUtilities.h"
-
 #import "neDebugLog.h"
 
 // HTTP method that selects the form-encoded POST body path; any other value uses the GET query.
@@ -128,8 +127,8 @@ static BOOL g_bApplilinkWebAPISessionStatus;
 
 - (NSDictionary *)commonParameters {
     return @{
-        kApplilinkWebAPICarrierKey: kApplilinkWebAPICarrierValue,
-        kApplilinkWebAPIFormatKey: kApplilinkWebAPIFormatValue,
+        kApplilinkWebAPICarrierKey : kApplilinkWebAPICarrierValue,
+        kApplilinkWebAPIFormatKey : kApplilinkWebAPIFormatValue,
     };
 }
 

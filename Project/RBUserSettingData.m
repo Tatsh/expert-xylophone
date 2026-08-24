@@ -140,8 +140,7 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
 // Mirrors one option into the current theme's customise dictionary. The binary inlines this block
 // into each of the reset methods; it is a plain function rather than a method because the class
 // metadata defines no such selector.
-static void
-RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *key) {
+static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *key) {
     NSMutableDictionary *item = settings.customizeItems[settings.thema];
     [item setValue:value forKey:key];
 }
@@ -247,8 +246,8 @@ RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *ke
         if (NE_DBG_FIRST(6)) {
             neDebugLog("tutorialPersist load key=%s present=%d tutorials=%lu",
                        NSStringFromClass([self class]).UTF8String,
-                       [[NSUserDefaults standardUserDefaults] dataForKey:NSStringFromClass(
-                                                                            [self class])] != nil,
+                       [[NSUserDefaults standardUserDefaults]
+                           dataForKey:NSStringFromClass([self class])] != nil,
                        (unsigned long)instance.tutorialStatuses.count);
         }
     }
@@ -267,7 +266,7 @@ RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *ke
                    (unsigned long)archived.length,
                    (unsigned long)self.tutorialStatuses.count,
                    (unsigned long)[[NSUserDefaults standardUserDefaults]
-                                      dataForKey:NSStringFromClass([self class])]
+                       dataForKey:NSStringFromClass([self class])]
                        .length);
     }
 }

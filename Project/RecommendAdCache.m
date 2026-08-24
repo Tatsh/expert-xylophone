@@ -124,16 +124,17 @@ static NSString *const kSettingUserInfoKey = @"Setting";
           [RecommendAdCache getTemplateFiles];
       }
       [RecommendAdCache clearCacheBannerImage];
-      [RecommendAdCache getAllAdDataWithCallBack:^(id _Nullable data, NSError *_Nullable innerError) {
-        /** @ghidraAddress 0x241970 */
-        // The block reads its error from the second argument; the first is never used.
-        if (innerError == nil) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-              /** @ghidraAddress 0x2419e0 */
-              [RecommendAdData class]; // ProcessRecommendAdLists processes the fetched records.
-            });
-        }
-      }];
+      [RecommendAdCache
+          getAllAdDataWithCallBack:^(id _Nullable data, NSError *_Nullable innerError) {
+            /** @ghidraAddress 0x241970 */
+            // The block reads its error from the second argument; the first is never used.
+            if (innerError == nil) {
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                  /** @ghidraAddress 0x2419e0 */
+                  [RecommendAdData class]; // ProcessRecommendAdLists processes the fetched records.
+                });
+            }
+          }];
     }];
 }
 
@@ -410,12 +411,12 @@ static NSString *const kSettingUserInfoKey = @"Setting";
     default: {
         NSString *message =
             [NSString stringWithFormat:kRecommendAdCacheFormatUnknownAdType, adModel, adLocation];
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                  kRecommendAdCacheUnknownAdTypeMessage,
-                                                  kErrorUserInfoKey,
-                                                  message,
-                                                  kSettingUserInfoKey,
-                                                  nil];
+        NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObjectsAndKeys:kRecommendAdCacheUnknownAdTypeMessage,
+                                                       kErrorUserInfoKey,
+                                                       message,
+                                                       kSettingUserInfoKey,
+                                                       nil];
         return [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendAdCacheErrorCodeCacheCreate
                                    userInfo:userInfo];

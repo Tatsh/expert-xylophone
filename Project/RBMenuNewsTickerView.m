@@ -190,8 +190,7 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     CGSize textSize = [text sizeWithFont:self.font];
     // The label is sized to the text, not to the base view: only the width comes from the measured
     // text, while the height is the one the base view's frame left behind.
-    self.textView.frame =
-        CGRectMake(0.0, 0.0, textSize.width, self.textBaseView.frame.size.height);
+    self.textView.frame = CGRectMake(0.0, 0.0, textSize.width, self.textBaseView.frame.size.height);
     CGFloat overflow = textSize.width - self.textBaseView.bounds.size.width;
 
     float duration = 0.0;

@@ -211,8 +211,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
             container.frame = CGRectMake(container.x,
                                          container.y,
                                          self.displayRate * kContainerGrownWidth,
-                                         container.height +
-                                             self.displayRate * kScoreFieldHeight);
+                                         container.height + self.displayRate * kScoreFieldHeight);
             [container addSubview:field];
         }
         if (container.height > 0.0) {
@@ -222,10 +221,10 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     }
 
     __weak RBErosionMarkUpdater *weakSelf = self;
-    self.alertSetScoreController = [RBErosionMarkUpdaterAlertController
-        alertControllerWithTitle:title
-                         message:@"スコアを入力して下さい"
-                  preferredStyle:UIAlertControllerStyleAlert];
+    self.alertSetScoreController =
+        [RBErosionMarkUpdaterAlertController alertControllerWithTitle:title
+                                                              message:@"スコアを入力して下さい"
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     if (self.baseBasicScore == g_lowerScoreBounds[kDifficultyBasic].integerValue) {
         [self.alertSetScoreController
             addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -349,10 +348,10 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     }
     // Yes, this arm passes the literal rather than the formatted string: 0x1471a0 reloads the
     // constant, so the stringWithFormat: result is used only by the legacy arm at 0x14738c.
-    self.alertConfirmController = [RBErosionMarkUpdaterAlertController
-        alertControllerWithTitle:@"スコアを更新します"
-                         message:@""
-                  preferredStyle:UIAlertControllerStyleAlert];
+    self.alertConfirmController =
+        [RBErosionMarkUpdaterAlertController alertControllerWithTitle:@"スコアを更新します"
+                                                              message:@""
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     [self.alertConfirmController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedCancel
                                            style:UIAlertActionStyleCancel
@@ -425,8 +424,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     // The three labels are padded to a common six-column width before the colon: the constants at
     // 0x36d220, 0x36d240, and 0x36d260 are each 22 characters long.
     if (self.baseBasicScore == g_lowerScoreBounds[kDifficultyBasic].integerValue) {
-        [summary
-            appendFormat:@"BASIC : %04zd → %04zd\n", self.baseBasicScore, self.editBasicScore];
+        [summary appendFormat:@"BASIC : %04zd → %04zd\n", self.baseBasicScore, self.editBasicScore];
     }
     if (self.baseMediumScore == g_lowerScoreBounds[kDifficultyMedium].integerValue) {
         [summary

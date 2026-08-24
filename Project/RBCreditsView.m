@@ -12,7 +12,6 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 
-
 // The credits-text artwork laid out in the popup content view.
 static NSString *const kCreditsTextImageName = @"07_credits/cre_text";
 

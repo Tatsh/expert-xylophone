@@ -733,8 +733,8 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     if (!IsPad()) {
         self.helpView =
             [[UIView alloc] initWithFrame:CGRectMake(0, 0, kHelpCanvasSize, kHelpCanvasSize)];
-        self.pastelView = [[UIView alloc]
-            initWithFrame:CGRectMake(0, 0, kPastelCanvasSize, kPastelCanvasSize)];
+        self.pastelView =
+            [[UIView alloc] initWithFrame:CGRectMake(0, 0, kPastelCanvasSize, kPastelCanvasSize)];
     } else {
         self.helpView = [[UIView alloc]
             initWithFrame:CGRectMake(0, 0, kWideHelpCanvasWidth, kWideHelpCanvasHeight)];
@@ -752,8 +752,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
 
     const BOOL narrow = !IsPad();
 
-    UIImage *pastel =
-        [info clipImageWithRect:narrow ? kPastelClipRectNarrow : kPastelClipRectWide];
+    UIImage *pastel = [info clipImageWithRect:narrow ? kPastelClipRectNarrow : kPastelClipRectWide];
     self.pastelImageView = [[UIImageView alloc] initWithImage:pastel];
     self.pastelImageView.frame =
         CGRectMake(narrow ? kPastelImageOriginXNarrow : kPastelImageOriginXWide,
@@ -774,19 +773,17 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     UIImage *fill = [info clipImageWithRect:narrow ? kFillClipRectNarrow : kFillClipRectWide];
     const CGFloat trackScale = narrow ? kTrackSpriteScaleNarrow : kTrackSpriteScaleWide;
     if (!narrow) {
-        fill = [fill
-            resizableImageWithCapInsets:UIEdgeInsetsMake(kProgressFillCapInsetVertical,
-                                                         kProgressFillCapInsetHorizontal,
-                                                         kProgressFillCapInsetVertical,
-                                                         kProgressFillCapInsetHorizontal)];
+        fill = [fill resizableImageWithCapInsets:UIEdgeInsetsMake(kProgressFillCapInsetVertical,
+                                                                  kProgressFillCapInsetHorizontal,
+                                                                  kProgressFillCapInsetVertical,
+                                                                  kProgressFillCapInsetHorizontal)];
     }
     self.trackImageView = [[UIImageView alloc] initWithImage:track];
-    self.trackImageView.frame = CGRectMake(narrow ? kTrackImageOriginXNarrow
-                                                  : kTrackImageOriginXWide,
-                                           narrow ? kTrackImageOriginYNarrow
-                                                  : kTrackImageOriginYWide,
-                                           track.size.width * trackScale,
-                                           track.size.height * trackScale);
+    self.trackImageView.frame =
+        CGRectMake(narrow ? kTrackImageOriginXNarrow : kTrackImageOriginXWide,
+                   narrow ? kTrackImageOriginYNarrow : kTrackImageOriginYWide,
+                   track.size.width * trackScale,
+                   track.size.height * trackScale);
     [self.pastelView addSubview:self.trackImageView];
 
     self.progressImageView = [[UIImageView alloc] initWithImage:fill];
@@ -900,9 +897,9 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     // 0x1edac splits every other device on the bounds' aspect, taking side by side when the height
     // is the lesser. A pad stacks the help panel above the pastel container and centres both
     // horizontally. Any other device stacks them the same way in portrait but aligns the pastel
-    // container's right edge with the help panel's, and in landscape sets them side by side with the
-    // pastel container's bottom edge on the help panel's. Each computed origin round-trips through
-    // fcvt in the binary, so the originals were single precision.
+    // container's right edge with the help panel's, and in landscape sets them side by side with
+    // the pastel container's bottom edge on the help panel's. Each computed origin round-trips
+    // through fcvt in the binary, so the originals were single precision.
     CGRect bounds = self.view.bounds;
     CGSize helpSize = self.helpView.frame.size;
     CGSize pastelSize = self.pastelView.frame.size;

@@ -145,9 +145,9 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleMargins =
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
 // The activity indicator's mask: as above but without the top margin.
-static const UIViewAutoresizing kAutoresizingMaskIndicator =
-    UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
-    UIViewAutoresizingFlexibleBottomMargin;
+static const UIViewAutoresizing kAutoresizingMaskIndicator = UIViewAutoresizingFlexibleLeftMargin |
+                                                             UIViewAutoresizingFlexibleRightMargin |
+                                                             UIViewAutoresizingFlexibleBottomMargin;
 
 // The server unlock-list dictionary keys.
 static NSString *const kJSONKeyList = @"List";
@@ -178,18 +178,14 @@ static NSString *const kCampaignIdFormat = @"%d";
 
 // The four completion branches of the single binary -downloaderFinished:, de-inlined. They are
 // functions rather than methods because the class metadata defines no such selectors.
-static void
-RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
-                                       Downloader *downloader);
-static void
-RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller,
-                                            Downloader *downloader);
-static void
-RBCampaignHandleTermsCheckerFinished(RBCampaignViewController *controller,
-                                     Downloader *downloader);
-static void
-RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
-                                          Downloader *downloader);
+static void RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
+                                                   Downloader *downloader);
+static void RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller,
+                                                        Downloader *downloader);
+static void RBCampaignHandleTermsCheckerFinished(RBCampaignViewController *controller,
+                                                 Downloader *downloader);
+static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
+                                                      Downloader *downloader);
 
 @implementation RBCampaignViewController
 
@@ -314,9 +310,8 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         self.loadingLabel.shadowOffset = CGSizeMake(0, kLabelShadowOffset);
         self.loadingLabel.textAlignment = NSTextAlignmentCenter;
         // Only the y is truncated to an integer here; the x keeps its fraction.
-        self.loadingLabel.center =
-            CGPointMake(self.view.bounds.size.width * kCenterScale,
-                        (int)(self.view.bounds.size.height * kCenterScale));
+        self.loadingLabel.center = CGPointMake(self.view.bounds.size.width * kCenterScale,
+                                               (int)(self.view.bounds.size.height * kCenterScale));
         self.loadingLabel.autoresizingMask = kAutoresizingMaskFlexibleSize;
         self.loadingLabel.text = g_pLocalizedLoadingMixed;
         self.loadingLabel.hidden = NO;
@@ -354,10 +349,9 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         self.errorLabel.textAlignment = NSTextAlignmentCenter;
         self.errorLabel.numberOfLines = 0;
         // The halved height is truncated to an integer before the offset is subtracted.
-        self.errorLabel.center =
-            CGPointMake(self.view.bounds.size.width * kCenterScale,
-                        (int)(self.view.bounds.size.height * kCenterScale) -
-                            kErrorLabelCenterYOffset);
+        self.errorLabel.center = CGPointMake(self.view.bounds.size.width * kCenterScale,
+                                             (int)(self.view.bounds.size.height * kCenterScale) -
+                                                 kErrorLabelCenterYOffset);
         self.errorLabel.autoresizingMask = kAutoresizingMaskFlexibleAll;
         self.errorLabel.hidden = YES;
         [self.view addSubview:self.errorLabel];
@@ -510,13 +504,14 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         // passes an empty completion block, so that form is kept rather than the shorter one.
         __weak UIImageView *weakArtwork = cell.artworkView;
         [UIView animateWithDuration:kBannerFadeDuration
-            animations:^{
-              /** @ghidraAddress 0x1faef8 (animation block) */
-              weakArtwork.alpha = kOpaqueAlpha;
-            }
-            completion:^(BOOL finished){
-                /** @ghidraAddress 0x1faf58 (completion block; the binary's body is empty) */
-            }];
+                         animations:^{
+                           /** @ghidraAddress 0x1faef8 (animation block) */
+                           weakArtwork.alpha = kOpaqueAlpha;
+                         }
+                         completion:^(BOOL finished){
+                             /** @ghidraAddress 0x1faf58 (completion block; the binary's body is
+                                empty) */
+                         }];
     }
     return cell;
 }
@@ -838,9 +833,8 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
 }
 
 /** @ghidraAddress 0x1fc988 (info-downloader branch) */
-static void
-RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
-                                       Downloader *downloader) {
+static void RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
+                                                   Downloader *downloader) {
     controller.loadingLabel.hidden = YES;
     NSDictionary *json = [downloader getDataInJSON];
     if (json == nil || ![downloader hashChecked]) {
@@ -869,9 +863,8 @@ RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
 }
 
 /** @ghidraAddress 0x1fc988 (music-info-downloader branch) */
-static void
-RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller,
-                                            Downloader *downloader) {
+static void RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller,
+                                                        Downloader *downloader) {
     NSDictionary *json = [downloader getDataInJSON];
     if (json == nil) {
         return;
@@ -900,14 +893,13 @@ RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller
                                                                 path:path
                                                            AddObject:nil];
     controller.dlManager = [[StoreDownloadManager alloc] initWithTasks:@[ task ]
-                                                             delegate:controller];
+                                                              delegate:controller];
     [controller.dlManager start];
 }
 
 /** @ghidraAddress 0x1fc988 (terms-checker branch) */
-static void
-RBCampaignHandleTermsCheckerFinished(RBCampaignViewController *controller,
-                                     Downloader *downloader) {
+static void RBCampaignHandleTermsCheckerFinished(RBCampaignViewController *controller,
+                                                 Downloader *downloader) {
     NSDictionary *json = [downloader getDataInJSON];
     if (json != nil) {
         if ([json[kJSONKeyStatus] intValue] == kServerStatusSuccess) {
@@ -941,9 +933,8 @@ RBCampaignHandleTermsCheckerFinished(RBCampaignViewController *controller,
 }
 
 /** @ghidraAddress 0x1fc988 (item-url-downloader branch) */
-static void
-RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
-                                          Downloader *downloader) {
+static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
+                                                      Downloader *downloader) {
     NSDictionary *json = [downloader getDataInJSON];
     if (json != nil) {
         if ([json[kJSONKeyStatus] intValue] == kServerStatusSuccess) {
