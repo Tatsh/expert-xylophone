@@ -81,11 +81,12 @@ static const NSUInteger kListSaltLength = 4;
 static NSString *const kMusicDataFileExtension = @"rb";
 static const NSUInteger kMusicDataIDDigits = 9;
 
-// The audio entry every archive carries. An extend note usually ships its tune's audio byte for
-// byte, so the zip's own CRC-32 for this entry pairs the two without opening either file. It is a
-// shortcut rather than a rule: some packages re-encode the audio, and those have to be paired by
-// name and artist instead.
-static NSString *const kArchiveAudioEntry = @"bgm";
+// Extend-note packages occupy their own identifier block. Every one is 100050xxx, and the tune it
+// holds the SPECIAL chart for is the same number 50000 lower: 100050433 belongs to 100000433. That
+// is the whole pairing rule, and it needs neither archive opened.
+static const int kExtendNoteIDFirst = 100050000;
+static const int kExtendNoteIDCount = 1000;
+static const int kExtendNoteIDParentDelta = 50000;
 
 // The three chart entries. An extend-note archive carries only its SPECIAL chart, served out of the
 // basic slot, and ships the other two as blank placeholders.
@@ -211,41 +212,21 @@ static const int kClientMusicEntriesPerPage = 20;
 
 #pragma mark - Drop-in archive discovery (ENABLE_PATCHES)
 
-// Read the CRC-32 and the uncompressed size the zip central directory records for one entry. The
-// entry is never decompressed: the values are what the archive itself stores, so two archives
-// sharing an identical file agree here no matter how either was compressed. Either output may be
-// NULL.
-static BOOL RBArchiveEntryInfo(NSString *archivePath,
-                               NSString *entryName,
-                               uint32_t *outCRC,
-                               uint32_t *outSize) {
-    unzFile archive = unzOpen(archivePath.fileSystemRepresentation);
-    if (archive == NULL) {
-        return NO;
-    }
-    BOOL found = NO;
-    if (unzLocateFile(archive, entryName.UTF8String, NULL) == UNZ_OK) {
-        unz_file_info info = {};
-        if (unzGetCurrentFileInfo(archive, &info, NULL, 0, NULL, 0, NULL, 0) == UNZ_OK) {
-            if (outCRC != NULL) {
-                *outCRC = info.crc;
-            }
-            if (outSize != NULL) {
-                *outSize = (uint32_t)info.uncompressed_size;
-            }
-            found = YES;
-        }
-    }
-    unzClose(archive);
-    return found;
+// Whether an identifier falls in the extend-note block, and the tune an extend note belongs to.
+// Neither reads the archive, so classifying and pairing a drop-in costs no file access at all.
+static BOOL RBIsExtendNoteID(int musicID) {
+    return musicID >= kExtendNoteIDFirst && musicID < kExtendNoteIDFirst + kExtendNoteIDCount;
 }
 
-// Whether an archive holds an extend note rather than a tune. The audio cannot answer this on its
-// own, because a package that re-encodes the tune's audio leaves nothing for a CRC to match, so the
-// charts decide it: an extend note has no MEDIUM or HARD chart to carry and ships both entries
-// blank, which no tune does.
-// The archive is opened once for all three entries rather than per entry, because this runs over
-// every installed song on each launch.
+static int RBExtendNoteParentID(int extendNoteID) {
+    return extendNoteID - kExtendNoteIDParentDelta;
+}
+
+// A structural second opinion, for an archive whose identifier is outside the block above. An
+// extend note has no MEDIUM or HARD chart to carry and ships both entries blank, which no tune
+// does, so this recognises one that does not follow the numbering. It cannot say which tune the
+// note belongs to — only the identifier can — so such a note is passed over rather than listed.
+// The archive is opened once for all three entries rather than once per entry.
 static BOOL RBArchiveIsExtendNote(NSString *archivePath) {
     unzFile archive = unzOpen(archivePath.fileSystemRepresentation);
     if (archive == NULL) {
@@ -274,48 +255,6 @@ static BOOL RBArchiveIsExtendNote(NSString *archivePath) {
     return sizes[kChartSlotBasic] > kBlankChartMaximumSize &&
            sizes[kChartSlotMedium] <= kBlankChartMaximumSize &&
            sizes[kChartSlotHard] <= kBlankChartMaximumSize;
-}
-
-// The name and artist a tune shares with its extend note, joined into one lookup key. A newline
-// separates the two because neither field can hold one.
-static NSString *RBTuneKey(NSString *musicName, NSString *artistName) {
-    return [NSString stringWithFormat:@"%@\n%@",
-                                      musicName ? musicName : kEmptyString,
-                                      artistName ? artistName : kEmptyString];
-}
-
-// Every installed tune keyed by name and artist, for pairing an extend note whose audio does not
-// match its tune's byte for byte. Only each archive's small info entry is read.
-static NSMutableDictionary<NSString *, NSNumber *> *RBTuneKeyMap(NSSet<NSNumber *> *musicIDs,
-                                                                 NSSet<NSNumber *> *reservedIDs) {
-    NSMutableDictionary<NSString *, NSNumber *> *map = [NSMutableDictionary dictionary];
-    for (NSNumber *musicID in musicIDs) {
-        if ([reservedIDs containsObject:musicID]) {
-            continue;
-        }
-        NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
-        if (path == nil) {
-            continue;
-        }
-        MusicData *data = [MusicData dataWithPath:path ID:musicID.intValue];
-        if (data == nil) {
-            continue;
-        }
-        // Both keys are recorded: the name alone is the fallback for a note whose package spells
-        // the artist differently from its tune's. The lowest identifier wins, so a tune installed
-        // twice still pairs its notes the same way on every launch.
-        NSArray<NSString *> *keys = @[
-            RBTuneKey(data.musicName, data.artistName),
-            RBTuneKey(data.musicName, nil),
-        ];
-        for (NSString *key in keys) {
-            NSNumber *existing = map[key];
-            if (existing == nil || musicID.intValue < existing.intValue) {
-                map[key] = musicID;
-            }
-        }
-    }
-    return map;
 }
 
 // Every canonical %09d.rb identifier in one directory. A name that is not exactly nine digits is
@@ -376,9 +315,7 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     // skipping them as already listed.
     NSIndexSet *misfiled = [self.purchasedMusicDictionaries
         indexesOfObjectsPassingTest:^BOOL(NSDictionary *entry, NSUInteger index, BOOL *stop) {
-          NSString *path =
-              [RBMusicManager resolveArchivePath:[entry[kPurchasedMusicKeyID] intValue]];
-          return path != nil && RBArchiveIsExtendNote(path);
+          return RBIsExtendNoteID([entry[kPurchasedMusicKeyID] intValue]);
         }];
     const BOOL misfiledRemoved = misfiled.count != 0;
     [self.purchasedMusicDictionaries removeObjectsAtIndexes:misfiled];
@@ -397,28 +334,12 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     NSMutableSet<NSNumber *> *knownMusicIDs = [NSMutableSet setWithSet:listedMusicIDs];
     [knownMusicIDs addObjectsFromArray:self.preinstallMusicIDs];
 
-    // The bundle's two non-catalogue archives are skipped outright. They must not be registered as
-    // songs, and they must not fingerprint either: the tutorial and preview tunes are ordinary
-    // archives, so an unlisted copy of one would otherwise pair with it and be filed as its extend
-    // note.
+    // The bundle's two non-catalogue archives are skipped outright: the tutorial and preview tunes
+    // are loaded straight from the bundle by identifier, so registering either would list it as an
+    // ordinary song.
     NSMutableSet<NSNumber *> *reservedIDs = [NSMutableSet set];
     for (NSUInteger index = 0; index < ARRAY_SIZE(kReservedArchiveIDs); ++index) {
         [reservedIDs addObject:@(kReservedArchiveIDs[index])];
-    }
-
-    // The audio fingerprint of every song already known, so an unlisted archive carrying one of
-    // them can be recognised as that song's extend note rather than as a new song.
-    NSMutableDictionary<NSNumber *, NSNumber *> *audioCRCToMusicID =
-        [NSMutableDictionary dictionary];
-    for (NSNumber *musicID in knownMusicIDs) {
-        if ([reservedIDs containsObject:musicID]) {
-            continue;
-        }
-        NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
-        uint32_t crc = 0;
-        if (path != nil && RBArchiveEntryInfo(path, kArchiveAudioEntry, &crc, NULL)) {
-            audioCRCToMusicID[@(crc)] = musicID;
-        }
     }
 
     NSMutableSet<NSNumber *> *presentSet = [NSMutableSet set];
@@ -426,14 +347,13 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         RBCollectArchiveIDs(directory, presentSet);
     }
 
-    // Sorted, because the classification below depends on the order archives are considered and a
-    // set enumerates in whatever order its hashes fall in.
+    // Sorted, so a batch is always considered in the same order rather than in whatever order the
+    // set's hashes fall in.
     NSArray<NSNumber *> *presentIDs =
         [presentSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
 
-    // Sort the unlisted archives into tunes and extend notes before registering any of them. The
-    // two passes matter: a note is placed against the tune it belongs to, and that tune may be
-    // sitting in the same batch, still unregistered.
+    // Sort the unlisted archives into tunes and extend notes. The identifier decides it, so a note
+    // and the tune it belongs to can be dropped in together in either order.
     NSMutableArray<NSNumber *> *newTuneIDs = [NSMutableArray array];
     NSMutableArray<NSNumber *> *newNoteIDs = [NSMutableArray array];
     for (NSNumber *foundID in presentIDs) {
@@ -445,24 +365,20 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         if (path == nil) {
             continue;
         }
-        if (RBArchiveIsExtendNote(path)) {
+        if (RBIsExtendNoteID(foundID.intValue)) {
             [newNoteIDs addObject:foundID];
-        } else {
+        } else if (!RBArchiveIsExtendNote(path)) {
             [newTuneIDs addObject:foundID];
         }
+        // An extend note numbered outside the block is passed over: its charts give it away, but
+        // nothing says which tune it belongs to, and listing it would draw a second copy of that
+        // tune with two empty difficulties.
     }
 
     BOOL musicListChanged = misfiledRemoved;
     BOOL noteListChanged = NO;
     for (NSNumber *foundID in newTuneIDs) {
         NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
-        // Another copy of a tune that is already installed is left unregistered, so a duplicate
-        // file does not draw the same song twice.
-        uint32_t audioCRC = 0;
-        const BOOL haveAudioCRC = RBArchiveEntryInfo(path, kArchiveAudioEntry, &audioCRC, NULL);
-        if (haveAudioCRC && audioCRCToMusicID[@(audioCRC)] != nil) {
-            continue;
-        }
         // Reading the archive doubles as a validity check: the factory rejects a file whose own
         // identifier disagrees with its name.
         MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
@@ -489,15 +405,9 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         [self.purchasedMusicDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
         [listedMusicIDs addObject:foundID];
         [knownMusicIDs addObject:foundID];
-        if (haveAudioCRC) {
-            audioCRCToMusicID[@(audioCRC)] = foundID;
-        }
         musicListChanged = YES;
     }
 
-    // Built only when there is a note to place, and only once, because it opens every installed
-    // archive.
-    NSMutableDictionary<NSString *, NSNumber *> *tuneKeyToMusicID = nil;
     for (NSNumber *foundID in newNoteIDs) {
         NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
         MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
@@ -505,27 +415,15 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
             continue;
         }
 
-        // The tune's own audio settles the pairing outright when the note ships it unchanged, which
-        // is the common case and costs one central-directory read. Otherwise the note is placed by
-        // the name and artist it shares with its tune.
-        NSNumber *parentMusicID = nil;
-        uint32_t audioCRC = 0;
-        if (RBArchiveEntryInfo(path, kArchiveAudioEntry, &audioCRC, NULL)) {
-            parentMusicID = audioCRCToMusicID[@(audioCRC)];
-        }
-        if (parentMusicID == nil) {
-            if (tuneKeyToMusicID == nil) {
-                tuneKeyToMusicID = RBTuneKeyMap(knownMusicIDs, reservedIDs);
-            }
-            parentMusicID = tuneKeyToMusicID[RBTuneKey(data.musicName, data.artistName)];
-            if (parentMusicID == nil) {
-                parentMusicID = tuneKeyToMusicID[RBTuneKey(data.musicName, nil)];
-            }
-        }
-        // With no tune to attach it to, the note is left out rather than registered as a song of
-        // its own: it carries no MEDIUM or HARD chart, so listing it would draw a second copy of
-        // the tune whose other difficulties are empty.
-        if (parentMusicID == nil) {
+        // The tune is named by the identifier itself, so the pairing needs nothing read and holds
+        // whether or not the note ships that tune's audio unchanged.
+        NSNumber *parentMusicID = @(RBExtendNoteParentID(foundID.intValue));
+
+        // With the tune absent the note is left out rather than registered: it carries no MEDIUM or
+        // HARD chart, so listing it would draw a second copy of the tune with two empty
+        // difficulties.
+        if (![knownMusicIDs containsObject:parentMusicID] &&
+            [RBMusicManager resolveArchivePath:parentMusicID.intValue] == nil) {
             continue;
         }
 

@@ -156,18 +156,22 @@ screen plays (999999999) and the tutorial tune (999999998). Both are ordinary ar
 straight from the bundle by identifier, so registering either would list it as a song, and
 fingerprinting either would make an unlisted copy of it pair as its extend note.
 
-Telling the two kinds apart is the whole problem, because they are indistinguishable by name or by
-format: both are `%09d.rb` in the same directory, and an extend note is read by the ordinary
-`MusicData` parser with its SPECIAL chart in the BASIC slot. The charts settle it. An extend note
-carries only its SPECIAL chart, shipping `note_med` and `note_har` as blank placeholders a few dozen
-bytes long where a real chart runs to tens of kilobytes. Pairing one with its song is a second
-question, answered first by the CRC-32 the zip's own central directory records for the `bgm` entry —
-no decompression, no hashing — since an extend note usually ships its song's audio byte for byte.
-Some packages re-encode that audio, leaving nothing for a CRC to match, so those fall back to the
-name and artist the two archives share, read from each one's small `info` entry. A note that matches
-neither way is left out rather than listed as a song of its own, and a `mulist` entry that turns out
-to be an extend note is dropped on load so it can be placed properly. Everything else is a new song,
-with `ExtLevel` taken from the archive's own basic level.
+Telling the two kinds apart looks hard, because they are indistinguishable by name or by format:
+both are `%09d.rb` in the same directory, and an extend note is read by the ordinary `MusicData`
+parser with its SPECIAL chart in the BASIC slot. The identifier settles it. Extend-note packages
+occupy their own block — every one is `100050xxx` — and the song a note belongs to is the same
+number 50000 lower, so `100050433` is the SPECIAL chart for `100000433`. That classifies and pairs
+a drop-in without opening either archive, and it holds whether or not the note ships its song's
+audio unchanged, which some packages re-encode. A `mulist` entry numbered in that block is dropped
+on load, so a note misfiled as a song by an earlier rule is placed properly on the next launch, and
+a note whose song is not installed is passed over rather than listed. `ExtLevel` comes from the
+archive's own basic level.
+
+One structural check remains as a backstop for an archive numbered outside that block: an extend
+note carries only its SPECIAL chart, shipping `note_med` and `note_har` as blank placeholders a few
+dozen bytes long where a real chart runs to tens of kilobytes. Such a file is skipped rather than
+registered, since nothing identifies the song it belongs to and listing it would draw a second copy
+of that song with two empty difficulties.
 Identifiers already in either list, and the three bundled songs, are skipped, which is what stops a
 song appearing twice. A registered song carries its name and artist, read out of the archive: the
 song list itself does not need them, but the store's manage tab draws its rows and its download and
