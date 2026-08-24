@@ -15,6 +15,7 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
+#import "engineglobals.h"
 #import "soundeffectmanager.h"
 
 // The music-menu popups all fade over a quarter second.
@@ -92,7 +93,9 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
 
     [self setAlpha:0.0];
-    [self setBackgroundColor:nil];
+    // The popup dims whatever it covers; the binary loads the shared half-alpha black at 0x3cff88
+    // rather than leaving the backdrop transparent.
+    self.backgroundColor = g_pPaletteDimmingCoverColor;
     self.autoresizingMask = kAutoresizingFull;
     [self addTarget:self action:@selector(tap:) forControlEvents:UIControlEventTouchUpInside];
 
