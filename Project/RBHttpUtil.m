@@ -13,6 +13,7 @@
 
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
+#import "neDebugLog.h"
 
 // The common request headers stamped on every request.
 static NSString *const kUserAgentHeaderField = @"User-Agent";
@@ -55,6 +56,60 @@ static NSString *const kQueryPercentEscapeCharacters = @"!*'();:@&=+$,/?%#[]";
 
 // The user-facing message stored when the body fails its hash check.
 static NSString *const kHashCheckErrorMessage = @"hash check error ...";
+
+#if RBPDBG
+// The most of one log line neDebugLog will carry. It formats into a 512-byte buffer, so a long URI
+// or body is emitted in numbered pieces rather than silently cut off at the boundary.
+static const NSUInteger kLogChunkLength = 400;
+
+static void RBLogLong(const char *label, NSString *text) {
+    if (text.length <= kLogChunkLength) {
+        neDebugLog("%s %s", label, text.UTF8String);
+        return;
+    }
+    NSUInteger offset = 0;
+    int part = 0;
+    while (offset < text.length) {
+        const NSUInteger length =
+            (text.length - offset) < kLogChunkLength ? (text.length - offset) : kLogChunkLength;
+        neDebugLog("%s[%d] %s",
+                   label,
+                   part,
+                   [text substringWithRange:NSMakeRange(offset, length)].UTF8String);
+        offset += length;
+        ++part;
+    }
+}
+
+// Report one outgoing request in full: method and URI, every query parameter and header on its own
+// line, and the body. Every request the app makes is started here, whichever initialiser built it,
+// so this covers all of them rather than one endpoint at a time.
+static void RBLogRequest(NSURLRequest *request) {
+    RBLogLong("request",
+              [NSString stringWithFormat:@"%@ %@", request.HTTPMethod, request.URL.absoluteString]);
+    NSURLComponents *components = [NSURLComponents componentsWithURL:request.URL
+                                             resolvingAgainstBaseURL:NO];
+    for (NSURLQueryItem *item in components.queryItems) {
+        neDebugLog("  param %s = %s", item.name.UTF8String, item.value.UTF8String);
+    }
+    // Worth naming rather than assuming: several endpoints are posted with no content type at all,
+    // so the header simply will not appear for them.
+    for (NSString *field in request.allHTTPHeaderFields) {
+        neDebugLog(
+            "  header %s: %s", field.UTF8String, [request.allHTTPHeaderFields[field] UTF8String]);
+    }
+    NSData *body = request.HTTPBody;
+    if (body.length == 0) {
+        return;
+    }
+    NSString *text = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
+    if (text != nil) {
+        RBLogLong("  body", text);
+    } else {
+        neDebugLog("  body %lu bytes, not UTF-8", (unsigned long)body.length);
+    }
+}
+#endif
 
 @implementation RBHttpUtil
 
@@ -215,6 +270,7 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
 #pragma mark - Start / cancel
 
 - (NSURLSessionTask *)startDownloading:(id<RBHttpUtilDelegate>)delegate {
+    NE_DBG(RBLogRequest(self.request));
     self.delegate = delegate;
     if (self.filePath == nil) {
         return [self startDataTask];

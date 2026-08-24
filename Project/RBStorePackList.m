@@ -1,7 +1,5 @@
 #import "RBStorePackList.h"
 
-#import <objc/runtime.h>
-
 #import "AppDelegate.h"
 #import "Downloader.h"
 #import "RBUserSettingData.h"
@@ -9,7 +7,6 @@
 #import "StorePackListGenre.h"
 #import "StoreUtil.h"
 #import "engineglobals.h"
-#import "neDebugLog.h"
 
 // The default genre presented before any catalogue page has loaded, with identifier zero. Its name
 // is a three-character CFString literal at 0x36eee0 whose data lives at 0x41c800; that __cstring
@@ -67,41 +64,6 @@ static const NSComparisonResult kVersionRequirementUnmet = NSOrderedAscending;
 // The country code most recently seen on a StoreKit product's price locale, retained across product
 // requests so the store can detect a currency change.
 static NSString *_lastProductCountryCode = nil;
-
-#if RBPDBG
-// Report what the pack-list endpoint actually returned. The parser only reads the keys the binary
-// models, so a field the server sends but the app ignores — a price for a pack, say — is invisible
-// from the source alone; this names every key present instead. The first entry's keys and scalar
-// values are enough, because every entry in a page shares a shape.
-static void RBLogPackListResponse(Downloader *downloader, NSDictionary *json) {
-    neDebugLog("packlist response bytes=%lu", (unsigned long)[downloader getData].length);
-    if (json == nil) {
-        neDebugLog("packlist body did not parse as JSON");
-        return;
-    }
-    neDebugLog("packlist top-level keys: %s",
-               [json.allKeys componentsJoinedByString:@", "].UTF8String);
-
-    NSArray *packList = json[kStoreJSONKeyPackList];
-    NSDictionary *first = packList.firstObject;
-    if (first == nil) {
-        neDebugLog("packlist carries no pack entries");
-        return;
-    }
-    for (NSString *key in first.allKeys) {
-        id value = first[key];
-        // A nested list or dictionary is named but not dumped: the tune list alone would overrun
-        // the log line, and a price would never be hidden inside one.
-        if ([value isKindOfClass:NSArray.class] || [value isKindOfClass:NSDictionary.class]) {
-            neDebugLog("packlist entry %s = <%s>", key.UTF8String, object_getClassName(value));
-        } else {
-            neDebugLog("packlist entry %s = %s",
-                       key.UTF8String,
-                       [NSString stringWithFormat:@"%@", value].UTF8String);
-        }
-    }
-}
-#endif
 
 @implementation RBStorePackList
 
@@ -232,7 +194,6 @@ static void RBLogPackListResponse(Downloader *downloader, NSDictionary *json) {
     NSURL *url = [StoreUtil packListURL:self.genreFetching.numFetchedPack + 1
                                   limit:kStorePackListPageSize
                                   genre:self.genreFetching.genreID];
-    NE_DBG(neDebugLog("packlist request %s", url.absoluteString.UTF8String));
     self.packlistDownloader = [[Downloader alloc] initWithURL:url save:nil];
     [self.packlistDownloader startDownloadingWithDelegate:self];
 }
@@ -276,7 +237,6 @@ static void RBLogPackListResponse(Downloader *downloader, NSDictionary *json) {
 /** @ghidraAddress 0x1f1ca0 */
 - (void)downloaderFinished:(Downloader *)downloader {
     NSDictionary *json = [downloader getDataInJSON];
-    NE_DBG(RBLogPackListResponse(downloader, json));
     NSString *requiredVersion = json[kStoreJSONKeyVersion];
     NSString *appVersion = [[NSBundle mainBundle].infoDictionary objectForKey:@"CFBundleVersion"];
 

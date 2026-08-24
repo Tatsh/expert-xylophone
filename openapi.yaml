@@ -271,9 +271,10 @@ paths:
         `-[RBStorePackList startFetchForGenreIndex:]` (`@ghidraAddress 0x1f10bc`), which requests
         `head` as the count already fetched plus one, with `limit` fixed at 10.
 
-        No pack entry carries a price. In the shipped app a pack is priced entirely through its
+        No pack entry carries a price, confirmed against the live endpoint and not merely inferred
+        from what the client parses. In the shipped app a pack is priced entirely through its
         StoreKit product, which is why a build with no App Store record behind it shows a pack with
-        no amount.
+        no amount, and why there is nothing on the server to fall back to.
       parameters:
         - $ref: '#/components/parameters/Target'
         - name: 'head'
@@ -1039,7 +1040,15 @@ components:
     PackEntry:
       type: 'object'
       description: |
-        One music pack. No price: see the note on `/v3/packlist/`.
+        One music pack. No price, and this is now confirmed against the live endpoint rather than
+        inferred from the client: a captured `/v3/packlist/` page carried `ID`, `Name`, `Comment`,
+        `ShortComment`, `IsNew`, `Copyright`, `ArtworkURL`, `ExtNum`, and `MusicNum`, and nothing
+        resembling an amount.
+
+        That capture also shows which fields a list page omits. It carried no `MusicList`,
+        `ArtistURL`, or `ArtistBunnerURL`, so those reach the client from `/v3/packinfo/` instead;
+        a list page advertises its tune count through `MusicNum` alone. All three are still
+        described here because `-[StorePackInfo setDictionary:]` reads them from either response.
       properties:
         ID:
           type: 'integer'
@@ -1068,9 +1077,16 @@ components:
           description: |
             How many extend notes the pack advertises. A non-zero value is what draws the Sequences
             badge on the pack row.
+        MusicNum:
+          type: 'integer'
+          description: |
+            How many tunes the pack holds. The client never reads this: it counts `MusicList`
+            instead, and a list page does not carry one. Recorded because the server sends it.
         MusicList:
           type: 'array'
-          description: 'The client keeps at most the first four entries.'
+          description: |
+            Sent by `/v3/packinfo/`, not by a list page. The client keeps at most the first four
+            entries.
           items:
             $ref: '#/components/schemas/MusicEntry'
 
