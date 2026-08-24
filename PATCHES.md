@@ -58,13 +58,17 @@ screen changes, and an unpatched build keeps the original's behaviour.
 
 **File:** `Project/AppDelegate.mm` — `-needUpdateTerms` (0x4ee50)
 
-Accepting the terms POSTs to `[NetworkUtil termAgree]`, a Konami endpoint that no longer answers, so
-`-sendAgree`'s success path can never run and the acceptance is never recorded. An unpatched build
-therefore shows the screen again on every launch, with no way past it.
+Accepting the terms POSTs to `[NetworkUtil termAgree]`, and `-sendAgree` assigns `termVersion` only
+inside its `success:` block, under a `kServerStatusOK` test. With that endpoint unavailable the
+acceptance is never recorded, and `-needUpdateTerms` answers `YES` for a nil `termVersion` before it
+ever consults `latestTermVer`, so the gate re-arms on every run.
 
-All three themed title scenes gate the screen on `-needUpdateTerms`, so the patch reports no
-outstanding terms and the screen is skipped everywhere, first install included. The screen and its
-whole agree flow are left intact for an unpatched build.
+It is not a launch-time screen: all three themed title scenes test `-needUpdateTerms` on the title
+screen's touch pass and pre-empt the first tap with `-showTerms` — Colette in
+`TitleColetteScene::RunMainLoop` (0x57ad8), Limelight in `TitleLimelightScene::RenderFrame`
+(0x1531fc), and Classic in `TitleClassicScene::RenderFrame` (0x151934). An unpatched build therefore
+cannot get past the title screen. The patch reports no outstanding terms so that tap proceeds
+normally, and the screen and its whole agree flow are left intact for an unpatched build.
 
 ### The music grid's per-item layout attributes
 

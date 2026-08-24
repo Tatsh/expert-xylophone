@@ -102,6 +102,7 @@ cset
 cstring
 ctask
 dakuten
+daria
 dashcam
 datablock
 datas
@@ -234,6 +235,7 @@ jsonschema
 keta
 keysound
 konaminet
+kopaliani
 korsk
 kuropastelkun
 layouted

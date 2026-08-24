@@ -73,7 +73,6 @@
     },
     "gitignore": true,
     "globs": ["**/*.md", "**/*.mdc"],
-    "ignores": ["OBJC_METHODS.md"],
     "noBanner": true,
     "showFound": true
   },

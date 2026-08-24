@@ -124,9 +124,8 @@ discards this call's result.`). Do not write an extensive explanation.
   `rctool` lives in the `recon-tools` repository beside this one; every audit, scan, and verify
   tool that used to sit in `tools/` is a subcommand now, grouped as `audit`, `objc`, `gen`,
   `dump`, `atlas`, and `ipa`. Pass `-W` to point it at a directory other than the current one.
-  Only the `*_update.py` generators and `layout_table_gen.py` stay in `tools/`, because they are
-  specific to this tree. The three record files `objc_update.py` reads are written by
-  `rctool objc accessors|trivial|float-constants -o tools/<name>.txt`.
+  This tree no longer has a `tools/` directory: the per-function checklists that its generators
+  maintained are retired, so those generators and their record files went with them.
 - The C/C++ engine phase is done one routine at a time as routines are encountered, never in batches.
   For each routine, in order: (1) read the decompile; (2) fix all typing in Ghidra until the
   decompile reads like normal C++ — the full signature, every local, the return, every global, and

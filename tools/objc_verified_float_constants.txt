@@ -1,5 +1,0 @@
-0x1caf7c returns 50.0, read from the pool at 0x2ec6e0
-0x5608c returns 50.0, read from the pool at 0x2ec6e0
-0xd7c28 returns 19.0
-0xd7c30 returns 37.0, read from the pool at 0x3014d8
-0xdc5b4 returns 32.0, read from the pool at 0x2ee9b0

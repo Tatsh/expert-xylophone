@@ -63,7 +63,6 @@
 /.zshrc
 /3rdparty/ziparchive/minizip/ChangeLogUnzip
 /HANDOFF.md
-/OBJC_METHODS.md
 /Project/.audit/
 /build/
 /dist/
