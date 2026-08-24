@@ -58,12 +58,12 @@ static const CGFloat kTimingSliderBarWidthWide = 315.0;
 // binary groups the themes by their raw stored value: values below the colette threshold (the
 // classic and limelight themes) share one readout layout, the colette theme its own, and any
 // further theme leaves the readout at the zero origin. The suffixes below name those two groups.
-static const CGFloat kTimingSliderReadoutOriginXLowThemeNarrow = 141.0; // 0x1002ec6c0
-static const CGFloat kTimingSliderReadoutOriginXLowThemeWide = 213.0;   // 0x100301850
+static const CGFloat kTimingSliderReadoutOriginXLowThemeNarrow = 140.0; // 0x1002ec6c0
+static const CGFloat kTimingSliderReadoutOriginXLowThemeWide = 212.0;   // 0x100301850
 static const CGFloat kTimingSliderReadoutOriginYLowThemeNarrow = 10.0;
-static const CGFloat kTimingSliderReadoutOriginYLowThemeWide = 138.0;  // 0x10030dde0
+static const CGFloat kTimingSliderReadoutOriginYLowThemeWide = 16.5;   // 0x10030dde0
 static const CGFloat kTimingSliderReadoutOriginXColetteNarrow = 138.0; // 0x10030ddd8
-static const CGFloat kTimingSliderReadoutOriginXColetteWide = 221.0;   // 0x1003011b8
+static const CGFloat kTimingSliderReadoutOriginXColetteWide = 220.0;   // 0x1003011b8
 static const CGFloat kTimingSliderReadoutOriginYColetteNarrow = 10.0;
 static const CGFloat kTimingSliderReadoutOriginYColetteWide = 14.0;
 
@@ -72,14 +72,6 @@ static const CGFloat kTimingSliderColetteSignYAdjust = 0.5;
 
 // Per-digit horizontal advance and its +1 point inter-glyph gap.
 static const CGFloat kTimingSliderDigitGap = 1.0;
-
-// The glyph cell width, height, and step share the track-rectangle metrics per device idiom.
-static const CGFloat kTimingSliderCellWidthNarrow = 19.0;
-static const CGFloat kTimingSliderCellHeightNarrow = 21.0;
-static const CGFloat kTimingSliderCellStepNarrow = 210.0;
-static const CGFloat kTimingSliderCellWidthWide = 40.0; // g_dSliderRowHeightWide
-static const CGFloat kTimingSliderCellHeightWide = 33.0;
-static const CGFloat kTimingSliderCellStepWide = 315.0;
 
 // The number of digit-image views held before growth.
 static const NSUInteger kTimingSliderReadoutCapacity = 3;
@@ -161,18 +153,25 @@ enum {
     self.barMax = kTimingSliderBarMax;
     self.step = (float)(self.barRect.size.width / (CGFloat)(self.barMax - self.barMin));
 
+    // The readout's cell metrics are measured from the glyph artwork rather than read from the
+    // pool: the binary keeps the zero digit's size in d10/d11 and the minus sign's in d8/d9.
+    CGSize digitGlyphSize = CGSizeZero;
+    CGSize signGlyphSize = CGSizeZero;
     self.numImages = [[NSMutableArray alloc] initWithCapacity:kTimingSliderMinusImageIndex + 1];
     for (NSUInteger i = 0; i <= kTimingSliderMinusImageIndex; ++i) {
-        [self.numImages addObject:[UIImage imageWithName:kTimingSliderDigitImageNames[i]]];
+        UIImage *glyphImage = [UIImage imageWithName:kTimingSliderDigitImageNames[i]];
+        [self.numImages addObject:glyphImage];
+        if (i == 0) {
+            digitGlyphSize = glyphImage.size;
+        } else if (i == kTimingSliderMinusImageIndex) {
+            signGlyphSize = glyphImage.size;
+        }
     }
 
     self.numImageViews = [[NSMutableArray alloc] initWithCapacity:kTimingSliderReadoutCapacity];
 
     CGFloat readoutOriginX = 0.0;
     CGFloat readoutOriginY = 0.0;
-    CGFloat cellWidth = isPad ? kTimingSliderCellWidthWide : kTimingSliderCellWidthNarrow;
-    CGFloat cellHeight = isPad ? kTimingSliderCellHeightWide : kTimingSliderCellHeightNarrow;
-    CGFloat cellStep = isPad ? kTimingSliderCellStepWide : kTimingSliderCellStepNarrow;
 
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     if (thema < kTimingSliderColetteThemaThreshold) {
@@ -198,7 +197,7 @@ enum {
     // column (digit - 1 - i), so numImageViews[0] is the rightmost (least significant) place and
     // the sign column is appended last at numImageViews[digit]. The final iteration builds the
     // sign column, the earlier ones the digit places.
-    CGFloat readoutOriginXWithGap = cellWidth + kTimingSliderDigitGap + readoutOriginX;
+    CGFloat readoutOriginXWithGap = signGlyphSize.width + kTimingSliderDigitGap + readoutOriginX;
     for (int iteration = -1; iteration < digit; ++iteration) {
         int column = digit - 2 - iteration;
         UIImageView *glyph = [[UIImageView alloc] init];
@@ -207,19 +206,20 @@ enum {
             // position it, the latter with a half-point vertical nudge in the large font.
             RBUserSettingDataTheme signThema = [RBUserSettingData sharedInstance].thema;
             if (signThema < kTimingSliderColetteThemaThreshold) {
-                glyph.frame = CGRectMake(readoutOriginX, readoutOriginY, cellWidth, cellHeight);
+                glyph.frame = CGRectMake(
+                    readoutOriginX, readoutOriginY, signGlyphSize.width, signGlyphSize.height);
             } else if (signThema == kTimingSliderColetteThema && isPad) {
                 glyph.frame = CGRectMake(readoutOriginX,
                                          readoutOriginY + kTimingSliderColetteSignYAdjust,
-                                         cellWidth,
-                                         cellHeight);
+                                         signGlyphSize.width,
+                                         signGlyphSize.height);
             }
         } else {
-            glyph.frame =
-                CGRectMake((CGFloat)column + readoutOriginXWithGap + cellStep * (CGFloat)column,
-                           readoutOriginY,
-                           cellStep,
-                           cellHeight);
+            glyph.frame = CGRectMake((CGFloat)column + readoutOriginXWithGap +
+                                         digitGlyphSize.width * (CGFloat)column,
+                                     readoutOriginY,
+                                     digitGlyphSize.width,
+                                     digitGlyphSize.height);
         }
         [self addSubview:glyph];
         [self.numImageViews addObject:glyph];
@@ -265,10 +265,12 @@ enum {
 - (void)sliderChangeWithTouchPoint:(CGPoint)point {
     int newValue;
     CGRect bar = self.barRect;
-    if (point.x >= bar.origin.x && point.x <= bar.origin.x + bar.size.width) {
-        newValue = (int)((float)((point.x - bar.origin.x) + bar.size.width * -0.5) / self.step);
-    } else {
+    if (point.x < bar.origin.x) {
+        newValue = self.barMin;
+    } else if (point.x > bar.origin.x + bar.size.width) {
         newValue = self.barMax;
+    } else {
+        newValue = (int)((float)((point.x - bar.origin.x) + bar.size.width * -0.5) / self.step);
     }
     [self setValue:(float)newValue];
 }

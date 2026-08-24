@@ -58,7 +58,7 @@ static const CGFloat kEffectSizeSliderBarOriginYNarrow = 21.0;
 static const CGFloat kEffectSizeSliderBarWidthNarrow = 210.0;
 static const CGFloat kEffectSizeSliderBarOriginXWide = 38.0;
 static const CGFloat kEffectSizeSliderBarOriginYWide = 33.0;
-static const CGFloat kEffectSizeSliderBarWidthWide = 315.0;
+static const CGFloat kEffectSizeSliderBarWidthWide = 318.0; // 0x2eeeb0
 
 // The digit readout's origin varies by the active theme and iPad idiom. The binary groups the
 // themes by their raw stored value: values below the colette threshold (the classic and limelight
