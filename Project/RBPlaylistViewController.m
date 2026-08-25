@@ -461,7 +461,7 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellReuseID];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
                                       reuseIdentifier:kCellReuseID];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
