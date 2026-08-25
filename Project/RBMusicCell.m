@@ -71,8 +71,7 @@ enum {
 // the left.
 static const CGFloat kPlaylistButtonSize = 29.0;
 // Both the add and the remove button take this origin, each from its own idiom test: the phone arms
-// at 0xbabf0 and 0xbadbc are identical, so one shared frame reproduces them. The x had been -3.0,
-// where both arms pass an fmov of -1.5.
+// at 0xbabf0 and 0xbadbc are identical, so one shared frame reproduces them.
 static const CGFloat kPlaylistButtonOriginXNarrow = -1.5;
 static const CGFloat kPlaylistButtonOriginYNarrow = -2.0;
 

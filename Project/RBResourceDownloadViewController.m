@@ -104,7 +104,7 @@ enum {
 // Help-carousel and pastel-container canvas sizes, by device idiom, and the inter-container gutter.
 static const CGFloat kHelpCanvasSize = 320;
 // The wide help canvas is taller than it is wide: the initWithFrame: at 0x1cdf4 is handed 544 as
-// its width and 670 as its height, which had been transcribed the other way round.
+// its width and 670 as its height.
 static const CGFloat kWideHelpCanvasWidth = 544;
 static const CGFloat kWideHelpCanvasHeight = 670;
 // @ghidraAddress 0x2ee970
@@ -669,22 +669,19 @@ static const CGFloat kProgressFillCapInsetVertical = 0;
 static const CGFloat kHelpScrollBackgroundOriginX = 2;
 static const CGFloat kHelpScrollBackgroundWidth = 316;
 static const CGFloat kHelpScrollBackgroundHeight = 320;
-// The help carousel's scroll view, per idiom. Both were previously the narrow one, so on a pad a
-// 300-wide scroll view sat inside a 544-wide panel and clipped the pages. The wide values come from
-// the branch at 0x1ce64 and the narrow ones from 0x1cf40; each inset fits its canvas exactly.
+// The help carousel's scroll view, per idiom. The wide values come from the branch at 0x1ce64 and
+// the narrow ones from 0x1cf40; each inset fits its canvas exactly.
 static const CGRect kHelpScrollViewFrameNarrow = {{10, 10}, {300, 300}};
 static const CGRect kHelpScrollViewFrameWide = {{8, 20}, {528, 630}};
-// The gradient bar across the top of the help panel, per idiom. Both had been the narrow one, so on
-// a pad a 314-wide bar stopped two thirds of the way across a 544-wide panel. The wide values come
-// from the same branch as the scroll view: x and y from d12 and sp+0x50, the width from the 540 at
-// 0x2ee990, and the height from the 80 at 0x2ec6c8.
+// The gradient bar across the top of the help panel, per idiom. The wide values come from the same
+// branch as the scroll view: x and y from d12 and sp+0x50, the width from the 540 at 0x2ee990, and
+// the height from the 80 at 0x2ec6c8.
 static const CGRect kHelpGradientFrameNarrow = {{3, 2}, {314, 40}};
 static const CGRect kHelpGradientFrameWide = {{2, 0}, {540, 80}};
 static const CGFloat kHelpBarTop = 5;
 // The page control, from the ldp d0,d2,[sp,#0x20] at 0x1e044: x comes from sp+0x20 and the width
-// from sp+0x28. The narrow branch fills those with 60 and 200, which had been transcribed the other
-// way round and gave a 60-wide control for six pages. The wide branch pairs d12 with the 540 at
-// 0x2ee990 and takes its y from the 642 at 0x2ee988.
+// from sp+0x28, which the narrow branch fills with 60 and 200. The wide branch pairs d12 with the
+// 540 at 0x2ee990 and takes its y from the 642 at 0x2ee988.
 static const CGRect kHelpPageControlFrameNarrow = {{60, 298}, {200, 24}};
 static const CGRect kHelpPageControlFrameWide = {{2, 642}, {540, 24}};
 // Page-control cosmetics.

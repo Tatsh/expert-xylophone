@@ -53,13 +53,9 @@ static NSString *const kPurchasedMusicKeyArtist = @"Artist";
 static NSString *const kPurchasedMusicKeyItemURL = @"ItemURL";
 static NSString *const kPurchasedMusicKeyITunesURL = @"iTunesURL";
 
-// The three preinstalled tune identifiers seeded on construction.
-// @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
-// The three songs shipped inside the bundle, read from the table at 0x2fcfe0 that
-// -createPreInMusics indexes. Each had been transcribed 512 short, so getPathFromBundle: looked for
-// 099999595.rb and its two neighbours, none of which exist, and a fresh install listed no songs at
-// all. The names these produce, 100000107.rb, 100000109.rb and 100000419.rb, are exactly the three
-// .rb files in the shipped bundle. @ghidraAddress 0x2fcfe0
+// The three songs shipped inside the bundle, read from the table -createPreInMusics indexes. They
+// name 100000107.rb, 100000109.rb and 100000419.rb, which are exactly the three .rb files the
+// bundle carries. @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
 static const int kPreinstallMusicIDs[] = {100000107, 100000109, 100000419};
 static const NSUInteger kPreinstallMusicIDCount = ARRAY_SIZE(kPreinstallMusicIDs);
 

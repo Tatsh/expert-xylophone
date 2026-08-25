@@ -65,8 +65,8 @@ static const CGFloat kSideLabelWidth = 420.0;
 static const CGFloat kCommentHeight = 90.0;
 
 // Copyright text-view frame. It shares the pack name's left edge, clearing the artwork, which ends
-// at kArtworkOriginX + kArtworkSide. The origin had been read a slot early out of the constant
-// pool: 157 is this view's y, sitting at 0x301838, and the y below is the neighbouring 0x301840.
+// at kArtworkOriginX + kArtworkSide. Its y and the purchase button's sit in neighbouring pool
+// slots, 0x301838 and 0x301840, so the two are easy to swap.
 // @ghidraAddress 0x301838 (origin y)
 // @ghidraAddress 0x3011b8 (width)
 // @ghidraAddress 0x2ec6e0 (height)

@@ -56,10 +56,8 @@ static const int kButtonStretchCap = 6;
 static const CGFloat kButtonFontSize = 15.0;
 static const CGFloat kButtonTitleWhite = 0.62;
 
-// The white component of the song-list and price labels, 50/255. Both had been drawn with
-// g_dRBWebViewGrayViewWhite, which is 0.6 and belongs to the purchased button's title-shadow alpha
-// further down, leaving the two labels a washed-out grey where the original draws them nearly
-// black.
+// The white component of the song-list and price labels, 50/255. Not to be confused with
+// g_dRBWebViewGrayViewWhite, which is 0.6 and is this file's purchased-button title-shadow alpha.
 // @ghidraAddress 0xfe2f8 (song list)
 // @ghidraAddress 0xfe424 (price)
 static const CGFloat kBodyLabelWhite = 0.196078;

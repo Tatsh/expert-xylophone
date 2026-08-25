@@ -88,9 +88,8 @@ PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape = {}; // @ghidraAddress 0x
 
 // The fixed landscape offsets the customize overlays add to their base positions. These are not
 // standalone globals: 0x3d8058 through 0x3d8070 fall inside the anchor table based at 0x3d7cd0
-// (indices 113 through 116), and the load-time initialiser is what fills them. They were previously
-// modelled as four separate statics, which gave them their own zeroed storage and made both
-// overlays add a null offset.
+// (indices 113 through 116), and the load-time initialiser is what fills them. Modelling them as
+// separate statics would give them their own zeroed storage, and both overlays would add nothing.
 constexpr int kCustomizeOverlayLandscapeAnchor = 113; // 0x3d8058
 constexpr int kNameplateBackingAnchor = 114;          // 0x3d8060
 constexpr int kNameplateNameAnchor = 115;             // 0x3d8068
