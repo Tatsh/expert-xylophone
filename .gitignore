@@ -1,8 +1,8 @@
 *.ipa
 *.ips
 *.kate-swp
-*.rb
 *.log
+*.rb
 *~
 .*.swp
 .*_cache/
@@ -32,8 +32,6 @@
 /.mcp.json
 /.profile
 /.ripgreprc
-/.sbclaude-venv/
-/.venv/
 /.wiswa-ci/
 /.yarn/install-state.gz
 /.zprofile
@@ -49,3 +47,5 @@
 CMakeCache.txt
 __pycache__/
 node_modules/
+
+/.sbclaude-venv/

@@ -245,6 +245,7 @@ memcpy
 memset
 metaclass
 minizip
+minizip's
 mispacked
 mktemp
 mobileprovision
@@ -325,13 +326,13 @@ rbplus
 rbscorehash
 rctool
 rdparty
-readback
 receiptdata
 recomputation
 recon
 rect
 rects
 reflec
+reflecbea
 reflecbeat
 reflow
 regen
