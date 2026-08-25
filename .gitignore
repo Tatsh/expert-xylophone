@@ -47,5 +47,3 @@
 CMakeCache.txt
 __pycache__/
 node_modules/
-
-/.sbclaude-venv/
