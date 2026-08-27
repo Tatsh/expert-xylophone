@@ -44,12 +44,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The device fingerprint parameter: the MD5 hex digest of the device UUID key with a fixed
  * suffix, computed once and cached.
+ * @return The device fingerprint parameter string.
  * @ghidraAddress 0x327b0
  */
 + (nullable NSString *)identifierParams;
 
 /**
  * @brief The device model name reported alongside play logs.
+ * @return The device model name.
  * @ghidraAddress 0x32740
  */
 + (nullable NSString *)deviceName;
@@ -58,23 +60,27 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The legacy play-log endpoint. Referenced by
  * @c +[RBServerAPIManager playedAPIWithMusicID:dif:]; the binary ships no implementation for it
  * (the version 2 endpoint superseded it).
+ * @return The legacy play-log endpoint URL.
  */
 + (nullable NSURL *)playedURL;
 
 /**
  * @brief The version 2 play-log endpoint (@c .../akx/main/cgi/log/play/).
+ * @return The version 2 play-log endpoint URL.
  * @ghidraAddress 0x32dac
  */
 + (nullable NSURL *)playedV2URL;
 
 /**
  * @brief The unlock-report endpoint (@c .../akx/main/cgi/unlocked/).
+ * @return The unlock-report endpoint URL.
  * @ghidraAddress 0x33168
  */
 + (nullable NSURL *)unlockedURL;
 
 /**
  * @brief The unlock-catalogue list endpoint.
+ * @return The unlock-catalogue list endpoint URL.
  * @ghidraAddress 0x32f08
  */
 + (nullable NSURL *)unlockListURL;
@@ -84,12 +90,14 @@ NS_ASSUME_NONNULL_BEGIN
  * stale response and carrying the device user-info parameters.
  * @param musicID The music identifier to unlock.
  * @param randKey The random key echoed back by the response.
+ * @return The music-unlock endpoint URL.
  * @ghidraAddress 0x33058
  */
 + (nullable NSURL *)unlockMusicURL:(int)musicID randKey:(int)randKey;
 
 /**
  * @brief The reward-check endpoint.
+ * @return The reward-check endpoint URL.
  */
 + (nullable NSURL *)rewardCheckURL;
 
@@ -103,18 +111,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The startup / web-info endpoint (@c .../akx/main/cgi/startup/), carrying the region code.
+ * @return The startup endpoint URL.
  * @ghidraAddress 0x32ba0
  */
 + (nullable NSURL *)startupURL;
 
 /**
  * @brief The tutorial-status endpoint (@c .../akx/main/cgi/tutorial/).
+ * @return The tutorial-status endpoint URL.
  * @ghidraAddress 0x32dcc
  */
 + (nullable NSURL *)tutorialStatusURL;
 
 /**
  * @brief The downloadable-resource information endpoint (@c .../akx/main/cgi/v3/ssl_resource/).
+ * @return The resource-information endpoint URL.
  * @ghidraAddress 0x32c70
  */
 + (nullable NSURL *)resourceURL;
@@ -122,30 +133,35 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The searchable-spot campaign-master endpoint (@c .../akx/main/cgi/search_master/),
  * carrying the region code and the device user-info parameters.
+ * @return The searchable-spot campaign-master endpoint URL.
  * @ghidraAddress 0x32dec
  */
 + (nullable NSURL *)searchMasterURL;
 
 /**
  * @brief The searchable-spot list endpoint (@c .../akx/main/cgi/gamecenter/).
+ * @return The searchable-spot list endpoint URL.
  * @ghidraAddress 0x32ee8
  */
 + (nullable NSURL *)searchURL;
 
 /**
  * @brief The terms-of-service list endpoint.
+ * @return The terms-of-service list endpoint URL.
  * @ghidraAddress 0x338cc
  */
 + (nullable NSURL *)termList;
 
 /**
  * @brief The terms-of-service detail (single-term body) endpoint.
+ * @return The terms-of-service detail endpoint URL.
  * @ghidraAddress 0x338ec
  */
 + (nullable NSURL *)termFetch;
 
 /**
  * @brief The terms-of-service acceptance endpoint.
+ * @return The terms-of-service acceptance endpoint URL.
  * @ghidraAddress 0x3390c
  */
 + (nullable NSURL *)termAgree;

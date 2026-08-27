@@ -25,26 +25,33 @@ class C_SPRITE_INSTANCING_2D;
  */
 class TutorialGuideLayer : public PlayFieldLayerBase {
 public:
-    // The number of keyframe steps in the guide sweep.
+    /** @brief The number of keyframe steps in the guide sweep. */
     static constexpr int kKeyframeCount = 9;
-    // The two grid dimensions filled per keyframe: kGridRows rows of kGridColumns entries.
+    /** @brief The number of grid rows filled per keyframe. */
     static constexpr int kGridRows = 4;
+    /** @brief The number of grid entries per row. */
     static constexpr int kGridColumns = 6;
-    // The sprite-instancer capacity the guide builds.
+    /** @brief The sprite-instancer capacity the guide builds. */
     static constexpr unsigned int kSpriteCapacity = 0x14;
 
-    // A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
+    /**
+     * @brief A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
+     */
     struct Keyframe {
-        float flStartX = {}; // +0x00
-        float flEndX = {};   // +0x04
-        int nStep = {};      // +0x08
+        float flStartX = {}; /*!< The sweep's start X. +0x00 */
+        float flEndX = {};   /*!< The sweep's end X. +0x04 */
+        int nStep = {};      /*!< The step index. +0x08 */
     };
 
-    // One coordinate-grid entry: an X position and an enable weight. The binary copies the second
-    // field as raw 32 bits, and every value in the shipped offset tables is the float 0.0 or 1.0.
+    /**
+     * @brief One coordinate-grid entry: an X position and an enable weight.
+     *
+     * The binary copies the second field as raw 32 bits, and every value in the shipped offset
+     * tables is the float 0.0 or 1.0.
+     */
     struct CoordEntry {
-        float flX = {};      // +0x00
-        float flWeight = {}; // +0x04
+        float flX = {};      /*!< The entry's X position. +0x00 */
+        float flWeight = {}; /*!< The entry's enable weight, 0.0 or 1.0. +0x04 */
     };
 
     /**

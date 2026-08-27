@@ -171,10 +171,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sampleStop;
 /**
  * @brief Marks the overlay's install as complete so it reflects the downloaded state.
- * @param downloadFlag @c YES once the item has finished downloading.
+ * @param flag @c YES once the item has finished downloading.
  * @ghidraAddress 0x46f48
  */
-- (void)setDownloadFlag:(BOOL)downloadFlag;
+- (void)setDownloadFlag:(BOOL)flag;
 /**
  * @brief Reports whether a tune item's archive is already present on disk.
  * @param hasItem Zero identifies a downloadable tune; any other value reports no.

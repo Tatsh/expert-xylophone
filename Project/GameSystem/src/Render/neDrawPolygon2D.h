@@ -144,12 +144,12 @@ public:
      */
     void SetTexture(C_TEXTURE *pTexture);
 
-    // The vertex-format attribute bits tested before writing a vertex attribute.
+    /** @brief The vertex-format attribute bits tested before writing a vertex attribute. */
     enum VertexFormatFlag {
-        kVertexHasPosition = 1 << 0, // The mesh carries per-vertex positions.
-        kVertexHasTexcoord = 1 << 1, // The mesh carries per-vertex texture coordinates.
-        kVertexHasColor = 1 << 2,    // The mesh carries per-vertex colours.
-        kVertexHasSkin = 7 << 3,     // The mesh carries per-vertex bone weights and indices.
+        kVertexHasPosition = 1 << 0, /*!< The mesh carries per-vertex positions. */
+        kVertexHasTexcoord = 1 << 1, /*!< The mesh carries per-vertex texture coordinates. */
+        kVertexHasColor = 1 << 2,    /*!< The mesh carries per-vertex colours. */
+        kVertexHasSkin = 7 << 3,     /*!< The mesh carries per-vertex bone weights and indices. */
     };
 
     /**

@@ -16,10 +16,10 @@
  * @c // +0xNN comments document the original 32-bit member offsets for reference only.
  */
 struct PlayRecord {
-    int nCells[8] = {}; // +0x00: the per-grade judgement counters (cell indices 0 through 7).
-    float flRate = {};  // +0x20: the clear rate (cell index 8, read as a float).
-    int nRank = {};     // +0x24: the play rank (cell index 9).
-    int nField10 = {};  // +0x28: the trailing field (cell index 10).
+    int nCells[8] = {}; /*!< The per-grade judgement counters (cell indices 0 through 7). +0x00 */
+    float flRate = {};  /*!< The clear rate (cell index 8, read as a float). +0x20 */
+    int nRank = {};     /*!< The play rank (cell index 9). +0x24 */
+    int nField10 = {};  /*!< The trailing field (cell index 10). +0x28 */
 };
 
 /**
@@ -31,7 +31,7 @@ struct PlayRecord {
  */
 class ScoreTracker {
 public:
-    // The number of player sides tracked.
+    /** @brief The number of player sides tracked. */
     static constexpr int kSideCount = 2;
 
     /**

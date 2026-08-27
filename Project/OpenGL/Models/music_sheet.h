@@ -19,6 +19,8 @@ class GameSystem;
  */
 using SheetPathNode = NotePathPoint;
 
+namespace rb {
+
 /**
  * @brief The note-chart reader: parses an RBFF chart blob into a pool of note records and holds the
  * per-chart timing, lane, and free-note state the play field reads.
@@ -27,8 +29,6 @@ using SheetPathNode = NotePathPoint;
  * the trailing @c // +0xNN comments document the original offsets for reference only, and access is
  * always through the named members.
  */
-namespace rb {
-
 class CMusicSheet2 {
 public:
     /**
@@ -85,7 +85,10 @@ public:
      */
     int ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem);
 
-    /** @brief The number of note records in the chart's pool. */
+    /**
+     * @brief The number of note records in the chart's pool.
+     * @return The number of note records.
+     */
     int GetNoteCount() const {
         return m_nNoteCount;
     }
@@ -102,6 +105,7 @@ public:
     /**
      * @brief The chart's just-reflec quota: the number of just-reflec opportunities it grants, and
      * the term the maximum achievable score weights by @c kScoreJustReflec.
+     * @return The chart's just-reflec quota.
      */
     int GetJustReflecQuota() const {
         return m_nJustReflecQuota;
@@ -118,6 +122,7 @@ public:
 
     /**
      * @brief The just-reflec quota taken over the note count less side zero's late notes.
+     * @return The remaining just-reflec quota.
      */
     int GetJustReflecQuotaRemain() const {
         return m_nJustReflecQuotaRemain;
@@ -133,12 +138,18 @@ public:
      */
     SheetPathNode *GetSheetPathNode(int nIndex);
 
-    /** @brief The number of speed-change path nodes in the chart. */
+    /**
+     * @brief The number of speed-change path nodes in the chart.
+     * @return The number of speed-change path nodes.
+     */
     int GetSheetPathNodeCount() const {
         return m_pathNodes.GetCount();
     }
 
-    /** @brief The chart's end time, in unscaled chart units. */
+    /**
+     * @brief The chart's end time, in unscaled chart units.
+     * @return The chart's end time, in unscaled chart units.
+     */
     int GetChartEndTime() const {
         return m_nChartEndTime;
     }
@@ -188,6 +199,10 @@ public:
     /**
      * @brief Finds a note on @p nLane whose active span overlaps the time range, from @p
      * nStartIndex.
+     * @param nLane The lane to search.
+     * @param nTimeStart The start of the time range.
+     * @param nTimeEnd The end of the time range.
+     * @param nStartIndex The note index to start searching from.
      * @return The first matching note record, or @c nullptr.
      * @ghidraAddress 0x131704
      */
@@ -196,6 +211,10 @@ public:
     /**
      * @brief Finds the nearest chain-eligible note on @p nLane whose timing selector matches
      * @p nField, from @p nStartIndex.
+     * @param nLane The lane to search.
+     * @param nTime The reference time the nearest note is measured against.
+     * @param nField The timing selector to match.
+     * @param nStartIndex The note index to start searching from.
      * @return The matching note record, or @c nullptr.
      * @ghidraAddress 0x131760
      */

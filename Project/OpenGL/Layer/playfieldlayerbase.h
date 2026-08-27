@@ -17,6 +17,7 @@ class PlayFieldLayerBase {
 public:
     /**
      * @brief Whether the device is an iPad (seeded from @c IsPad at construction).
+     * @return @c true on an iPad-idiom device.
      */
     bool IsPad() const {
         return m_bIsPad;
@@ -24,6 +25,7 @@ public:
 
     /**
      * @brief Whether the device is the older (type 9) hardware.
+     * @return @c true on the older type-9 hardware.
      */
     bool IsHardwareType9() const {
         return m_fIsHardwareType9;
@@ -31,6 +33,7 @@ public:
 
     /**
      * @brief The selected theme identifier.
+     * @return The selected theme identifier.
      */
     int GetThema() const {
         return m_nThema;

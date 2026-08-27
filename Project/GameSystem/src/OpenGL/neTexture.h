@@ -21,6 +21,7 @@ namespace ne {
  */
 class C_TEXTURE {
 public:
+    /** @brief Constructs an unlinked, unloaded texture with no GL handle and no cache key. */
     C_TEXTURE();
 
     /**
@@ -56,6 +57,7 @@ public:
 
     /**
      * @brief The texture's current reference count.
+     * @return The current reference count.
      */
     int GetRefCount() const {
         return m_nRefCount;
@@ -63,6 +65,7 @@ public:
 
     /**
      * @brief The texture's cache key, or @c nullptr when it is not cached.
+     * @return The cache key, or @c nullptr when the texture is not cached.
      */
     const char *GetKeyName() const {
         return m_pKeyName;
@@ -70,6 +73,7 @@ public:
 
     /**
      * @brief The OpenGL texture handle.
+     * @return The GL texture handle, or zero when none is live.
      */
     unsigned int GetGLHandle() const {
         return m_nGLHandle;
@@ -77,6 +81,7 @@ public:
 
     /**
      * @brief The allocated (power-of-two) texture width in texels.
+     * @return The allocated width, in texels.
      */
     int GetAllocWidth() const {
         return m_nAllocWidth;
@@ -84,6 +89,7 @@ public:
 
     /**
      * @brief The allocated (power-of-two) texture height in texels.
+     * @return The allocated height, in texels.
      */
     int GetAllocHeight() const {
         return m_nAllocHeight;
@@ -91,6 +97,7 @@ public:
 
     /**
      * @brief The source image width in pixels (the used region of the allocation).
+     * @return The source image width, in pixels.
      */
     int GetImageWidth() const {
         return m_nImageWidth;
@@ -98,6 +105,7 @@ public:
 
     /**
      * @brief The source image height in pixels (the used region of the allocation).
+     * @return The source image height, in pixels.
      */
     int GetImageHeight() const {
         return m_nImageHeight;
@@ -105,6 +113,7 @@ public:
 
     /**
      * @brief The texture's content scale: pixel dimensions divided by it give layout points.
+     * @return The content scale.
      */
     float GetScale() const {
         return m_flScale;

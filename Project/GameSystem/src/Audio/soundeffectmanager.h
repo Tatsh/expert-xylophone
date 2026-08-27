@@ -15,6 +15,7 @@ class SoundEffectManager {
 public:
     /**
      * @brief Returns the shared themed sound-effect manager, constructing it on first use.
+     * @return The shared themed sound-effect manager.
      * @ghidraAddress 0x1cc514
      */
     static SoundEffectManager *GetInstance();
@@ -30,6 +31,8 @@ public:
     /**
      * @brief Plays the sound effect in the given slot for the current theme, returning its play
      *        handle, or @c 0xffffffff when the slot is not loaded.
+     * @param slotID The themed sound-effect slot to play.
+     * @return The play handle, or @c 0xffffffff when the slot is not loaded.
      * @ghidraAddress 0x1cc934
      */
     unsigned int PlayThemedSoundEffect(int slotID);

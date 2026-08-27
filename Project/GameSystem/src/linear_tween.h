@@ -39,52 +39,82 @@ public:
      */
     void Advance(float flDelta);
 
-    /** @brief The elapsed time so far. */
+    /**
+     * @brief The elapsed time so far.
+     * @return The elapsed time, never above the duration.
+     */
     float GetElapsed() const {
         return m_flElapsed;
     }
 
-    /** @brief The channel's total duration. */
+    /**
+     * @brief The channel's total duration.
+     * @return The total duration.
+     */
     float GetDuration() const {
         return m_flDuration;
     }
 
-    /** @brief The last computed interpolated value. */
+    /**
+     * @brief The last computed interpolated value.
+     * @return The last computed interpolated value.
+     */
     float GetCurrent() const {
         return m_flCurrent;
     }
 
-    /** @brief The interpolation start value. */
+    /**
+     * @brief The interpolation start value.
+     * @return The interpolation start value.
+     */
     float GetStart() const {
         return m_flStart;
     }
 
-    /** @brief The interpolation end value. */
+    /**
+     * @brief The interpolation end value.
+     * @return The interpolation end value.
+     */
     float GetEnd() const {
         return m_flEnd;
     }
 
-    /** @brief Sets the interpolation start value. */
+    /**
+     * @brief Sets the interpolation start value.
+     * @param flStart The interpolation start value.
+     */
     void SetStart(float flStart) {
         m_flStart = flStart;
     }
 
-    /** @brief Sets the interpolation end value. */
+    /**
+     * @brief Sets the interpolation end value.
+     * @param flEnd The interpolation end value.
+     */
     void SetEnd(float flEnd) {
         m_flEnd = flEnd;
     }
 
-    /** @brief Sets the total duration. */
+    /**
+     * @brief Sets the total duration.
+     * @param flDuration The total duration.
+     */
     void SetDuration(float flDuration) {
         m_flDuration = flDuration;
     }
 
-    /** @brief Sets the elapsed time so far. */
+    /**
+     * @brief Sets the elapsed time so far.
+     * @param flElapsed The elapsed time.
+     */
     void SetElapsed(float flElapsed) {
         m_flElapsed = flElapsed;
     }
 
-    /** @brief Sets the last computed interpolated value. */
+    /**
+     * @brief Sets the last computed interpolated value.
+     * @param flCurrent The interpolated value.
+     */
     void SetCurrent(float flCurrent) {
         m_flCurrent = flCurrent;
     }

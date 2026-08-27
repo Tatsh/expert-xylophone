@@ -46,6 +46,7 @@ public:
 
     /**
      * @brief Whether this node (and its subtree) is drawn.
+     * @return @c true when the node and its subtree are drawn.
      */
     bool IsVisible() const {
         return m_bVisible;
@@ -61,6 +62,7 @@ public:
 
     /**
      * @brief Whether the node is flagged for deferred deletion by the scene walker.
+     * @return @c true once the node is flagged for deferred deletion.
      */
     bool IsDeleteRequested() const {
         return m_bDeleteRequest;
@@ -75,6 +77,7 @@ public:
 
     /**
      * @brief The node's parent in the scene graph, or @c nullptr when it is a root.
+     * @return The parent node, or @c nullptr when this node is a root.
      */
     C_RENDER *GetParent() const {
         return m_pParent;
@@ -85,6 +88,7 @@ public:
      *
      * A render node copies its parent's world matrix into its own and composes each sprite's
      * transform against it before drawing, so the matrix is exposed mutably.
+     * @return The node's sixteen-float world matrix.
      */
     float *GetWorldMatrix() {
         return m_mWorldMatrix;
@@ -94,6 +98,7 @@ public:
      * @brief The node's local transform (a column-major 4x4 matrix).
      *
      * Reset to identity at the start of a draw before the world matrix is composed.
+     * @return The node's sixteen-float local matrix.
      */
     float *GetLocalMatrix() {
         return m_mLocalMatrix;

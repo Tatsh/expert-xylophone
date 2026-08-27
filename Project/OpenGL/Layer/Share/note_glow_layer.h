@@ -72,7 +72,7 @@ public:
      */
     void Process(float flDelta);
 
-    // The number of player colours the glow tracks.
+    /** @brief The number of player colours the glow tracks. */
     static constexpr int kColorCount = 2;
 
 private:

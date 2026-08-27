@@ -194,10 +194,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setInfo:(nullable StoreCampaignItemInfo *)info;
 /**
  * @brief Marks the item's install as complete and re-styles the acquisition button accordingly.
- * @param downloadFlag @c YES once the item has finished downloading.
+ * @param flag @c YES once the item has finished downloading.
  * @ghidraAddress 0x64f8
  */
-- (void)setDownloadFlag:(BOOL)downloadFlag;
+- (void)setDownloadFlag:(BOOL)flag;
 /**
  * @brief Reports whether a downloadable tune's archive is already present on disk.
  * @param hasItem Zero identifies a downloadable tune; any other value reports no.

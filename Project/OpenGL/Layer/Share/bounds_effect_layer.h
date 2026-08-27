@@ -27,8 +27,9 @@ class C_SPRITE_INSTANCING_2D;
  */
 class BoundsEffectLayer : public PlayFieldLayerBase {
 public:
-    // The number of player-colour effect banks and the records per bank.
+    /** @brief The number of player-colour effect banks. */
     static constexpr int kBankCount = 2;
+    /** @brief The number of effect records per bank. */
     static constexpr int kRecordsPerBank = 23;
 
     /**

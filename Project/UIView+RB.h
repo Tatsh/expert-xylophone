@@ -142,36 +142,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The receiver's frame origin x-coordinate.
+ * @return The frame origin x-coordinate, in points.
  * @ghidraAddress 0x1a3668
  */
 - (CGFloat)x;
 
 /**
  * @brief The receiver's frame origin y-coordinate.
+ * @return The frame origin y-coordinate, in points.
  * @ghidraAddress 0x1a3674
  */
 - (CGFloat)y;
 
 /**
  * @brief The receiver's frame width.
+ * @return The frame width, in points.
  * @ghidraAddress 0x1a3694
  */
 - (CGFloat)width;
 
 /**
  * @brief The receiver's frame height.
+ * @return The frame height, in points.
  * @ghidraAddress 0x1a36b4
  */
 - (CGFloat)height;
 
 /**
  * @brief The receiver's frame minimum x-coordinate (the left edge, @c frame.origin.x).
+ * @return The frame's left edge, in points.
  * @ghidraAddress 0x1a35ac
  */
 - (CGFloat)left;
 
 /**
  * @brief The receiver's frame minimum y-coordinate (the top edge, @c frame.origin.y).
+ * @return The frame's top edge, in points.
  * @ghidraAddress 0x1a35b8
  */
 - (CGFloat)top;
@@ -179,6 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The receiver's frame maximum x-coordinate (the right edge,
  * @c frame.origin.x + frame.size.width).
+ * @return The frame's right edge, in points.
  * @ghidraAddress 0x1a35d8
  */
 - (CGFloat)right;
@@ -186,6 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The receiver's frame maximum y-coordinate (the bottom edge,
  * @c frame.origin.y + frame.size.height).
+ * @return The frame's bottom edge, in points.
  * @ghidraAddress 0x1a3620
  */
 - (CGFloat)bottom;

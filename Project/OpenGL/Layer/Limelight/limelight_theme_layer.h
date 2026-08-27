@@ -45,9 +45,9 @@ public:
      */
     void InitFullComboLayerTextures();
 
-    // The number of full-combo sprite instancers the layer builds.
+    /** @brief The number of full-combo sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 4;
-    // The number of player sides the result grade display tracks.
+    /** @brief The number of player sides the result grade display tracks. */
     static constexpr int kSideCount = 2;
 
     /**
@@ -67,6 +67,7 @@ public:
 
     /**
      * @brief Advances the result grade-gauge reveal channel by @p flDeltaTime.
+     * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x120a74
      */
     void AdvanceGradeChannel(float flDeltaTime);

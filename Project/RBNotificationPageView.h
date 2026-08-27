@@ -81,6 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Whether the receiver should autorotate; always @c YES.
+ * @return Always @c YES.
  * @ghidraAddress 0x194150
  */
 - (BOOL)shouldAutorotate;

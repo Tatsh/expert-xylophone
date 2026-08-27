@@ -75,29 +75,34 @@ public:
 
     /**
      * @brief Starts playback on the voice resolved from @p dwHandle.
+     * @param dwHandle The play handle of the voice to start.
      * @return @c true when a voice matched the handle.
      * @ghidraAddress 0x48058
      */
     bool PlayBusByHandle(unsigned int dwHandle);
     /**
      * @brief Stops the voice resolved from @p dwHandle.
+     * @param dwHandle The play handle of the voice to stop.
      * @return @c true when a voice matched the handle.
      * @ghidraAddress 0x48158
      */
     bool StopBusByHandle(unsigned int dwHandle);
     /**
      * @brief Pauses the voice resolved from @p dwHandle.
+     * @param dwHandle The play handle of the voice to pause.
      * @return @c true when a voice matched the handle.
      * @ghidraAddress 0x481c0
      */
     bool PauseBusByHandle(unsigned int dwHandle);
     /**
      * @brief Stops the voice resolved from @p dwHandle and unbinds its source.
+     * @param dwHandle The play handle of the voice to stop and clear.
      * @ghidraAddress 0x4849c
      */
     void StopAndClearBusByHandle(unsigned int dwHandle);
     /**
      * @brief The playback status of the voice resolved from @p dwHandle.
+     * @param dwHandle The play handle of the voice to query.
      * @return The voice's status, or @c -1 when no voice matched the handle.
      * @ghidraAddress 0x48228
      */

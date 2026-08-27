@@ -32,6 +32,7 @@ struct ScoreDigitField {
     /**
      * @brief Rolls the animated value toward the target by @p flDeltaTime, snapping to the end
      * value once the duration is reached.
+     * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x18bd58
      */
     void Advance(float flDeltaTime);
@@ -46,7 +47,7 @@ struct ScoreDigitField {
  */
 class PlayerFieldLayer : public PlayFieldLayerBase {
 public:
-    // The number of player sides.
+    /** @brief The number of player sides. */
     static constexpr int kSideCount = 2;
 
     /**
@@ -57,11 +58,11 @@ public:
      * anchor and size and resolves its UV rectangle from the shared sprite-UV table.
      */
     struct ScoreDigitGlyph {
-        float flAnchorX = {}; // +0x00: the glyph anchor x.
-        float flAnchorY = {}; // +0x04: the glyph anchor y.
-        float flSizeW = {};   // +0x08: the glyph width.
-        float flSizeH = {};   // +0x0c: the glyph height.
-        int nUvIndex = {};    // +0x10: the index into the shared sprite-UV table.
+        float flAnchorX = {}; /*!< The glyph anchor x. +0x00 */
+        float flAnchorY = {}; /*!< The glyph anchor y. +0x04 */
+        float flSizeW = {};   /*!< The glyph width. +0x08 */
+        float flSizeH = {};   /*!< The glyph height. +0x0c */
+        int nUvIndex = {};    /*!< The index into the shared sprite-UV table. +0x10 */
     };
 
     /**
@@ -85,7 +86,7 @@ public:
      */
     void SetScoreDigitTarget(unsigned int uSide, int nValue, float flDuration);
 
-    // The score-number sprite-instancer capacity the layer builds.
+    /** @brief The score-number sprite-instancer capacity the layer builds. */
     static constexpr unsigned int kSpriteCapacity = 0x14;
 
     /**

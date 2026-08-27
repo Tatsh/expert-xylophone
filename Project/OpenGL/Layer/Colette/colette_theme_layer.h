@@ -45,9 +45,9 @@ public:
      */
     void CreateFcEffectSprites();
 
-    // The number of full-combo sprite instancers the layer builds.
+    /** @brief The number of full-combo sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 4;
-    // The number of player sides the result grade display tracks.
+    /** @brief The number of player sides the result grade display tracks. */
     static constexpr int kSideCount = 2;
 
     /**

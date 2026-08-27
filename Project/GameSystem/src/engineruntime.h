@@ -18,6 +18,8 @@ extern "C" {
 
 /**
  * @brief Returns the clear rank for the given achievement rate.
+ * @param achievementRate The achievement rate to grade.
+ * @return The clear rank for the rate.
  * @ghidraAddress 0x14992c
  */
 int GetClearRank(float achievementRate);
@@ -62,6 +64,7 @@ void CreateTitleLayerForTheme(void);
 /**
  * @brief Dispatches the per-frame notification (an opaque frame-elapsed argument) to every live
  *        node in the engine listener list.
+ * @param nElapsedMs The frame delta, in milliseconds, passed to each listener.
  * @ghidraAddress 0x36628
  */
 void DispatchListenerList(int nElapsedMs);

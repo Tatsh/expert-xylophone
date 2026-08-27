@@ -30,11 +30,13 @@ class C_SPRITE_INSTANCING_2D;
  */
 class NoteBornLayer : public PlayFieldLayerBase {
 public:
-    // The number of pooled spawn-burst effect records.
+    /** @brief The number of pooled spawn-burst effect records. */
     static constexpr int kEffectRecordCount = 128;
 
-    // The number of player colours a spawn effect may take (the valid colour range is
-    // @c [0, kPlayerColorMax)).
+    /**
+     * @brief The number of player colours a spawn effect may take (the valid colour range is
+     * @c [0, kPlayerColorMax)).
+     */
     static constexpr int kPlayerColorMax = 2;
 
     /**

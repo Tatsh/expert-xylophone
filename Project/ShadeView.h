@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Initialise the shade, enabling user interaction and painting the translucent backdrop.
  * @param frame The shade frame.
+ * @return The initialised shade view.
  * @ghidraAddress 0x22b498
  */
 - (instancetype)initWithFrame:(CGRect)frame;

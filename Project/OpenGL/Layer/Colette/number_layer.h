@@ -41,7 +41,7 @@ public:
      */
     void InitializeNumberLayer();
 
-    // The number of number-layer sprite instancers the layer builds.
+    /** @brief The number of number-layer sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 2;
 
     /**
@@ -57,7 +57,10 @@ public:
      */
     void ClearReady(float flDuration);
 
-    /** @brief Whether the number display is ready to show (its intro is complete). */
+    /**
+     * @brief Whether the number display is ready to show (its intro is complete).
+     * @return @c true once the intro is complete.
+     */
     bool IsReady() const {
         return m_bReady;
     }

@@ -53,15 +53,19 @@ struct SlideNoteTrail {
  */
 class SlideNoteLayer : public PlayFieldLayerBase {
 public:
-    // The number of sprite batches the layer owns and the number of slide-trail records it pools.
+    /** @brief The number of sprite batches the layer owns. */
     static constexpr int kBatchCount = 3;
+    /** @brief The number of slide-trail records the layer pools. */
     static constexpr int kTrailCount = 80;
-    // The number of player colours a trail may take (the valid colour range is [0,
-    // kPlayerColorMax)).
+    /**
+     * @brief The number of player colours a trail may take (the valid colour range is
+     * @c [0, kPlayerColorMax)).
+     */
     static constexpr int kPlayerColorMax = 2;
 
     /**
      * @brief Returns the slide-note layer singleton, constructing it on first use.
+     * @return The shared slide-note layer.
      * @ghidraAddress 0x95a90
      */
     static SlideNoteLayer *shared();

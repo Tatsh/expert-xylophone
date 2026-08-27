@@ -24,12 +24,13 @@ class C_SPRITE_INSTANCING_2D;
  */
 class PlayColorLayer : public PlayFieldLayerBase {
 public:
-    // The number of gauge-part sprite instancers the layer builds.
+    /** @brief The number of gauge-part sprite instancers the layer builds. */
     static constexpr int kBatchCount = 2;
-    // The number of part groups whose sprites the layer emits.
+    /** @brief The number of part groups whose sprites the layer emits. */
     static constexpr int kPartGroupCount = 10;
-    // The number of across-field gauge X positions and toward-edge gauge Y positions.
+    /** @brief The number of across-field gauge X positions. */
     static constexpr int kGaugeLaneXCount = 3;
+    /** @brief The number of toward-edge gauge Y positions. */
     static constexpr int kGaugeLaneYCount = 2;
 
     /**

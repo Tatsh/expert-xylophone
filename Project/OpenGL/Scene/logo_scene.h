@@ -30,9 +30,13 @@ namespace rb {
  */
 class LogoScene : public BaseScene {
 public:
-    // The number of logo sprite layers the scene sweeps on (konami, bemani, rating, and two more).
+    /**
+     * @brief The number of logo sprite layers the scene sweeps on (konami, bemani, rating, and two
+     * more).
+     */
     static constexpr int kLayerCount = 5;
-    // The number of ref-counted logo textures the scene owns (konami, bemani, and rating).
+    /** @brief The number of ref-counted logo textures the scene owns (konami, bemani, and rating).
+     */
     static constexpr int kTextureCount = 3;
 
     /**

@@ -44,7 +44,7 @@ public:
      */
     void BuildBackgroundSpriteNodes();
 
-    // The number of background sprite instancers the manager builds.
+    /** @brief The number of background sprite instancers the manager builds. */
     static constexpr int kSpriteSlotCount = 3;
 
     /**
@@ -60,7 +60,10 @@ public:
      */
     void SetInactive(float flDuration);
 
-    /** @brief Whether the manager's intro animation is still active. */
+    /**
+     * @brief Whether the manager's intro animation is still active.
+     * @return @c true while the intro animation is running.
+     */
     bool IsActive() const {
         return m_bActive;
     }

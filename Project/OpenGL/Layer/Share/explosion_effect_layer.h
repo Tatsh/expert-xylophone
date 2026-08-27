@@ -22,14 +22,16 @@ class C_SPRITE_INSTANCING_2D;
  */
 class ExplosionEffectLayer : public PlayFieldLayerBase {
 public:
-    // The number of player-colour banks and the effect slots per bank.
+    /** @brief The number of player-colour banks. */
     static constexpr int kBankCount = 2;
+    /** @brief The number of effect slots per bank. */
     static constexpr int kSlotsPerBank = 19;
-    // The capacity each bank's sprite instancer is created with.
+    /** @brief The capacity each bank's sprite instancer is created with. */
     static constexpr int kSpriteCapacity = 0x26;
 
     /**
      * @brief The process-wide explosion effect layer, created on first use.
+     * @return The shared explosion effect layer.
      * @ghidraAddress 0x176ed0
      */
     static ExplosionEffectLayer *shared();
@@ -90,7 +92,7 @@ public:
      */
     void SetPlayColorAlpha(float flAlpha, int nLane);
 
-    // The number of explosion texture types.
+    /** @brief The number of explosion texture types. */
     static constexpr int kEffectTypeCount = 19;
 
 private:

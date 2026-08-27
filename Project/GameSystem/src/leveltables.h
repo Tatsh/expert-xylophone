@@ -8,6 +8,7 @@
 #ifdef __OBJC__
 @class NSData;
 #else
+/** @brief The Foundation data object, opaque to a pure C++ translation unit. */
 typedef struct objc_object NSData;
 #endif
 
@@ -32,6 +33,7 @@ class LevelTables {
 public:
     /**
      * @brief Returns the level-tables manager singleton, constructing it on first use.
+     * @return The level-tables manager singleton.
      * @ghidraAddress 0x1cbec8
      */
     static LevelTables *GetInstance();
@@ -58,20 +60,33 @@ public:
     /** @brief The number of unlock categories. */
     static constexpr int kCategoryCount = 5;
 
-    /** @brief The player's current level (the first word of the {level, experience} record). */
+    /**
+     * @brief The player's current level (the first word of the {level, experience} record).
+     * @return The player's current level.
+     */
     int GetCurrentLevel() const {
         return m_nCurrentLevel;
     }
-    /** @brief The player's current experience (the second word of the record). */
+    /**
+     * @brief The player's current experience (the second word of the record).
+     * @return The player's current experience.
+     */
     int GetCurrentExp() const {
         return m_nCurrentExp;
     }
-    /** @brief Sets the player's current {level, experience} record. */
+    /**
+     * @brief Sets the player's current {level, experience} record.
+     * @param nLevel The player's level.
+     * @param nExp The player's experience.
+     */
     void SetLevelExp(int nLevel, int nExp) {
         m_nCurrentLevel = nLevel;
         m_nCurrentExp = nExp;
     }
-    /** @brief The address of the {level, experience} record, for the level-progression helpers. */
+    /**
+     * @brief The address of the {level, experience} record, for the level-progression helpers.
+     * @return The address of the two-word {level, experience} record.
+     */
     int *GetLevelExpRecord() {
         return &m_nCurrentLevel;
     }

@@ -21,7 +21,12 @@ struct S_VECTOR3 {
     /** @brief Constructs a zero vector. */
     constexpr S_VECTOR3() : x(0.0f), y(0.0f), z(0.0f) {
     }
-    /** @brief Constructs a vector from its three components. */
+    /**
+     * @brief Constructs a vector from its three components.
+     * @param x The x component.
+     * @param y The y component.
+     * @param z The z component.
+     */
     constexpr S_VECTOR3(float x, float y, float z) : x(x), y(y), z(z) {
     }
 

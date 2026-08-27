@@ -41,6 +41,7 @@ public:
      *        play handle, or @c 0xffffffff when every voice is busy.
      * @param pSource The sound to bind.
      * @param nVolume The gain-table index.
+     * @return The play handle, or @c 0xffffffff when every voice is busy.
      * @ghidraAddress 0x4b238
      */
     unsigned int FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume);
@@ -54,12 +55,14 @@ public:
     unsigned int StartVoice(unsigned int hVoice);
     /**
      * @brief Marks the voice named by @p hVoice finished (stopped).
+     * @param hVoice The play handle of the voice to stop.
      * @return @c 1 when the voice matched, @c 0 otherwise.
      * @ghidraAddress 0x4b2e4
      */
     unsigned int StopVoice(unsigned int hVoice);
     /**
      * @brief Pauses the voice named by @p hVoice.
+     * @param hVoice The play handle of the voice to pause.
      * @return @c 1 when the voice matched, @c 0 otherwise.
      * @ghidraAddress 0x4b32c
      */
@@ -67,12 +70,16 @@ public:
     /**
      * @brief Returns the playback state of the voice named by @p hVoice, or @c -1 when the handle
      *        does not resolve to a live voice.
+     * @param hVoice The play handle of the voice to query.
+     * @return The voice's playback state, or @c -1 when the handle does not resolve.
      * @ghidraAddress 0x4b374
      */
     int GetVoiceState(unsigned int hVoice);
     /**
      * @brief Frees the voice named by @p hVoice (marks it finished and drops its source) so a later
      *        @c FindFreeVoiceAndEnqueue can recycle it. Always returns @c 1.
+     * @param hVoice The play handle of the voice to free.
+     * @return Always @c 1.
      * @ghidraAddress 0x4b42c
      */
     unsigned int StopAndClearVoice(unsigned int hVoice);

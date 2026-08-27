@@ -688,7 +688,7 @@ public:
                                         unsigned int nAlpha,
                                         float flScaleX);
 
-    // The number of player sides the result panel reports.
+    /** @brief The number of player sides the result panel reports. */
     static constexpr int kSideCount = 2;
 
     /** @brief The play colour a seeded result score belongs to. */
@@ -697,22 +697,28 @@ public:
         kResultScoreBlue = 1, /*!< The blue side's score. */
     };
 
-    /** @brief Stores the pair of per-colour result score values the scene seeds at set-up. */
+    /**
+     * @brief Stores the pair of per-colour result score values the scene seeds at set-up.
+     * @param nScore The red side's result score.
+     * @param nScoreHi The blue side's result score.
+     */
     void SetResultScores(int nScore, int nScoreHi) {
         m_aResultScores[kResultScoreRed] = nScore;
         m_aResultScores[kResultScoreBlue] = nScoreHi;
     }
 
-    // The number of sprite-instancer slots the layer builds.
+    /** @brief The number of sprite-instancer slots the layer builds. */
     static constexpr int kSpriteSlotCount = 8;
-    // The number of ribbon trails the layer builds (during the first slot's setup).
+    /** @brief The number of ribbon trails the layer builds (during the first slot's setup). */
     static constexpr int kTrailCount = 4;
-    // The number of result-score/effect display animation channels.
+    /** @brief The number of result-score/effect display animation channels. */
     static constexpr int kScoreAnimCount = 5;
-    // The number of phone-layout position records.
+    /** @brief The number of phone-layout position records. */
     static constexpr int kPositionRecordCount = 82;
-    // The number of result-screen gesture hit-box regions (the side-slider drag region is
-    // separate).
+    /**
+     * @brief The number of result-screen gesture hit-box regions (the side-slider drag region is
+     * separate).
+     */
     static constexpr int kGestureRegionCount = 4;
 
 private:

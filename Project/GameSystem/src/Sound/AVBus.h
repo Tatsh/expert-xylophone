@@ -99,11 +99,13 @@ typedef NS_ENUM(int, AVBusStatus) {
 - (float)volume;
 /**
  * @brief The voice's current id, matched against a play handle's low half to resolve the voice.
+ * @return The voice's current id.
  * @ghidraAddress 0x41f38
  */
 - (unsigned short)currentID;
 /**
  * @brief The voice's playback state.
+ * @return The voice's playback state.
  * @ghidraAddress 0x41d04
  */
 - (AVBusStatus)status;

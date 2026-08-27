@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Initialises the loop timing, resume, and preview-cache state.
+ * @return The initialised controller.
  * @ghidraAddress 0x88fc0
  */
 - (instancetype)init;
@@ -78,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillAppear:(BOOL)animated;
 
 /** @brief Returns the hosted OpenGL ES view.
+ * @return The hosted OpenGL ES view, or @c nil before the view is loaded.
  * @ghidraAddress 0x8af30
  */
 - (nullable neGLView *)openGLView;

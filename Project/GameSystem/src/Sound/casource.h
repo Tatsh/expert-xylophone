@@ -97,11 +97,17 @@ public:
      */
     int FreeBuffer();
 
-    /** @brief The source sample rate, in hertz. */
+    /**
+     * @brief The source sample rate, in hertz.
+     * @return The source sample rate, in hertz.
+     */
     double GetSampleRate() const {
         return m_dSampleRate;
     }
-    /** @brief The number of channels in the decoded PCM. */
+    /**
+     * @brief The number of channels in the decoded PCM.
+     * @return The number of channels in the decoded PCM.
+     */
     int GetChannelCount() const {
         return m_nChannelCount;
     }

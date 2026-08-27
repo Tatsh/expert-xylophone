@@ -2,7 +2,7 @@
  * Deep-link handler for the @c store host of the game's custom URL scheme. It is one of the
  * per-host handler classes resolved by name and dispatched to by @c RBUrlSchemeManager, and it
  * adopts @c RBUrlSchemeControllerProtocol. Its @c -action:query: turns the routed action into a
- * @c <action>RbAction: selector and forwards the query to that handler; the per-action handlers
+ * @c \<action\>RbAction: selector and forwards the query to that handler; the per-action handlers
  * read the query's @c id parameter and store it on the application delegate as the pack, campaign,
  * or extended-note identifier used to open the store.
  *
@@ -22,9 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBUrlSchemeStoreController : NSObject <RBUrlSchemeControllerProtocol>
 
 /**
- * @brief Dispatch a routed action to its matching @c <action>RbAction: handler method.
+ * @brief Dispatch a routed action to its matching @c \<action\>RbAction: handler method.
  *
- * The action name is turned into a selector of the form @c <action>RbAction: (for example
+ * The action name is turned into a selector of the form @c \<action\>RbAction: (for example
  * @c packRbAction: for the @c pack action). When the receiver responds to that selector, it is
  * invoked with the parsed query dictionary as its only argument and its @c BOOL result is returned.
  * @param action The routed action name (the URL's last path component).

@@ -24,9 +24,9 @@ class C_SPRITE_INSTANCING_2D;
  */
 class LongNoteLayer : public PlayFieldLayerBase {
 public:
-    // The number of connector sprite instancers the layer builds.
+    /** @brief The number of connector sprite instancers the layer builds. */
     static constexpr int kBatchCount = 3;
-    // The sprite-instancer capacity each batch is built with.
+    /** @brief The sprite-instancer capacity each batch is built with. */
     static constexpr unsigned int kSpriteCapacity = 0x5a;
 
     /**

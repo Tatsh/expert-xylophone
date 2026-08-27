@@ -26,8 +26,9 @@ class C_SPRITE_INSTANCING_2D;
  */
 class DamageEffectLayer : public PlayFieldLayerBase {
 public:
-    // The number of pooled effect records and the number of player lanes.
+    /** @brief The number of pooled effect records. */
     static constexpr int kEffectRecordCount = 32;
+    /** @brief The number of player lanes. */
     static constexpr int kLaneCount = 2;
 
     /**

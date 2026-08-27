@@ -17,6 +17,7 @@ public:
     /**
      * @brief Returns the shared shot-sound manager, constructing and clearing its slots on first
      *        use.
+     * @return The shared shot-sound manager.
      * @ghidraAddress 0x1ccf30
      */
     static ShotSoundManager *GetInstance();
@@ -46,6 +47,7 @@ public:
      * @param uChannel The mixer channel to play on.
      * @param iSlot The shot slot to play.
      * @param iVariant The judgement variant (zero to three).
+     * @return The play handle for the auditioned slot.
      * @ghidraAddress 0x1cd364
      */
     unsigned int PlaySlot(unsigned long uChannel, int iSlot, int iVariant);

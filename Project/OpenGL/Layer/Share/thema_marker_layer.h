@@ -25,9 +25,9 @@ class C_SPRITE_INSTANCING_2D;
  */
 class ThemaMarkerLayer : public PlayFieldLayerBase {
 public:
-    // The number of sprite instancers the layer owns (a 2D batch and a 3D batch).
+    /** @brief The number of sprite instancers the layer owns (a 2D batch and a 3D batch). */
     static constexpr int kBatchCount = 2;
-    // The number of marker-group layout entries in the shared tables.
+    /** @brief The number of marker-group layout entries in the shared tables. */
     static constexpr int kMarkerLayoutCount = 6;
 
     /**

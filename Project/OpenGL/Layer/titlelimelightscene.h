@@ -14,6 +14,8 @@ class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
+namespace rb {
+
 /**
  * @brief The parts-based title-screen scene layer used for the themes other than 0 (Classic) and 2
  * (Colette).
@@ -27,23 +29,21 @@ class C_SPRITE_INSTANCING_2D;
  * to preserve the object layout.
  * Reconstructed type @c TitleLimelightScene: engine layer, 0x628 bytes.
  */
-namespace rb {
-
 class TitleLimelightScene : public BaseScene {
 public:
-    // The number of cached title textures and the number of part sprite instancers the layer
-    // builds.
+    /** @brief The number of cached title textures the layer builds. */
     static constexpr int kTextureCount = 3;
+    /** @brief The number of part sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 0x53;
-    // The number of interactive-part touch hit-rectangles the part emitter records.
+    /** @brief The number of interactive-part touch hit-rectangles the part emitter records. */
     static constexpr int kHitRectCount = 5;
 
     /** @brief One interactive part's touch hit-rectangle, in screen space. */
     struct HitRect {
-        float x = {};      // +0x00: the rectangle's left edge.
-        float y = {};      // +0x04: the rectangle's top edge.
-        float width = {};  // +0x08: the rectangle's width.
-        float height = {}; // +0x0c: the rectangle's height.
+        float x = {};      /*!< The rectangle's left edge. +0x00 */
+        float y = {};      /*!< The rectangle's top edge. +0x04 */
+        float width = {};  /*!< The rectangle's width. +0x08 */
+        float height = {}; /*!< The rectangle's height. +0x0c */
     };
 
     /**
@@ -70,6 +70,7 @@ public:
      *
      * State 0 loads the title resources and starts the BGM, state 1 waits for the start music,
      * state 2 renders and animates the title parts, and state 3 finishes and opens the music list.
+     * @param nElapsedMs The frame delta, in milliseconds, passed by the dispatcher.
      * @ghidraAddress 0x152f84
      */
     void OnFrame(int nElapsedMs) override;

@@ -44,18 +44,21 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * The view records itself in a file-scope global as its last initialisation step and clears it in
  * @c -dealloc, so at most one instance is live at a time.
+ * @return The most recently created GL view, or @c nil when none exists.
  * @ghidraAddress 0x39e10
  */
 + (nullable instancetype)GetInstance;
 
 /**
  * @brief Returns the current front-buffer width, in pixels.
+ * @return The front-buffer width, in pixels.
  * @ghidraAddress 0x3a448
  */
 - (int)GetFrontBufferWidth;
 
 /**
  * @brief Returns the current front-buffer height, in pixels.
+ * @return The front-buffer height, in pixels.
  * @ghidraAddress 0x3a458
  */
 - (int)GetFrontBufferHeight;

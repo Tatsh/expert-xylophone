@@ -43,7 +43,7 @@ public:
      */
     void InitializeBackgroundSprites();
 
-    // The number of background sprite instancers the layer builds.
+    /** @brief The number of background sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 2;
 
     /**
@@ -59,7 +59,10 @@ public:
      */
     void SetInactive(float flDuration);
 
-    /** @brief Whether the effect's intro animation is still active. */
+    /**
+     * @brief Whether the effect's intro animation is still active.
+     * @return @c true while the intro animation is running.
+     */
     bool IsActive() const {
         return m_bActive;
     }

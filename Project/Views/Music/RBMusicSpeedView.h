@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Creates the speed sub-view for a page of the host's setting scroll.
  * @param frame The page frame inside the host's setting scroll view.
  * @param MusicSelectedBase The hosting music-detail view the selection is reported back to.
+ * @return The initialised speed sub-view.
  * @ghidraAddress 0x10df74
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame

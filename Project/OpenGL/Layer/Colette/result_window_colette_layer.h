@@ -42,13 +42,13 @@ struct ResultTouchRegion {
  */
 class ResultWindowColetteLayer : public PlayFieldLayerBase {
 public:
-    // The number of sprite-instancer slots the result window draws with.
+    /** @brief The number of sprite-instancer slots the result window draws with. */
     static constexpr int kSlotCount = 8;
-    // The number of open/close display animation channels.
+    /** @brief The number of open/close display animation channels. */
     static constexpr int kTweenChannelCount = 5;
-    // The number of touch hit-regions the input pass tracks.
+    /** @brief The number of touch hit-regions the input pass tracks. */
     static constexpr int kTouchRegionCount = 4;
-    // The number of per-colour result score values the scene seeds.
+    /** @brief The number of per-colour result score values the scene seeds. */
     static constexpr int kResultScoreColorCount = 2;
 
     /** @brief The play colour a seeded result score belongs to. */
@@ -64,17 +64,26 @@ public:
      */
     static ResultWindowColetteLayer *shared();
 
-    /** @brief Whether a tutorial touch was just released this frame (the tutorial advance gate). */
+    /**
+     * @brief Whether a tutorial touch was just released this frame (the tutorial advance gate).
+     * @return @c true when a tutorial touch was released this frame.
+     */
     bool IsTutorialTouchEnded() const {
         return m_bTutorialTouchEnded;
     }
 
-    /** @brief Whether a flick changed the result page this frame. */
+    /**
+     * @brief Whether a flick changed the result page this frame.
+     * @return @c true when a flick changed the result page this frame.
+     */
     bool IsPageDirty() const {
         return m_bPageDirty;
     }
 
-    /** @brief The current result page index (0 or 1), also the running/initialised marker. */
+    /**
+     * @brief The current result page index (0 or 1), also the running/initialised marker.
+     * @return The current result page index.
+     */
     int GetActivePage() const {
         return m_nActive;
     }
@@ -303,7 +312,16 @@ public:
      */
     void UpdateBonusSoundCueTimer(float flDeltaTime);
 
-    /** @brief Stores the seven result-bonus display values computed at the end of a play. */
+    /**
+     * @brief Stores the seven result-bonus display values computed at the end of a play.
+     * @param flClear The clear bonus.
+     * @param flMiss The miss bonus.
+     * @param flRank The rank bonus.
+     * @param flFirstPlay The first-play bonus.
+     * @param flHotMusic The hot-music bonus.
+     * @param flEarlyPlay The early-play bonus.
+     * @param flExperience The experience bonus.
+     */
     void SetResultBonuses(float flClear,
                           float flMiss,
                           float flRank,
@@ -320,7 +338,11 @@ public:
         m_flExperienceBonus = flExperience;
     }
 
-    /** @brief Stores the pair of per-colour result score values the scene seeds at set-up. */
+    /**
+     * @brief Stores the pair of per-colour result score values the scene seeds at set-up.
+     * @param nScore The red side's result score.
+     * @param nScoreHi The blue side's result score.
+     */
     void SetResultScores(int nScore, int nScoreHi) {
         m_anResultScore[kResultScoreRed] = nScore;
         m_anResultScore[kResultScoreBlue] = nScoreHi;

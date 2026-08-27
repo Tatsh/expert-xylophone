@@ -103,7 +103,7 @@ public:
      */
     void BuildSprites();
 
-    // The number of frame sprite batches the layer builds.
+    /** @brief The number of frame sprite batches the layer builds. */
     static constexpr int kSpriteSlotCount = 3;
 
 private:

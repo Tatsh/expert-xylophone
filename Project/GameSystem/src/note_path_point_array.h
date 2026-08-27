@@ -67,12 +67,19 @@ public:
      */
     void Append(const NotePathPoint &point);
 
-    /** @brief The number of live entries. */
+    /**
+     * @brief The number of live entries.
+     * @return The number of live entries.
+     */
     int GetCount() const {
         return m_nCount;
     }
 
-    /** @brief The entry at @p nIndex. */
+    /**
+     * @brief The entry at @p nIndex.
+     * @param nIndex The entry index, below @c GetCount.
+     * @return The entry at @p nIndex.
+     */
     NotePathPoint &operator[](int nIndex) {
         return m_pEntries[nIndex];
     }

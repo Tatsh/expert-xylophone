@@ -63,6 +63,7 @@ public:
 
     /**
      * @brief The process-wide note-result effect layer, created on first use.
+     * @return The shared note-result effect layer.
      * @ghidraAddress 0x1892fc
      */
     static NoteResultLayer *shared();

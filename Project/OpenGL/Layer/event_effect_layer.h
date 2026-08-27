@@ -41,8 +41,9 @@ public:
      */
     void CreateEventEffectSprites();
 
-    // The capacity of the root and main sprite instancers.
+    /** @brief The capacity of the root sprite instancer. */
     static constexpr unsigned int kRootCapacity = 1;
+    /** @brief The capacity of the main sprite instancer. */
     static constexpr unsigned int kMainCapacity = 6;
 
     /**
@@ -90,7 +91,7 @@ public:
      * size are halved. Its scale is taken directly from @p flScaleX and @p flScaleY, and it is
      * drawn opaque white at @p iAlpha.
      * @param uDescIdx The event-sprite descriptor index.
-     * @param pPosition The sprite's world position.
+     * @param position The sprite's world position.
      * @param iAlpha The sprite alpha (0 through 255).
      * @param flScaleX The sprite's X scale.
      * @param flScaleY The sprite's Y scale.
@@ -102,7 +103,10 @@ public:
                          float flScaleX,
                          float flScaleY);
 
-    /** @brief Whether the event effect is currently playing. */
+    /**
+     * @brief Whether the event effect is currently playing.
+     * @return @c true while the event effect is playing.
+     */
     bool IsEffectActive() const {
         return m_bActive;
     }

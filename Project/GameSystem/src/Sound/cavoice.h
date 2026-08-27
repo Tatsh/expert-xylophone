@@ -36,38 +36,62 @@ public:
      */
     unsigned long FillPcm(void *pDst, int nCount);
 
-    /** @brief The sound bound to this voice, or @c nullptr when free. */
+    /**
+     * @brief The sound bound to this voice, or @c nullptr when free.
+     * @return The bound sound, or @c nullptr when the voice is free.
+     */
     caSource *GetSource() const {
         return m_pSource;
     }
-    /** @brief Binds (or clears with @c nullptr) the sound this voice plays. */
+    /**
+     * @brief Binds (or clears with @c nullptr) the sound this voice plays.
+     * @param pSource The sound to bind, or @c nullptr to free the voice.
+     */
     void SetSource(caSource *pSource) {
         m_pSource = pSource;
     }
 
-    /** @brief Whether the render callback has been installed on this voice. */
+    /**
+     * @brief Whether the render callback has been installed on this voice.
+     * @return @c true once the render callback is installed.
+     */
     bool IsCallbackBound() const {
         return m_bCallbackBound;
     }
-    /** @brief Records whether the render callback has been installed. */
+    /**
+     * @brief Records whether the render callback has been installed.
+     * @param bBound @c true once the render callback is installed.
+     */
     void SetCallbackBound(bool bBound) {
         m_bCallbackBound = bBound;
     }
 
-    /** @brief The rolling generation, packed into the play handle's low 16 bits. */
+    /**
+     * @brief The rolling generation, packed into the play handle's low 16 bits.
+     * @return The rolling generation.
+     */
     unsigned short GetGeneration() const {
         return m_wGeneration;
     }
-    /** @brief Sets the rolling generation. */
+    /**
+     * @brief Sets the rolling generation.
+     * @param wGeneration The rolling generation.
+     */
     void SetGeneration(unsigned short wGeneration) {
         m_wGeneration = wGeneration;
     }
 
-    /** @brief The voice's current playback state, one of @c State. */
+    /**
+     * @brief The voice's current playback state, one of @c State.
+     * @return The voice's playback state.
+     */
     int GetState() const {
         return m_nState;
     }
-    /** @brief Sets the voice's playback state. */
+    /**
+     * @brief Sets the voice's playback state.
+     * @param nState The playback state, one of @c State.
+     */
     void SetState(int nState) {
         m_nState = nState;
     }

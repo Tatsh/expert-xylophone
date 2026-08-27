@@ -15,6 +15,11 @@ class SheetLayer {
 public:
     /**
      * @brief Stores the sheet-layer margins on @p pGameSystem and recomputes the far corner.
+     * @param fLeft The left margin.
+     * @param fTop The top margin.
+     * @param fRight The right margin.
+     * @param fBottom The bottom margin.
+     * @param pGameSystem The game system the margins are stored on.
      * @ghidraAddress 0x12f394
      */
     static void SetSheetLayerMargins(

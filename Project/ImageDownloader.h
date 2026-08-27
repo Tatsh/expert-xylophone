@@ -123,12 +123,16 @@ typedef void (^ImageDownloaderBlock)(ImageDownloader *downloader);
  * @brief Initialise a downloader for the given image URL string.
  * @param getURL The image URL, as a string.
  * @param unUseRetina Whether to skip the @2x Retina variant.
+ * @return The initialised downloader.
  * @ghidraAddress 0x83d30
  */
 - (instancetype)initWithGetURL:(nullable NSString *)getURL unUseRetina:(BOOL)unUseRetina;
 
 /**
  * @brief Start the download, delivering completion to the given blocks.
+ * @param proceed The progress block, or @c nil to fall back to the delegate.
+ * @param success The completion block, or @c nil to fall back to the delegate.
+ * @param failure The failure block, or @c nil to fall back to the delegate.
  * @ghidraAddress 0x83eb0
  */
 - (void)startDownloadWithProceed:(nullable ImageDownloaderBlock)proceed
@@ -143,6 +147,7 @@ typedef void (^ImageDownloaderBlock)(ImageDownloader *downloader);
 
 /**
  * @brief The decoded image, once the download has finished.
+ * @return The decoded image, or @c nil before the download finishes or when decoding failed.
  * @ghidraAddress 0x84b3c
  */
 - (nullable UIImage *)getImage;

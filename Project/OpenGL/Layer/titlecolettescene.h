@@ -14,6 +14,7 @@
 #ifdef __OBJC__
 @class SePlayer;
 #else
+/** @brief The Objective-C sound-effect player, opaque to a pure C++ translation unit. */
 typedef struct objc_object SePlayer;
 #endif
 
@@ -53,13 +54,14 @@ struct TitleHitRect {
  */
 class TitleColetteScene : public BaseScene {
 public:
-    // The number of cached title textures and the number of part sprite instancers the scene
-    // builds.
+    /** @brief The number of cached title textures the scene builds. */
     static constexpr int kTextureCount = 4;
+    /** @brief The number of part sprite instancers the scene builds. */
     static constexpr int kSpriteSlotCount = 0x68;
-    // The number of part anchor positions in the ring the title arranges its parts around.
+    /** @brief The number of part anchor positions in the ring the title arranges its parts around.
+     */
     static constexpr int kPartAnchorCount = 12;
-    // The number of touchable part hit-box rectangles the emitter records.
+    /** @brief The number of touchable part hit-box rectangles the emitter records. */
     static constexpr int kHitBoxCount = 8;
 
     /**
@@ -87,6 +89,7 @@ public:
      * State 0 loads the resources and sound-effect player, state 1 starts the title BGM, state 2
      * scrolls and animates the parts and handles input, and state 3 finishes and opens the music
      * list.
+     * @param nElapsedMs The frame delta, in milliseconds, passed by the dispatcher.
      * @ghidraAddress 0x57514
      */
     void OnFrame(int nElapsedMs) override;

@@ -56,23 +56,35 @@ private:
     double m_dPauseMediaTime = {}; // +0x38: the media time captured when the timer paused.
 
 public:
-    /** @brief Marks the timer paused and records the media time it paused at. */
+    /**
+     * @brief Marks the timer paused and records the media time it paused at.
+     * @param dMediaTime The media time the timer paused at.
+     */
     void MarkPaused(double dMediaTime) {
         m_dPauseMediaTime = dMediaTime;
         m_bPaused = true;
     }
 
-    /** @brief Whether the timer is currently paused. */
+    /**
+     * @brief Whether the timer is currently paused.
+     * @return @c true while the timer is paused.
+     */
     bool IsPaused() const {
         return m_bPaused;
     }
 
-    /** @brief The current play time, in scaled units. */
+    /**
+     * @brief The current play time, in scaled units.
+     * @return The current play time, in scaled units.
+     */
     float GetPlayTime() const {
         return m_flPlayTime;
     }
 
-    /** @brief The per-frame time step. */
+    /**
+     * @brief The per-frame time step.
+     * @return The per-frame time step.
+     */
     float GetFrameDelta() const {
         return m_flFrameDelta;
     }

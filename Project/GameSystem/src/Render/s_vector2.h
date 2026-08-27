@@ -21,7 +21,11 @@ struct S_VECTOR2 {
     /** @brief Constructs a zero vector. */
     constexpr S_VECTOR2() : x(0.0f), y(0.0f) {
     }
-    /** @brief Constructs a vector from its two components. */
+    /**
+     * @brief Constructs a vector from its two components.
+     * @param x The x component.
+     * @param y The y component.
+     */
     constexpr S_VECTOR2(float x, float y) : x(x), y(y) {
     }
 

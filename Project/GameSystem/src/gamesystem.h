@@ -10,6 +10,7 @@
 #ifdef __OBJC__
 @class MusicData;
 #else
+/** @brief The Objective-C tune catalogue entry, opaque to a pure C++ translation unit. */
 typedef struct objc_object MusicData;
 #endif
 
@@ -753,10 +754,10 @@ public:
     /**
      * @brief Recomputes the note-sheet layer position and margins for the current screen and the
      *        given speed type.
-     * @param speedType The note-speed type the layout is computed for.
+     * @param nScaleStep The note-speed type the layout is computed for.
      * @ghidraAddress 0x8ef60
      */
-    void ConfigureSheetLayerForScreen(int speedType);
+    void ConfigureSheetLayerForScreen(int nScaleStep);
     /**
      * @brief Sets the note-sheet corner radius and recomputes the derived inset, half, scaled, and
      *        squared-diameter fields.

@@ -45,11 +45,11 @@ struct ResultButtonRecord {
  */
 class LimelightResultLayer : public PlayFieldLayerBase {
 public:
-    // The number of result-screen bonus/EX display animation channels.
+    /** @brief The number of result-screen bonus/EX display animation channels. */
     static constexpr int kBonusAnimCount = 5;
-    // The number of phone result-panel touch/button records.
+    /** @brief The number of phone result-panel touch/button records. */
     static constexpr int kButtonCount = 4;
-    // The number of result-step animation slots.
+    /** @brief The number of result-step animation slots. */
     static constexpr int kStepAnimSlotCount = 2;
 
     /**
@@ -632,7 +632,14 @@ public:
      */
     void RenderRatingValue(float flValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
-    /** @brief Stores the five result-bonus display values computed at the end of a play. */
+    /**
+     * @brief Stores the five result-bonus display values computed at the end of a play.
+     * @param flClear The clear bonus.
+     * @param flMiss The miss bonus.
+     * @param flRank The rank bonus.
+     * @param flFirstPlay The first-play bonus.
+     * @param flExperience The experience bonus.
+     */
     void SetResultBonuses(
         float flClear, float flMiss, float flRank, float flFirstPlay, float flExperience) {
         m_flClearBonus = flClear;
@@ -642,13 +649,17 @@ public:
         m_flExperienceBonus = flExperience;
     }
 
-    /** @brief Stores the pair of result score values the scene seeds at set-up. */
+    /**
+     * @brief Stores the pair of result score values the scene seeds at set-up.
+     * @param nScore The result score.
+     * @param nScoreHi The high result score.
+     */
     void SetResultScores(int nScore, int nScoreHi) {
         m_nResultScore = nScore;
         m_nResultScoreHi = nScoreHi;
     }
 
-    // The number of sprite-instancer slots the layer builds.
+    /** @brief The number of sprite-instancer slots the layer builds. */
     static constexpr int kSpriteSlotCount = 8;
 
 private:

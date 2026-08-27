@@ -26,9 +26,9 @@ class C_TEXTURE;
  */
 class ClearGaugeLayer : public PlayFieldLayerBase {
 public:
-    // The number of player sides the gauge tracks.
+    /** @brief The number of player sides the gauge tracks. */
     static constexpr int kSideCount = 2;
-    // The number of sprite batches the gauge draws through.
+    /** @brief The number of sprite batches the gauge draws through. */
     static constexpr int kBatchCount = 8;
 
     /** @brief Constructs the clear-gauge render layer. */

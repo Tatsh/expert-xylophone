@@ -15,9 +15,9 @@
  */
 class NoteLaneSlot {
 public:
-    // The number of start/end occupancy pairs a lane slot holds.
+    /** @brief The number of start/end occupancy pairs a lane slot holds. */
     static constexpr int kSpanPairCount = 3;
-    // The out-of-range time marking a span pair free.
+    /** @brief The out-of-range time marking a span pair free. */
     static constexpr unsigned int kFreeTime = 0xfffe7961;
 
     virtual ~NoteLaneSlot() = default;

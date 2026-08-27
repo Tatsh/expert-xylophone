@@ -46,12 +46,16 @@ public:
      */
     void LoadNoteChargeSprites();
 
-    // The player colours a charge/particle may carry (asserted by Create/CreateParticle), the
-    // number of pooled charge records and burst particles, and the number of sprite graphics
-    // CreateSprite can emit.
+    /**
+     * @brief The player colours a charge or particle may carry, asserted by @c Create and
+     * @c CreateParticle (the valid colour range is @c [0, kPlayerColorMax)).
+     */
     static constexpr int kPlayerColorMax = 2;
+    /** @brief The number of pooled charge records. */
     static constexpr int kChargeCount = 0x20;
+    /** @brief The number of pooled burst particles. */
     static constexpr int kParticleCount = 0x100;
+    /** @brief The number of sprite graphics @c CreateSprite can emit. */
     static constexpr int kSpriteTypeCount = 8;
 
     /**

@@ -14,6 +14,8 @@ class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
+namespace rb {
+
 /**
  * @brief The theme-0 (Classic) title-screen scene layer: the animated title/logo screen shown
  * before the music list.
@@ -28,15 +30,15 @@ class C_SPRITE_INSTANCING_2D;
  * are still being worked out are reserved to preserve the object layout.
  * Reconstructed type @c TitleClassicScene: engine layer, 0x168 bytes.
  */
-namespace rb {
-
 class TitleClassicScene : public BaseScene {
 public:
-    // The number of cached title textures and the number of sprite instancers the layer builds.
+    /** @brief The number of cached title textures the layer builds. */
     static constexpr int kTextureCount = 7;
+    /** @brief The number of sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 8;
-    // The number of scrolling star layers and counter-rotating rings the title animates.
+    /** @brief The number of scrolling star layers the title animates. */
     static constexpr int kStarLayerCount = 2;
+    /** @brief The number of counter-rotating rings the title animates. */
     static constexpr int kRingCount = 2;
 
     /**
@@ -63,6 +65,7 @@ public:
      *
      * State 0 loads the title resources and starts the BGM, state 1 waits for the start music,
      * state 2 renders and animates the title, and state 3 finishes and opens the music list.
+     * @param nElapsedMs The frame delta, in milliseconds, passed by the dispatcher.
      * @ghidraAddress 0x151678
      */
     void OnFrame(int nElapsedMs) override;

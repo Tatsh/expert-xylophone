@@ -270,6 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The shared app delegate: @c [[UIApplication sharedApplication] delegate].
+ * @return The shared application delegate.
  * @ghidraAddress 0x50af0
  */
 + (instancetype)appDelegate;
@@ -283,6 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The external URL captured for the next launch-time open.
+ * @return The queued external URL, or @c nil when none is queued.
  * @ghidraAddress 0x4f3d4
  */
 + (nullable NSURL *)getOuterURL;
@@ -296,12 +298,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The base news web-info URL.
+ * @return The base news web-info URL, or @c nil when none is set.
  * @ghidraAddress 0x4eb78
  */
 - (nullable NSURL *)getBaseWebInfoURL;
 
 /**
  * @brief The resolved news web-info URL.
+ * @return The resolved news web-info URL, or @c nil when none is set.
  * @ghidraAddress 0x4ec18
  */
 - (nullable NSURL *)getWebInfoURL;
@@ -315,6 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The pre-release news web-info URL.
+ * @return The pre-release news web-info URL, or @c nil when none is set.
  * @ghidraAddress 0x4eca4
  */
 - (nullable NSURL *)getPreWebInfoURL;
@@ -328,6 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The base terms URL.
+ * @return The base terms URL, or @c nil when none is set.
  * @ghidraAddress 0x4ecec
  */
 - (nullable NSString *)getBaseTermURL;
@@ -345,6 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The last-update time string for the news info feed.
+ * @return The last-update time string, or @c nil when none has been recorded.
  * @ghidraAddress 0x4efa4
  */
 - (nullable NSString *)getInfoLastUpdateTimeString;
@@ -360,12 +367,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The extend-note product identifier queued for a launch-time store open.
+ * @return The queued product identifier, or @c nil when none is queued.
  * @ghidraAddress 0x4f07c
  */
 - (nullable NSString *)getExtendNotePIDForOpenStore;
 
 /**
  * @brief The pending push-notification queue.
+ * @return The queued notification payloads, or @c nil when the queue has not been created.
  * @ghidraAddress 0x4f08c
  */
 + (nullable NSMutableArray *)getPushNotificationData;
@@ -380,24 +389,28 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Whether the accepted terms version is older than the latest available, requiring
  * re-accept.
+ * @return @c YES when the terms must be accepted again.
  * @ghidraAddress 0x4ee50
  */
 - (BOOL)needUpdateTerms;
 
 /**
  * @brief Whether the current music has an early-bonus entry.
+ * @return @c YES when the current tune has an early-bonus entry.
  * @ghidraAddress 0x4f4d0
  */
 - (BOOL)isEnableEarlyBonus;
 
 /**
  * @brief Whether the current music has a hot-bonus entry.
+ * @return @c YES when the current tune has a hot-bonus entry.
  * @ghidraAddress 0x4f658
  */
 - (BOOL)isEnableHotBonus;
 
 /**
  * @brief The fixed passphrase used to encrypt persisted save data.
+ * @return The save-data passphrase.
  * @ghidraAddress 0x517fc
  */
 + (nullable NSString *)saveDataKey;
@@ -423,6 +436,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The two-element server-data pair (@c \@[p1, p2]) used to gate remote-notification
  * registration and to build the APNs token-upload payload.
+ * @return The identity and password pair, or @c nil when the Keychain holds no item.
  * @ghidraAddress 0x511cc
  */
 + (nullable NSArray *)getServerData;
@@ -439,6 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The device-unique key string used to encrypt the purchased-music list: a Keychain
  * generic-password value, generated as a fresh @c CFUUID on first run and persisted back.
+ * @return The device-unique music-list key.
  * @ghidraAddress 0x50cb8
  */
 + (nullable NSString *)musicListKey;

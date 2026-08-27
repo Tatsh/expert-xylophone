@@ -34,37 +34,58 @@ public:
      */
     float Advance(float flDeltaTime);
 
-    /** @brief The last computed value. */
+    /**
+     * @brief The last computed value.
+     * @return The last computed value.
+     */
     float GetCurrent() const {
         return m_flCurrent;
     }
 
-    /** @brief Sets the ramp's start value. */
+    /**
+     * @brief Sets the ramp's start value.
+     * @param flFrom The ramp's start value.
+     */
     void SetFrom(float flFrom) {
         m_flFrom = flFrom;
     }
 
-    /** @brief Sets the ramp's end value. */
+    /**
+     * @brief Sets the ramp's end value.
+     * @param flTo The ramp's end value.
+     */
     void SetTo(float flTo) {
         m_flTo = flTo;
     }
 
-    /** @brief Sets the ramp duration applied after the delay elapses. */
+    /**
+     * @brief Sets the ramp duration applied after the delay elapses.
+     * @param flDuration The ramp duration.
+     */
     void SetDuration(float flDuration) {
         m_flDuration = flDuration;
     }
 
-    /** @brief Sets the lead-in delay subtracted from the accumulator. */
+    /**
+     * @brief Sets the lead-in delay subtracted from the accumulator.
+     * @param flDelay The lead-in delay.
+     */
     void SetDelay(float flDelay) {
         m_flDelay = flDelay;
     }
 
-    /** @brief Sets the accumulated time. */
+    /**
+     * @brief Sets the accumulated time.
+     * @param flElapsed The accumulated time.
+     */
     void SetElapsed(float flElapsed) {
         m_flElapsed = flElapsed;
     }
 
-    /** @brief Sets the last computed value. */
+    /**
+     * @brief Sets the last computed value.
+     * @param flCurrent The last computed value.
+     */
     void SetCurrent(float flCurrent) {
         m_flCurrent = flCurrent;
     }

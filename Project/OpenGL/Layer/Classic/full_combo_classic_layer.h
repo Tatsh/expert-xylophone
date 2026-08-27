@@ -100,9 +100,9 @@ public:
      */
     void Update(float flDelta);
 
-    // The number of background sprite instancers the layer builds.
+    /** @brief The number of background sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 3;
-    // The number of player colours with a full-combo effect record.
+    /** @brief The number of player colours with a full-combo effect record. */
     static constexpr int kColorCount = 2;
 
 private:

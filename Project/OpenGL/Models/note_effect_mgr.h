@@ -59,6 +59,8 @@ public:
      * projects it into note-field space, and caches it. Returns @c nullptr when the cache is full
      * or no live touch matches.
      * @param nTouchId The touch id to resolve.
+     * @return The cached note-field position, or @c nullptr when the cache is full or no live
+     *         touch matches.
      * @ghidraAddress 0x136e38
      */
     const S_VECTOR2 *GetOrCacheNotePosition(int nTouchId);
@@ -233,13 +235,17 @@ public:
 
     /**
      * @brief The active note count (the loaded chart's note count).
+     * @return The loaded chart's note count.
      * @ghidraAddress 0x13719c
      */
     int GetNoteCount() const {
         return m_nNoteCount;
     }
 
-    /** @brief The active player theme (0 classic, 1 limelight, otherwise colette). */
+    /**
+     * @brief The active player theme (0 classic, 1 limelight, otherwise colette).
+     * @return The active player theme.
+     */
     int GetThema() const {
         return m_nThema;
     }
@@ -260,6 +266,7 @@ public:
 
     /**
      * @brief The accumulated hit (judged-note) count.
+     * @return The accumulated hit count.
      * @ghidraAddress 0x137ae4
      */
     int GetHitCount() const {

@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param title The pin's title.
  * @param subtitle The pin's subtitle.
  * @param modelName The spot's model name, used to select the pin image.
+ * @return The initialised pin.
  * @ghidraAddress 0xdf15c
  */
 - (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate

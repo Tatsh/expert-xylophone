@@ -31,15 +31,24 @@ class CMusicSheet2;
  */
 class GameScene : public BaseScene {
 public:
-    /** @brief Returns the scene's current state. */
+    /**
+     * @brief Returns the scene's current state.
+     * @return The scene's current state.
+     */
     int GetState() const {
         return m_nState;
     }
-    /** @brief Sets the scene's play mode (0 normal, 1 alternate). */
+    /**
+     * @brief Sets the scene's play mode (0 normal, 1 alternate).
+     * @param nMode The play mode.
+     */
     void SetMode(int nMode) {
         m_nMode = nMode;
     }
-    /** @brief Sets the scene's state and clears its accumulated play time. */
+    /**
+     * @brief Sets the scene's state and clears its accumulated play time.
+     * @param nState The scene state to enter.
+     */
     void SetState(int nState) {
         m_nState = nState;
         m_nPlayTime = 0;

@@ -26,6 +26,7 @@ public:
     TouchManager();
     /**
      * @brief Returns the global touch-manager singleton, or @c nullptr when not yet created.
+     * @return The global touch manager, or @c nullptr when it has not been created.
      * @ghidraAddress 0x17c38
      */
     static TouchManager *FetchSharedSingleton();
@@ -87,16 +88,24 @@ public:
 
     /**
      * @brief Returns whether any active slot was added this frame (has a fresh touch).
+     * @return @c true when any active slot carries a fresh touch.
      * @ghidraAddress 0x17d84
      */
     bool HasActiveTouch() const;
 
-    /** @brief The number of active touch slots at the head of the slot array. */
+    /**
+     * @brief The number of active touch slots at the head of the slot array.
+     * @return The number of active touch slots.
+     */
     int GetActiveTouchCount() const {
         return m_nActiveCount;
     }
 
-    /** @brief Returns the active touch slot at @p nIndex (below @c GetActiveTouchCount). */
+    /**
+     * @brief Returns the active touch slot at @p nIndex (below @c GetActiveTouchCount).
+     * @param nIndex The slot index, below @c GetActiveTouchCount.
+     * @return The active touch slot.
+     */
     TouchPoint *GetActiveTouch(int nIndex) const {
         return m_apSlots[nIndex];
     }

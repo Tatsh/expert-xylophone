@@ -42,12 +42,18 @@ public:
         return m_nNext == kNone;
     }
 
-    /** @brief The next chain-segment index, or the -1 marker at the tail. */
+    /**
+     * @brief The next chain-segment index, or the -1 marker at the tail.
+     * @return The next chain-segment index, or -1 at the tail.
+     */
     short GetNext() const {
         return m_nNext;
     }
 
-    /** @brief The head-note chain id (the parser stores it here for a long-note head). */
+    /**
+     * @brief The head-note chain id (the parser stores it here for a long-note head).
+     * @return The head-note chain id.
+     */
     short GetChainId() const {
         return m_nPrev;
     }
@@ -57,6 +63,8 @@ public:
      * Used only by the legacy parser, which leaves the next index unset and fills it later in its
      * own resolve pass. The v10 parser takes an already-resolved block from the chart instead; see
      * @c SetFromChartPayload.
+     * @param nChainId The head-note chain id.
+     * @param nPartner The bound partner index.
      */
     void SetLongNoteHead(short nChainId, short nPartner) {
         m_nPrev = nChainId;
@@ -83,13 +91,20 @@ public:
         std::memcpy(m_aReserved08, &nExtra, sizeof(nExtra));
     }
 
-    /** @brief Records the resolved long-note tail: its partner note id and time delta. */
+    /**
+     * @brief Records the resolved long-note tail: its partner note id and time delta.
+     * @param nPartnerNoteId The tail's partner note id.
+     * @param nTimeDelta The tail's time delta.
+     */
     void SetTail(short nPartnerNoteId, short nTimeDelta) {
         m_nNext = nPartnerNoteId;
         m_nMarker = nTimeDelta;
     }
 
-    /** @brief The bound partner index, when this note heads a long note. */
+    /**
+     * @brief The bound partner index, when this note heads a long note.
+     * @return The bound partner index.
+     */
     short GetPartner() const {
         return m_nPartner;
     }

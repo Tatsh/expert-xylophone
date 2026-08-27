@@ -18,6 +18,8 @@
 //  the program image base.
 //
 
+namespace ne {
+
 /**
  * @brief One intrusive node in the engine's priority-sorted listener list.
  *
@@ -30,8 +32,6 @@
  *
  * Reconstructed type @c C_TASK: engine listener-list node.
  */
-namespace ne {
-
 class C_TASK {
 public:
     /**
@@ -62,19 +62,31 @@ public:
      */
     virtual void OnFrame(int nElapsedMs);
 
-    /** @brief The previous node in the list. */
+    /**
+     * @brief The previous node in the list.
+     * @return The previous node, or this node itself while unlinked.
+     */
     C_TASK *GetPrev() const {
         return m_pPrev;
     }
-    /** @brief The next node in the list. */
+    /**
+     * @brief The next node in the list.
+     * @return The next node, or this node itself while unlinked.
+     */
     C_TASK *GetNext() const {
         return m_pNext;
     }
-    /** @brief The node's priority (the list is kept ascending by this key). */
+    /**
+     * @brief The node's priority (the list is kept ascending by this key).
+     * @return The node's sort priority.
+     */
     int GetPriority() const {
         return m_nPriority;
     }
-    /** @brief Whether the node has been flagged dead (to be destroyed on the next dispatch). */
+    /**
+     * @brief Whether the node has been flagged dead (to be destroyed on the next dispatch).
+     * @return @c true once the node has been flagged dead.
+     */
     bool IsDead() const {
         return m_bDead;
     }
@@ -100,17 +112,21 @@ public:
     static void InitializeGlobalContainer();
 
 protected:
-    // Unlinks the node from its circular list (shared by the destructor and re-insertion).
+    /**
+     * @brief Unlinks the node from its circular list.
+     *
+     * Shared by the destructor and re-insertion.
+     */
     void Unlink();
 
     // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual
     // methods).
-    C_TASK *m_pPrev = {}; // +0x08: the previous node.
-    C_TASK *m_pNext = {}; // +0x10: the next node.
-    int m_nPriority = {}; // +0x18: the sort key (the task state field).
+    C_TASK *m_pPrev = {}; /*!< The previous node. +0x08 */
+    C_TASK *m_pNext = {}; /*!< The next node. +0x10 */
+    int m_nPriority = {}; /*!< The sort key (the task state field). +0x18 */
     // unsigned char m_aReserved1c[0x24] = {}; // +0x1c: node-specific state.
-    unsigned char *m_pBuffer = {}; // +0x40: an owned heap buffer, freed on destruction.
-    bool m_bDead = {};             // +0x48: set when the node should be destroyed.
+    unsigned char *m_pBuffer = {}; /*!< An owned heap buffer, freed on destruction. +0x40 */
+    bool m_bDead = {};             /*!< Set when the node should be destroyed. +0x48 */
 };
 
 } // namespace ne

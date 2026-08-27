@@ -42,6 +42,7 @@ public:
 
     /**
      * @brief The process-wide number-effect layer, created on first use.
+     * @return The shared number-effect layer.
      * @ghidraAddress 0x189ce0
      */
     static NumberEffectLayer *shared();
@@ -64,6 +65,7 @@ public:
 
     /**
      * @brief Advances the fade channel by @p flDeltaTime and raises the active flag.
+     * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x189ef0
      */
     void AdvanceFadeInterp(float flDeltaTime);

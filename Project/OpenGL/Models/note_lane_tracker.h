@@ -19,9 +19,11 @@ class Random;
  */
 class NoteLaneTracker {
 public:
-    // The number of players and the number of lanes each player has.
+    /** @brief The number of players. */
     static constexpr int kPlayerCount = 2;
+    /** @brief The number of lanes each player has. */
     static constexpr int kLaneCount = 7;
+    /** @brief The total number of lane slots, one per player per lane. */
     static constexpr int kSlotCount = kPlayerCount * kLaneCount;
 
     /**

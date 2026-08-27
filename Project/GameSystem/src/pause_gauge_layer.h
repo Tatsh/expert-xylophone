@@ -179,6 +179,7 @@ public:
      * This is the class's per-frame task callback: it occupies the task node's virtual slot in the
      * binary's vtable, so the listener dispatch runs the state machine every frame. It ignores the
      * frame delta.
+     * @param nElapsedMs The frame delta, in milliseconds, which this override ignores.
      * @ghidraAddress 0x150b38
      */
     void OnFrame(int nElapsedMs) override;

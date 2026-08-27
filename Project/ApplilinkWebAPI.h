@@ -180,6 +180,16 @@ typedef void (^ApplilinkWebAPIFailedBlock)(id _Nullable request, NSError *_Nulla
  *
  * The work is dispatched to a global concurrent queue, where a throwaway instance sends the
  * request through the instance method of the same selector.
+ * @param URL The request URL.
+ * @param method The HTTP method to send.
+ * @param parameters The request parameters.
+ * @param userInfo Caller-defined context carried alongside the request.
+ * @param tag The caller's request tag.
+ * @param cachePolicy The cache policy, or @c nil for the default.
+ * @param timeout The request timeout, in seconds.
+ * @param retry Whether to apply the network-retry policy.
+ * @param finishedBlock The completion block.
+ * @param failedBlock The failure block.
  * @ghidraAddress 0x2232d8
  */
 + (void)requestAsynchronousWithURL:(nullable NSString *)URL
@@ -196,6 +206,11 @@ typedef void (^ApplilinkWebAPIFailedBlock)(id _Nullable request, NSError *_Nulla
 /**
  * @brief Convenience class factory for @c requestSynchronousWithURL:method:parameters:cachePolicy:
  * error:.
+ * @param URL The request URL.
+ * @param method The HTTP method to send.
+ * @param parameters The request parameters.
+ * @param cachePolicy The cache policy, or @c nil for the default.
+ * @param error Receives the failure reason, when the request fails.
  * @return The parsed JSON response, or @c nil on failure.
  * @ghidraAddress 0x223604
  */
@@ -208,6 +223,11 @@ typedef void (^ApplilinkWebAPIFailedBlock)(id _Nullable request, NSError *_Nulla
 /**
  * @brief Convenience class factory for @c responseFromContentsServer:request:data:finishedBlock:
  * failedBlock:.
+ * @param response The response string from the contents server.
+ * @param request The request the response belongs to.
+ * @param data The raw response body.
+ * @param finishedBlock The completion block.
+ * @param failedBlock The failure block.
  * @return The value forwarded from the invoked callback, or @c nil.
  * @ghidraAddress 0x223704
  */

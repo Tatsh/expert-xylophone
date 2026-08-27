@@ -26,7 +26,7 @@ class C_SPRITE_INSTANCING_2D;
  */
 class JudgeEffectLayer : public PlayFieldLayerBase {
 public:
-    // The sprite-instancer capacity the layer builds.
+    /** @brief The sprite-instancer capacity the layer builds. */
     static constexpr unsigned int kSpriteCapacity = 0x14;
 
     /**

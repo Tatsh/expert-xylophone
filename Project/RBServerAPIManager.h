@@ -33,18 +33,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The lazily-created shared manager.
+ * @return The shared server-API manager.
  * @ghidraAddress 0x17ca08
  */
 + (instancetype)getInstance;
 
 /**
  * @brief Post a play-log entry for a music selection and difficulty (legacy endpoint).
+ * @param musicID The tune identifier played.
+ * @param dif The difficulty played.
  * @ghidraAddress 0x17cac4
  */
 + (void)playedAPIWithMusicID:(unsigned int)musicID dif:(unsigned int)dif;
 
 /**
  * @brief Post a detailed play-log entry (version 2) for a music selection, difficulty, and result.
+ * @param musicID The tune identifier played.
+ * @param dif The difficulty played.
+ * @param note The note count achieved.
+ * @param jr The just-reflec count achieved.
+ * @param score The score achieved.
  * @ghidraAddress 0x17ce50
  */
 + (void)playedV2APIWithMusicID:(unsigned int)musicID
@@ -55,6 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Report an unlock (type, identity, and point cost) to the server.
+ * @param type The unlock type.
+ * @param identity The identifier of the unlocked item.
+ * @param point The point cost of the unlock.
  * @ghidraAddress 0x17d484
  */
 + (void)unlockedAPIWithType:(unsigned int)type identity:(unsigned int)identity point:(float)point;

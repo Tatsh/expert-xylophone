@@ -26,7 +26,7 @@ class C_SPRITE_INSTANCING_2D;
  */
 class SlideNoteResultLayer : public PlayFieldLayerBase {
 public:
-    // The judge kinds a queued result mark may carry (its judge grade).
+    /** @brief The judge kinds a queued result mark may carry (its judge grade). */
     enum SlideJudge {
         kSlideJudge0 = 0,   /*!< The first judge grade. */
         kSlideJudge1 = 1,   /*!< The second judge grade. */
@@ -34,7 +34,7 @@ public:
         kSlideJudgeMax = 4, /*!< The exclusive upper bound Create asserts against. */
     };
 
-    // The sprite-graphic kinds CreateSprite can emit.
+    /** @brief The sprite-graphic kinds @c CreateSprite can emit. */
     enum SlideSpriteType {
         kSlideSpriteType0 = 0,   /*!< The judge-0 result graphic. */
         kSlideSpriteType1 = 1,   /*!< A result graphic. */
@@ -45,7 +45,8 @@ public:
         kSlideSpriteTypeMax = 6, /*!< The exclusive upper bound CreateSprite asserts against. */
     };
 
-    // The most result marks the layer can queue in one frame (its sprite-batch capacity).
+    /** @brief The most result marks the layer can queue in one frame (its sprite-batch capacity).
+     */
     static constexpr int kMaxResults = 40;
 
     /**

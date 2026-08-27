@@ -97,42 +97,49 @@ public:
 
     /**
      * @brief The column-major 4x4 projection matrix.
+     * @return The sixteen-float column-major projection matrix.
      */
     const float *GetProjectionMatrix() const {
         return m_mProjection;
     }
     /**
      * @brief The vertical field of view, in radians (zero for an orthographic viewport).
+     * @return The vertical field of view in radians, or zero for an orthographic viewport.
      */
     float GetFovY() const {
         return m_flFovY;
     }
     /**
      * @brief The perspective aspect ratio (zero for an orthographic viewport).
+     * @return The aspect ratio, or zero for an orthographic viewport.
      */
     float GetAspect() const {
         return m_flAspect;
     }
     /**
      * @brief The GL viewport x origin.
+     * @return The GL viewport x origin.
      */
     int GetViewX() const {
         return m_nViewX;
     }
     /**
      * @brief The GL viewport y origin.
+     * @return The GL viewport y origin.
      */
     int GetViewY() const {
         return m_nViewY;
     }
     /**
      * @brief The GL viewport width.
+     * @return The GL viewport width.
      */
     int GetViewWidth() const {
         return m_nViewW;
     }
     /**
      * @brief The GL viewport height.
+     * @return The GL viewport height.
      */
     int GetViewHeight() const {
         return m_nViewH;
@@ -212,12 +219,14 @@ public:
 
     /**
      * @brief The column-major 4x4 view (world-to-camera) matrix.
+     * @return The sixteen-float column-major view matrix.
      */
     float *GetViewMatrix() {
         return m_mView;
     }
     /**
      * @brief The column-major 4x4 inverse-view (camera-to-world) matrix.
+     * @return The sixteen-float column-major inverse-view matrix.
      */
     const float *GetInverseViewMatrix() const {
         return m_mInverseView;
@@ -261,29 +270,48 @@ void SetCurrentCamera(neGLESRenderer *pRenderer, ne::Viewport *pCamera);
 /**
  * @brief Installs the given viewport as the current projection (retaining it and releasing the
  *        previous one).
+ * @param pViewport The viewport to install as the current projection.
  * @ghidraAddress 0x29f1c
  */
 void SetCurrentProjection(ne::Viewport *pViewport);
 /**
  * @brief Installs the given viewport as the active view camera (retaining it and releasing the
  *        previous one).
+ * @param pViewport The viewport to install as the active view camera.
  * @ghidraAddress 0x29f64
  */
 void SetActiveViewCamera(ne::Viewport *pViewport);
 /**
  * @brief Installs the given camera node as the current model/world node (retaining it and releasing
  *        the previous one).
+ * @param pCamera The camera node to install as the current model/world node.
  * @ghidraAddress 0x29fac
  */
 void SetCurrentModelNode(ne::CameraNode *pCamera);
 /**
  * @brief Creates an orthographic viewport for the given view rectangle.
+ * @param width The orthographic width.
+ * @param height The orthographic height.
+ * @param x The GL viewport x origin.
+ * @param y The GL viewport y origin.
+ * @param viewportWidth The GL viewport width.
+ * @param viewportHeight The GL viewport height.
+ * @return The new viewport, with one reference held by the caller.
  * @ghidraAddress 0x2991c
  */
 ne::Viewport *
 CreateOrthoViewport(float width, float height, int x, int y, int viewportWidth, int viewportHeight);
 /**
  * @brief Creates a perspective viewport for the given field of view and view rectangle.
+ * @param fovY The vertical field of view, in radians.
+ * @param aspect The aspect ratio.
+ * @param nearZ The near clip plane.
+ * @param farZ The far clip plane.
+ * @param x The GL viewport x origin.
+ * @param y The GL viewport y origin.
+ * @param viewportWidth The GL viewport width.
+ * @param viewportHeight The GL viewport height.
+ * @return The new viewport, with one reference held by the caller.
  * @ghidraAddress 0x299c4
  */
 ne::Viewport *CreatePerspectiveViewport(float fovY,
@@ -296,11 +324,17 @@ ne::Viewport *CreatePerspectiveViewport(float fovY,
                                         int viewportHeight);
 /**
  * @brief Creates a camera node from a 4x4 view matrix.
+ * @param pMatrix A column-major 4x4 view matrix.
+ * @return The new camera node, with one reference held by the caller.
  * @ghidraAddress 0x21fe0
  */
 ne::CameraNode *CreateCameraFromMatrix(float *pMatrix);
 /**
  * @brief Creates a look-at camera node from an eye, a target, and an up vector.
+ * @param pEye The camera position.
+ * @param pTarget The look-at target.
+ * @param pUp The up direction.
+ * @return The new camera node, with one reference held by the caller.
  * @ghidraAddress 0x21f74
  */
 ne::CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp);

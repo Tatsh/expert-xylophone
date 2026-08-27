@@ -23,6 +23,7 @@ class BaseScene : public ne::C_TASK {
 public:
     /**
      * @brief Whether the device is an iPad (cached from @c IsPad at construction).
+     * @return @c true on an iPad-idiom device.
      */
     bool IsPad() const {
         return m_bIsPad;
@@ -30,6 +31,7 @@ public:
 
     /**
      * @brief Whether the device is the older type-9 hardware.
+     * @return @c true on the older type-9 hardware.
      */
     bool IsHardwareType9() const {
         return m_bHardwareType9;
@@ -43,8 +45,8 @@ protected:
      */
     BaseScene();
 
-    bool m_bIsPad = {};         // +0x49: whether the device is an iPad (from IsPad()).
-    bool m_bHardwareType9 = {}; // +0x4a: whether the device is the older type-9 hardware.
+    bool m_bIsPad = {};         /*!< Whether the device is an iPad (from @c IsPad). +0x49 */
+    bool m_bHardwareType9 = {}; /*!< Whether the device is the older type-9 hardware. +0x4a */
 };
 
 } // namespace rb

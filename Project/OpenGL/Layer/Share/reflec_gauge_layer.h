@@ -51,19 +51,20 @@ public:
      */
     static void SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nPlayer);
 
-    // The number of gauge/slider sprite instancers the layer builds.
+    /** @brief The number of gauge/slider sprite instancers the layer builds. */
     static constexpr int kBatchCount = 4;
-    // The number of part groups whose capacities the constructor accumulates.
+    /** @brief The number of part groups whose capacities the constructor accumulates. */
     static constexpr int kPartGroupCount = 6;
-    // The number of player sides the gauge tracks.
+    /** @brief The number of player sides the gauge tracks. */
     static constexpr int kSideCount = 2;
 
     /** @brief A gauge sprite descriptor (a 20-byte record): its anchor, its size, and atlas frame.
      */
     struct GaugeSpriteDescriptor {
-        S_VECTOR2 anchor = {}; // +0x00: the sprite anchor offset.
-        S_VECTOR2 size = {};   // +0x08: the sprite pixel size.
-        int nAtlasFrame = {};  // +0x10: the atlas-frame number indexing the shared sprite UV table.
+        S_VECTOR2 anchor = {}; /*!< The sprite anchor offset. +0x00 */
+        S_VECTOR2 size = {};   /*!< The sprite pixel size. +0x08 */
+        /** @brief The atlas-frame number indexing the shared sprite UV table. +0x10 */
+        int nAtlasFrame = {};
     };
 
     /**
@@ -102,6 +103,7 @@ public:
      *
      * Maps the colour to a side (matching the current play side) and reads that side's value.
      * @param nColor The player colour (0 or 1).
+     * @return The colour's gauge value.
      * @ghidraAddress 0x18ab18
      */
     float GetValue(int nColor) const;
@@ -111,6 +113,7 @@ public:
      * Maps the colour to the side that does not match the current play side and reads that side's
      * value.
      * @param nColor The player colour (0 or 1).
+     * @return The opposing side's gauge value.
      * @ghidraAddress 0x18ac38
      */
     float GetAnotherValue(int nColor) const;
@@ -127,6 +130,7 @@ public:
     /**
      * @brief Reads a side's stored gauge value directly.
      * @param nSide The player side (0 or 1).
+     * @return The side's stored gauge value.
      * @ghidraAddress 0x18ab98
      */
     float GetValueBySide(unsigned int nSide) const;

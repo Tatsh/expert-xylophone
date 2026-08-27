@@ -26,7 +26,7 @@ class C_SPRITE_INSTANCING_2D;
  */
 class NoteTrailLayer : public PlayFieldLayerBase {
 public:
-    // The sprite-instancer capacity the layer builds.
+    /** @brief The sprite-instancer capacity the layer builds. */
     static constexpr unsigned int kSpriteCapacity = 0x28;
 
     /**
@@ -47,10 +47,11 @@ public:
      */
     void LoadNoteTrailSprites();
 
-    // The judge grades a queued result mark may carry (asserted by Create); the most marks the
-    // queue holds in one frame; and the number of result sprite graphics CreateSprite can emit.
+    /** @brief The judge grades a queued result mark may carry, asserted by @c Create. */
     static constexpr int kJudgeMax = 4;
+    /** @brief The most result marks the queue holds in one frame. */
     static constexpr int kMaxResults = 40;
+    /** @brief The number of result sprite graphics @c CreateSprite can emit. */
     static constexpr int kResultSpriteTypeCount = 6;
 
     /**

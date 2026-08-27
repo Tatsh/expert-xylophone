@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Whether location services are enabled and the app is authorised to use them.
+ * @return @c YES when location services are enabled and authorised.
  * @ghidraAddress 0xdf6c4
  */
 + (BOOL)currentLocationEnabled;
@@ -56,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
  * The binary derives this from the latitude delta alone: it is @c sqrt(2)·|latitudeDelta| and does
  * not read the longitude delta.
  * @param region The coordinate region to measure.
+ * @return The region's diagonal latitude span, used as a search radius.
  * @ghidraAddress 0xdf634
  */
 + (double)rangeOfRegion:(MKCoordinateRegion)region;
@@ -63,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Convert a coordinate region into an axis-aligned map rectangle, widened by a fixed factor.
  * @param region The coordinate region to convert.
+ * @return The axis-aligned map rectangle covering the region.
  * @ghidraAddress 0xdf644
  */
 + (MKMapRect)mapRectForCoordinateRegion:(MKCoordinateRegion)region;

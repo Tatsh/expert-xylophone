@@ -344,6 +344,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Server-date callback stub. The binary body is empty.
+ * @param year The server date's year.
+ * @param month The server date's month.
+ * @param day The server date's day.
+ * @param hour The server time's hour.
+ * @param minute The server time's minute.
+ * @param second The server time's second.
  * @ghidraAddress 0xaf8bc
  */
 - (void)SetServerDateYear:(int)year

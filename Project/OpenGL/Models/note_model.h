@@ -184,11 +184,17 @@ public:
      */
     void MarkTouched();
 
-    /** @brief Returns the note's assigned colour kind (0 through 3). */
+    /**
+     * @brief Returns the note's assigned colour kind (0 through 3).
+     * @return The assigned colour kind.
+     */
     int GetColorKind() const {
         return m_nKind;
     }
-    /** @brief Sets the note's assigned colour kind. */
+    /**
+     * @brief Sets the note's assigned colour kind.
+     * @param nKind The colour kind (0 through 3).
+     */
     void SetColorKind(int nKind) {
         m_nKind = nKind;
     }
@@ -196,42 +202,71 @@ public:
      * @brief Whether the note carries a pre-assigned (locked) colour, kept instead of a random one.
      *
      * A colour-lock state at or below @c kColorLockThreshold is itself the assigned colour.
+     *
+     * @return @c true when the note carries a pre-assigned colour.
      */
     bool IsColorLocked() const {
         return m_nColorLockState <= kColorLockThreshold;
     }
-    /** @brief The pre-assigned colour a locked note carries (its colour-lock state value). */
+    /**
+     * @brief The pre-assigned colour a locked note carries (its colour-lock state value).
+     * @return The pre-assigned colour.
+     */
     int GetLockedColor() const {
         return m_nColorLockState;
     }
 
-    /** @brief Stamps the note with a replay's recorded judge, JR flag, and long-note rate. */
+    /**
+     * @brief Stamps the note with a replay's recorded judge, JR flag, and long-note rate.
+     * @param nJudge The recorded judge result.
+     * @param bJustReflec The recorded just-reflec flag.
+     * @param flLongRate The recorded long-note rate.
+     */
     void SetReplayResult(int nJudge, bool bJustReflec, float flLongRate) {
         m_nColorLockState = nJudge;
         m_bEmphasisFallback = bJustReflec;
         m_flLongRate = flLongRate;
     }
-    /** @brief Sets slide sub-point @p nIndex's recorded judge result. */
+    /**
+     * @brief Sets slide sub-point @p nIndex's recorded judge result.
+     * @param nIndex The slide sub-point index.
+     * @param nJudge The judge result to record.
+     */
     void SetSlidePointJudge(int nIndex, int nJudge) {
         m_aSubEntries[nIndex].nSlidePointJudge = nJudge;
     }
-    /** @brief Sets slide sub-point @p nIndex's recorded replay judge (the +0x44 sub-entry slot). */
+    /**
+     * @brief Sets slide sub-point @p nIndex's recorded replay judge (the +0x44 sub-entry slot).
+     * @param nIndex The slide sub-point index.
+     * @param nJudge The replay judge result to record.
+     */
     void SetSlideReplayJudge(int nIndex, int nJudge) {
         m_aSubEntries[nIndex].nIncomingGrade = nJudge;
     }
-    /** @brief The note's recorded judge result (from a replay). */
+    /**
+     * @brief The note's recorded judge result (from a replay).
+     * @return The recorded judge result.
+     */
     int GetRecordedJudge() const {
         return m_nColorLockState;
     }
-    /** @brief The note's judgement grade (the per-note COOL/GREAT/GOOD/MISS index). */
+    /**
+     * @brief The note's judgement grade (the per-note COOL/GREAT/GOOD/MISS index).
+     * @return The judgement grade.
+     */
     int GetJudgeGrade() const {
         return m_nJudgeGrade;
     }
-    /** @brief The note's shot travel progress (recorded as the replay long-note rate). */
+    /**
+     * @brief The note's shot travel progress (recorded as the replay long-note rate).
+     * @return The shot travel progress.
+     */
     float GetShotProgress() const {
         return m_flShotProgress;
     }
-    /** @brief Whether a CPU/ghost shot has been scored on this note (the replay just-reflec flag).
+    /**
+     * @brief Whether a CPU/ghost shot has been scored on this note (the replay just-reflec flag).
+     * @return @c true once a CPU or ghost shot has been scored on the note.
      */
     bool IsShotResolved() const {
         return m_bShotResolved;
@@ -519,17 +554,26 @@ public:
      */
     void UpdateNotePathLinks();
 
-    /** @brief The note's index in its sheet. */
+    /**
+     * @brief The note's index in its sheet.
+     * @return The note's index in its sheet, or -1 when unassigned.
+     */
     int GetNoteIndex() const {
         return m_nNoteIndex;
     }
 
-    /** @brief The note-state-machine state. */
+    /**
+     * @brief The note-state-machine state.
+     * @return The current note-state-machine state.
+     */
     int GetState() const {
         return m_nState;
     }
 
-    /** @brief The note's rival-play mode (0 = player, 1 = CPU, 2 = ghost). */
+    /**
+     * @brief The note's rival-play mode (0 = player, 1 = CPU, 2 = ghost).
+     * @return The rival-play mode.
+     */
     int GetRivalMode() const {
         return m_nRivalMode;
     }

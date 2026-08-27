@@ -61,6 +61,7 @@ public:
 
     /**
      * @brief The overlay's current fade alpha, in the unit interval.
+     * @return The current fade alpha, in the unit interval.
      * @ghidraAddress 0x17fbf8
      */
     float GetCurrentAlpha() const {

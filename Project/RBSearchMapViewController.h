@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Build the custom navigation-bar title view and the back and current-location buttons.
+ * @return The initialised controller.
  * @ghidraAddress 0xe5748
  */
 - (instancetype)init;
