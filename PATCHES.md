@@ -427,3 +427,29 @@ no longer reaches, so the field renders grey where the shipped build renders whi
 
 The patch sets `searchTextField.backgroundColor` as well, behind an `@available(iOS 13.0, *)` guard.
 An unpatched build keeps the single original send and shows the grey field.
+
+### The result screen's share button
+
+**Files:** `Project/RBViewController.mm` — `+hasTwitterAPI` (0x8d540), `+canTweet` (0x8d564),
+`-PostTwitter:Images:URLs:` (0x8d5b4), `-PostTweet` (0x8d9c0), `-PostTwitter:Text:` (0x8dbbc);
+`Project/OpenGL/Layer/Colette/result_window_colette_layer.mm`,
+`Project/OpenGL/Layer/Classic/result_window_classic_layer.mm`, and
+`Project/OpenGL/Layer/Limelight/limelight_result_layer.mm` — `PostResultToTwitter`
+
+The share button is dead twice over on a modern iOS. `+hasTwitterAPI` resolves
+`TWTweetComposeViewController` by name and the app links no `Twitter.framework`, so that class is
+never in the process; each result layer seeds `m_bTwitterAvailable` from the method, and the flag
+gates both the button sprite and its touch region, so the button is not even drawn. Behind it,
+`-PostTwitter:Images:URLs:` posts through `SLComposeViewController` and `SLServiceTypeTwitter`,
+which iOS 11 removed, and `-PostTwitter:Text:` first probes `http://twitter.com` in the clear,
+which App Transport Security refuses — so the flow would end in the network-error alert even if it
+could be reached.
+
+The patch returns `YES` from both availability methods, skips the probe and queues the share-image
+render straight away, and presents a `UIActivityViewController` carrying the score card and the
+play text, so a result can go to any installed target. Its completion handler hides the dimming
+cover, which the binary leaves up until the next preview transition and which a sheet dismissed in
+place would otherwise strand over the result screen; the pad popover is anchored to the centre of
+the game view, because the button is a GL sprite with no subview to point at. The three result
+layers drop the App Store link from the tweet body, as the sheet hands the text to the target app
+whole. An unpatched build keeps the hidden button, the Social compose path, and the probe.

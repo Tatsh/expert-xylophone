@@ -638,11 +638,15 @@ constexpr float kSharePercentScale = 100.0f; // 1000.0 * 0.1, as the binary comp
 constexpr int kSoundEffectShare = 5;
 
 // The default player name and the tweet body format (music name, side-one score and rate, and the
-// App Store link), reproduced verbatim from the binary.
+// App Store link), reproduced verbatim from the binary. The patched build drops the link.
 static NSString *const kSharePlayerName = @"なまえ";
+#ifdef ENABLE_PATCHES
+static NSString *const kShareTweetFormat = @"%@をプレー！ Score:%d AR:%0.1f #rb_plus";
+#else
 static NSString *const kShareTweetFormat = @"%@をプレー！ Score:%d AR:%0.1f #rb_plus %@";
 static NSString *const kShareStoreUrl =
     @"http://itunes.apple.com/jp/app/reflec-beat-plus/id472140433";
+#endif
 
 // Builds the classic result-screen Twitter share image from the current play result and posts it
 // through the view controller. This variant uses the light (white) title and artist images. A free
@@ -686,8 +690,12 @@ void PostResultToTwitter() {
     NSString *musicName = pTweetMusic.musicName;
     const int nScore = pTracker->GetPlayRecordCell(1, kCellScore);
     const double flRate = static_cast<double>(pTracker->GetPlayRecordRate(1) * kSharePercentScale);
+#ifdef ENABLE_PATCHES
+    NSString *tweet = [NSString stringWithFormat:kShareTweetFormat, musicName, nScore, flRate];
+#else
     NSString *tweet =
         [NSString stringWithFormat:kShareTweetFormat, musicName, nScore, flRate, kShareStoreUrl];
+#endif
     [pViewController PostTwitter:pCreater Text:tweet];
 }
 

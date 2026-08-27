@@ -157,8 +157,13 @@ constexpr CGFloat kCorporateButtonMargin = 10.0;
 // LoadAndSetThemedVoice (0x1ccc18), not the themed sound-effect player.
 constexpr int kGameStartVoiceID = 17;
 
+#ifdef ENABLE_PATCHES
+// An empty arrow-direction set presents the pad popover centred and without a callout arrow.
+constexpr UIPopoverArrowDirection kNoPopoverArrow = static_cast<UIPopoverArrowDirection>(0);
+#else
 // The Twitter reachability-probe request timeout, in seconds; an fmov immediate at 0x8dd48.
 constexpr NSTimeInterval kTwitterProbeTimeout = 15.0;
+#endif
 
 // Projection constants used by -UpdateProjection.
 // The sheet field-of-view is (sheetWidth / 180) * pi, converting the sheet's angular width in
@@ -198,6 +203,19 @@ constexpr int kTermTypeAgreement = 1;
 // The default play colour that the preview restores before showing the bundled preview song.
 constexpr int kDefaultPlayColor = 0;
 
+// Queues the share-image render. The binary inlines this at the end of the reachability probe; a
+// patched build skips that probe and needs the same tail.
+static void EnqueueImageCreaterOperation(RBViewController *controller) {
+    if (!controller.twitterImageCreaterQueue) {
+        controller.twitterImageCreaterQueue = [[NSOperationQueue alloc] init];
+    }
+    NSInvocationOperation *operation =
+        [[NSInvocationOperation alloc] initWithTarget:controller
+                                             selector:@selector(PostImageCreater)
+                                               object:nil];
+    [controller.twitterImageCreaterQueue addOperation:operation];
+}
+
 @interface RBViewController () <NSURLConnectionDataDelegate,
                                 SKStoreProductViewControllerDelegate,
                                 RBPlaylistViewControllerDelegate,
@@ -225,15 +243,25 @@ constexpr int kDefaultPlayColor = 0;
 
 + (BOOL)hasTwitterAPI {
     /** @ghidraAddress 0x8d540 */
+#ifdef ENABLE_PATCHES
+    // Twitter.framework is not linked, so the original probe can never resolve the class and the
+    // result screens hide their share button. The share sheet needs no framework of its own.
+    return YES;
+#else
     return NSClassFromString(@"TWTweetComposeViewController") != nil;
+#endif
 }
 
 + (BOOL)canTweet {
     /** @ghidraAddress 0x8d564 */
+#ifdef ENABLE_PATCHES
+    return YES;
+#else
     if (![RBViewController hasTwitterAPI]) {
         return NO;
     }
     return [SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter];
+#endif
 }
 
 #pragma mark - Lifecycle and view loop
@@ -1097,6 +1125,42 @@ constexpr int kDefaultPlayColor = 0;
         return;
     }
     m_Tweeting = YES;
+#ifdef ENABLE_PATCHES
+    // iOS 11 removed the system Twitter account, so SLComposeViewController can no longer post.
+    // The share sheet reaches every installed target instead.
+    NSMutableArray *items = [NSMutableArray array];
+    if (text) {
+        [items addObject:text];
+    }
+    if (images) {
+        [items addObjectsFromArray:images];
+    }
+    if (urls) {
+        [items addObjectsFromArray:urls];
+    }
+    UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                        applicationActivities:nil];
+    // The share button is drawn by the GL scene, so there is no subview for the pad popover to
+    // point at; the centre of the game view is the anchor.
+    UIPopoverPresentationController *popover = share.popoverPresentationController;
+    popover.sourceView = self.view;
+    popover.sourceRect =
+        CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 0.0, 0.0);
+    popover.permittedArrowDirections = kNoPopoverArrow;
+    __weak RBViewController *weakSelf = self;
+    share.completionWithItemsHandler =
+        ^(UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *error) {
+          RBViewController *strongSelf = weakSelf;
+          if (!strongSelf) {
+              return;
+          }
+          strongSelf->m_Tweeting = NO;
+          // The binary leaves the dimming cover up until the next preview transition, which with a
+          // sheet the player dismisses in place would strand it over the result screen.
+          strongSelf.tweetCoverView.hidden = YES;
+        };
+    [self presentViewController:share animated:YES completion:nil];
+#else
     SLComposeViewController *compose =
         [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
     [compose setInitialText:text];
@@ -1114,11 +1178,18 @@ constexpr int kDefaultPlayColor = 0;
       strongSelf->m_Tweeting = NO;
     };
     [self presentViewController:compose animated:YES completion:nil];
+#endif
 }
 
 - (void)PostTweet {
     /** @ghidraAddress 0x8d9c0 */
+#ifdef ENABLE_PATCHES
+    // -createImage is nullable and the binary's literal array would throw on a nil element.
+    NSArray *images = self.tweetImage ? @[ self.tweetImage ] : @[];
+    [self PostTwitter:self.tweetText Images:images URLs:nil];
+#else
     [self PostTwitter:self.tweetText Images:@[ self.tweetImage ] URLs:nil];
+#endif
     self.tweetText = nil;
     self.tweetImage = nil;
 }
@@ -1133,6 +1204,11 @@ constexpr int kDefaultPlayColor = 0;
     m_Tweeting = YES;
     self.twitterImageCreater = imageCreater;
     self.tweetText = text;
+#ifdef ENABLE_PATCHES
+    // The probe requests http://twitter.com in the clear, which App Transport Security refuses, so
+    // it can only fail and take the share down with it. The share sheet needs no network.
+    EnqueueImageCreaterOperation(self);
+#else
     NSURL *url = [NSURL URLWithString:@"http://twitter.com"];
     // w3 is 4 at 0x8dd4c, which is ReloadIgnoringLocalAndRemoteCacheData, not the protocol default.
     self.twitterRequestTest =
@@ -1141,6 +1217,7 @@ constexpr int kDefaultPlayColor = 0;
                           timeoutInterval:kTwitterProbeTimeout];
     self.twitterConnectionTest = [[NSURLConnection alloc] initWithRequest:self.twitterRequestTest
                                                                  delegate:self];
+#endif
     return YES;
 }
 
@@ -1180,14 +1257,7 @@ constexpr int kDefaultPlayColor = 0;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     /** @ghidraAddress 0x8dfe4 */
-    if (!self.twitterImageCreaterQueue) {
-        self.twitterImageCreaterQueue = [[NSOperationQueue alloc] init];
-    }
-    NSInvocationOperation *operation =
-        [[NSInvocationOperation alloc] initWithTarget:self
-                                             selector:@selector(PostImageCreater)
-                                               object:nil];
-    [self.twitterImageCreaterQueue addOperation:operation];
+    EnqueueImageCreaterOperation(self);
 }
 
 @end

@@ -42,14 +42,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Reports whether the legacy Twitter compose API class is present at runtime.
- * @return @c YES when @c TWTweetComposeViewController can be resolved by name.
+ * @return @c YES when @c TWTweetComposeViewController can be resolved by name, or unconditionally
+ * with @c ENABLE_PATCHES, where the share sheet replaces that API.
  * @ghidraAddress 0x8d540
  */
 + (BOOL)hasTwitterAPI;
 
 /**
  * @brief Reports whether a tweet can currently be composed for the Twitter service.
- * @return @c YES when the Twitter API is present and available for the Twitter service type.
+ * @return @c YES when the Twitter API is present and available for the Twitter service type, or
+ * unconditionally with @c ENABLE_PATCHES.
  * @ghidraAddress 0x8d564
  */
 + (BOOL)canTweet;
@@ -353,7 +355,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Twitter
 
 /**
- * @brief Composes and presents a tweet with the given text, images, and URLs.
+ * @brief Composes and presents a tweet with the given text, images, and URLs. With
+ * @c ENABLE_PATCHES the arguments become the activity items of a @c UIActivityViewController
+ * instead, so the result can go to any installed target.
  * @param text The tweet text.
  * @param images The images to attach.
  * @param urls The URLs to attach.
@@ -364,13 +368,15 @@ NS_ASSUME_NONNULL_BEGIN
                URLs:(nullable NSArray *)urls;
 
 /**
- * @brief Composes and presents a tweet built from the stored tweet text and image.
+ * @brief Composes and presents a tweet built from the stored tweet text and image. With
+ * @c ENABLE_PATCHES a nil image is omitted rather than boxed into the attachment array.
  * @ghidraAddress 0x8d9c0
  */
 - (void)PostTweet;
 
 /**
- * @brief Begins a tweet flow guarded by a network reachability probe.
+ * @brief Begins a tweet flow guarded by a network reachability probe. With @c ENABLE_PATCHES the
+ * probe is skipped and the image render is queued straight away.
  * @param imageCreater The image creator to run before posting.
  * @param text The tweet text.
  * @return @c YES when the flow was started.

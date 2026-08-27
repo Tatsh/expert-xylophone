@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
+### Changed
+
+- The result screen's share button now opens the iOS share sheet, carrying the rendered score card
+  and the play text, so a result can be sent to any installed app. The button was previously never
+  drawn, because its availability check looked for a Twitter framework the app does not link, and
+  the flow behind it went through the Twitter integration iOS 11 removed. The App Store link was
+  dropped from the shared text. Patched builds only.
+
 ### Fixed
 
 - Corrected the localised UI string keys cached by `CacheLocalizedUIStrings` so that they match the
