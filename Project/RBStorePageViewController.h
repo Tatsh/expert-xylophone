@@ -40,18 +40,19 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The song-pack store page, the first store tab's root controller.
  */
-@interface RBStorePageViewController : RBBaseViewController <UITableViewDataSource,
-                                                             UITableViewDelegate,
-                                                             SKStoreProductViewControllerDelegate,
-                                                             StorePackListDelegate,
-                                                             RBPurchaseManagerDelegate,
-                                                             ImageDownloaderDelegate,
-                                                             StoreDownloadManagerDelegate,
-                                                             StorePackViewDelegate,
-                                                             StorePackInfoDownloaderDelegate,
-                                                             StoreExtendNoteInfoDownloaderDelegate,
-                                                             StorePromotionViewDelegate,
-                                                             UIPopoverControllerDelegate>
+@interface RBStorePageViewController :
+    RBBaseViewController <UITableViewDataSource,
+                          UITableViewDelegate,
+                          SKStoreProductViewControllerDelegate,
+                          StorePackListDelegate,
+                          RBPurchaseManagerDelegate,
+                          ImageDownloaderDelegate,
+                          StoreDownloadManagerDelegate,
+                          StorePackViewDelegate,
+                          StorePackInfoDownloaderDelegate,
+                          StoreExtendNoteInfoDownloaderDelegate,
+                          StorePromotionViewDelegate,
+                          UIPopoverControllerDelegate>
 
 #pragma mark - Properties
 

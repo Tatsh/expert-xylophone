@@ -219,7 +219,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wmissing-selector-name"
 /**
  * @brief Show the "App Installed Reward" / "%d Lime Point" has been Added. alert (OK).
- * @param limePoint The number of lime points substituted into the message.
+ *
+ * The leading @c int argument is the number of lime points substituted into the message. It is
+ * documented here rather than with @c \@param because the selector's second piece is unnamed, which
+ * Doxygen reads as making the count a selector keyword rather than a parameter.
  * @param delegate The alert delegate.
  * @return The shown alert.
  * @ghidraAddress 0xf150

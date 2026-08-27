@@ -36,8 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The per-package experience-item picker.
  */
-@interface RBUnlockCollectionView
-    : UIView <RBCollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
+@interface RBUnlockCollectionView :
+    UIView <RBCollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
 
 /**
  * @brief Create the picker for a single unlock package and build its subviews.

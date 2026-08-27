@@ -46,8 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The rotating store promotion banner carousel shown above the pack list.
  */
-@interface StorePromotionView
-    : UIView <UIScrollViewDelegate, ImageDownloaderDelegate, DownloaderDelegate>
+@interface StorePromotionView :
+    UIView <UIScrollViewDelegate, ImageDownloaderDelegate, DownloaderDelegate>
 
 #pragma mark - Properties
 

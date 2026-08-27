@@ -60,8 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Singleton that drives StoreKit purchases and restores and verifies their receipts.
  */
-@interface RBPurchaseManager
-    : NSObject <SKPaymentTransactionObserver, SKRequestDelegate, DownloaderDelegate>
+@interface RBPurchaseManager :
+    NSObject <SKPaymentTransactionObserver, SKRequestDelegate, DownloaderDelegate>
 
 /**
  * @brief The delegate that receives purchase and restore progress callbacks.

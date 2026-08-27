@@ -35,8 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Root view controller that hosts the game GL view and music-select menu and runs the
  * display-link game loop.
  */
-@interface RBViewController
-    : RBBaseViewController <UINavigationControllerDelegate, neGLViewDelegate>
+@interface RBViewController :
+    RBBaseViewController <UINavigationControllerDelegate, neGLViewDelegate>
 
 #pragma mark - Class helpers
 

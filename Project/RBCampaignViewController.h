@@ -28,11 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
  * Conforms to the table view's data source and delegate, the plain and image @c Downloader
  * delegates, and the @c StoreDownloadManager delegate.
  */
-@interface RBCampaignViewController : RBBaseViewController <UITableViewDelegate,
-                                                            UITableViewDataSource,
-                                                            DownloaderDelegate,
-                                                            ImageDownloaderDelegate,
-                                                            StoreDownloadManagerDelegate>
+@interface RBCampaignViewController :
+    RBBaseViewController <UITableViewDelegate,
+                          UITableViewDataSource,
+                          DownloaderDelegate,
+                          ImageDownloaderDelegate,
+                          StoreDownloadManagerDelegate>
 
 /**
  * @brief The hosting store tab controller, used to drive the shared modal download dialog.

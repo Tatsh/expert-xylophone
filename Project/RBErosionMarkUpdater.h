@@ -26,10 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @c UITextFieldDelegate, @c UIPickerViewDataSource, @c UIPickerViewDelegate, and (on the legacy
  * path) @c UIAlertViewDelegate for the dialog it builds.
  */
-@interface RBErosionMarkUpdater : NSObject <UITextFieldDelegate,
-                                            UIPickerViewDataSource,
-                                            UIPickerViewDelegate,
-                                            UIAlertViewDelegate>
+@interface RBErosionMarkUpdater :
+    NSObject <UITextFieldDelegate,
+              UIPickerViewDataSource,
+              UIPickerViewDelegate,
+              UIAlertViewDelegate>
 
 #pragma mark Entry point
 

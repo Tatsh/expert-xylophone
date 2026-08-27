@@ -37,18 +37,18 @@ NS_ASSUME_NONNULL_BEGIN
  * @c RBPurchaseManagerDelegate with matching selectors, so the page conforms to
  * @c RBPurchaseManagerDelegate.
  */
-@interface RBStoreExtendPageViewController
-    : RBBaseViewController <UITableViewDataSource,
-                            UITableViewDelegate,
-                            SKStoreProductViewControllerDelegate,
-                            StoreExtendNoteListDelegate,
-                            RBPurchaseManagerDelegate,
-                            ImageDownloaderDelegate,
-                            StoreDownloadManagerDelegate,
-                            StoreTableCellViewBaseDelegate,
-                            StoreExtendNoteInfoDownloaderDelegate,
-                            UIAlertViewDelegate,
-                            UIPopoverControllerDelegate>
+@interface RBStoreExtendPageViewController :
+    RBBaseViewController <UITableViewDataSource,
+                          UITableViewDelegate,
+                          SKStoreProductViewControllerDelegate,
+                          StoreExtendNoteListDelegate,
+                          RBPurchaseManagerDelegate,
+                          ImageDownloaderDelegate,
+                          StoreDownloadManagerDelegate,
+                          StoreTableCellViewBaseDelegate,
+                          StoreExtendNoteInfoDownloaderDelegate,
+                          UIAlertViewDelegate,
+                          UIPopoverControllerDelegate>
 
 /**
  * @brief The store tab controller that hosts this page.

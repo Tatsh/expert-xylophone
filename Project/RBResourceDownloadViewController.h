@@ -31,10 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
  * delegate for its extraction, and it doubles as the @c UIScrollView delegate and the
  * @c UIAlertView delegate for its help carousel and error prompts.
  */
-@interface RBResourceDownloadViewController : RBBaseViewController <NSURLSessionDownloadDelegate,
-                                                                    SSZipArchiveDelegate,
-                                                                    UIScrollViewDelegate,
-                                                                    UIAlertViewDelegate>
+@interface RBResourceDownloadViewController :
+    RBBaseViewController <NSURLSessionDownloadDelegate,
+                          SSZipArchiveDelegate,
+                          UIScrollViewDelegate,
+                          UIAlertViewDelegate>
 
 /**
  * @brief The item URL to download the asset archive from, taken from the server response.

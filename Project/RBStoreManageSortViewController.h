@@ -23,8 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
  * tells the owning manage page to switch to that order through its @c switchToSort:title:
  * selector, then dismisses the selector through @c hideSortSelect:.
  */
-@interface RBStoreManageSortViewController
-    : RBBaseViewController <UITableViewDelegate, UITableViewDataSource>
+@interface RBStoreManageSortViewController :
+    RBBaseViewController <UITableViewDelegate, UITableViewDataSource>
 
 /**
  * @brief Builds the sort-order table, sizes the popover content, and installs the table as the

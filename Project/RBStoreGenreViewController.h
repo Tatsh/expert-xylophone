@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The genre-select list controller shown from the pack store page.
  */
-@interface RBStoreGenreViewController
-    : RBBaseViewController <UITableViewDelegate, UITableViewDataSource>
+@interface RBStoreGenreViewController :
+    RBBaseViewController <UITableViewDelegate, UITableViewDataSource>
 
 /**
  * @brief The genre list table.

@@ -28,10 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The experience/unlock item picker.
  */
-@interface RBUnlockView : UIView <RBUnlockCollectionViewDelegate,
-                                  DownloaderDelegate,
-                                  StoreDownloadManagerDelegate,
-                                  UIAlertViewDelegate>
+@interface RBUnlockView :
+    UIView <RBUnlockCollectionViewDelegate,
+            DownloaderDelegate,
+            StoreDownloadManagerDelegate,
+            UIAlertViewDelegate>
 
 /**
  * @brief Create the picker with the given frame and build its subviews.

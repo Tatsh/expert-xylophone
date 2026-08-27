@@ -26,12 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The phone-layout pack detail controller.
  */
-@interface RBStoreDetailViewController : RBBaseViewController <UITableViewDataSource,
-                                                               UITableViewDelegate,
-                                                               UIAlertViewDelegate,
-                                                               ImageDownloaderDelegate,
-                                                               StorePackInfoDownloaderDelegate,
-                                                               DownloaderDelegate>
+@interface RBStoreDetailViewController :
+    RBBaseViewController <UITableViewDataSource,
+                          UITableViewDelegate,
+                          UIAlertViewDelegate,
+                          ImageDownloaderDelegate,
+                          StorePackInfoDownloaderDelegate,
+                          DownloaderDelegate>
 
 /**
  * @brief The delegate that drives the detail's purchase and download actions.

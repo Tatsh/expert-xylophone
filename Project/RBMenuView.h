@@ -55,14 +55,15 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The music-menu hub view that hosts the music grid, the menu chrome, and every overlay
  * presented over the music-select screen.
  */
-@interface RBMenuView : UIView <UICollectionViewDelegate,
-                                UICollectionViewDataSource,
-                                RBCollectionViewDelegate,
-                                UIGestureRecognizerDelegate,
-                                RBTermAgreeViewDelegate,
-                                DownloaderDelegate,
-                                UISearchBarDelegate,
-                                RBMenuMascotDelegate>
+@interface RBMenuView :
+    UIView <UICollectionViewDelegate,
+            UICollectionViewDataSource,
+            RBCollectionViewDelegate,
+            UIGestureRecognizerDelegate,
+            RBTermAgreeViewDelegate,
+            DownloaderDelegate,
+            UISearchBarDelegate,
+            RBMenuMascotDelegate>
 
 #pragma mark Lifecycle
 

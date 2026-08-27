@@ -38,11 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief A map view that tracks the user's location and shows searchable spots for the search
  * popup.
  */
-@interface RBSearchMapView : UIView <MKMapViewDelegate,
-                                     CLLocationManagerDelegate,
-                                     DownloaderDelegate,
-                                     ImageDownloaderDelegate,
-                                     UIAlertViewDelegate>
+@interface RBSearchMapView :
+    UIView <MKMapViewDelegate,
+            CLLocationManagerDelegate,
+            DownloaderDelegate,
+            ImageDownloaderDelegate,
+            UIAlertViewDelegate>
 
 /**
  * @brief Whether location services are enabled and the app is authorised to use them.

@@ -43,8 +43,8 @@ typedef NS_ENUM(int, RBCustomizeItemType) {
  * that host an @c RBCollectionView, and to @c RBCollectionView's own custom delegate for the paged
  * layout callback.
  */
-@interface RBCustomSelectCollectionView
-    : UIView <UICollectionViewDelegate, UICollectionViewDataSource, RBCollectionViewDelegate>
+@interface RBCustomSelectCollectionView :
+    UIView <UICollectionViewDelegate, UICollectionViewDataSource, RBCollectionViewDelegate>
 
 /**
  * @brief Create the grid with the given frame and customization category.

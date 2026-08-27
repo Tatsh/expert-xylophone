@@ -23,8 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The phone campaign item detail view controller.
  */
-@interface RBCampaignDetailViewController
-    : RBBaseViewController <DownloaderDelegate, UIAlertViewDelegate>
+@interface RBCampaignDetailViewController :
+    RBBaseViewController <DownloaderDelegate, UIAlertViewDelegate>
 
 /**
  * @brief The campaign item shown on the page.

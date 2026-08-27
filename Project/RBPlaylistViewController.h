@@ -44,8 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The playlist list screen, a grouped table of playlist filters, level nodes, or an
  * add-to-playlist picker.
  */
-@interface RBPlaylistViewController
-    : RBBaseTableViewController <UITableViewDataSource, UITableViewDelegate>
+@interface RBPlaylistViewController :
+    RBBaseTableViewController <UITableViewDataSource, UITableViewDelegate>
 
 #pragma mark - Properties
 

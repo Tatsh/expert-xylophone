@@ -30,11 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
  * callbacks, and drives the sort-selection popover (on the pad) or pushed controller (on the
  * phone) that its @c RBStoreManageSortViewController presents.
  */
-@interface RBStoreManageViewController : RBBaseViewController <UITableViewDelegate,
-                                                               UITableViewDataSource,
-                                                               StoreDownloadManagerDelegate,
-                                                               DownloaderDelegate,
-                                                               UIPopoverControllerDelegate>
+@interface RBStoreManageViewController :
+    RBBaseViewController <UITableViewDelegate,
+                          UITableViewDataSource,
+                          StoreDownloadManagerDelegate,
+                          DownloaderDelegate,
+                          UIPopoverControllerDelegate>
 
 /**
  * @brief Initialises the page for the given hosting store tab controller.
