@@ -36,12 +36,24 @@ endif()
 # in the original binary (address relative to the program's image base).
 # DOXYGEN_VERBATIM_VARS stops CMake re-quoting the alias, so the embedded
 # Doxygen-side quoting reaches the Doxyfile intact.
+#
+# Doxygen has no built-in knowledge of the Cocoa enumeration macros, so without
+# the expansions below it reads `typedef NS_ENUM(NSInteger, Foo) {...}` as a
+# function named NS_ENUM and drops the enumeration and its documented cases from
+# the output entirely.
 # ---------------------------------------------------------------------------
 if(BUILD_DOCS OR BUILD_DOCS_ONLY)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
     set(DOXYGEN_ALIASES [[ghidraAddress="\par Ghidra address:^^"]])
+    set(DOXYGEN_ENABLE_PREPROCESSING YES)
+    set(DOXYGEN_MACRO_EXPANSION YES)
+    set(DOXYGEN_EXPAND_ONLY_PREDEF YES)
+    set(DOXYGEN_PREDEFINED
+        "NS_ENUM(type,name)=enum name : type"
+        "NS_OPTIONS(type,name)=enum name : type"
+        "NS_CLOSED_ENUM(type,name)=enum name : type")
     find_package(Doxygen REQUIRED)
     doxygen_add_docs(docs README.md Project ALL)
 endif()
