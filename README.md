@@ -30,7 +30,8 @@ behind the `ENABLE_PATCHES` flag and documented in [PATCHES.md](PATCHES.md).
 The server API the app speaks is described in [openapi.yaml](openapi.yaml). It was recovered from
 the client rather than from any server or published document, so it records what the app sends and
 what it reads back; a response schema there is a lower bound, since the client ignores any field it
-does not need.
+does not need. It is rendered with Redoc at
+[tatsh.github.io/expert-xylophone/api/](https://tatsh.github.io/expert-xylophone/api/).
 
 ## Bundled third-party libraries
 
