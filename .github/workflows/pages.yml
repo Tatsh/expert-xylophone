@@ -30,6 +30,14 @@ jobs:
           cp -R "${{ runner.temp }}/scalar/node_modules/@scalar/api-reference/dist/browser" \
             "${{ github.workspace }}/build/html/api/scalar"
           find "${{ github.workspace }}/build/html/api/scalar" -name '*.map' -delete
+          # The bundle queries api.scalar.com on load whatever it is configured with, and would
+          # route a sent request through proxy.scalar.com. Point its service hosts at a name that
+          # cannot resolve, so the page cannot reach them even where its policy is not enforced.
+          find "${{ github.workspace }}/build/html/api/scalar" -name '*.js' -exec sed -i \
+            -e 's#https://api\.scalar\.com#https://api.scalar.invalid#g' \
+            -e 's#https://proxy\.scalar\.com#https://proxy.scalar.invalid#g' \
+            -e 's#https://fonts\.scalar\.com#https://fonts.scalar.invalid#g' \
+            -e 's#https://registry\.scalar\.com#https://registry.scalar.invalid#g' {} +
           cp openapi.yaml "${{ github.workspace }}/build/html/api/openapi.yaml"
           cp docs/api/index.html "${{ github.workspace }}/build/html/api/index.html"
       - name: 'Upload artifact'
