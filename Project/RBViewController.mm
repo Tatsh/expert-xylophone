@@ -1138,6 +1138,12 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     if (urls) {
         [items addObjectsFromArray:urls];
     }
+    if (items.count == 0) {
+        // UIActivityViewController raises on an empty item list.
+        m_Tweeting = NO;
+        self.tweetCoverView.hidden = YES;
+        return;
+    }
     UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items
                                                                         applicationActivities:nil];
     // The share button is drawn by the GL scene, so there is no subview for the pad popover to
