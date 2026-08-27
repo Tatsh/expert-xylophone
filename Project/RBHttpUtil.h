@@ -157,22 +157,32 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
 
 /**
  * @brief Serialise a dictionary to JSON @c NSData for a request body.
+ * @param dictionary The dictionary to serialise.
+ * @return The JSON-encoded body, or @c nil when the dictionary could not be serialised.
  * @ghidraAddress 0x36aa8
  */
 + (nullable NSData *)dictionaryToJsonData:(nullable NSDictionary *)dictionary;
 /**
  * @brief Serialise a dictionary to @c application/x-www-form-urlencoded query @c NSData.
+ * @param dictionary The dictionary to serialise.
+ * @return The form-encoded body, or @c nil when the dictionary could not be serialised.
  * @ghidraAddress 0x36754
  */
 + (nullable NSData *)dictionaryToQueryData:(nullable NSDictionary *)dictionary;
 
 /**
  * @brief Initialise a GET request for @p url with the common headers.
+ * @param url The URL to request.
+ * @return The initialised connection.
  * @ghidraAddress 0x36bd0
  */
 - (instancetype)initWithGetURL:(NSURL *)url;
 /**
  * @brief Initialise a POST request with a body and content type (15 second timeout).
+ * @param url The URL to request.
+ * @param post The request body, or @c nil for an empty body.
+ * @param contentType The @c Content-Type header value, or @c nil to omit the header.
+ * @return The initialised connection.
  * @ghidraAddress 0x36e0c
  */
 - (instancetype)initWithPostURL:(NSURL *)url
@@ -180,6 +190,11 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
                     contentType:(nullable NSString *)contentType;
 /**
  * @brief Initialise a POST request with a body, content type, and timeout (seconds).
+ * @param url The URL to request.
+ * @param post The request body, or @c nil for an empty body.
+ * @param contentType The @c Content-Type header value, or @c nil to omit the header.
+ * @param timeoutInterval The request timeout, in seconds.
+ * @return The initialised connection.
  * @ghidraAddress 0x36ea4
  */
 - (instancetype)initWithPostURL:(NSURL *)url
@@ -188,12 +203,21 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
                 timeoutInterval:(float)timeoutInterval;
 /**
  * @brief Initialise a GET request that saves the response body to @p filePath.
+ * @param url The URL to request.
+ * @param filePath The destination path the response body is saved to.
+ * @return The initialised connection.
  * @ghidraAddress 0x371b0
  */
 - (instancetype)initWithDownloadURL:(NSURL *)url filePath:(NSString *)filePath;
 
 /**
  * @brief Rebuild the request for @p url with the given method, content type, body, and save path.
+ * @param url The URL to request.
+ * @param HTTPMethod The HTTP method to send.
+ * @param contentType The @c Content-Type header value, or @c nil to omit the header.
+ * @param sendData The request body, or @c nil for an empty body.
+ * @param filePath The destination path for a download-to-file request, or @c nil to keep the body
+ *        in memory.
  * @ghidraAddress 0x3741c
  */
 - (void)updateRequest:(NSURL *)url
@@ -204,11 +228,17 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
 
 /**
  * @brief Start the request, delivering callbacks to @p delegate.
+ * @param delegate The delegate to receive lifecycle callbacks, or @c nil for none.
+ * @return The started session task.
  * @ghidraAddress 0x376ec
  */
 - (NSURLSessionTask *)startDownloading:(nullable id<RBHttpUtilDelegate>)delegate;
 /**
  * @brief Set the completion blocks and start the request.
+ * @param proceed The progress block, or @c nil to fall back to the delegate.
+ * @param success The completion block, or @c nil to fall back to the delegate.
+ * @param failure The failure block, or @c nil to fall back to the delegate.
+ * @return The started session task.
  * @ghidraAddress 0x377a8
  */
 - (NSURLSessionTask *)startDownloadingWithProceed:(nullable RBHttpUtilBlock)proceed
@@ -222,31 +252,37 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
 
 /**
  * @brief Bytes received so far.
+ * @return The number of body bytes received so far.
  * @ghidraAddress 0x3930c
  */
 - (unsigned long long)currentSize;
 /**
  * @brief Fractional download progress in the range 0..1.
+ * @return The fractional progress, or zero when the expected length is unknown.
  * @ghidraAddress 0x3936c
  */
 - (float)currentProgress;
 /**
  * @brief The received response body.
+ * @return The accumulated response body, or @c nil when nothing was received.
  * @ghidraAddress 0x39430
  */
 - (nullable NSData *)getData;
 /**
  * @brief The received response body parsed as JSON (allowing fragments).
+ * @return The parsed JSON value, or @c nil when the body is absent or malformed.
  * @ghidraAddress 0x3943c
  */
 - (nullable id)getDataInJSON;
 /**
  * @brief The response headers.
+ * @return The response header fields, or @c nil when no response was received.
  * @ghidraAddress 0x39520
  */
 - (nullable NSDictionary *)getHeader;
 /**
  * @brief Whether the response passed its integrity hash check.
+ * @return @c YES when the body matched the response's @c code header.
  * @ghidraAddress 0x3952c
  */
 - (BOOL)hashChecked;

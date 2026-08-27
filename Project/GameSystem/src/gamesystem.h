@@ -27,87 +27,150 @@ class GameScene;
  */
 class GameSystem {
 public:
-    /** @brief Returns the screen origin x coordinate, in points. */
+    /**
+     * @brief Returns the screen origin x coordinate, in points.
+     * @return The screen origin x coordinate, in points.
+     */
     double GetScreenX() const {
         return m_dScreenX;
     }
-    /** @brief Stores the screen origin x coordinate, in points. */
+    /**
+     * @brief Stores the screen origin x coordinate, in points.
+     * @param value The screen origin x coordinate, in points.
+     */
     void SetScreenX(double value) {
         m_dScreenX = value;
     }
-    /** @brief Returns the screen origin y coordinate, in points. */
+    /**
+     * @brief Returns the screen origin y coordinate, in points.
+     * @return The screen origin y coordinate, in points.
+     */
     double GetScreenY() const {
         return m_dScreenY;
     }
-    /** @brief Stores the screen origin y coordinate, in points. */
+    /**
+     * @brief Stores the screen origin y coordinate, in points.
+     * @param value The screen origin y coordinate, in points.
+     */
     void SetScreenY(double value) {
         m_dScreenY = value;
     }
-    /** @brief Returns the screen width, in points. */
+    /**
+     * @brief Returns the screen width, in points.
+     * @return The screen width, in points.
+     */
     double GetScreenWidth() const {
         return m_dScreenWidth;
     }
-    /** @brief Stores the screen width, in points. */
+    /**
+     * @brief Stores the screen width, in points.
+     * @param value The screen width, in points.
+     */
     void SetScreenWidth(double value) {
         m_dScreenWidth = value;
     }
-    /** @brief Returns the screen height, in points. */
+    /**
+     * @brief Returns the screen height, in points.
+     * @return The screen height, in points.
+     */
     double GetScreenHeight() const {
         return m_dScreenHeight;
     }
-    /** @brief Stores the screen height, in points. */
+    /**
+     * @brief Stores the screen height, in points.
+     * @param value The screen height, in points.
+     */
     void SetScreenHeight(double value) {
         m_dScreenHeight = value;
     }
-    /** @brief Returns the screen scale factor. */
+    /**
+     * @brief Returns the screen scale factor.
+     * @return The screen scale factor.
+     */
     float GetScreenScale() const {
         return m_flScreenScale;
     }
-    /** @brief Stores the screen scale factor. */
+    /**
+     * @brief Stores the screen scale factor.
+     * @param value The screen scale factor.
+     */
     void SetScreenScale(float value) {
         m_flScreenScale = value;
     }
-    /** @brief Returns the GL viewport width, in pixels. */
+    /**
+     * @brief Returns the GL viewport width, in pixels.
+     * @return The GL viewport width, in pixels.
+     */
     float GetViewportWidth() const {
         return m_flViewportWidth;
     }
-    /** @brief Stores the GL viewport width, in pixels. */
+    /**
+     * @brief Stores the GL viewport width, in pixels.
+     * @param value The GL viewport width, in pixels.
+     */
     void SetViewportWidth(float value) {
         m_flViewportWidth = value;
     }
-    /** @brief Returns the GL viewport height, in pixels. */
+    /**
+     * @brief Returns the GL viewport height, in pixels.
+     * @return The GL viewport height, in pixels.
+     */
     float GetViewportHeight() const {
         return m_flViewportHeight;
     }
-    /** @brief Stores the GL viewport height, in pixels. */
+    /**
+     * @brief Stores the GL viewport height, in pixels.
+     * @param value The GL viewport height, in pixels.
+     */
     void SetViewportHeight(float value) {
         m_flViewportHeight = value;
     }
-    /** @brief Returns the note sheet's near-plane x position (half-width reference). */
+    /**
+     * @brief Returns the note sheet's near-plane x position (half-width reference).
+     * @return The note sheet's near-plane x position.
+     */
     float GetSheetPosX() const {
         return m_flSheetPosX;
     }
-    /** @brief Returns the note sheet's near-plane y position (half-height reference). */
+    /**
+     * @brief Returns the note sheet's near-plane y position (half-height reference).
+     * @return The note sheet's near-plane y position.
+     */
     float GetSheetPosY() const {
         return m_flSheetPosY;
     }
-    /** @brief Returns the far-plane x extent of the note sheet. */
+    /**
+     * @brief Returns the far-plane x extent of the note sheet.
+     * @return The far-plane x extent of the note sheet.
+     */
     float GetSheetFarX() const {
         return m_flSheetFarX;
     }
-    /** @brief Returns the far-plane y extent of the note sheet. */
+    /**
+     * @brief Returns the far-plane y extent of the note sheet.
+     * @return The far-plane y extent of the note sheet.
+     */
     float GetSheetFarY() const {
         return m_flSheetFarY;
     }
-    /** @brief Returns the note sheet's half-width inset, the across-field position scale. */
+    /**
+     * @brief Returns the note sheet's half-width inset, the across-field position scale.
+     * @return The note sheet's half-width inset.
+     */
     float GetSheetInsetHalfX() const {
         return m_flSheetInsetHalfX;
     }
-    /** @brief Returns the note sheet's half-height inset, the toward-edge position scale. */
+    /**
+     * @brief Returns the note sheet's half-height inset, the toward-edge position scale.
+     * @return The note sheet's half-height inset.
+     */
     float GetSheetInsetHalfY() const {
         return m_flSheetInsetHalfY;
     }
-    /** @brief Returns the note sheet's radius. */
+    /**
+     * @brief Returns the note sheet's radius.
+     * @return The note sheet's radius.
+     */
     float GetSheetRadius() const {
         return m_flSheetRadius;
     }
@@ -126,43 +189,73 @@ public:
      * @ghidraAddress 0x12f394
      */
     void SetSheetLayerMargins(float fLeft, float fTop, float fRight, float fBottom);
-    /** @brief Returns the note sheet's half radius, the off-screen cull margin below the field. */
+    /**
+     * @brief Returns the note sheet's half radius, the off-screen cull margin below the field.
+     * @return The note sheet's half radius.
+     */
     float GetSheetRadiusHalf() const {
         return m_flSheetRadiusHalf;
     }
-    /** @brief Returns the note sheet's scaled radius, used as the slide-result sprite scale. */
+    /**
+     * @brief Returns the note sheet's scaled radius, used as the slide-result sprite scale.
+     * @return The note sheet's scaled radius.
+     */
     float GetSheetRadiusScaled() const {
         return m_flSheetRadiusScaled;
     }
-    /** @brief Returns the squared note-sheet diameter, the note touch-hit radius test. */
+    /**
+     * @brief Returns the squared note-sheet diameter, the note touch-hit radius test.
+     * @return The squared note-sheet diameter.
+     */
     float GetSheetDiameterSq() const {
         return m_flSheetDiameterSq;
     }
-    /** @brief Returns the play-field scale. */
+    /**
+     * @brief Returns the play-field scale.
+     * @return The play-field scale.
+     */
     float GetPlayfieldScale() const {
         return m_flPlayfieldScale;
     }
-    /** @brief Returns the camera pitch reference height used by the tilt projection. */
+    /**
+     * @brief Returns the camera pitch reference height used by the tilt projection.
+     * @return The camera pitch reference height.
+     */
     float GetCameraPitchHeight() const {
         return m_flCameraPitchHeight;
     }
-    /** @brief Stores the camera pitch reference height used by the tilt projection. */
+    /**
+     * @brief Stores the camera pitch reference height used by the tilt projection.
+     * @param value The camera pitch reference height.
+     */
     void SetCameraPitchHeight(float value) {
         m_flCameraPitchHeight = value;
     }
-    /** @brief Returns the cached target score used by the play screen. */
+    /**
+     * @brief Returns the cached target score used by the play screen.
+     * @return The cached target score.
+     */
     int GetTargetScore() const {
         return m_nTargetScore;
     }
-    /** @brief Stores the cached target score used by the play screen. */
+    /**
+     * @brief Stores the cached target score used by the play screen.
+     * @param value The target score.
+     */
     void SetTargetScore(int value) {
         m_nTargetScore = value;
     }
-    /** @brief Returns the cached target achievement rate used by the play screen. */
+    /**
+     * @brief Returns the cached target achievement rate used by the play screen.
+     * @return The cached target achievement rate.
+     */
     float GetTargetAR() const {
         return m_flTargetAR;
     }
-    /** @brief Stores the cached target achievement rate used by the play screen. */
+    /**
+     * @brief Stores the cached target achievement rate used by the play screen.
+     * @param value The target achievement rate.
+     */
     void SetTargetAR(float value) {
         m_flTargetAR = value;
     }
@@ -171,291 +264,496 @@ public:
      *
      * The music-menu hub clears this at the start of its hide animation and sets it again while a
      * tutorial hide step is playing.
+     *
+     * @return @c true while the tutorial is suppressing the menu's gameplay input.
      */
     bool GetMenuTutorialActive() const {
         return m_fMenuTutorialActive;
     }
-    /** @brief Records whether the music-menu tutorial is suppressing the menu's gameplay input. */
+    /**
+     * @brief Records whether the music-menu tutorial is suppressing the menu's gameplay input.
+     * @param value @c true while the tutorial is suppressing the menu's gameplay input.
+     */
     void SetMenuTutorialActive(bool value) {
         m_fMenuTutorialActive = value;
     }
-    /** @brief Returns the in-play tutorial-guide phase. */
+    /**
+     * @brief Returns the in-play tutorial-guide phase.
+     * @return The in-play tutorial-guide phase.
+     */
     int GetTutorialPhase() const {
         return m_nTutorialPhase;
     }
-    /** @brief Sets the in-play tutorial-guide phase. */
+    /**
+     * @brief Sets the in-play tutorial-guide phase.
+     * @param nPhase The in-play tutorial-guide phase.
+     */
     void SetTutorialPhase(int nPhase) {
         m_nTutorialPhase = nPhase;
     }
-    /** @brief Reports whether this is the player's first play of the song. */
+    /**
+     * @brief Reports whether this is the player's first play of the song.
+     * @return @c true when this is the player's first play of the song.
+     */
     bool GetIsFirstPlay() const {
         return m_fIsFirstPlay;
     }
-    /** @brief Records whether this is the player's first play of the song. */
+    /**
+     * @brief Records whether this is the player's first play of the song.
+     * @param value @c true when this is the player's first play of the song.
+     */
     void SetIsFirstPlay(bool value) {
         m_fIsFirstPlay = value;
     }
-    /** @brief Returns the random seed used to drive gameplay. */
+    /**
+     * @brief Returns the random seed used to drive gameplay.
+     * @return The random seed used to drive gameplay.
+     */
     unsigned int GetRandSeed() const {
         return m_dwRandSeed;
     }
-    /** @brief Stores the random seed used to drive gameplay. */
+    /**
+     * @brief Stores the random seed used to drive gameplay.
+     * @param value The random seed used to drive gameplay.
+     */
     void SetRandSeed(unsigned int value) {
         m_dwRandSeed = value;
     }
-    /** @brief Returns the note-sheet width. */
+    /**
+     * @brief Returns the note-sheet width.
+     * @return The note-sheet width.
+     */
     float GetSheetWidth() const {
         return m_flSheetWidth;
     }
-    /** @brief Stores the note-sheet width. */
+    /**
+     * @brief Stores the note-sheet width.
+     * @param value The note-sheet width.
+     */
     void SetSheetWidth(float value) {
         m_flSheetWidth = value;
     }
-    /** @brief Returns the note-sheet height. */
+    /**
+     * @brief Returns the note-sheet height.
+     * @return The note-sheet height.
+     */
     float GetSheetHeight() const {
         return m_flSheetHeight;
     }
-    /** @brief Stores the note-sheet height. */
+    /**
+     * @brief Stores the note-sheet height.
+     * @param value The note-sheet height.
+     */
     void SetSheetHeight(float value) {
         m_flSheetHeight = value;
     }
-    /** @brief Reports whether the 3D tilt sheet projection is enabled. */
+    /**
+     * @brief Reports whether the 3D tilt sheet projection is enabled.
+     * @return @c true when the 3D tilt sheet projection is enabled.
+     */
     bool GetSheetLayerFlags() const {
         return m_fUse3dTiltProjection;
     }
-    /** @brief Enables or disables the 3D tilt sheet projection from an integer flag. */
+    /**
+     * @brief Enables or disables the 3D tilt sheet projection from an integer flag.
+     * @param value Non-zero to enable the 3D tilt sheet projection.
+     */
     void SetSheetLayerFlags(int value) {
         m_fUse3dTiltProjection = value != 0;
     }
-    /** @brief Returns the camera target x coordinate. */
+    /**
+     * @brief Returns the camera target x coordinate.
+     * @return The camera target x coordinate.
+     */
     float GetCameraTargetX() const {
         return m_flCameraTargetX;
     }
-    /** @brief Stores the camera target x coordinate. */
+    /**
+     * @brief Stores the camera target x coordinate.
+     * @param value The camera target x coordinate.
+     */
     void SetCameraTargetX(float value) {
         m_flCameraTargetX = value;
     }
-    /** @brief Returns the camera target y coordinate. */
+    /**
+     * @brief Returns the camera target y coordinate.
+     * @return The camera target y coordinate.
+     */
     float GetCameraTargetY() const {
         return m_flCameraTargetY;
     }
-    /** @brief Stores the camera target y coordinate. */
+    /**
+     * @brief Stores the camera target y coordinate.
+     * @param value The camera target y coordinate.
+     */
     void SetCameraTargetY(float value) {
         m_flCameraTargetY = value;
     }
-    /** @brief Returns the selected game type. */
+    /**
+     * @brief Returns the selected game type.
+     * @return The selected game type.
+     */
     int GetGameType() const {
         return m_nGameType;
     }
-    /** @brief Stores the selected game type. */
+    /**
+     * @brief Stores the selected game type.
+     * @param value The selected game type.
+     */
     void SetGameType(int value) {
         m_nGameType = value;
     }
-    /** @brief Returns the selected difficulty. */
+    /**
+     * @brief Returns the selected difficulty.
+     * @return The selected difficulty.
+     */
     int GetDifficulty() const {
         return m_nDifficulty;
     }
-    /** @brief Stores the selected difficulty. */
+    /**
+     * @brief Stores the selected difficulty.
+     * @param value The selected difficulty.
+     */
     void SetDifficulty(int value) {
         m_nDifficulty = value;
     }
-    /** @brief Returns the selected difficulty level. */
+    /**
+     * @brief Returns the selected difficulty level.
+     * @return The selected difficulty level.
+     */
     int GetDifficultyLevel() const {
         return m_nDifficultyLevel;
     }
-    /** @brief Stores the selected difficulty level. */
+    /**
+     * @brief Stores the selected difficulty level.
+     * @param value The selected difficulty level.
+     */
     void SetDifficultyLevel(int value) {
         m_nDifficultyLevel = value;
     }
-    /** @brief Returns the play colour. */
+    /**
+     * @brief Returns the play colour.
+     * @return The play colour.
+     */
     int GetPlayColor() const {
         return m_nPlayColor;
     }
-    /** @brief Stores the play colour. */
+    /**
+     * @brief Stores the play colour.
+     * @param value The play colour.
+     */
     void SetPlayColor(int value) {
         m_nPlayColor = value;
     }
-    /** @brief Returns the player colour. */
+    /**
+     * @brief Returns the player colour.
+     * @return The player colour.
+     */
     int GetPlayerColor() const {
         return m_nPlayerColor;
     }
-    /** @brief Stores the player colour. */
+    /**
+     * @brief Stores the player colour.
+     * @param value The player colour.
+     */
     void SetPlayerColor(int value) {
         m_nPlayerColor = value;
     }
-    /** @brief Returns the rival alpha. */
+    /**
+     * @brief Returns the rival alpha.
+     * @return The rival alpha.
+     */
     float GetRivalAlpha() const {
         return m_flRivalAlpha;
     }
-    /** @brief Stores the rival alpha. */
+    /**
+     * @brief Stores the rival alpha.
+     * @param value The rival alpha.
+     */
     void SetRivalAlpha(float value) {
         m_flRivalAlpha = value;
     }
-    /** @brief Returns the shot volume. */
+    /**
+     * @brief Returns the shot volume.
+     * @return The shot volume.
+     */
     float GetShotVolume() const {
         return m_flShotVolume;
     }
-    /** @brief Stores the shot volume. */
+    /**
+     * @brief Stores the shot volume.
+     * @param value The shot volume.
+     */
     void SetShotVolume(float value) {
         m_flShotVolume = value;
     }
-    /** @brief Returns the background brightness. */
+    /**
+     * @brief Returns the background brightness.
+     * @return The background brightness.
+     */
     float GetBackgroundBrightness() const {
         return m_flBackgroundBrightness;
     }
-    /** @brief Stores the background brightness. */
+    /**
+     * @brief Stores the background brightness.
+     * @param value The background brightness.
+     */
     void SetBackgroundBrightness(float value) {
         m_flBackgroundBrightness = value;
     }
-    /** @brief Whether the play-field background fade-in has reached full opacity. */
+    /**
+     * @brief Whether the play-field background fade-in has reached full opacity.
+     * @return @c true once the background fade-in has reached full opacity.
+     */
     bool IsBackgroundFadeComplete() const {
         return m_fBackgroundFadeComplete;
     }
-    /** @brief Records whether the play-field background fade-in has reached full opacity. */
+    /**
+     * @brief Records whether the play-field background fade-in has reached full opacity.
+     * @param bComplete @c true once the background fade-in has reached full opacity.
+     */
     void SetBackgroundFadeComplete(bool bComplete) {
         m_fBackgroundFadeComplete = bComplete;
     }
-    /** @brief Returns the shot cosmetic type. */
+    /**
+     * @brief Returns the shot cosmetic type.
+     * @return The shot cosmetic type.
+     */
     int GetShotType() const {
         return m_nShotType;
     }
-    /** @brief Stores the shot cosmetic type. */
+    /**
+     * @brief Stores the shot cosmetic type.
+     * @param value The shot cosmetic type.
+     */
     void SetShotType(int value) {
         m_nShotType = value;
     }
-    /** @brief Returns the background-music cosmetic type. */
+    /**
+     * @brief Returns the background-music cosmetic type.
+     * @return The background-music cosmetic type.
+     */
     int GetBgmType() const {
         return m_nBgmType;
     }
-    /** @brief Stores the background-music cosmetic type. */
+    /**
+     * @brief Stores the background-music cosmetic type.
+     * @param value The background-music cosmetic type.
+     */
     void SetBgmType(int value) {
         m_nBgmType = value;
     }
-    /** @brief Returns the frame cosmetic type. */
+    /**
+     * @brief Returns the frame cosmetic type.
+     * @return The frame cosmetic type.
+     */
     int GetFrameType() const {
         return m_nFrameType;
     }
-    /** @brief Stores the frame cosmetic type. */
+    /**
+     * @brief Stores the frame cosmetic type.
+     * @param value The frame cosmetic type.
+     */
     void SetFrameType(int value) {
         m_nFrameType = value;
     }
-    /** @brief Returns the explosion cosmetic type. */
+    /**
+     * @brief Returns the explosion cosmetic type.
+     * @return The explosion cosmetic type.
+     */
     int GetExplosionType() const {
         return m_nExplosionType;
     }
-    /** @brief Stores the explosion cosmetic type. */
+    /**
+     * @brief Stores the explosion cosmetic type.
+     * @param value The explosion cosmetic type.
+     */
     void SetExplosionType(int value) {
         m_nExplosionType = value;
     }
-    /** @brief Returns the background cosmetic type. */
+    /**
+     * @brief Returns the background cosmetic type.
+     * @return The background cosmetic type.
+     */
     int GetBackgroundType() const {
         return m_nBackgroundType;
     }
-    /** @brief Stores the background cosmetic type. */
+    /**
+     * @brief Stores the background cosmetic type.
+     * @param value The background cosmetic type.
+     */
     void SetBackgroundType(int value) {
         m_nBackgroundType = value;
     }
-    /** @brief Returns the note cosmetic type. */
+    /**
+     * @brief Returns the note cosmetic type.
+     * @return The note cosmetic type.
+     */
     int GetNoteType() const {
         return m_nNoteType;
     }
-    /** @brief Stores the note cosmetic type. */
+    /**
+     * @brief Stores the note cosmetic type.
+     * @param value The note cosmetic type.
+     */
     void SetNoteType(int value) {
         m_nNoteType = value;
     }
-    /** @brief Returns the current combo count. */
+    /**
+     * @brief Returns the current combo count.
+     * @return The current combo count.
+     */
     int GetComboCount() const {
         return m_nComboCount;
     }
-    /** @brief Stores the current combo count. */
+    /**
+     * @brief Stores the current combo count.
+     * @param value The current combo count.
+     */
     void SetComboCount(int value) {
         m_nComboCount = value;
     }
-    /** @brief Reports whether the CPU achieved a full combo. */
+    /**
+     * @brief Reports whether the CPU achieved a full combo.
+     * @return @c true when the CPU achieved a full combo.
+     */
     bool GetCpuFullCombo() const {
         return m_fCpuFullCombo;
     }
-    /** @brief Records whether the CPU achieved a full combo. */
+    /**
+     * @brief Records whether the CPU achieved a full combo.
+     * @param value @c true when the CPU achieved a full combo.
+     */
     void SetCpuFullCombo(bool value) {
         m_fCpuFullCombo = value;
     }
-    /** @brief Reports whether the user achieved a full combo. */
+    /**
+     * @brief Reports whether the user achieved a full combo.
+     * @return @c true when the user achieved a full combo.
+     */
     bool GetUserFullCombo() const {
         return m_fUserFullCombo;
     }
-    /** @brief Records whether the user achieved a full combo. */
+    /**
+     * @brief Records whether the user achieved a full combo.
+     * @param value @c true when the user achieved a full combo.
+     */
     void SetUserFullCombo(bool value) {
         m_fUserFullCombo = value;
     }
-    /** @brief Reports whether every reflec was a full-just. */
+    /**
+     * @brief Reports whether every reflec was a full-just.
+     * @return @c true when every reflec was a full-just.
+     */
     bool GetFullJustReflec() const {
         return m_fFullJustReflec;
     }
-    /** @brief Records whether every reflec was a full-just. */
+    /**
+     * @brief Records whether every reflec was a full-just.
+     * @param value @c true when every reflec was a full-just.
+     */
     void SetFullJustReflec(bool value) {
         m_fFullJustReflec = value;
     }
-    /** @brief Reports whether background music is currently playing. */
+    /**
+     * @brief Reports whether background music is currently playing.
+     * @return @c true while background music is playing.
+     */
     bool GetBgmPlaying() const {
         return m_fBgmPlaying;
     }
-    /** @brief Sets whether background music is currently playing. */
+    /**
+     * @brief Sets whether background music is currently playing.
+     * @param value @c true while background music is playing.
+     */
     void SetBgmPlaying(bool value) {
         m_fBgmPlaying = value;
     }
-    /** @brief Reports whether the game is paused or interrupted. */
+    /**
+     * @brief Reports whether the game is paused or interrupted.
+     * @return @c true while the game is paused or interrupted.
+     */
     bool GetPaused() const {
         return m_fPaused;
     }
-    /** @brief Sets whether the game is paused or interrupted. */
+    /**
+     * @brief Sets whether the game is paused or interrupted.
+     * @param value @c true while the game is paused or interrupted.
+     */
     void SetPaused(bool value) {
         m_fPaused = value;
     }
-    /** @brief The pastel-bonus type for the current play (0 when no bonus is active). */
+    /**
+     * @brief The pastel-bonus type for the current play (0 when no bonus is active).
+     * @return The pastel-bonus type, or zero when no bonus is active.
+     */
     int GetPastelBonusType() const {
         return m_nPastelBonusType;
     }
-    /** @brief Stores the pastel-bonus type for the current play. */
+    /**
+     * @brief Stores the pastel-bonus type for the current play.
+     * @param value The pastel-bonus type, or zero when no bonus is active.
+     */
     void SetPastelBonusType(int value) {
         m_nPastelBonusType = value;
     }
     /**
      * @brief Whether the finished play set a new record, which arms the result screen's celebration
      * cue.
+     * @return @c true when the finished play set a new record.
      */
     bool IsNewRecord() const {
         return m_nNewRecordFlag != 0;
     }
-    /** @brief Records whether the finished play set a new record. */
+    /**
+     * @brief Records whether the finished play set a new record.
+     * @param value @c true when the finished play set a new record.
+     */
     void SetNewRecord(bool value) {
         m_nNewRecordFlag = value ? 1 : 0;
     }
-    /** @brief Stores the player's level, current experience, and experience gained this play. */
+    /**
+     * @brief Stores the player's level, current experience, and experience gained this play.
+     * @param nLevel The player's level.
+     * @param nExp The player's current experience.
+     * @param nGained The experience gained this play.
+     */
     void SetResultLevelExp(int nLevel, int nExp, int nGained) {
         m_nPlayerLevel = nLevel;
         m_nPlayerExp = nExp;
         m_nGainedExp = nGained;
     }
-    /** @brief The player's level, as stored for the result screen. */
+    /**
+     * @brief The player's level, as stored for the result screen.
+     * @return The player's level.
+     */
     int GetPlayerLevel() const {
         return m_nPlayerLevel;
     }
-    /** @brief The player's current experience, as stored for the result screen. */
+    /**
+     * @brief The player's current experience, as stored for the result screen.
+     * @return The player's current experience.
+     */
     int GetPlayerExp() const {
         return m_nPlayerExp;
     }
-    /** @brief The experience gained this play, as stored for the result screen. */
+    /**
+     * @brief The experience gained this play, as stored for the result screen.
+     * @return The experience gained this play.
+     */
     int GetGainedExp() const {
         return m_nGainedExp;
     }
     /**
      * @brief Stores the sheet-layer base position and recomputes its derived anchor points.
+     * @param pPosition The sheet-layer base position.
      * @ghidraAddress 0x12f33c
      */
     void SetSheetLayerPosition(S_VECTOR2 *pPosition);
     /**
      * @brief Recomputes the note-sheet layer position and margins for the current screen and the
      *        given speed type.
+     * @param speedType The note-speed type the layout is computed for.
      * @ghidraAddress 0x8ef60
      */
     void ConfigureSheetLayerForScreen(int speedType);
@@ -475,7 +773,10 @@ public:
      * @ghidraAddress 0x12f394
      */
     void SetSheetMargins(float flLeft, float flTop, float flRight, float flBottom);
-    /** @brief Returns the active game scene, or @c nullptr when none is running. */
+    /**
+     * @brief Returns the active game scene, or @c nullptr when none is running.
+     * @return The active game scene, or @c nullptr when none is running.
+     */
     rb::GameScene *GetCurrentScene() const {
         return m_pCurrentScene;
     }
@@ -484,12 +785,15 @@ public:
      *
      * @c rb::GameScene::GetInstance lazily constructs the play scene into this slot; it is the same
      * field as @c GetCurrentScene reads.
+     *
+     * @return The address of the leading scene slot.
      */
     rb::GameScene **GetCurrentSceneSlot() {
         return &m_pCurrentScene;
     }
     /**
      * @brief Returns the global GameSystem singleton, constructing it on first use.
+     * @return The global @c GameSystem singleton.
      * @ghidraAddress 0x12edb4
      */
     static GameSystem *GetGameSystem();
@@ -518,17 +822,26 @@ public:
      */
     void LoadArtistNameTexture(MusicData *pMusicData);
 
-    /** @brief The rendered music-name text texture, loaded by @c LoadMusicNameTexture. */
+    /**
+     * @brief The rendered music-name text texture, loaded by @c LoadMusicNameTexture.
+     * @return The rendered music-name text texture, or @c nullptr when none is loaded.
+     */
     ne::C_TEXTURE *GetMusicNameTexture() const {
         return m_pMusicNameTexture;
     }
 
-    /** @brief The song jacket/artwork texture, loaded by @c LoadArtworkTexture. */
+    /**
+     * @brief The song jacket/artwork texture, loaded by @c LoadArtworkTexture.
+     * @return The song jacket/artwork texture, or @c nullptr when none is loaded.
+     */
     ne::C_TEXTURE *GetArtworkTexture() const {
         return m_pArtworkTexture;
     }
 
-    /** @brief The rendered artist-name text texture, loaded by @c LoadArtistNameTexture. */
+    /**
+     * @brief The rendered artist-name text texture, loaded by @c LoadArtistNameTexture.
+     * @return The rendered artist-name text texture, or @c nullptr when none is loaded.
+     */
     ne::C_TEXTURE *GetArtistNameTexture() const {
         return m_pArtistNameTexture;
     }
@@ -554,12 +867,13 @@ private:
 public:
     // The three cached song textures are torn down (released and nulled) directly by the game
     // scene, matching the binary's cross-class field access, so they are public.
-    ne::C_TEXTURE *m_pArtworkTexture = {};   // +0x40: the song jacket/artwork texture, loaded by
-                                             //        LoadArtworkTexture and released at teardown.
-    ne::C_TEXTURE *m_pMusicNameTexture = {}; // +0x48: the rendered music-name text texture.
-    ne::C_TEXTURE *m_pArtistNameTexture =
-        {}; // +0x50: the rendered artist-name text texture, loaded
-            //        by LoadArtistNameTexture.
+
+    /** @brief The song jacket/artwork texture, loaded by @c LoadArtworkTexture. */
+    ne::C_TEXTURE *m_pArtworkTexture = {}; // +0x40: released at teardown by the game scene.
+    /** @brief The rendered music-name text texture, loaded by @c LoadMusicNameTexture. */
+    ne::C_TEXTURE *m_pMusicNameTexture = {}; // +0x48
+    /** @brief The rendered artist-name text texture, loaded by @c LoadArtistNameTexture. */
+    ne::C_TEXTURE *m_pArtistNameTexture = {}; // +0x50
 
 private:
     float m_flSheetPosX = {};         // +0x58

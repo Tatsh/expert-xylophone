@@ -246,593 +246,710 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The main audio archive member (@c bgm).
+ * @return The decrypted audio data, or @c nil when the member is absent.
  * @ghidraAddress 0x602d8
  */
 - (nullable NSMutableData *)music;
 /**
  * @brief The basic-chart audio member (@c bgm_b, falling back to @c bgm).
+ * @return The decrypted audio data, or @c nil when the member is absent.
  * @ghidraAddress 0x602ec
  */
 - (nullable NSMutableData *)musicBasic;
 /**
  * @brief The medium-chart audio member (@c bgm_m, falling back to @c bgm).
+ * @return The decrypted audio data, or @c nil when the member is absent.
  * @ghidraAddress 0x60308
  */
 - (nullable NSMutableData *)musicMedium;
 /**
  * @brief The hard-chart audio member (@c bgm_h, falling back to @c bgm).
+ * @return The decrypted audio data, or @c nil when the member is absent.
  * @ghidraAddress 0x60324
  */
 - (nullable NSMutableData *)musicHard;
 /**
  * @brief The preview audio member (@c pre).
+ * @return The decrypted audio data, or @c nil when the member is absent.
  * @ghidraAddress 0x60340
  */
 - (nullable NSMutableData *)musicPre;
 
 /**
  * @brief The basic note sheet (@c note_bas).
+ * @return The decrypted note-sheet data, or @c nil when the member is absent.
  * @ghidraAddress 0x60354
  */
 - (nullable NSMutableData *)sheetBasic;
 /**
  * @brief The basic-light note sheet (@c note_bas2, falling back to @c note_bas).
+ * @return The decrypted note-sheet data, or @c nil when the member is absent.
  * @ghidraAddress 0x60368
  */
 - (nullable NSMutableData *)sheetBasicLight;
 /**
  * @brief The medium note sheet (@c note_med).
+ * @return The decrypted note-sheet data, or @c nil when the member is absent.
  * @ghidraAddress 0x60384
  */
 - (nullable NSMutableData *)sheetMedium;
 /**
  * @brief The medium-light note sheet (@c note_med2, falling back to @c note_med).
+ * @return The decrypted note-sheet data, or @c nil when the member is absent.
  * @ghidraAddress 0x60398
  */
 - (nullable NSMutableData *)sheetMediumLight;
 /**
  * @brief The hard note sheet (@c note_har).
+ * @return The decrypted note-sheet data, or @c nil when the member is absent.
  * @ghidraAddress 0x603b4
  */
 - (nullable NSMutableData *)sheetHard;
 /**
  * @brief The hard-light note sheet (@c note_har2, falling back to @c note_har).
+ * @return The decrypted note-sheet data, or @c nil when the member is absent.
  * @ghidraAddress 0x603c8
  */
 - (nullable NSMutableData *)sheetHardLight;
 /**
  * @brief The special note sheet, sourced from the extend note data owner.
+ * @return The decrypted note-sheet data, or @c nil when no extend note data is present.
  * @ghidraAddress 0x603e4
  */
 - (nullable NSMutableData *)sheetSpecial;
 /**
  * @brief The special-light note sheet, sourced from the extend note data owner.
+ * @return The decrypted note-sheet data, or @c nil when no extend note data is present.
  * @ghidraAddress 0x60484
  */
 - (nullable NSMutableData *)sheetSpecialLight;
 
 /**
  * @brief The default artwork member (@c artwork).
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x60524
  */
 - (nullable NSMutableData *)artworkData;
 /**
  * @brief The basic-chart artwork member (@c artwork_b).
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x60538
  */
 - (nullable NSMutableData *)artworkDataBasic;
 /**
  * @brief The medium-chart artwork member (@c artwork_m).
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x6054c
  */
 - (nullable NSMutableData *)artworkDataMedium;
 /**
  * @brief The hard-chart artwork member (@c artwork_h).
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x60560
  */
 - (nullable NSMutableData *)artworkDataHard;
 
 /**
  * @brief The default white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60574
  */
 - (nullable NSMutableData *)musicNameImageWhiteData;
 /**
  * @brief The basic white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60588
  */
 - (nullable NSMutableData *)musicNameImageWhiteDataBasic;
 /**
  * @brief The medium white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x6059c
  */
 - (nullable NSMutableData *)musicNameImageWhiteDataMedium;
 /**
  * @brief The hard white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x605b0
  */
 - (nullable NSMutableData *)musicNameImageWhiteDataHard;
 /**
  * @brief The default white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x605c4
  */
 - (nullable NSMutableData *)artistNameImageWhiteData;
 /**
  * @brief The basic white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x605d8
  */
 - (nullable NSMutableData *)artistNameImageWhiteDataBasic;
 /**
  * @brief The medium white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x605ec
  */
 - (nullable NSMutableData *)artistNameImageWhiteDataMedium;
 /**
  * @brief The hard white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60600
  */
 - (nullable NSMutableData *)artistNameImageWhiteDataHard;
 /**
  * @brief The default black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60614
  */
 - (nullable NSMutableData *)musicNameImageBlackData;
 /**
  * @brief The basic black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60628
  */
 - (nullable NSMutableData *)musicNameImageBlackDataBasic;
 /**
  * @brief The medium black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x6063c
  */
 - (nullable NSMutableData *)musicNameImageBlackDataMedium;
 /**
  * @brief The hard black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60650
  */
 - (nullable NSMutableData *)musicNameImageBlackDataHard;
 /**
  * @brief The default black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60664
  */
 - (nullable NSMutableData *)artistNameImageBlackData;
 /**
  * @brief The basic black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60678
  */
 - (nullable NSMutableData *)artistNameImageBlackDataBasic;
 /**
  * @brief The medium black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x6068c
  */
 - (nullable NSMutableData *)artistNameImageBlackDataMedium;
 /**
  * @brief The hard black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x606a0
  */
 - (nullable NSMutableData *)artistNameImageBlackDataHard;
 
 /**
  * @brief The default artwork member at double resolution (@c artwork2x).
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x606b4
  */
 - (nullable NSMutableData *)artwork2xData;
 /**
  * @brief The basic double-resolution artwork member.
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x606c8
  */
 - (nullable NSMutableData *)artwork2xDataBasic;
 /**
  * @brief The medium double-resolution artwork member.
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x606dc
  */
 - (nullable NSMutableData *)artwork2xDataMedium;
 /**
  * @brief The hard double-resolution artwork member.
+ * @return The decrypted artwork data, or @c nil when the member is absent.
  * @ghidraAddress 0x606f0
  */
 - (nullable NSMutableData *)artwork2xDataHard;
 /**
  * @brief The default double-resolution white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60704
  */
 - (nullable NSMutableData *)musicNameImageWhite2xData;
 /**
  * @brief The basic double-resolution white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60718
  */
 - (nullable NSMutableData *)musicNameImageWhite2xDataBasic;
 /**
  * @brief The medium double-resolution white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x6072c
  */
 - (nullable NSMutableData *)musicNameImageWhite2xDataMedium;
 /**
  * @brief The hard double-resolution white title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60740
  */
 - (nullable NSMutableData *)musicNameImageWhite2xDataHard;
 /**
  * @brief The default double-resolution white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60754
  */
 - (nullable NSMutableData *)artistNameImageWhite2xData;
 /**
  * @brief The basic double-resolution white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60768
  */
 - (nullable NSMutableData *)artistNameImageWhite2xDataBasic;
 /**
  * @brief The medium double-resolution white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x6077c
  */
 - (nullable NSMutableData *)artistNameImageWhite2xDataMedium;
 /**
  * @brief The hard double-resolution white artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60790
  */
 - (nullable NSMutableData *)artistNameImageWhite2xDataHard;
 /**
  * @brief The default double-resolution black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x607a4
  */
 - (nullable NSMutableData *)musicNameImageBlack2xData;
 /**
  * @brief The basic double-resolution black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x607b8
  */
 - (nullable NSMutableData *)musicNameImageBlack2xDataBasic;
 /**
  * @brief The medium double-resolution black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x607cc
  */
 - (nullable NSMutableData *)musicNameImageBlack2xDataMedium;
 /**
  * @brief The hard double-resolution black title-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x607e0
  */
 - (nullable NSMutableData *)musicNameImageBlack2xDataHard;
 /**
  * @brief The default double-resolution black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x607f4
  */
 - (nullable NSMutableData *)artistNameImageBlack2xData;
 /**
  * @brief The basic double-resolution black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60808
  */
 - (nullable NSMutableData *)artistNameImageBlack2xDataBasic;
 /**
  * @brief The medium double-resolution black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x6081c
  */
 - (nullable NSMutableData *)artistNameImageBlack2xDataMedium;
 /**
  * @brief The hard double-resolution black artist-strip member.
+ * @return The decrypted strip data, or @c nil when the member is absent.
  * @ghidraAddress 0x60830
  */
 - (nullable NSMutableData *)artistNameImageBlack2xDataHard;
 
 /**
  * @brief The default double-resolution brown-tinted title strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x60844
  */
 - (nullable NSData *)musicNameImageBrown2xData;
 /**
  * @brief The basic double-resolution brown-tinted title strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x60988
  */
 - (nullable NSData *)musicNameImageBrown2xDataBasic;
 /**
  * @brief The medium double-resolution brown-tinted title strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x60ad8
  */
 - (nullable NSData *)musicNameImageBrown2xDataMedium;
 /**
  * @brief The hard double-resolution brown-tinted title strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x60c28
  */
 - (nullable NSData *)musicNameImageBrown2xDataHard;
 /**
  * @brief The default double-resolution brown-tinted artist strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x60d78
  */
 - (nullable NSData *)artistNameImageBrown2xData;
 /**
  * @brief The basic double-resolution brown-tinted artist strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x60ebc
  */
 - (nullable NSData *)artistNameImageBrown2xDataBasic;
 /**
  * @brief The medium double-resolution brown-tinted artist strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x6100c
  */
 - (nullable NSData *)artistNameImageBrown2xDataMedium;
 /**
  * @brief The hard double-resolution brown-tinted artist strip, PNG encoded.
+ * @return The PNG-encoded strip data, or @c nil when the source strip is absent.
  * @ghidraAddress 0x6115c
  */
 - (nullable NSData *)artistNameImageBrown2xDataHard;
 
 /**
  * @brief The default artwork image, decoded and cached.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x612ac
  */
 - (nullable UIImage *)artwork;
 /**
  * @brief The basic artwork image, decoded and cached.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61498
  */
 - (nullable UIImage *)artworkBasic;
 /**
  * @brief The medium artwork image, decoded and cached.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61684
  */
 - (nullable UIImage *)artworkMedium;
 /**
  * @brief The hard artwork image, decoded and cached.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6188c
  */
 - (nullable UIImage *)artworkHard;
 /**
  * @brief The default white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61a94
  */
 - (nullable UIImage *)musicNameImageWhite;
 /**
  * @brief The basic white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61ba4
  */
 - (nullable UIImage *)musicNameImageWhiteBasic;
 /**
  * @brief The medium white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61cb4
  */
 - (nullable UIImage *)musicNameImageWhiteMedium;
 /**
  * @brief The hard white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61dc4
  */
 - (nullable UIImage *)musicNameImageWhiteHard;
 /**
  * @brief The default white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61ed4
  */
 - (nullable UIImage *)artistNameImageWhite;
 /**
  * @brief The basic white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x61fe4
  */
 - (nullable UIImage *)artistNameImageWhiteBasic;
 /**
  * @brief The medium white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x620f4
  */
 - (nullable UIImage *)artistNameImageWhiteMedium;
 /**
  * @brief The hard white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62204
  */
 - (nullable UIImage *)artistNameImageWhiteHard;
 /**
  * @brief The default black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62314
  */
 - (nullable UIImage *)musicNameImageBlack;
 /**
  * @brief The basic black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x624a0
  */
 - (nullable UIImage *)musicNameImageBlackBasic;
 /**
  * @brief The medium black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62638
  */
 - (nullable UIImage *)musicNameImageBlackMedium;
 /**
  * @brief The hard black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x627d0
  */
 - (nullable UIImage *)musicNameImageBlackHard;
 /**
  * @brief The default black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62968
  */
 - (nullable UIImage *)artistNameImageBlack;
 /**
  * @brief The basic black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62af4
  */
 - (nullable UIImage *)artistNameImageBlackBasic;
 /**
  * @brief The medium black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62c8c
  */
 - (nullable UIImage *)artistNameImageBlackMedium;
 /**
  * @brief The hard black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62e24
  */
 - (nullable UIImage *)artistNameImageBlackHard;
 /**
  * @brief The default brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x62fbc
  */
 - (nullable UIImage *)musicNameImageBrown;
 /**
  * @brief The basic brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x63154
  */
 - (nullable UIImage *)musicNameImageBrownBasic;
 /**
  * @brief The medium brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x632f8
  */
 - (nullable UIImage *)musicNameImageBrownMedium;
 /**
  * @brief The hard brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6349c
  */
 - (nullable UIImage *)musicNameImageBrownHard;
 /**
  * @brief The default brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x63640
  */
 - (nullable UIImage *)artistNameImageBrown;
 /**
  * @brief The basic brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x637d8
  */
 - (nullable UIImage *)artistNameImageBrownBasic;
 /**
  * @brief The medium brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6397c
  */
 - (nullable UIImage *)artistNameImageBrownMedium;
 /**
  * @brief The hard brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x63b20
  */
 - (nullable UIImage *)artistNameImageBrownHard;
 
 /**
  * @brief The default double-resolution artwork image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x63cc4
  */
 - (nullable UIImage *)artwork2x;
 /**
  * @brief The basic double-resolution artwork image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x63dbc
  */
 - (nullable UIImage *)artwork2xBasic;
 /**
  * @brief The medium double-resolution artwork image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x63eb4
  */
 - (nullable UIImage *)artwork2xMedium;
 /**
  * @brief The hard double-resolution artwork image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x63fac
  */
 - (nullable UIImage *)artwork2xHard;
 /**
  * @brief The default double-resolution white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x640a4
  */
 - (nullable UIImage *)musicNameImageWhite2x;
 /**
  * @brief The basic double-resolution white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6419c
  */
 - (nullable UIImage *)musicNameImageWhite2xBasic;
 /**
  * @brief The medium double-resolution white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64294
  */
 - (nullable UIImage *)musicNameImageWhite2xMedium;
 /**
  * @brief The hard double-resolution white title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6438c
  */
 - (nullable UIImage *)musicNameImageWhite2xHard;
 /**
  * @brief The default double-resolution white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64484
  */
 - (nullable UIImage *)artistNameImageWhite2x;
 /**
  * @brief The basic double-resolution white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6457c
  */
 - (nullable UIImage *)artistNameImageWhite2xBasic;
 /**
  * @brief The medium double-resolution white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64674
  */
 - (nullable UIImage *)artistNameImageWhite2xMedium;
 /**
  * @brief The hard double-resolution white artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6476c
  */
 - (nullable UIImage *)artistNameImageWhite2xHard;
 /**
  * @brief The default double-resolution black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64864
  */
 - (nullable UIImage *)musicNameImageBlack2x;
 /**
  * @brief The basic double-resolution black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6495c
  */
 - (nullable UIImage *)musicNameImageBlack2xBasic;
 /**
  * @brief The medium double-resolution black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64a54
  */
 - (nullable UIImage *)musicNameImageBlack2xMedium;
 /**
  * @brief The hard double-resolution black title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64b4c
  */
 - (nullable UIImage *)musicNameImageBlack2xHard;
 /**
  * @brief The default double-resolution black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64c44
  */
 - (nullable UIImage *)artistNameImageBlack2x;
 /**
  * @brief The basic double-resolution black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64d3c
  */
 - (nullable UIImage *)artistNameImageBlack2xBasic;
 /**
  * @brief The medium double-resolution black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64e34
  */
 - (nullable UIImage *)artistNameImageBlack2xMedium;
 /**
  * @brief The hard double-resolution black artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x64f2c
  */
 - (nullable UIImage *)artistNameImageBlack2xHard;
 /**
  * @brief The default double-resolution brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x65024
  */
 - (nullable UIImage *)musicNameImageBrown2x;
 /**
  * @brief The basic double-resolution brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6511c
  */
 - (nullable UIImage *)musicNameImageBrown2xBasic;
 /**
  * @brief The medium double-resolution brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x65214
  */
 - (nullable UIImage *)musicNameImageBrown2xMedium;
 /**
  * @brief The hard double-resolution brown-tinted title-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x6530c
  */
 - (nullable UIImage *)musicNameImageBrown2xHard;
 /**
  * @brief The default double-resolution brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x65404
  */
 - (nullable UIImage *)artistNameImageBrown2x;
 /**
  * @brief The basic double-resolution brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x654fc
  */
 - (nullable UIImage *)artistNameImageBrown2xBasic;
 /**
  * @brief The medium double-resolution brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x655f4
  */
 - (nullable UIImage *)artistNameImageBrown2xMedium;
 /**
  * @brief The hard double-resolution brown-tinted artist-strip image.
+ * @return The decoded image, or @c nil when the source data is absent.
  * @ghidraAddress 0x656ec
  */
 - (nullable UIImage *)artistNameImageBrown2xHard;
@@ -858,6 +975,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)releaseChache;
 /**
  * @brief Whether the default artwork image is currently cached.
+ * @return @c YES when a decoded artwork image is held, @c NO otherwise.
  * @ghidraAddress 0x66308
  */
 - (BOOL)isArtworkCache;

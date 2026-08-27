@@ -135,6 +135,8 @@ static void tempAssert(bool bCondition) {
     assert(bCondition);
 }
 
+namespace {
+
 // The static quad geometry the batch builds once: four vertices and six indices (two triangles)
 // per sprite.
 constexpr int kSpriteVertexCount = 4;
@@ -165,6 +167,8 @@ constexpr int kTemplateMatrixIndexOffset =
     static_cast<int>(offsetof(InitialSpriteVertex, nSpriteIndex));
 // One weight and one matrix index per vertex: each sprite rides a single palette matrix.
 constexpr int kTemplateComponentCount = 1;
+
+} // namespace
 
 /** @ghidraAddress 0x2f668 */
 C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {

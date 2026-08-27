@@ -83,6 +83,7 @@ public:
 
     /**
      * @brief Returns the global OpenGL ES renderer, or @c nullptr when it has not been created.
+     * @return The global renderer, or @c nullptr when @c EnsureShared has not run.
      * @ghidraAddress 0x20f50
      */
     static neGLESRenderer *GetShared();
@@ -96,11 +97,13 @@ public:
     static void EnsureShared();
     /**
      * @brief Returns the @c GL_RENDERBUFFER_OES bind target constant (0x8d41).
+     * @return The @c GL_RENDERBUFFER_OES bind target constant.
      * @ghidraAddress 0x212a4
      */
     static unsigned int GetRenderbufferTarget();
     /**
      * @brief Returns @c true when the bound framebuffer is complete.
+     * @return @c true when the bound framebuffer is complete.
      * @ghidraAddress 0x213b4
      */
     static bool IsFramebufferComplete();
@@ -116,107 +119,137 @@ public:
 
     /**
      * @brief Clears the current GL buffers selected by the GL clear mask.
+     * @param dwMask The GL clear mask selecting the buffers to clear.
      * @ghidraAddress 0x21400
      */
     void ClearBuffers(unsigned int dwMask);
     /**
      * @brief Deletes the GL texture object @p dwHandle.
+     * @param dwHandle The GL texture object name to delete.
      * @ghidraAddress 0x21a68
      */
     void DeleteTexture(unsigned int dwHandle);
     /**
      * @brief Generates one GL framebuffer object name into @p pOutFramebuffer.
+     * @param pOutFramebuffer Receives the generated framebuffer object name.
      * @ghidraAddress 0x212ac
      */
     void GenFramebuffer(unsigned int *pOutFramebuffer);
     /**
      * @brief Deletes the GL framebuffer object @p dwFramebuffer.
+     * @param dwFramebuffer The framebuffer object name to delete.
      * @ghidraAddress 0x212b4
      */
     void DeleteFramebuffer(unsigned int dwFramebuffer);
     /**
      * @brief Binds @p dwFramebuffer as the current @c GL_FRAMEBUFFER_OES draw target.
+     * @param dwFramebuffer The framebuffer object name to bind.
      * @ghidraAddress 0x212dc
      */
     void BindFramebuffer(unsigned int dwFramebuffer);
     /**
      * @brief Generates one GL renderbuffer object name into @p pOutRenderbuffer.
+     * @param pOutRenderbuffer Receives the generated renderbuffer object name.
      * @ghidraAddress 0x212e4
      */
     void GenRenderbuffer(unsigned int *pOutRenderbuffer);
     /**
      * @brief Deletes the GL renderbuffer object @p dwRenderbuffer.
+     * @param dwRenderbuffer The renderbuffer object name to delete.
      * @ghidraAddress 0x212ec
      */
     void DeleteRenderbuffer(unsigned int dwRenderbuffer);
     /**
      * @brief Binds @p dwRenderbuffer as the current @c GL_RENDERBUFFER_OES.
+     * @param dwRenderbuffer The renderbuffer object name to bind.
      * @ghidraAddress 0x21314
      */
     void BindRenderbuffer(unsigned int dwRenderbuffer);
     /**
      * @brief Attaches @p dwRenderbuffer to the bound framebuffer at the @p nRenderKind attachment.
+     * @param nRenderKind The render kind selecting the attachment point.
+     * @param dwRenderbuffer The renderbuffer object name to attach.
      * @ghidraAddress 0x21380
      */
     void AttachRenderbufferToFramebuffer(RenderKind nRenderKind, unsigned int dwRenderbuffer);
     /**
      * @brief Reads the bound renderbuffer's width into @p pOutWidth.
+     * @param pOutWidth Receives the bound renderbuffer's width in pixels.
      * @ghidraAddress 0x213d8
      */
     void GetRenderbufferWidth(int *pOutWidth);
     /**
      * @brief Reads the bound renderbuffer's height into @p pOutHeight.
+     * @param pOutHeight Receives the bound renderbuffer's height in pixels.
      * @ghidraAddress 0x213ec
      */
     void GetRenderbufferHeight(int *pOutHeight);
     /**
      * @brief Generates one GL buffer object name into @p pOutBuffer.
+     * @param pOutBuffer Receives the generated buffer object name.
      * @ghidraAddress 0x2147c
      */
     void GenBuffer(unsigned int *pOutBuffer);
     /**
      * @brief Binds @p dwBuffer as the current @c GL_ELEMENT_ARRAY_BUFFER.
+     * @param dwBuffer The buffer object name to bind.
      * @ghidraAddress 0x21a14
      */
     void BindIndexBuffer(unsigned int dwBuffer);
     /**
      * @brief Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.
+     * @param dwBuffer The buffer object name to bind.
      * @ghidraAddress 0x21510
      */
     void BindArrayBuffer(unsigned int dwBuffer);
     /**
      * @brief Uploads @p nSize bytes of index data to the bound element-array buffer.
+     * @param pData The index data to upload.
+     * @param nSize The number of bytes to upload.
+     * @param nUsage The GL buffer usage hint.
      * @ghidraAddress 0x21a30
      */
     void UploadIndexBufferData(const void *pData, unsigned int nSize, int nUsage);
     /**
      * @brief Uploads @p nSize bytes of vertex data to the bound array buffer.
+     * @param pData The vertex data to upload.
+     * @param nSize The number of bytes to upload.
+     * @param nUsage The GL buffer usage hint.
      * @ghidraAddress 0x2152c
      */
     void UploadArrayBufferData(const void *pData, unsigned int nSize, int nUsage);
     /**
      * @brief Deletes the GL buffer object @p dwBuffer.
+     * @param dwBuffer The buffer object name to delete.
      * @ghidraAddress 0x21484
      */
     void DeleteBuffer(unsigned int dwBuffer);
     /**
      * @brief Generates one GL texture object name into @p pOutHandle.
+     * @param pOutHandle Receives the generated texture object name.
      * @ghidraAddress 0x21a60
      */
     void GenTexture(unsigned int *pOutHandle);
     /**
      * @brief Binds @p dwHandle as the current @c GL_TEXTURE_2D.
+     * @param dwHandle The texture object name to bind.
      * @ghidraAddress 0x21ab4
      */
     void BindTexture2d(unsigned int dwHandle);
     /**
      * @brief Sets one texture sampler parameter (@p nParameter: 0 min filter, 1 mag filter, 2 wrap
      *        S, 3 wrap T) to @p nValue on the bound texture.
+     * @param nParameter The sampler parameter index.
+     * @param nValue The sampler parameter value.
      * @ghidraAddress 0x21ae8
      */
     void SetTextureParameter(int nParameter, int nValue);
     /**
      * @brief Uploads @p nWidth by @p nHeight pixels in the given @p nFormat to the bound texture.
+     * @param nFormat The GL pixel format of @p pData.
+     * @param nWidth The image width in pixels.
+     * @param nHeight The image height in pixels.
+     * @param pData The pixel data to upload.
      * @ghidraAddress 0x21bd0
      */
     void UploadTexture2d(int nFormat, int nWidth, int nHeight, const void *pData);
@@ -235,6 +268,8 @@ public:
      * Read from the renderer's capability block (the GL_OES_matrix_palette limit). The sprite batch
      * flushes a draw once this many per-instance matrices have been queued, and a skinned mesh
      * loads this many bone matrices.
+     *
+     * @return The maximum number of palette matrices per draw call.
      */
     int GetMaxPaletteMatrices() const {
         return m_nMaxPaletteMatrices;
@@ -246,6 +281,8 @@ public:
      * The binary queries the extension only to decide whether to read the palette size, and every
      * draw path then uses the palette unconditionally. A build running where the extension is
      * absent needs to know, so the flag is exposed.
+     *
+     * @return @c true when the driver advertises @c GL_OES_matrix_palette.
      */
     bool HasMatrixPalette() const {
         return m_bHasMatrixPalette;
@@ -313,46 +350,67 @@ public:
     /**
      * @brief Point the vertex (position) array at client memory, caching the pointer, stride, and
      *        size so an unchanged binding skips the @c glVertexPointer call.
+     * @param pData The vertex position data.
+     * @param nSize The number of position components per vertex.
+     * @param nStride The byte stride between vertices.
      * @ghidraAddress 0x21634
      */
     void SetVertexPointer(const void *pData, int nSize, int nStride);
     /**
      * @brief Point the colour array at client memory (four unsigned bytes per colour), caching the
      *        pointer and stride so an unchanged binding skips the @c glColorPointer call.
+     * @param pData The vertex colour data.
+     * @param nStride The byte stride between colours.
      * @ghidraAddress 0x2155c
      */
     void SetColorPointer(const void *pData, int nStride);
     /**
      * @brief Point the active texture unit's coordinate array at client memory (two shorts per
      *        coordinate), caching the per-unit pointer and stride.
+     * @param pData The texture-coordinate data.
+     * @param nStride The byte stride between coordinates.
      * @ghidraAddress 0x21718
      */
     void SetTexCoordPointer(const void *pData, int nStride);
     /**
      * @brief Point the skinning weight array at client memory.
+     * @param pData The skinning weight data.
+     * @param nSize The number of weight components per vertex.
+     * @param nStride The byte stride between vertices.
      * @ghidraAddress 0x2183c
      */
     void SetWeightPointer(const void *pData, int nSize, int nStride);
     /**
      * @brief Point the skinning matrix-index array at client memory.
+     * @param pData The matrix-index data.
+     * @param nSize The number of matrix-index components per vertex.
+     * @param nStride The byte stride between vertices.
      * @ghidraAddress 0x21928
      */
     void SetMatrixIndexPointer(const void *pData, int nSize, int nStride);
     /**
      * @brief Re-issue the vertex array against the bound array buffer, resetting the cached vertex
      *        pointer state when the bound buffer changed.
+     * @param nStride The interleaved byte stride between vertices.
+     * @param nSize The number of position components per vertex.
      * @ghidraAddress 0x216dc
      */
     void ClearVertexPointer(int nStride, int nSize);
     /**
      * @brief Re-issue the colour array against the bound array buffer, resetting the cached colour
      *        pointer state when the bound buffer changed.
+     * @param nStride The interleaved byte stride between vertices.
+     * @param nColorOffset The colour's byte offset within a vertex, used as the buffer offset.
+     * @param nBinding The array-buffer name the colour array is re-issued against.
      * @ghidraAddress 0x215f4
      */
     void ClearColorPointer(int nStride, int nColorOffset, int nBinding);
     /**
      * @brief Re-issue the active unit's texcoord array against the bound array buffer, resetting
      * the cached per-unit pointer state when the bound buffer changed.
+     * @param nStride The interleaved byte stride between vertices.
+     * @param nTexCoordOffset The coordinate's byte offset within a vertex, used as the buffer
+     *        offset.
      * @ghidraAddress 0x217e4
      */
     void ClearTexCoordPointer(int nStride, int nTexCoordOffset);
