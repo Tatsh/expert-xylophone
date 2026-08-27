@@ -165,6 +165,7 @@ typedef struct {
     CGPoint good;
     CGPoint miss;
     CGPoint justReflec;
+    CGPoint maxCombo;
 } TwitterImageCreaterColumnLayout;
 
 // The two per-column layouts, recovered from the static position table at raw 0x1002fea70.
@@ -182,6 +183,7 @@ static const TwitterImageCreaterColumnLayout kColumnLayouts[] = {
         .good = {195.0, 259.0},
         .miss = {195.0, 276.0},
         .justReflec = {195.0, 293.0},
+        .maxCombo = {195.0, 310.0},
     },
     {
         .icon = {260.0, 115.0},
@@ -195,6 +197,7 @@ static const TwitterImageCreaterColumnLayout kColumnLayouts[] = {
         .good = {312.0, 259.0},
         .miss = {312.0, 276.0},
         .justReflec = {312.0, 293.0},
+        .maxCombo = {312.0, 310.0},
     },
 };
 
@@ -554,6 +557,13 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
             Position:CGPointMake(justReflecDigits * digitStep / 2 + layout->justReflec.x,
                                  layout->justReflec.y)
                 Keta:justReflecDigits
+                 Dot:NO];
+
+    int maxComboDigits = [self getDigitNum:element.maxComboNum];
+    [self drawNumber:element.maxComboNum
+            Position:CGPointMake(maxComboDigits * digitStep / 2 + layout->maxCombo.x,
+                                 layout->maxCombo.y)
+                Keta:maxComboDigits
                  Dot:NO];
 }
 

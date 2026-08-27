@@ -19,6 +19,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- The share image draws its MAX COMBO value again. `-[TwitterImageCreater drawScore:Pos:Dot:]` was
+  missing the last of the binary's eight `drawNumber` calls, so the row's label and dotted leader
+  came from the background artwork with no number over them.
 - Corrected the localised UI string keys cached by `CacheLocalizedUIStrings` so that they match the
   shipped binary. A key that misses the lookup is drawn on screen verbatim, so every mismatch was
   visible in the game.
