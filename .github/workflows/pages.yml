@@ -22,6 +22,10 @@ jobs:
         run: cmake -B ${{ github.workspace }}/build -DBUILD_DOCS_ONLY=ON
       - name: 'Build documentation'
         run: cmake --build ${{ github.workspace }}/build --target docs
+      - name: 'Build API reference'
+        run: |
+          npx --yes @redocly/cli@2.46.2 build-docs openapi.yaml --disableGoogleFont \
+            -o "${{ github.workspace }}/build/html/api/index.html"
       - name: 'Upload artifact'
         uses: 'actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9'
         with:
