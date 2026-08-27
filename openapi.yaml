@@ -144,6 +144,8 @@ components:
         A per-install fingerprint: the hex MD5 of the device UUID with the literal `STORE` appended,
         computed once per process. It is the closest thing the API has to an account identifier for
         an anonymous install.
+      examples:
+        - '098815807733da415e50fce611e5c1d8'
       pattern: '^[0-9a-f]{32}$'
       type: 'string'
     Locale:
@@ -196,7 +198,9 @@ components:
     MusicListKey:
       description: |
         The install's UUID, used both to key the local purchased-content lists and as the server
-        identity.
+        identity. Spelled the way `CFUUIDCreateString` spells one: upper case, with dashes.
+      examples:
+        - '00000000-0000-0000-0000-000000000000'
       type: 'string'
     PackEntry:
       description: |
@@ -286,8 +290,55 @@ components:
           type: 'string'
       type: 'object'
     RegionCode:
-      description: "The build's region code. Every endpoint takes it."
+      default: 'JP'
+      description: |
+        The region code, fixed at build time. `JP` is the only value the shipped build sends, and
+        it is what the server answers Japanese in.
+      examples:
+        - 'JP'
       type: 'string'
+    ServerError:
+      description: |
+        The failure envelope. Any endpoint can answer `200 OK` and still have failed: the status
+        says the request was received, and this body is what says it was refused. A response
+        carrying `Error` carries none of the documented payload.
+      properties:
+        Error:
+          description: 'The failure message, in the language the region serves.'
+          examples:
+            - 'Connection failed'
+            - '接続に失敗しました。'
+          type: 'string'
+      type: 'object'
+    StartupResponse:
+      description: |
+        The start-up payload. These four fields were seen on a live response; the client keeps the
+        whole payload and takes the identifier and password it sends to later endpoints from it, so
+        a response to a registered install carries more than this.
+      properties:
+        AnotherURL:
+          description: 'The secondary news page. Served over plaintext HTTP, as `URL` is.'
+          examples:
+            - 'http://akx.konaminet.jp/akx/main/news/passed_info.jsp'
+          format: 'uri'
+          type: 'string'
+        SvTime:
+          description: 'The server clock as `YYYYMMDDhhmmss`.'
+          examples:
+            - '20260828045853'
+          type: 'string'
+        URL:
+          description: 'The news page the app links to.'
+          examples:
+            - 'http://akx.konaminet.jp/akx/main/news/info.jsp'
+          format: 'uri'
+          type: 'string'
+        UpdateTime:
+          description: 'When the news pages last changed, as `YYYYMMDDhhmm`.'
+          examples:
+            - '201911291440'
+          type: 'string'
+      type: 'object'
     SystemVersion:
       description: 'The iOS version string.'
       examples:
@@ -310,8 +361,10 @@ components:
       type: 'object'
     TermType:
       description: |
-        Which terms document. The title scene looks for type 1 specifically, and runs neither branch
-        of its check when no entry of that type is present.
+        Which terms document. The title screen looks for type 1 specifically, and runs neither
+        branch of its check when no entry of that type is present.
+      examples:
+        - 1
       type: 'integer'
     UnimplementedPlayLogRequest:
       description: |
@@ -385,7 +438,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The campaign item.'
       summary: 'Fetch one campaign item, including its download URL.'
       tags:
@@ -426,7 +481,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'One page of campaigns.'
       summary: 'List campaigns, one page at a time.'
       tags:
@@ -464,7 +521,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The redemption result.'
       summary: 'Redeem a campaign serial code.'
       tags:
@@ -482,10 +541,14 @@ paths:
               properties:
                 lat:
                   description: 'The centre latitude of the visible map region.'
+                  examples:
+                    - 35.681236
                   format: 'double'
                   type: 'number'
                 long:
                   description: 'The centre longitude of the visible map region.'
+                  examples:
+                    - 139.767125
                   format: 'double'
                   type: 'number'
                 range:
@@ -504,7 +567,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The matching locations.'
       summary: 'List arcade locations within a map region.'
       tags:
@@ -565,7 +630,13 @@ paths:
         required: true
       responses:
         '200':
-          description: 'Logged.'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
+          description: 'Logged, unless the body carries `Error`.'
       summary: 'Log a completed play.'
       tags:
         - 'telemetry'
@@ -579,7 +650,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The sort data.'
       summary: 'Fetch the sort order for the manage tab.'
       tags:
@@ -598,7 +671,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The message.'
       summary: 'Fetch the in-app message of the day.'
       tags:
@@ -622,6 +697,13 @@ paths:
                 p3:
                   description: 'The APNs device token.'
                   type: 'string'
+                target:
+                  allOf:
+                    - $ref: '#/components/schemas/RegionCode'
+                  description: |
+                    Accepted although the client does not send it, and it selects the language the
+                    server answers in: with `JP`, an `Error` comes back in Japanese rather than
+                    English.
               required:
                 - 'p1'
                 - 'p2'
@@ -630,7 +712,15 @@ paths:
         required: true
       responses:
         '200':
-          description: 'Registration accepted.'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
+          description: |
+            The registration result. A 200 does not mean the token was registered — the status is
+            200 either way, and an `Error` in the body is what says it was not.
       summary: 'Register the APNs device token.'
       tags:
         - 'session'
@@ -648,7 +738,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The master data.'
       summary: 'Fetch the arcade-location master data.'
       tags:
@@ -664,11 +756,9 @@ paths:
           content:
             application/json:
               schema:
-                description: |
-                  The client stores the parsed result as its server data, an array whose first two
-                  elements it later sends back as `user_id` and `passwd`. The exact shape is not
-                  recoverable from the client, which indexes it positionally.
-                type: 'object'
+                anyOf:
+                  - $ref: '#/components/schemas/StartupResponse'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The start-up payload.'
       summary: 'Fetch the start-up payload.'
       tags:
@@ -681,12 +771,21 @@ paths:
             schema:
               properties:
                 types:
-                  description: 'The completed tutorial identifiers.'
+                  description: |
+                    The identifiers of the walkthroughs that have been seen. The ones the app
+                    records are 23 (music select), 24 (customize, on entry), 25 (the settings
+                    button), 29 (unlock), and 34 (customize, on completion).
+                  examples:
+                    - [23, 24, 34]
                   items:
                     type: 'integer'
                   type: 'array'
                 user:
-                  description: 'The stored user identifier.'
+                  description: |
+                    The identifier the start-up payload supplied, kept in the keychain. A fresh
+                    install has none and sends an empty string.
+                  examples:
+                    - ''
                   type: 'string'
                 uuid:
                   $ref: '#/components/schemas/MusicListKey'
@@ -698,7 +797,13 @@ paths:
         required: true
       responses:
         '200':
-          description: 'Status recorded.'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
+          description: 'Status recorded, unless the body carries `Error`.'
       summary: 'Report which first-run walkthroughs have been completed.'
       tags:
         - 'session'
@@ -722,7 +827,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The unlock listing.'
       summary: 'List the unlockable items for a theme.'
       tags:
@@ -761,7 +868,13 @@ paths:
         required: true
       responses:
         '200':
-          description: 'Recorded.'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
+          description: 'Recorded, unless the body carries `Error`.'
       summary: 'Report that an item has been unlocked.'
       tags:
         - 'telemetry'
@@ -791,7 +904,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The unlock result.'
       summary: 'Claim a tune unlock.'
       tags:
@@ -811,9 +926,18 @@ paths:
                 target:
                   $ref: '#/components/schemas/RegionCode'
                 type:
-                  description: 'The purchase-limit type, decimal.'
+                  description: |
+                    The declared bracket, as a decimal string: `0` is undeclared, `1` and `2` are
+                    monthly ceilings of 5000 and 20000 yen, and anything higher means no ceiling.
+                  examples:
+                    - '2'
                   type: 'string'
                 user_id:
+                  description: |
+                    The identifier the start-up payload supplied. A fresh install has none and
+                    sends an empty string.
+                  examples:
+                    - ''
                   type: 'string'
               required:
                 - 'app_ver'
@@ -824,7 +948,21 @@ paths:
         required: true
       responses:
         '200':
-          description: 'Recorded.'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - properties:
+                      status:
+                        description: |
+                          Zero means the purchase may go ahead. The client treats every other
+                          value, and a missing `status`, as a refusal and stops the purchase.
+                        examples:
+                          - 0
+                        type: 'integer'
+                    type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
+          description: 'The verification result, unless the body carries `Error`.'
       summary: "Report the user's declared purchase-limit bracket."
       tags:
         - 'store'
@@ -850,7 +988,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExtendNoteEntry'
+                anyOf:
+                  - $ref: '#/components/schemas/ExtendNoteEntry'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The extend note.'
       summary: 'Fetch one extend note.'
       tags:
@@ -867,12 +1007,15 @@ paths:
           name: 'head'
           required: true
           schema:
+            default: 1
+            minimum: 1
             type: 'integer'
         - description: 'The maximum number of notes to return.'
           in: 'query'
           name: 'limit'
           required: true
           schema:
+            default: 10
             type: 'integer'
         - $ref: '#/components/parameters/UserInfoUuid'
         - $ref: '#/components/parameters/UserInfoVersion'
@@ -884,7 +1027,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExtendNoteListResponse'
+                anyOf:
+                  - $ref: '#/components/schemas/ExtendNoteListResponse'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'One page of the extend-note catalogue.'
       summary: 'List purchasable extend notes (the Sequences tab), one page at a time.'
       tags:
@@ -912,7 +1057,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MusicEntry'
+                anyOf:
+                  - $ref: '#/components/schemas/MusicEntry'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The tune entry.'
       summary: "Fetch one tune's catalogue entry."
       tags:
@@ -940,7 +1087,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PackEntry'
+                anyOf:
+                  - $ref: '#/components/schemas/PackEntry'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The pack.'
       summary: 'Fetch one pack, including its tune list.'
       tags:
@@ -962,6 +1111,7 @@ paths:
           name: 'head'
           required: true
           schema:
+            default: 1
             minimum: 1
             type: 'integer'
         - description: 'The maximum number of packs to return. The client always sends 10.'
@@ -987,7 +1137,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PackListResponse'
+                anyOf:
+                  - $ref: '#/components/schemas/PackListResponse'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'One page of the pack catalogue.'
       summary: 'List purchasable music packs, one page at a time.'
       tags:
@@ -1005,11 +1157,15 @@ paths:
               properties:
                 passwd:
                   description: 'The stored password, or an empty string on a fresh install.'
+                  examples:
+                    - ''
                   type: 'string'
                 target:
                   $ref: '#/components/schemas/RegionCode'
                 user_id:
                   description: 'The stored user identifier, or an empty string on a fresh install.'
+                  examples:
+                    - ''
                   type: 'string'
                 uuid:
                   $ref: '#/components/schemas/MusicListKey'
@@ -1028,7 +1184,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The resource manifest.'
       summary: 'Fetch the downloadable resource manifest.'
       tags:
@@ -1054,7 +1212,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TermEntry'
+                anyOf:
+                  - $ref: '#/components/schemas/TermEntry'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The document.'
       summary: 'Fetch one terms document.'
       tags:
@@ -1080,12 +1240,14 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  list:
-                    items:
-                      $ref: '#/components/schemas/TermEntry'
-                    type: 'array'
-                type: 'object'
+                anyOf:
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/components/schemas/TermEntry'
+                        type: 'array'
+                    type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: |
             The terms listing. A response without a `list` key is treated as a network error.
       summary: 'List the terms documents in force.'
@@ -1120,7 +1282,13 @@ paths:
         required: true
       responses:
         '200':
-          description: 'Acceptance recorded.'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
+          description: 'Acceptance recorded, unless the body carries `Error`.'
       summary: 'Record acceptance of a terms document.'
       tags:
         - 'terms'
@@ -1180,7 +1348,9 @@ paths:
           content:
             application/json:
               schema:
-                type: 'object'
+                anyOf:
+                  - type: 'object'
+                  - $ref: '#/components/schemas/ServerError'
           description: 'The verification result.'
       summary: 'Verify an App Store receipt and credit the purchase.'
       tags:
