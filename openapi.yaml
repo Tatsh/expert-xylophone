@@ -78,6 +78,167 @@ components:
       examples:
         - '4.5.8'
       type: 'string'
+    ArcadeLocation:
+      description: |
+        One arcade. An entry is dropped unless `ID`, `Lat`, and `Long` are numbers, `Name` and
+        `Open` are strings, and `Model` is a non-empty array.
+      properties:
+        ID:
+          type: 'integer'
+        Lat:
+          format: 'double'
+          type: 'number'
+        Long:
+          format: 'double'
+          type: 'number'
+        Model:
+          description: |
+            The cabinets on site, named as the master data names them. The pin uses whichever of
+            them the master data orders first, so a name absent from it draws nothing.
+          items:
+            type: 'string'
+          type: 'array'
+        Name:
+          type: 'string'
+        Open:
+          description: 'The opening hours, as free text.'
+          type: 'string'
+      required:
+        - 'ID'
+        - 'Lat'
+        - 'Long'
+        - 'Model'
+        - 'Name'
+        - 'Open'
+      type: 'object'
+    ArcadeMasterResponse:
+      description: |
+        Master data for the arcade map. `Version` gates the whole feature: a build below it is
+        refused outright, so raising it withdraws the map from older builds.
+      properties:
+        Info:
+          description: 'The banner image above the map.'
+          type: 'string'
+        Mark:
+          description: |
+            The cabinet models, in pin precedence order. An entry whose four fields are not all
+            strings is discarded, including `Order`, which is a string rather than a number.
+          items:
+            properties:
+              Image:
+                description: 'The pin image for this model.'
+                type: 'string'
+              Model:
+                type: 'string'
+              Name:
+                type: 'string'
+              Order:
+                description: 'The precedence, as a string rather than a number.'
+                type: 'string'
+            type: 'object'
+          type: 'array'
+        Version:
+          description: 'The minimum app version, compared numerically against the build version.'
+          type: 'string'
+      type: 'object'
+    CampaignEntry:
+      description: |
+        One campaign giveaway. The tune it grants arrives under `music`, shaped as a catalogue
+        entry; an entry without one still parses, and describes an item that is not a tune.
+      properties:
+        bannerUrl:
+          format: 'uri'
+          type: 'string'
+        campaignId:
+          description: 'Sent back as `campId`, which is a string in the request.'
+          type: 'integer'
+        copyright:
+          type: 'string'
+        description:
+          type: 'string'
+        foreignUrl:
+          description: 'An external page for the campaign. Ignored when empty.'
+          format: 'uri'
+          type: 'string'
+        hideType:
+          description: 'A value of 2 hides the entry from the list entirely.'
+          type: 'integer'
+        itemId:
+          type: 'integer'
+        itemType:
+          description: 'Zero is a tune. A tune is the only type with a thumbnail and a download.'
+          type: 'integer'
+        music:
+          $ref: '#/components/schemas/MusicEntry'
+        name:
+          type: 'string'
+        option:
+          description: |
+            The experience-point item this campaign duplicates. With both fields present and that
+            item already granted, the entry counts as earned rather than claimable.
+          properties:
+            id:
+              type: 'integer'
+            type:
+              type: 'integer'
+          type: 'object'
+        termsDescription:
+          type: 'string'
+        termsTable:
+          description: |
+            What the unlock waits on, read according to `unlockType`: companion applications by
+            URL scheme, or pack identifiers.
+          items:
+            type: 'string'
+          type: 'array'
+        thumbnailUrl:
+          description: 'Read only when `itemType` is a tune.'
+          format: 'uri'
+          type: 'string'
+        unlockType:
+          description: |
+            0 unlocked outright, 1 once every companion application is installed, 2 once every
+            listed pack is owned, 3 as 1 but gated behind an app update, and 4 by serial code.
+          type: 'integer'
+        unlocked:
+          description: 'Whether the server has already granted this item to the account.'
+          type: 'boolean'
+      type: 'object'
+    CampaignTheme:
+      description: |
+        The store's campaign dressing, carried on the resource manifest as `Col`. Its `Option`
+        fields are the numbered slots the store reads for its colours and images.
+      properties:
+        Name:
+          description: 'The campaign identifier the store branches on.'
+          type: 'string'
+        Option:
+          properties:
+            a01:
+              description: 'The rotating message list.'
+              items:
+                type: 'string'
+              type: 'array'
+            c01:
+              description: 'The store base colour.'
+              type: 'string'
+            c02:
+              description: 'The strap image.'
+              type: 'string'
+            c03:
+              description: 'The base image.'
+              type: 'string'
+            c11:
+              description: 'The sample-button colour.'
+              type: 'string'
+            c21:
+              description: 'The first pack colour.'
+              type: 'string'
+            c22:
+              description: 'The second pack colour.'
+              type: 'string'
+          type: 'object'
+      type: 'object'
     DeviceName:
       description: 'The hardware model identifier.'
       examples:
@@ -85,8 +246,8 @@ components:
       type: 'string'
     ExtendNoteEntry:
       description: |
-        One extend note. An entry without a `Music` sub-object is skipped by the client, so that
-        field is effectively required.
+        One extend note. An entry without a `Music` sub-object is discarded, so that field is
+        effectively required.
       properties:
         Comment:
           type: 'string'
@@ -111,7 +272,7 @@ components:
         Music:
           $ref: '#/components/schemas/MusicEntry'
         PID:
-          description: 'The product identifier, and the key the client indexes notes by.'
+          description: 'The product identifier, and the key notes are indexed by. Must be unique.'
           type: 'integer'
         PackID:
           type: 'integer'
@@ -157,6 +318,23 @@ components:
         - 'en_JP'
         - 'ja_JP'
       type: 'string'
+    ManageSortEntry:
+      description: |
+        The sort metadata for one tune. The readings are converted to yomigana on arrival, so a
+        reading in kanji or katakana is accepted.
+      properties:
+        a_yomi:
+          description: 'The artist reading.'
+          type: 'string'
+        m_yomi:
+          description: 'The title reading.'
+          type: 'string'
+        musicId:
+          type: 'integer'
+        pack_name:
+          description: 'The pack the tune is filed under.'
+          type: 'string'
+      type: 'object'
     MusicEntry:
       description: 'One tune within a pack, or a tune fetched on its own.'
       properties:
@@ -180,6 +358,14 @@ components:
           type: 'array'
         Name:
           type: 'string'
+        NoteList:
+          description: |
+            The tune's extend notes, sent by `/v3/musicinfo/`. Each entry is registered as owned
+            when it is already among the purchased notes, with the rest of this payload attached
+            to it as its `Music`.
+          items:
+            $ref: '#/components/schemas/ExtendNoteEntry'
+          type: 'array'
         PID:
           description: |
             The extend-note product identifiers available for this tune. A present, non-empty list
@@ -202,17 +388,51 @@ components:
       examples:
         - '00000000-0000-0000-0000-000000000000'
       type: 'string'
+    NewsResponse:
+      description: 'The message of the day, and the notices that go with it.'
+      properties:
+        Info:
+          description: |
+            The notices. At most one is used: the first whose `ID` is above the last one already
+            seen and whose `Ver` the build has reached. Order the list accordingly.
+          items:
+            properties:
+              ID:
+                description: 'The notice identifier. A value below 1 is treated as no identifier.'
+                type: 'integer'
+              Image:
+                description: 'The image the notice is drawn from.'
+                type: 'string'
+              Link:
+                format: 'uri'
+                type: 'string'
+              Message:
+                type: 'string'
+              Ver:
+                description: 'The minimum app version. Builds below it skip the notice.'
+                type: 'string'
+            type: 'object'
+          type: 'array'
+        UpdateText:
+          description: 'The message-of-the-day lines. One is picked at random and they cycle.'
+          items:
+            type: 'string'
+          type: 'array'
+        UpdateTime:
+          description: |
+            When the store last changed. Compared numerically against the last time the store was
+            opened; a later value marks the store as having something new.
+          type: 'string'
+      type: 'object'
     PackEntry:
       description: |
-        One music pack. No price, and this is now confirmed against the live endpoint rather than
-        inferred from the client: a captured `/v3/packlist/` page carried `ID`, `Name`, `Comment`,
-        `ShortComment`, `IsNew`, `Copyright`, `ArtworkURL`, `ExtNum`, and `MusicNum`, and nothing
-        resembling an amount.
+        One music pack. It carries no price: a captured `/v3/packlist/` page held `ID`, `Name`,
+        `Comment`, `ShortComment`, `IsNew`, `Copyright`, `ArtworkURL`, `ExtNum`, and `MusicNum`,
+        and nothing resembling an amount. A pack is priced through its StoreKit product instead.
 
-        That capture also shows which fields a list page omits. It carried no `MusicList`,
-        `ArtistURL`, or `ArtistBunnerURL`, so those reach the client from `/v3/packinfo/` instead;
-        a list page advertises its tune count through `MusicNum` alone. All three are still
-        described here because the client reads them from either response.
+        That capture also shows what a list page omits: no `MusicList`, `ArtistURL`, or
+        `ArtistBunnerURL`, which belong to `/v3/packinfo/`, with the tune count advertised through
+        `MusicNum` alone. All three are described here because either response may carry them.
       properties:
         ArtistBunnerURL:
           description: 'The artist banner, spelled as the server spells it.'
@@ -239,15 +459,14 @@ components:
           type: 'boolean'
         MusicList:
           description: |
-            Sent by `/v3/packinfo/`, not by a list page. The client keeps at most the first four
-            entries.
+            Sent by `/v3/packinfo/`, not by a list page. Only the first four entries are kept.
           items:
             $ref: '#/components/schemas/MusicEntry'
           type: 'array'
         MusicNum:
           description: |
-            How many tunes the pack holds. The client never reads this: it counts `MusicList`
-            instead, and a list page does not carry one. Recorded because the server sends it.
+            How many tunes the pack holds. Ignored — the count comes from `MusicList`, which a
+            list page does not carry. Recorded here because the shipped server sends it.
           type: 'integer'
         Name:
           type: 'string'
@@ -256,15 +475,15 @@ components:
       type: 'object'
     PackListResponse:
       description: |
-        One page of the pack catalogue. The client treats an empty `PackList` with no `Error` as a
-        server fault and shows its generic failure message.
+        One page of the pack catalogue. An empty `PackList` with no `Error` beside it counts as a
+        fault, so send `Error` whenever there is nothing to return.
       properties:
         Date:
           description: |
-            The current month. The client resets its accumulated purchase total when this advances.
+            The current month. Advancing it resets the accumulated purchase total for the limit.
           type: 'integer'
         Error:
-          description: 'A server-supplied message, shown to the user in place of the listing.'
+          description: 'A message to surface in place of the listing.'
           type: 'string'
         Genre:
           description: |
@@ -285,9 +504,33 @@ components:
           type: 'object'
         Version:
           description: |
-            The minimum app version the server will serve. The client compares its own bundle
-            version numerically and refuses to go further if it is older.
+            The minimum app version served. Compared numerically against the build version; an
+            older build stops here rather than reading the page.
           type: 'string'
+      type: 'object'
+    ReceiptVerification:
+      description: |
+        The verdict on an App Store receipt. Three things must line up before a purchase is
+        credited: `status` is zero, `Products` is present and non-empty, and the `RB-RES-SIG-V2`
+        response header matches a digest over the body and the nonce the request carried. The body
+        alone grants nothing, so the header is mandatory.
+      properties:
+        MsgDev:
+          description: 'A developer-facing message. Parsed and then discarded.'
+          type: 'string'
+        Products:
+          description: 'The product identifiers the receipt was accepted for.'
+          items:
+            type: 'string'
+          type: 'array'
+        error:
+          description: 'Parsed and then discarded. Lower case here, unlike `Error` elsewhere.'
+          type: 'string'
+        status:
+          description: 'Zero is a pass. Any other value fails the purchase.'
+          examples:
+            - 0
+          type: 'integer'
       type: 'object'
     RegionCode:
       default: 'JP'
@@ -297,6 +540,47 @@ components:
       examples:
         - 'JP'
       type: 'string'
+    ResourceManifest:
+      description: |
+        Where the downloadable assets live, and the credentials for later requests. The same body
+        serves start-up and the asset download, which is why it carries both the asset fields and
+        the account ones.
+      properties:
+        App:
+          description: |
+            The minimum app version. A build below it is sent to the App Store instead of into
+            the game, so this field can force an update.
+          type: 'string'
+        Col:
+          $ref: '#/components/schemas/CampaignTheme'
+        ItemURL:
+          description: 'Where the asset archive is downloaded from.'
+          format: 'uri'
+          type: 'string'
+        Passwd:
+          description: |
+            The account password, sent back as `passwd` on later requests. Send it with `UserID`
+            or not at all: a body carrying one without the other is refused as a network error.
+          type: 'string'
+        Time:
+          description: 'The server clock, kept for the duration of the download.'
+          type: 'string'
+        Type:
+          description: |
+            Whether the update is mandatory, as a decimal string. Absent counts as `0`.
+          type: 'string'
+        UserID:
+          description: 'The account identifier, sent back as `user_id` on later requests.'
+          type: 'string'
+        Version:
+          description: 'The asset-archive version. Changing it is what triggers a download.'
+          type: 'string'
+        terms_version:
+          description: |
+            The terms version in force, compared against the version already accepted. The only
+            lower-case key in the payload.
+          type: 'string'
+      type: 'object'
     ServerError:
       description: |
         The failure envelope. Any endpoint can answer `200 OK` and still have failed: the status
@@ -312,29 +596,34 @@ components:
       type: 'object'
     StartupResponse:
       description: |
-        The start-up payload. These four fields were seen on a live response; the client keeps the
-        whole payload and takes the identifier and password it sends to later endpoints from it, so
-        a response to a registered install carries more than this.
+        The start-up payload: where the in-app information pages live, and when they last changed.
+        Credentials are not part of it — those come with the resource manifest. A live response
+        carried the four fields below, three of which are consumed.
       properties:
         AnotherURL:
-          description: 'The secondary news page. Served over plaintext HTTP, as `URL` is.'
+          description: |
+            The page that replaces `URL` once the information has been read. Served over plaintext
+            HTTP, as `URL` is.
           examples:
             - 'http://akx.konaminet.jp/akx/main/news/passed_info.jsp'
           format: 'uri'
           type: 'string'
         SvTime:
-          description: 'The server clock as `YYYYMMDDhhmmss`.'
+          description: 'The server clock as `YYYYMMDDhhmmss`. Sent, but not consumed.'
           examples:
             - '20260828045853'
           type: 'string'
         URL:
-          description: 'The news page the app links to.'
+          description: 'The information page linked from the title screen.'
           examples:
             - 'http://akx.konaminet.jp/akx/main/news/info.jsp'
           format: 'uri'
           type: 'string'
         UpdateTime:
-          description: 'When the news pages last changed, as `YYYYMMDDhhmm`.'
+          description: |
+            When the information page last changed, parsed as `YYYYMMddHHmm`. A value later than
+            the last read marks the page as unread. A value that does not parse falls back to
+            `200001010000`.
           examples:
             - '201911291440'
           type: 'string'
@@ -361,16 +650,15 @@ components:
       type: 'object'
     TermType:
       description: |
-        Which terms document. The title screen looks for type 1 specifically, and runs neither
-        branch of its check when no entry of that type is present.
+        Which terms document. Type 1 is the one the title screen gates on; with no entry of that
+        type in the listing, neither branch of the check runs and nothing is presented.
       examples:
         - 1
       type: 'integer'
     UnimplementedPlayLogRequest:
       description: |
-        The body the client assembles for the version 1 play log. It has no endpoint, so the
-        request is never sent; the version 2 endpoint at `/log/play/` supersedes it. Documented
-        only because the body-building code survives in the client.
+        The body of the version 1 play log. It has no endpoint and is never sent; `/log/play/`
+        supersedes it. Documented only because the body-building code survives.
       properties:
         dif:
           type: 'integer'
@@ -383,8 +671,8 @@ components:
       type: 'object'
     UnimplementedRewardCheckRequest:
       description: |
-        The body the reward screen assembles. It has no endpoint, so the request is never sent.
-        Documented only because the body-building code survives in the client.
+        The body of the reward check. It has no endpoint and is never sent. Documented only
+        because the body-building code survives.
       properties:
         appliId:
           description: 'The Applilink application identifiers already seen.'
@@ -399,6 +687,65 @@ components:
           type: 'string'
         userId:
           type: 'string'
+      type: 'object'
+    UnlockCatalogue:
+      description: |
+        What can be unlocked with points, for the theme named in the request. Each theme keeps its
+        own catalogue, so the two never mix.
+      properties:
+        Package:
+          description: 'The groups, ordered by `Order`, highest first.'
+          items:
+            $ref: '#/components/schemas/UnlockPackage'
+          type: 'array'
+        RewardBannerList:
+          description: |
+            Used on the Limelight theme only, and only the first entry. Serve the base name in
+            `URL`: `@2x` is appended before the extension on a retina device, and stripped
+            otherwise, so both variants have to exist.
+          items:
+            properties:
+              ID:
+                type: 'integer'
+              URL:
+                format: 'uri'
+                type: 'string'
+            type: 'object'
+          type: 'array'
+        Version:
+          type: 'string'
+      type: 'object'
+    UnlockPackage:
+      description: 'One group of unlockable items.'
+      properties:
+        Data:
+          description: 'The items, ordered by `Point`, highest first.'
+          items:
+            $ref: '#/components/schemas/UnlockPackageItem'
+          type: 'array'
+        ID:
+          type: 'integer'
+        Order:
+          type: 'integer'
+        Title:
+          type: 'string'
+      type: 'object'
+    UnlockPackageItem:
+      description: 'One unlockable item.'
+      properties:
+        ID:
+          type: 'integer'
+        Name:
+          type: 'string'
+        Path:
+          description: 'Where the item is downloaded from.'
+          type: 'string'
+        Point:
+          description: 'What it costs, in points.'
+          type: 'integer'
+        Type:
+          description: 'Which kind of item it is, and so where it lands once unlocked.'
+          type: 'integer'
       type: 'object'
 info:
   description: REFLEC BEAT plus API.
@@ -439,7 +786,22 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - properties:
+                      Error:
+                        description: 'The message to surface when `Status` is not zero.'
+                        type: 'string'
+                      Status:
+                        description: 'Zero releases the item. Anything else surfaces as an error.'
+                        examples:
+                          - 0
+                        type: 'integer'
+                      URL:
+                        description: |
+                          Where the item is fetched from. For a tune the value is not used
+                          directly: its presence is what leads on to `/v3/musicinfo/`.
+                        format: 'uri'
+                        type: 'string'
+                    type: 'object'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The campaign item.'
       summary: 'Fetch one campaign item, including its download URL.'
@@ -448,9 +810,8 @@ paths:
   /campaign/list/:
     post:
       description: |
-        Note that `head` is sent as a quoted string while `limit` is sent as a bare number — an
-        inconsistency in the client's hand-built JSON, reproduced here because it is what the server
-        receives.
+        Note that `head` arrives as a quoted string while `limit` arrives as a bare number. The
+        inconsistency is in the hand-built JSON, and it is what reaches the server.
       requestBody:
         content:
           application/json:
@@ -482,7 +843,17 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - properties:
+                      Error:
+                        description: |
+                          Surfaced when `List` is empty. An empty list with no message here is
+                          reported as a connection failure instead.
+                        type: 'string'
+                      List:
+                        items:
+                          $ref: '#/components/schemas/CampaignEntry'
+                        type: 'array'
+                    type: 'object'
                   - $ref: '#/components/schemas/ServerError'
           description: 'One page of campaigns.'
       summary: 'List campaigns, one page at a time.'
@@ -522,7 +893,18 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - properties:
+                      Error:
+                        description: 'The message to surface when `Status` is not zero.'
+                        type: 'string'
+                      Status:
+                        description: |
+                          Zero grants the campaign item and leads on to fetching it. Anything else
+                          surfaces as an error.
+                        examples:
+                          - 0
+                        type: 'integer'
+                    type: 'object'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The redemption result.'
       summary: 'Redeem a campaign serial code.'
@@ -531,9 +913,9 @@ paths:
   /gamecenter/:
     post:
       description: |
-        The body is a form-urlencoded string the client formats by hand with six decimal places per
-        field, and it sends no explicit content type. The range is a fixed 0.27 degrees rather than
-        derived from the visible map span.
+        The body is a hand-formatted form-urlencoded string, six decimal places per field, with no
+        explicit content type on the request. The range is a fixed 0.27 degrees rather than
+        anything derived from the visible map span.
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -553,7 +935,7 @@ paths:
                   type: 'number'
                 range:
                   default: 0.27
-                  description: 'The search radius in degrees. The client always sends 0.27.'
+                  description: 'The search radius in degrees. Always 0.27.'
                   format: 'double'
                   type: 'number'
               required:
@@ -568,7 +950,12 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - properties:
+                      GameCenterList:
+                        items:
+                          $ref: '#/components/schemas/ArcadeLocation'
+                        type: 'array'
+                    type: 'object'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The matching locations.'
       summary: 'List arcade locations within a map region.'
@@ -577,8 +964,8 @@ paths:
   /log/play/:
     post:
       description: |
-        The client drops the call entirely for tune identifiers below its minimum, which excludes
-        the tutorial and preview tunes.
+        Not sent at all for tune identifiers below the minimum, which excludes the tutorial and
+        preview tunes: those plays never reach the server.
       requestBody:
         content:
           application/json:
@@ -591,8 +978,8 @@ paths:
                   type: 'integer'
                 jr:
                   description: |
-                    Judgement-related counter. The client passes it through from the result screen
-                    without interpreting it further, so its exact meaning is not recoverable here.
+                    A judgement-related counter, passed through from the result without further
+                    interpretation, so its exact meaning is not recoverable.
                   type: 'integer'
                 locale:
                   $ref: '#/components/schemas/Locale'
@@ -636,7 +1023,9 @@ paths:
                 anyOf:
                   - type: 'object'
                   - $ref: '#/components/schemas/ServerError'
-          description: 'Logged, unless the body carries `Error`.'
+          description: |
+            Logged. No field of a success body is consumed, so `{}` will do; a failure carries
+            `Error`.
       summary: 'Log a completed play.'
       tags:
         - 'telemetry'
@@ -651,7 +1040,12 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - additionalProperties:
+                      $ref: '#/components/schemas/ManageSortEntry'
+                    description: |
+                      Keyed by tune identifier as a string. A tune with no entry here is filed
+                      with empty readings and listed as missing.
+                    type: 'object'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The sort data.'
       summary: 'Fetch the sort order for the manage tab.'
@@ -672,7 +1066,7 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - $ref: '#/components/schemas/NewsResponse'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The message.'
       summary: 'Fetch the in-app message of the day.'
@@ -681,8 +1075,7 @@ paths:
   /push/token/:
     post:
       description: |
-        The three fields are named positionally in the client, which is all that is known about
-        them.
+        The three fields are named positionally, which is all that is known about them.
       requestBody:
         content:
           application/json:
@@ -701,9 +1094,8 @@ paths:
                   allOf:
                     - $ref: '#/components/schemas/RegionCode'
                   description: |
-                    Accepted although the client does not send it, and it selects the language the
-                    server answers in: with `JP`, an `Error` comes back in Japanese rather than
-                    English.
+                    Optional, and never sent by the app, but accepted: it selects the language of
+                    the reply. With `JP`, an `Error` comes back in Japanese rather than English.
               required:
                 - 'p1'
                 - 'p2'
@@ -719,8 +1111,9 @@ paths:
                   - type: 'object'
                   - $ref: '#/components/schemas/ServerError'
           description: |
-            The registration result. A 200 does not mean the token was registered — the status is
-            200 either way, and an `Error` in the body is what says it was not.
+            The registration result. A 200 does not mean the token was registered: the status is
+            200 either way, and `Error` in the body is what says it was not. No field of a success
+            body is consumed, so `{}` will do.
       summary: 'Register the APNs device token.'
       tags:
         - 'session'
@@ -739,7 +1132,7 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - $ref: '#/components/schemas/ArcadeMasterResponse'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The master data.'
       summary: 'Fetch the arcade-location master data.'
@@ -748,7 +1141,7 @@ paths:
   /startup/:
     get:
       description: |
-        The first call the app makes, and the only endpoint whose query is the region code alone.
+        The first call of a session, and the only endpoint whose query is the region code alone.
       parameters:
         - $ref: '#/components/parameters/Target'
       responses:
@@ -772,9 +1165,9 @@ paths:
               properties:
                 types:
                   description: |
-                    The identifiers of the walkthroughs that have been seen. The ones the app
-                    records are 23 (music select), 24 (customize, on entry), 25 (the settings
-                    button), 29 (unlock), and 34 (customize, on completion).
+                    The identifiers of the walkthroughs that have been seen: 23 (music select),
+                    24 (customize, on entry), 25 (the settings button), 29 (unlock), and
+                    34 (customize, on completion).
                   examples:
                     - [23, 24, 34]
                   items:
@@ -782,8 +1175,8 @@ paths:
                   type: 'array'
                 user:
                   description: |
-                    The identifier the start-up payload supplied, kept in the keychain. A fresh
-                    install has none and sends an empty string.
+                    The account identifier issued with the resource manifest. A fresh install has
+                    none and sends an empty string.
                   examples:
                     - ''
                   type: 'string'
@@ -803,20 +1196,22 @@ paths:
                 anyOf:
                   - type: 'object'
                   - $ref: '#/components/schemas/ServerError'
-          description: 'Status recorded, unless the body carries `Error`.'
+          description: |
+            Recorded. No field of a success body is consumed, so `{}` will do; a failure carries
+            `Error`.
       summary: 'Report which first-run walkthroughs have been completed.'
       tags:
         - 'session'
   /unlock/:
     get:
       description: |
-        The only endpoint that takes the selected theme, and one of the few that sends no
-        client-info fields.
+        The only endpoint that takes the selected theme, and one of the few with no client-info
+        parameters.
       parameters:
         - $ref: '#/components/parameters/Target'
         - description: |
-            The selected theme, spelled as the client spells it. One of the three play-field
-            themes: Classic, Colette, or Limelight.
+            The selected theme: one of the three play-field themes, Classic, Colette, or
+            Limelight. Each keeps a separate catalogue.
           in: 'query'
           name: 'thema'
           required: true
@@ -828,7 +1223,7 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - $ref: '#/components/schemas/UnlockCatalogue'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The unlock listing.'
       summary: 'List the unlockable items for a theme.'
@@ -837,8 +1232,8 @@ paths:
   /unlocked/:
     post:
       description: |
-        The one endpoint whose body is form-urlencoded rather than JSON. The client builds the
-        query string itself and sends no explicit content type.
+        The one endpoint whose body is form-urlencoded rather than JSON, and it arrives with no
+        explicit content type.
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -874,7 +1269,9 @@ paths:
                 anyOf:
                   - type: 'object'
                   - $ref: '#/components/schemas/ServerError'
-          description: 'Recorded, unless the body carries `Error`.'
+          description: |
+            Recorded. No field of a success body is consumed, so `{}` will do; a failure carries
+            `Error`.
       summary: 'Report that an item has been unlocked.'
       tags:
         - 'telemetry'
@@ -888,7 +1285,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-        - description: 'A per-request random key generated by the client.'
+        - description: 'A per-request random key. The response must echo it back as `Key`.'
           in: 'query'
           name: 'key'
           required: true
@@ -905,7 +1302,16 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - allOf:
+                      - $ref: '#/components/schemas/MusicEntry'
+                      - properties:
+                          Key:
+                            description: |
+                              The `key` the request sent, echoed back. The tune is accepted only
+                              when this matches; anything else is treated as a network error, so
+                              the payload is a catalogue entry with this one field added.
+                            type: 'integer'
+                        type: 'object'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The unlock result.'
       summary: 'Claim a tune unlock.'
@@ -914,8 +1320,8 @@ paths:
   /v3/age/:
     post:
       description: |
-        Sent with no explicit content type. `type` is the client's purchase-limit enumeration, sent
-        as a decimal string rather than a number.
+        Arrives with no explicit content type. `type` is the purchase-limit bracket, sent as a
+        decimal string rather than a number.
       requestBody:
         content:
           application/json:
@@ -934,8 +1340,8 @@ paths:
                   type: 'string'
                 user_id:
                   description: |
-                    The identifier the start-up payload supplied. A fresh install has none and
-                    sends an empty string.
+                    The account identifier issued with the resource manifest. A fresh install has
+                    none and sends an empty string.
                   examples:
                     - ''
                   type: 'string'
@@ -955,8 +1361,8 @@ paths:
                   - properties:
                       status:
                         description: |
-                          Zero means the purchase may go ahead. The client treats every other
-                          value, and a missing `status`, as a refusal and stops the purchase.
+                          Zero lets the purchase go ahead. Every other value, and a missing
+                          `status`, stops it.
                         examples:
                           - 0
                         type: 'integer'
@@ -969,7 +1375,8 @@ paths:
   /v3/extmusicinfo/:
     get:
       description: |
-        As with `packinfo`, the client-info fields are appended only for a user-initiated request.
+        As with `packinfo`, the client-info parameters are present only on a user-initiated
+        request.
       parameters:
         - $ref: '#/components/parameters/Target'
         - description: 'The extend-note product identifier (the `PID` of a list entry).'
@@ -1067,8 +1474,8 @@ paths:
   /v3/packinfo/:
     get:
       description: |
-        The client-info fields are appended only when the request originates from a user action; a
-        background refresh sends `target` and `pack` alone.
+        The client-info parameters are present only when the request originates from a user
+        action; a background refresh sends `target` and `pack` alone.
       parameters:
         - $ref: '#/components/parameters/Target'
         - description: 'The pack identifier.'
@@ -1097,13 +1504,11 @@ paths:
   /v3/packlist/:
     get:
       description: |
-        Paged by the client, which requests `head` as the count already fetched plus one, with
-        `limit` fixed at 10.
+        Paged with `head` as the count already fetched plus one, and `limit` fixed at 10.
 
-        No pack entry carries a price, confirmed against the live endpoint and not merely inferred
-        from what the client parses. In the shipped app a pack is priced entirely through its
-        StoreKit product, which is why a build with no App Store record behind it shows a pack with
-        no amount, and why there is nothing on the server to fall back to.
+        No pack entry carries a price, confirmed against the live endpoint. A pack is priced
+        entirely through its StoreKit product, so there is nothing here to fall back to when no
+        App Store record exists.
       parameters:
         - $ref: '#/components/parameters/Target'
         - description: 'The one-based index of the first pack to return.'
@@ -1114,14 +1519,14 @@ paths:
             default: 1
             minimum: 1
             type: 'integer'
-        - description: 'The maximum number of packs to return. The client always sends 10.'
+        - description: 'The maximum number of packs to return. Always 10.'
           in: 'query'
           name: 'limit'
           required: true
           schema:
             default: 10
             type: 'integer'
-        - description: "The genre to list, or the client's default genre identifier."
+        - description: 'The genre to list, or the default genre identifier.'
           in: 'query'
           name: 'genre'
           required: true
@@ -1185,7 +1590,7 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - $ref: '#/components/schemas/ResourceManifest'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The resource manifest.'
       summary: 'Fetch the downloadable resource manifest.'
@@ -1271,7 +1676,7 @@ paths:
                   description: 'The stored user identifier.'
                   type: 'string'
                 version:
-                  description: 'The terms version the client is agreeing to.'
+                  description: 'The terms version being agreed to, as `terms_version` served it.'
                   type: 'string'
               required:
                 - 'target'
@@ -1288,15 +1693,17 @@ paths:
                 anyOf:
                   - type: 'object'
                   - $ref: '#/components/schemas/ServerError'
-          description: 'Acceptance recorded, unless the body carries `Error`.'
+          description: |
+            Acceptance recorded, which is what clears the terms screen. No field of a success body
+            is consumed, so `{}` will do; a failure carries `Error`.
       summary: 'Record acceptance of a terms document.'
       tags:
         - 'terms'
   /v3/verify_receipt/:
     post:
       description: |
-        The body is assembled as a string by the client rather than serialised from a dictionary.
-        The nonce is 62-character alphanumeric and generated per request.
+        The body is assembled as a string rather than serialised from a dictionary. The nonce is
+        62-character alphanumeric and generated per request; the response must sign over it.
       requestBody:
         content:
           application/json:
@@ -1349,9 +1756,17 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - type: 'object'
+                  - $ref: '#/components/schemas/ReceiptVerification'
                   - $ref: '#/components/schemas/ServerError'
           description: 'The verification result.'
+          headers:
+            RB-RES-SIG-V2:
+              description: |
+                A digest over the response body and the nonce the request carried. A purchase is
+                credited only when this matches the digest computed from the same two inputs, so
+                the header is required for the receipt to be accepted at all.
+              schema:
+                type: 'string'
       summary: 'Verify an App Store receipt and credit the purchase.'
       tags:
         - 'store'
