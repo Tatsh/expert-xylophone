@@ -3,7 +3,8 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 
-// The score is always drawn as a fixed four-digit column.
+// The score is always drawn as a fixed four-digit column. Declared as an enumerator so it can size
+// the digit array, which a static const cannot do in C.
 enum { kScoreDigitCount = 4 };
 
 // The difficulty grades selecting the themed glyph set.

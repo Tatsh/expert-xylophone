@@ -34,23 +34,25 @@ typedef NS_ENUM(NSUInteger, RBStoreManageSortOrder) {
 };
 
 // The number of collapsible list sections, matching the fixed section-open bit-field width.
+// Declared as an enumerator so it can size the section-open array, which a static const cannot do
+// in C.
 enum { kSectionCount = 11 };
 
 // The alert-button index that confirms a delete or a sort-metadata download.
-enum { kAlertButtonConfirm = 1 };
+static const int kAlertButtonConfirm = 1;
 
 // The sentinel encoding used by the "no working row selected" state and the per-cell button tags.
-enum { kNoWorkingIndex = -1 };
+static const int kNoWorkingIndex = -1;
 
 // A cell button's tag packs its section and row: tag = section * kCellTagSectionMultiplier + row.
-enum { kCellTagSectionMultiplier = 1000000 };
+static const int kCellTagSectionMultiplier = 1000000;
 
 // UILocalizedIndexedCollation returns this section index for entries with no collation letter (the
 // trailing "#" bucket); such entries are re-bucketed one section earlier when they have a reading.
-enum { kCollationMiscSection = 0x24 };
+static const int kCollationMiscSection = 0x24;
 
 // The number of leading placeholder sections the collation builds and this screen discards.
-enum { kCollationLeadingSectionsToDrop = 26 };
+static const int kCollationLeadingSectionsToDrop = 26;
 
 // Row-selection colours: even rows are a light grey, odd rows the shared translucent value. Each
 // pooled component is a single precision quotient widened to double, so the divisions are spelled

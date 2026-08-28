@@ -87,10 +87,10 @@ static const CGFloat kCenterScale = 0.5;
 
 // The pack detail table has a single section: the header plus one row per tune and the two trailing
 // copyright and terms rows.
-enum { kDetailSectionCount = 1 };
+static const int kDetailSectionCount = 1;
 
 // The two trailing rows after the tune list: the copyright notice and the terms of use.
-enum { kTrailingRowCount = 2 };
+static const int kTrailingRowCount = 2;
 
 // The unset selected-sample row sentinel.
 static const NSInteger kNoSampleRow = -1;

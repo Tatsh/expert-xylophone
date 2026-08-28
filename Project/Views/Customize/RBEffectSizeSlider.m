@@ -90,9 +90,7 @@ static const NSUInteger kEffectSizeSliderReadoutCapacity = 3;
 
 // The stored theme value at and above which the colette readout layout applies; below it the
 // low-theme (classic and limelight) layout applies.
-enum {
-    kEffectSizeSliderColetteThemaThreshold = 2,
-};
+static const int kEffectSizeSliderColetteThemaThreshold = 2;
 
 @implementation RBEffectSizeSlider
 

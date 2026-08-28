@@ -68,7 +68,7 @@ static NSString *const kHelpPageImageNames[] = {
     @"how_1", @"how_2", @"how_3", @"how_4", @"how_5", @"how_6"};
 
 // The tag the update-required alert carries so its button handling can be told apart.
-enum { kUpdateRequiredAlertTag = 3 };
+static const int kUpdateRequiredAlertTag = 3;
 
 // Which phase drives the progress fill.
 enum {
@@ -78,10 +78,10 @@ enum {
 };
 
 // The number of help pages in the carousel.
-enum { kHelpPageCount = 6 };
+static const int kHelpPageCount = 6;
 
 // The background-music type played for the resource-download flow.
-enum { kResourceDownloadBgmType = 15 };
+static const int kResourceDownloadBgmType = 15;
 
 // The resource-download background-music start volume, and the fade timings. The volume is a
 // 4-byte ldr s0, so it really is a float32; the duration is an fmov immediate and so has no pool

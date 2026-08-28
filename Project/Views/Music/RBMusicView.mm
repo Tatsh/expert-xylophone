@@ -38,7 +38,7 @@ extern const double g_dMascotMessageAnimDuration;
 
 // The per-difficulty score, achievement-rate, rank, play-count, and full-combo tables are indexed
 // by difficulty. Four difficulty slots exist (basic, medium, hard, and the extended chart).
-enum { kDifficultyCount = 4 };
+constexpr int kDifficultyCount = 4;
 
 // The three setting pages hosted by the paged setting scroll.
 enum {
@@ -49,7 +49,7 @@ enum {
 };
 
 // The five setting title images cycled by the setting scroll on the default (non-variant) layout.
-enum { kSettingTitleImageCount = 5 };
+constexpr int kSettingTitleImageCount = 5;
 
 // The game types written into m_GameType.
 enum {
@@ -59,7 +59,7 @@ enum {
 };
 
 // The extended (level 4) difficulty selects the extended music record.
-enum { kDifficultyExtended = 3 };
+constexpr int kDifficultyExtended = 3;
 enum {
     kDifficultyBasic = 0,
     kDifficultyMedium = 1,
@@ -67,13 +67,13 @@ enum {
 };
 
 // The extended chart stores its replay under difficulty slot 0.
-enum { kExtendedReplayDifficulty = 0 };
+constexpr int kExtendedReplayDifficulty = 0;
 
 // The user's ghost style; style 1 shows the ghost fully opaque, any other style dims it.
-enum { kGhostStyleReplay = 1 };
+constexpr int kGhostStyleReplay = 1;
 
 // The themed sound-effect slot played by the detail-view close animation.
-enum { kSoundEffectCancel = 4 };
+constexpr int kSoundEffectCancel = 4;
 
 // The tutorial song's music id, loaded by playTutorialGame.
 static const int kTutorialMusicID = 0x3b9ac9fe;
@@ -114,10 +114,10 @@ static const CGFloat kBaseViewAlphaVisible = 1.0;
 static const CGFloat kBaseViewAlphaHidden = 0.0;
 
 // The BPM digit column is at most three digits wide.
-enum { kBpmDigitCount = 3 };
+constexpr int kBpmDigitCount = 3;
 
 // The number of animated select-line images and layers.
-enum { kLineImageCount = 10 };
+constexpr int kLineImageCount = 10;
 
 // The autoresizing mask applied to the line overlay and its layers: the four flexible margins
 // (0x2d = flexible left, right, top, and bottom margins).
@@ -254,7 +254,7 @@ static const float kSelLineOpacity = 0.0f;
 // ---- SetupView constants (all decoded from the raw arm64 of the decompiler-crashing method) ----
 
 // The RBUserSettingData.difficulty sentinel: the "white hard" slot (3) is clamped back to HARD (2).
-enum { kDifficultyWhiteHard = 3 };
+constexpr int kDifficultyWhiteHard = 3;
 
 // The autoresizing masks used by SetupView: the outer view keeps its top and bottom margins
 // flexible; the base panel keeps the four flexible margins; the first-info overlay keeps its width
@@ -298,7 +298,7 @@ static const CGFloat kOverlayHalf = 0.5;
 static const CGFloat kFirstInfoCenterXFactor = 0.5;
 
 // The initial selected setting page.
-enum { kSetupInitialSetting = 1 };
+constexpr int kSetupInitialSetting = 1;
 
 // The base-panel image table (thema 0/1), indexed by frame-bonus type.
 static NSString *const kDetMbgTable[] = {
@@ -531,7 +531,7 @@ static const CGFloat kNarrowOtherTitleYNonWhite = 150.0;
 #pragma mark Music data
 
 // The plain background's index in kDetMbgTable, which the non-white themes always take.
-enum { kDetMbgPlainIndex = 3 };
+constexpr int kDetMbgPlainIndex = 3;
 
 - (void)setMusicData:(MusicData *)musicData {
     /** @ghidraAddress 0xca818 */

@@ -36,9 +36,7 @@ enum {
 };
 
 // The port the applilink external-application scheme listens on.
-enum {
-    RecommendAdAreaViewExtAppPort = 80,
-};
+static const int RecommendAdAreaViewExtAppPort = 80;
 
 // Result of redirectWithRequest: whether the web view should proceed with the request.
 enum {

@@ -23,7 +23,7 @@ enum {
 };
 
 // Themed sound-effect identifiers.
-enum { kSoundEffectCancel = 4 };
+constexpr int kSoundEffectCancel = 4;
 
 // The message font shown in the modal download dialog: 16 points on the phone, 18 on the pad.
 static const CGFloat kDialogMessageFontSizePhone = 16.0;

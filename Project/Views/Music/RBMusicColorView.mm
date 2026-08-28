@@ -11,7 +11,7 @@
 #import "soundeffectmanager.h"
 
 // The three play-colour slots this selector builds a button for.
-enum { kColorSlotCount = 3 };
+constexpr int kColorSlotCount = 3;
 
 // The play-colour values. Colour 0 and colour 1 are the two concrete colours; any other value is
 // the "both" slot the hosting view later resolves to a colour with a coin flip.
@@ -21,14 +21,14 @@ enum {
 };
 
 // The user theme (RBUserSettingData.thema); the brown theme (2) uses the flash-highlighted layout.
-enum { kThemeBrown = 2 };
+constexpr int kThemeBrown = 2;
 
 // The layout-offset the iPad idiom Colette layout seeds for the brown theme (8.0, the
 // 0x41000000 single-precision literal written by the initialiser).
 static const float kBrownLayoutOffset = 8.0f;
 
 // The themed selection sound-effect slot played when a colour button is tapped.
-enum { kSoundEffectSelect = 1 };
+constexpr int kSoundEffectSelect = 1;
 
 // The fully-opaque overlay opacity. The selected colour's name overlay is shown at the current
 // rival alpha instead, so the others use this value.

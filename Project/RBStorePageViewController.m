@@ -85,10 +85,10 @@ enum {
 };
 
 // The unset purchase-limit type, which triggers the age-selection sheet before a purchase.
-enum { kPurchaseLimitTypeUnset = 0 };
+static const int kPurchaseLimitTypeUnset = 0;
 
 // The age-verify response reports success with a zero status.
-enum { kAgeVerifyStatusOK = 0 };
+static const int kAgeVerifyStatusOK = 0;
 
 // Purchase-limit thresholds (yen) indexed by RBUserSettingData.purchaseLimitType; an index past the
 // end means no limit (the -1 sentinel).

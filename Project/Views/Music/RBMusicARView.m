@@ -28,14 +28,10 @@ enum {
 
 // The readout always shows at least this many integer glyphs, even when the significant-digit count
 // is smaller.
-enum {
-    kMinimumGlyphCount = 2,
-};
+static const int kMinimumGlyphCount = 2;
 
 // The index, counted from the least significant digit, after which the decimal point is inserted.
-enum {
-    kDecimalPointDigitIndex = 1,
-};
+static const int kDecimalPointDigitIndex = 1;
 
 // The fixed readout size; the caller's frame width and height are overridden with these.
 // @ghidraAddress 0x2eea20 (g_dCustomizeArtworkNarrowSize)

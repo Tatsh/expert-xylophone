@@ -62,7 +62,8 @@ static NSString *const kClearImageNames[] = {
 static NSString *const kAddButtonImageName = @"01_music_select/sel_add";
 static NSString *const kRemoveButtonImageName = @"01_music_select/sel_remove";
 
-// The cell shows four difficulty slots.
+// The cell shows four difficulty slots. Declared as an enumerator so it can size the rank and
+// clear-type arrays below, which a static const cannot do in C.
 enum {
     kDifficultyCount = 4,
 };

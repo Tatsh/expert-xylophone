@@ -20,10 +20,10 @@ static const CGFloat kPhoneCenterX = 54.0;
 static const CGFloat kPhoneCenterY = 43.0;
 
 // The difficulty level is clamped to this many distinct level-number glyphs (levels 1 through 15).
-enum { kMaxDifficultyGlyphIndex = 14 };
+static const int kMaxDifficultyGlyphIndex = 14;
 
 // The tag assigned to the difficulty button.
-enum { kDifficultyButtonTag = 2 };
+static const int kDifficultyButtonTag = 2;
 
 // The autoresizing mask applied to the button and its glyphs: all six flexible flags (0x3f).
 static const UIViewAutoresizing kExtendNoteAutoresizingMask =

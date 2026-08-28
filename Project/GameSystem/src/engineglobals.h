@@ -211,6 +211,9 @@ extern const ChartDecodeKey kChartDecodeKeys[];
 
 /**
  * @brief The number of decode types @c kChartDecodeKeys carries.
+ *
+ * An enumerator rather than a constant because this header is included by C translation units,
+ * where only an enumerator is a constant expression and so usable as an array bound.
  */
 enum { kChartDecodeKeyCount = 2 };
 

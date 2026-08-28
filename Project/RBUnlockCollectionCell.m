@@ -23,9 +23,7 @@ static NSString *const kBadgeImageName = @"04_customize/cus_restore_badge";
 static NSString *const kUnlockDisplayImageName = @"04_customize/cus_unlock_display";
 
 // The item type granted to a downloadable music cover; only this type fetches its artwork remotely.
-enum {
-    kUnlockItemTypeMusic = 7,
-};
+static const int kUnlockItemTypeMusic = 7;
 
 // The point label is drawn with the lime digit-glyph style.
 static const RBNumberLabelImageType kPointLabelImageType = RBNumberLabelImageTypeLime;

@@ -13,11 +13,17 @@
 
 /**
  * @brief The number of 32-bit words folded into a tamper-hash scramble buffer.
+ *
+ * An enumerator rather than a constant because the C translation units that include this header
+ * size a local array with it, and only an enumerator is a constant expression in C.
  */
 enum { kHashWordCount = 8 };
 
 /**
  * @brief The length in bytes of the MD5 digest a tamper-hash builder produces.
+ *
+ * An enumerator rather than a constant because the C translation units that include this header
+ * size a local array with it, and only an enumerator is a constant expression in C.
  */
 enum { kHashDigestLength = 16 };
 

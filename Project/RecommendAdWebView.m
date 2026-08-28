@@ -19,9 +19,7 @@ enum {
 };
 
 // Banner-detail status returned by RecommendWebAPI getBannerDetailWithAdModel:callback:.
-enum {
-    RecommendAdWebViewBannerStatusHasAd = 1,
-};
+static const int RecommendAdWebViewBannerStatusHasAd = 1;
 
 // Web-view load status stored in webViewStatus.
 enum {

@@ -1,10 +1,10 @@
 #import "StorePackListGenre.h"
 
 // The initial capacity of the accumulated pack-identifier array.
-enum { kPackInfoInitialCapacity = 20 };
+static const int kPackInfoInitialCapacity = 20;
 
 // The fetched-page offset a freshly built genre starts from.
-enum { kNumFetchedPackInitial = 0 };
+static const int kNumFetchedPackInitial = 0;
 
 @implementation StorePackListGenre
 

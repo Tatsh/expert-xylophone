@@ -81,7 +81,7 @@ static const int kThemedVoiceDifficultyBase = 10;
 static const int kExtendedSoundEffect = 15;
 
 // The largest difficulty-level image index (levels above this clamp to the last image).
-enum { kMaxDifficultyLevelIndex = 14 };
+constexpr int kMaxDifficultyLevelIndex = 14;
 
 // The base difficulty icon, indexed by difficulty slot, on the ordinary (non-Colette) themes.
 static NSString *const kDifficultyIconNames[] = {

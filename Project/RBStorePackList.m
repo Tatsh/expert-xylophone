@@ -13,21 +13,21 @@
 // region is not mapped in the Ghidra image, so the exact three characters could not be recovered.
 // "ALL" is the length-matching best guess and is unverified at the byte level.
 static NSString *const kStoreDefaultGenreName = @"ALL"; // @ghidraAddress 0x36eee0
-enum { kStoreDefaultGenreID = 0 };
+static const int kStoreDefaultGenreID = 0;
 
 // The number of packs requested per catalogue page.
-enum { kStorePackListPageSize = 10 };
+static const int kStorePackListPageSize = 10;
 
 // The purchase-limit type is reset to this "unset" tier, and the running purchase total is zeroed,
 // when a newer purchase month is reported by the server.
-enum { kPurchaseLimitTypeUnset = 0 };
-enum { kPurchaseTotalReset = 0 };
+static const int kPurchaseLimitTypeUnset = 0;
+static const int kPurchaseTotalReset = 0;
 
 // The purchase-limit type must be below this bound (the age-tier count) to be reset.
-enum { kPurchaseLimitTypeCount = 3 };
+static const int kPurchaseLimitTypeCount = 3;
 
 // The queued deep-link ("open store") pack identifier is only valid when strictly positive.
-enum { kInvalidPackID = 0 };
+static const int kInvalidPackID = 0;
 
 // The initial capacities used when building the model's mutable collections.
 enum {

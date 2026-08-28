@@ -57,7 +57,7 @@
 
 // rb::GameScene state-machine value referenced at launch. The state enum lives with the
 // rb::GameScene class; only the value used here is named.
-enum { kGameSceneStateMusicSelect = 1 };
+constexpr int kGameSceneStateMusicSelect = 1;
 
 // Note-sheet layout geometry, recovered from the launch decompile. Float DAT_ values were read from
 // the binary (0x1002ef180 = 96.0, 0x1002ef184 = 64.0, 0x1003ce930 = 1024).
