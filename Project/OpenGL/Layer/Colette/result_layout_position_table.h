@@ -20,7 +20,3 @@ constexpr int kResultLayoutPositionCount = 228;
  * @ghidraAddress 0x3d4630
  */
 extern S_VECTOR2 g_aResultLayoutPosition[kResultLayoutPositionCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

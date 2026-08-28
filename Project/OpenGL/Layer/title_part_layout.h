@@ -50,7 +50,3 @@ extern const SpriteUvEntry g_aTitle2PartUvMain[];
  * @ghidraAddress 0x2f7368
  */
 extern const SpriteUvEntry g_aTitle2PartUvAlt[];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

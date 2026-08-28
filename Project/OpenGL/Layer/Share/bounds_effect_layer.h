@@ -144,7 +144,3 @@ private:
     float m_flEffectSize = {}; // +0x308: the user's effect size.
     int m_nStyle = {};         // +0x30c: the bounds-effect style (0/1/2).
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -126,7 +126,3 @@ private:
     float m_flAnimTime = {}; // +0x40: the display animation timer, reset when made ready.
     // unsigned char m_aReserved44[4] = {}; // +0x44
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

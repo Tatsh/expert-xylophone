@@ -140,7 +140,3 @@ private:
     int m_nMarkerCount = {};         // +0x90: the active marker count (6 for theme 0, else 4).
     // unsigned char m_aReserved94[4] = {}; // +0x94: padding to the 0x98-byte allocation size.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

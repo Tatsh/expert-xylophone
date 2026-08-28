@@ -34,7 +34,3 @@ constexpr int kClassicFullComboObjectTypeCount = 3;
  */
 extern const ClassicFullComboSpriteType
     g_aClassicFullComboSpriteTypes[kClassicFullComboSpriteTypeCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

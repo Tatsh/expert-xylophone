@@ -149,7 +149,3 @@ private:
         {};                                  // +0x32c: the pooled burst particles (to 0x1b2c).
     unsigned char m_aReservedTail[0xc] = {}; // +0x1b2c: trailing state to the 0x1b38 size.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -374,7 +374,3 @@ extern const S_VECTOR2 g_aTitleCampaignPartAnchor[];
  * @ghidraAddress 0x2f7908
  */
 extern const SpriteUvEntry g_aTitlePartUvDefault[];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

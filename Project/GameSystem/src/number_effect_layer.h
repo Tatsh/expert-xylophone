@@ -176,7 +176,3 @@ private:
     // +0x68: the side-dependent transform block seeded when the instancers are built.
     float m_aTransform[kTransformWordCount] = {};
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

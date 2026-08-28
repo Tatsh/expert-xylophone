@@ -84,7 +84,3 @@ void CrossProductVector3(S_VECTOR3 *pOut, S_VECTOR3 *pB);
  * @ghidraAddress 0x20d20
  */
 void NormalizeVector3(S_VECTOR3 *pVec);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

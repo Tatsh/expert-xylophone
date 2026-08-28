@@ -174,7 +174,3 @@ private:
     float m_aScrollPhase[kScrollPhaseCount] = {}; // +0x44: the three scroll phases.
     Particle m_aParticles[kParticleCount] = {};   // +0x50: the pooled particles.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

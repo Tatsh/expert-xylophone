@@ -364,7 +364,3 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
  * @ghidraAddress 0x2a158
  */
 void ProjectWorldToScreenCurrent(float *pVec4);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

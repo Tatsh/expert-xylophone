@@ -128,7 +128,3 @@ private:
     bool m_bSoundFlag = {}; // +0x3c: a sound flag the getter zero-clears.
     // unsigned char m_aReserved3d[3] = {}; // +0x3d: padding to the 0x40-byte allocation size.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

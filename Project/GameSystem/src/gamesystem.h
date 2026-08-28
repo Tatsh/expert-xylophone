@@ -935,7 +935,3 @@ private:
     bool m_fUserFullCombo = {};          // +0x139
     bool m_fFullJustReflec = {};         // +0x13a
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

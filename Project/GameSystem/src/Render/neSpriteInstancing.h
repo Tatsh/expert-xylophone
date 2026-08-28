@@ -398,7 +398,3 @@ C_SPRITE_INSTANCING_2D *CreateWorldSpriteBatch(unsigned int nCapacity);
 C_SPRITE_INSTANCING_2D *CreateSpriteInstancer(unsigned int nCapacity);
 
 } // namespace ne
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

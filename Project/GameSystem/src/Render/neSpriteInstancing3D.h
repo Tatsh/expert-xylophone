@@ -56,7 +56,3 @@ public:
 };
 
 } // namespace ne
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

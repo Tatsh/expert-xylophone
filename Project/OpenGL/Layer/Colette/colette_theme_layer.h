@@ -209,7 +209,3 @@ private:
     // +0x94..+0x97: the remaining layer state, still being worked out.
     // unsigned char m_aReserved94[4] = {}; // +0x94
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

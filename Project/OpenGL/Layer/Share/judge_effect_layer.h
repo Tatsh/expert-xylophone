@@ -134,7 +134,3 @@ private:
     float m_flScaleY = {};                      // +0x38: a scale the constructor seeds to 1.
     JudgeRecord m_aJudgeRecords[2] = {};        // +0x3c: two per-judge records.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -133,7 +133,3 @@ private:
     ChainRecord m_aChains[kChainRecordCount] =
         {}; // +0x24: the pooled connector records (to 0xc24).
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

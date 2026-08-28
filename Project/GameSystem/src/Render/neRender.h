@@ -184,7 +184,3 @@ extern int g_nDebugFrameCounter;
 /** @brief The frame the sprite snapshot dumps on; zero until a layer arms it. */
 extern int g_nDebugSnapshotFrame;
 #endif
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

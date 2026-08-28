@@ -218,7 +218,3 @@ private:
     CoordEntry m_aGridA[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0xf0
     CoordEntry m_aGridB[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0x7b0
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

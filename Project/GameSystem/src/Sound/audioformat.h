@@ -42,7 +42,3 @@ void InitPcmFormatDescriptor(AudioStreamBasicDescription *pAsbd,
 #endif
 
 #endif // AUDIOFORMAT_H
-
-// code: language=C
-// kate: hl C;
-// vim: set ft=c :

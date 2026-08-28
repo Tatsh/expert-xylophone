@@ -25,7 +25,3 @@ public:
     static void SetSheetLayerMargins(
         float fLeft, float fTop, float fRight, float fBottom, GameSystem *pGameSystem);
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

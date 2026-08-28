@@ -126,7 +126,3 @@ private:
     float m_flElapsed = {};  // +0x0c elapsed time so far
     float m_flCurrent = {};  // +0x10 last computed interpolated value
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

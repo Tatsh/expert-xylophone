@@ -130,7 +130,3 @@ private:
     // unsigned char m_aPad35[3]; // +0x35 (alignment padding, compiler-inserted)
     EffectRecord m_aEffects[kColorCount] = {}; // +0x38: one effect record per player colour.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

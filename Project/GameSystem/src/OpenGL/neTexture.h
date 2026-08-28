@@ -312,7 +312,3 @@ extern C_TEXTURE **g_ppTextureCacheHead;
 extern int g_dwTotalTextureMemory;
 
 } // namespace ne
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

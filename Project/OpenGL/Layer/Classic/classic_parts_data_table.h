@@ -210,7 +210,3 @@ extern PhoneLayoutRect g_ClassicCenterPositionPhonePortrait;
  * @ghidraAddress 0x3d90f0
  */
 extern PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

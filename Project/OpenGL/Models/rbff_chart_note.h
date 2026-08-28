@@ -173,7 +173,3 @@ int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor);
  * @ghidraAddress 0x12ed44
  */
 int DeserializeChartHeaderRecord(RbffChartHeaderRecord *pRecord, const unsigned char **ppCursor);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

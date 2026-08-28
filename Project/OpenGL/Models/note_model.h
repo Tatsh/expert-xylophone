@@ -867,7 +867,3 @@ float GetNoteLaneFraction(int nKind, int nLane);
  * @ghidraAddress 0x1372e4
  */
 void ProjectNoteHitPoint(S_VECTOR2 *pPointInOut);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

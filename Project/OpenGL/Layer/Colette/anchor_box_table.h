@@ -117,7 +117,3 @@ extern S_VECTOR2 g_aColetteColorMarkerPoints[kColetteColorMarkerPointCount];
  * @ghidraAddress 0x3dc590
  */
 extern S_VECTOR2 g_ColetteColorMarkerOrigin;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

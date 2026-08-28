@@ -32,7 +32,3 @@ void InitRbffStreamCursor(RbffStreamCursor *pCursor);
  * @ghidraAddress 0x12e92c
  */
 bool CheckRbffMagic(const void *pData);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

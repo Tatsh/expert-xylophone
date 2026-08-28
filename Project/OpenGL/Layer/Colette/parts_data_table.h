@@ -55,7 +55,3 @@ extern PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount];
  * @ghidraAddress 0x3d20b0
  */
 extern PartsDataRecord g_aColettePartsPhone[kColettePhonePartsRecordCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

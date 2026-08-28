@@ -136,7 +136,3 @@ static inline void neDebugLog(const char *fmt, ...) {
 #ifndef RBPDBG_BUILD_SHA
 #define RBPDBG_BUILD_SHA "unknown"
 #endif
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

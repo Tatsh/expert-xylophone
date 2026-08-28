@@ -142,7 +142,3 @@ private:
     float m_flClearEffectDuration = {}; // +0x60: the clear-effect fade's duration, in frames.
     float m_flClearEffectElapsed = {};  // +0x64: the clear-effect fade's elapsed time, in frames.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

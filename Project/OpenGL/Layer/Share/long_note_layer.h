@@ -165,7 +165,3 @@ public:
                 unsigned char nFlagE,
                 float flRotation);
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

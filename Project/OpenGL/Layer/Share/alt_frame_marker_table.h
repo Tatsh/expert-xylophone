@@ -133,7 +133,3 @@ extern const SpriteUvEntry g_aAltFrameMeshUvMid[kAltFrameMeshUvCountMid];
  * @ghidraAddress 0x2f1a48
  */
 extern const SpriteUvEntry g_aAltFrameMeshUvHigh[kAltFrameMeshUvCountHigh];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

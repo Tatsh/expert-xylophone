@@ -33,7 +33,3 @@ struct TextureCacheControl {
  * @ghidraAddress 0x3cff20
  */
 extern TextureCacheControl *g_pTextureCacheControl;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

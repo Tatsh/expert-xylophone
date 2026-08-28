@@ -119,7 +119,3 @@ private:
     float m_aScale[2] = {};                  // +0x34: the default scale pair (one, one).
     // unsigned char m_aReserved3c[4] = {};        // +0x3c: trailing state to the 0x40-byte size.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

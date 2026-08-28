@@ -47,7 +47,3 @@ struct S_VECTOR2 {
         };
     };
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

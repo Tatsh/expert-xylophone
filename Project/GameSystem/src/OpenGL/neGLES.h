@@ -510,7 +510,3 @@ private:
     // unsigned char m_aReserved251[0x03] = {}; // +0x251
     int m_nMaxPaletteMatrices = {}; // +0x254 GL capability: max palette matrices per draw
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -218,7 +218,3 @@ private:
     int m_nTotalNotes = {}; // +0x00: the chart's total note count (rate denominator).
     PlayRecord m_aRecords[kSideCount] = {}; // +0x04: one play record per player side.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

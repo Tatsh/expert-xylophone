@@ -29,7 +29,3 @@ public:
 private:
     double m_flTime = {}; // +0x0
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

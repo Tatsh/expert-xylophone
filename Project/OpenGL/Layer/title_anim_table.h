@@ -2450,6 +2450,3 @@ constexpr float g_aTitleHintPos[] = {390.0f, 467.0f};
  * @ghidraAddress 0x2f8550
  */
 constexpr float g_aTitleLogoPos[] = {384.0f, 619.0f};
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

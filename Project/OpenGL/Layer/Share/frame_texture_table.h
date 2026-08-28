@@ -20,7 +20,3 @@ constexpr int kFrameTextureNameCount = 31;
  * @ghidraAddress 0x3ce738
  */
 extern const char *const g_aFrameTextureNames[kFrameTextureNameCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -74,7 +74,3 @@ private:
     bool m_fIsHardwareType9 = {}; // +0x01
     int m_nThema = {};            // +0x04
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

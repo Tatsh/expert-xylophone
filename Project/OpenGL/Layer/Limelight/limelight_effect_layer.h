@@ -135,7 +135,3 @@ private:
     float m_flClock = {}; // +0x40: the effect animation clock, reset on activation.
     // unsigned char m_aReserved44[4] = {}; // +0x44
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

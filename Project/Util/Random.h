@@ -72,7 +72,3 @@ private:
     unsigned int m_nState2 = {}; // +0x10
     unsigned int m_nState3 = {}; // +0x14
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

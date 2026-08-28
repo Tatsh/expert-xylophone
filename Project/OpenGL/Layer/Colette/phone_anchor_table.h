@@ -43,7 +43,3 @@ extern PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount];
  * @ghidraAddress 0x3d5530
  */
 extern PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -34,7 +34,3 @@ float CalculateCurveInterpolation(const float *pPairs, int nCount, float flQuery
  * @ghidraAddress 0x556d0
  */
 float CalculateCurveValue(const FloatCurve *pCurve, float flQueryX);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

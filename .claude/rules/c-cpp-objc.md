@@ -273,6 +273,10 @@
 
   Use `language=Objective-C++`, `hl Objective-C++`, and `ft=objcpp` for Objective-C++ headers.
 
+  Modelines are worth having only for Objective-C and Objective-C++, which an editor cannot tell
+  apart from plain C or C++ by the `.h` extension alone; that ambiguity is the whole reason the
+  hint exists. A C or C++ header needs none, so do not add them there and remove any that are.
+
 - When a `UIColor` is built from components (`colorWithRed:green:blue:alpha:` or
   `colorWithWhite:alpha:`) that exactly equal one of Apple's predefined class colours, use that
   predefined colour instead of the spelled-out component call, and add a short comment noting the

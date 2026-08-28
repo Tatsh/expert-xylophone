@@ -38,7 +38,3 @@ constexpr int kSlideNoteGlowTypeBase = 0xf;
  * @ghidraAddress 0x2fee38
  */
 extern const SlideNoteSpriteType g_aSlideNoteSpriteTypes[kSlideNoteSpriteTypeCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

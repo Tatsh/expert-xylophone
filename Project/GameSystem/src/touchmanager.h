@@ -118,7 +118,3 @@ private:
 
 /** @brief The global touch-manager singleton, constructed by @c TouchManager::EnsureSingleton. */
 extern TouchManager *g_pTouchManager;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

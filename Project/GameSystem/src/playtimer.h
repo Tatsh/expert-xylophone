@@ -148,7 +148,3 @@ extern PlayTimer *g_pPlayTimer;
  * @ghidraAddress 0x2ef178
  */
 extern const float g_flDelayFrameToSeconds;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

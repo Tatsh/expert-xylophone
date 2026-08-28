@@ -128,7 +128,3 @@ private:
     float m_flSpinPhaseB = {}; // +0x24: the second spin phase, wrapped to [-400/3, 400/3).
     ResultMark m_aResults[kMaxResults] = {}; // +0x28: the per-frame result-mark queue.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

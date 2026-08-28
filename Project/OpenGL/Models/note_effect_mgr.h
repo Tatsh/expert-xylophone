@@ -332,7 +332,3 @@ private:
     int m_nHitCount = {}; // +0x160: the accumulated hit (judged-note) count.
     // unsigned char m_aReserved164[4] = {}; // +0x164
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

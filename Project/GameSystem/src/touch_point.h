@@ -34,7 +34,3 @@ struct TouchPoint {
                                   the next commit. +0x2e */
     // unsigned char aPad2f[1] = {}; // +0x2f trailing pad to the 0x30-byte slot size
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

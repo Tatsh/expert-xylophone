@@ -195,7 +195,3 @@ void MultiplyVector4ByMatrixInPlace(float *pVec4, float *pMatrix);
  * @ghidraAddress 0x20db0
  */
 void TransformPointByMatrix(S_VECTOR3 *pPoint, const float *pMatrix);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -50,7 +50,3 @@ constexpr int kLongNoteBodyRangeEnd = 0x22;
  * @ghidraAddress 0x30dfa0
  */
 extern const LongNoteSpriteType g_aLongNoteSpriteTypes[kLongNoteSpriteTypeCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

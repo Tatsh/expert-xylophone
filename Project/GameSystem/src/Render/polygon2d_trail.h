@@ -99,7 +99,3 @@ private:
     S_VECTOR2 *m_pVertices = {};         // +0x20: the strip vertex positions.
     ne::C_DRAW_POLYGON_2D *m_pMesh = {}; // +0x28: the mesh node that draws the strip.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

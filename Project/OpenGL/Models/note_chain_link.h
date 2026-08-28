@@ -119,7 +119,3 @@ private:
     short m_nMarker = {};                // +0x06: an end marker / resolved tail time delta.
     unsigned char m_aReserved08[4] = {}; // +0x08: cleared spare space.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

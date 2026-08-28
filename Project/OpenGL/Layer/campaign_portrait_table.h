@@ -144,7 +144,3 @@ constexpr float g_aCampaignPortraitReaction[] = {0.0f,
  * @brief The time at which the SE-reaction scale curve ends, matching that curve's last knot time.
  */
 constexpr float kCampaignPortraitReactionEnd = 183.3333282470703f;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

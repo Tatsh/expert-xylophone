@@ -125,7 +125,3 @@ private:
     //        advanced by the frame delta until it reaches the effect duration.
     // unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

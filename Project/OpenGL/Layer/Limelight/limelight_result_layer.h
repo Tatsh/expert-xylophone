@@ -806,7 +806,3 @@ private:
      */
     void UpdateBonusSoundCueTimer(float flDeltaTime);
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

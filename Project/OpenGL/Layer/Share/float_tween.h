@@ -98,7 +98,3 @@ private:
     float m_flElapsed = {};  // +0x10: the accumulated time, advanced by the frame delta.
     float m_flCurrent = {};  // +0x14: the last computed value, returned while idle.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

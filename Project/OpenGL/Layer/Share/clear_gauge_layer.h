@@ -225,7 +225,3 @@ private:
     ValueSlot m_aValues[kSideCount] = {}; // +0x144
     int m_nTwoSideEnabled = {};           // +0x154: non-zero when the 2P gauge is drawn.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

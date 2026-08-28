@@ -33,7 +33,3 @@ constexpr int kColetteFullComboSpriteTypeCount = 103;
  */
 extern const ColetteFullComboSpriteType
     g_aColetteFullComboSpriteTypes[kColetteFullComboSpriteTypeCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

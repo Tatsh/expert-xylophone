@@ -45,7 +45,3 @@ enum ResultBonusColorIndex {
     kResultBonusColorLightGray = 9, /*!< 192, 192, 192. */
     kResultBonusColorWhite = 10,    /*!< 255, 255, 255. */
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

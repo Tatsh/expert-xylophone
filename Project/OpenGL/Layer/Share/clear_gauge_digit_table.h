@@ -118,7 +118,3 @@ constexpr int g_aGaugeDigitBatch[] = {2, 3, 4, 6};
  * @ghidraAddress 0x30c984
  */
 constexpr float g_aGaugeDigitAnchorX[] = {31.0f, 19.0f, 7.0f, -9.0f};
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

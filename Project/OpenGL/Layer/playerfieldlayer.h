@@ -181,7 +181,3 @@ private:
     float m_aScorePosition[kSideCount] = {};         // +0x38: each side's score-display position.
     ScoreDigitField m_aScoreFields[kSideCount] = {}; // +0x40: the per-side score-digit records.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

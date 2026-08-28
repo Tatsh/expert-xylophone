@@ -168,7 +168,3 @@ private:
     LinearTween m_easeChannel;                 // +0x44
     int m_aScoreValues[kScoreValueCount] = {}; // +0x58: the per-side score display values.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

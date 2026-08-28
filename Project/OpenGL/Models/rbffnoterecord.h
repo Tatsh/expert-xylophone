@@ -631,7 +631,3 @@ private:
     int m_nSlidePointCount = {};          // +0xb0: the number of slide points.
     // unsigned char m_aPadB4[4]; // +0xb4 (trailing alignment padding, compiler-inserted)
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -58,7 +58,3 @@ public:
 private:
     unsigned int m_aTimes[6] = {}; // +0x08: three start/end time pairs (all the free sentinel).
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

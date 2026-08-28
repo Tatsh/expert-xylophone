@@ -24,7 +24,3 @@ struct SpriteUvEntry {
  * @ghidraAddress 0x2efcc8
  */
 extern const SpriteUvEntry g_aSpriteUvTable[];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

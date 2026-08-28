@@ -230,7 +230,3 @@ extern const unsigned int g_aTitleSpriteCapacity[rb::TitleClassicScene::kSpriteS
  * @ghidraAddress 0x309384
  */
 extern const unsigned int g_aTitleSpriteTextureIndex[rb::TitleClassicScene::kSpriteSlotCount];
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

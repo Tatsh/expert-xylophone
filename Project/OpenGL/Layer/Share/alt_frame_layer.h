@@ -147,7 +147,3 @@ private:
         {}; // +0x70: each batch's sprite capacity and draw count.
     // unsigned char m_aReserved7c[4] = {}; // +0x7c: trailing state to the 0x80-byte size.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

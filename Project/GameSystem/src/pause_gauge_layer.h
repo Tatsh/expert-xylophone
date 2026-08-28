@@ -265,7 +265,3 @@ extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutAltFrame[];
  * @ghidraAddress 0x15145c
  */
 void SeedPauseGaugeLayoutTable(void);
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

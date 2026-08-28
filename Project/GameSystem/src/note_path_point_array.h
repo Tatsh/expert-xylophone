@@ -104,7 +104,3 @@ private:
     int m_nCount = {};              // +0x08 live entry count
     int m_nCapacity = {};           // +0x0c allocated entry count
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -166,7 +166,3 @@ private:
     int m_nCurrentExp = {};                     // +0x04: the player's current experience.
     int *m_apUnlockLevels[kCategoryCount] = {}; // +0x08: per-category item unlock-level arrays.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

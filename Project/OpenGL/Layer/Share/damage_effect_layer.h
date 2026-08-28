@@ -138,7 +138,3 @@ private:
     int m_nStyle = {};                                // +0x2b0: the bounds-effect style (0/1/2).
     // unsigned char m_aReserved2b4[4] = {};             // +0x2b4: trailing state to 0x2b8.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

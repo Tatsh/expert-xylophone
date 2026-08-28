@@ -107,7 +107,3 @@ private:
     Random *m_pNoteData = {};               // +0x08: the attached lane-picking generator.
     NoteLaneSlot m_aSlots[kSlotCount] = {}; // +0x10: the per-player, per-lane occupancy slots.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

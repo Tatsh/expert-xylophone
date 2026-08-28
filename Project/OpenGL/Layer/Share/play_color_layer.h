@@ -161,7 +161,3 @@ private:
     float m_flScaleY = {};          // +0x98: a scale the constructor seeds to 1.
     float m_flScaleZ = {};          // +0x9c: a scale the constructor seeds to 1.
 };
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

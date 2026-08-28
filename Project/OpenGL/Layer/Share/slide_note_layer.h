@@ -181,7 +181,3 @@ private:
  * @ghidraAddress 0x3dc650
  */
 extern int g_nActiveSlideTrailCount;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

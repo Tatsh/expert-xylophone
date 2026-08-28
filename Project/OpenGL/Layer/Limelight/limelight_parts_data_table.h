@@ -121,7 +121,3 @@ extern const UvPaletteEntry g_aLimelightGlyphUvPalette[];
  * The emitter ignores part ids at or above this bound.
  */
 constexpr int kLimelightPadGlyphRecordBound = 142;
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :

@@ -236,7 +236,3 @@ C_DRAW_POLYGON_3D *CreatePolygon3dMesh(unsigned int nDrawMode,
                                        bool bIndexBufferExternal);
 
 } // namespace ne
-
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :
