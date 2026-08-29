@@ -68,11 +68,9 @@
   constants, and other non-public code). Reserve Doxygen — a `/** ... */` block, or a trailing
   `/*!< ... */` member comment, with `@param`, `@return`, `@ghidraAddress`, etc. — for public
   members declared in headers. Do not use the `///` Doxygen single-line form for internal comments.
-- Do not write `@brief`. The documentation build sets both `JAVADOC_AUTOBRIEF` and `QT_AUTOBRIEF`,
-  so the first sentence of a doc block is the brief and the rest is the detailed description. Write
-  the summary as that first sentence, ending it with a full stop, and start the detail after it.
-  Both comment forms are covered: `JAVADOC_AUTOBRIEF` governs `/** ... */`, `QT_AUTOBRIEF` governs
-  the trailing `/*!< ... */` form.
+- Do not write `@brief`. A doc block's first sentence is its brief and the rest is the detailed
+  description, so write the summary as that first sentence, ending it with a full stop, and start
+  the detail after it.
 - Document a public enumeration's members with a trailing Doxygen member comment (`/*!< ... */`) on
   the same line as the member, not a leading comment before it:
 
