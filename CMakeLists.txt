@@ -36,11 +36,6 @@ endif()
 # in the original binary (address relative to the program's image base).
 # DOXYGEN_VERBATIM_VARS stops CMake re-quoting the alias, so the embedded
 # Doxygen-side quoting reaches the Doxyfile intact.
-#
-# Doxygen has no built-in knowledge of the Cocoa enumeration macros, so without
-# the expansions below it reads `typedef NS_ENUM(NSInteger, Foo) {...}` as a
-# function named NS_ENUM and drops the enumeration and its documented cases from
-# the output entirely.
 # ---------------------------------------------------------------------------
 if(BUILD_DOCS OR BUILD_DOCS_ONLY)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")

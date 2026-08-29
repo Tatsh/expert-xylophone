@@ -35,9 +35,6 @@ BreakAfterJavaFieldAnnotations: false
 BreakBeforeBinaryOperators: 'None'
 BreakBeforeBraces: 'Attach'
 BreakBeforeInheritanceComma: false
-# Doxygen mis-parses an Objective-C conformance list that is broken before the colon: it reads the
-# protocols between the first and last as instance variables of the class. Breaking after the colon
-# keeps the list on one logical line as far as its parser is concerned.
 BreakInheritanceList: 'AfterColon'
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializers: 'BeforeColon'
