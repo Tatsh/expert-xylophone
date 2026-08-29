@@ -1,21 +1,7 @@
-//
-//  MusicData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class MusicData). Verified against the
-//  arm64 disassembly: the decompiler drops the variadic message arguments, the screen-scale
-//  comparisons flow through VFP registers it renders as extraout_d0, and the CFString asset-name
-//  literals (whose method names invert the White/Black asset suffixes) were read straight from the
-//  __cfstring references.
-//
-
 #import "MusicData.h"
 
 #import <UIKit/UIKit.h>
 
-// Collaborator classes reached from the asset and load helpers. Their headers are not yet
-// reconstructed in this tree (the same speculative imports ScoreData.m and AppDelegate.mm already
-// use); they resolve once those classes land.
 #import "BFCodec.h"
 #import "MusicDataExtend.h"
 #import "NSData+RB.h"
@@ -28,9 +14,8 @@
 #import "enginecrypto.h"
 #import "engineglobals.h"
 
-// Archive member names. The White image accessors read the @c _b (black-background) members and
-// the Black image accessors read the @c _w (white-background) members; the binary names its
-// accessors the opposite way round from its assets, and that inversion is preserved here.
+// The White accessors read the @c _b members and the Black accessors the @c _w ones; the binary
+// names its accessors the opposite way round from its assets.
 static NSString *const kEntryMusic = @"bgm";
 static NSString *const kEntryMusicBasic = @"bgm_b";
 static NSString *const kEntryMusicMedium = @"bgm_m";
@@ -83,7 +68,6 @@ static NSString *const kEntryArtistWhite2xBasic = @"artist_w2x_b";
 static NSString *const kEntryArtistWhite2xMedium = @"artist_w2x_m";
 static NSString *const kEntryArtistWhite2xHard = @"artist_w2x_h";
 
-// Metadata keys read from the archive's info dictionary.
 static NSString *const kInfoDictionaryEntry = @"info";
 static NSString *const kInfoKeyID = @"ID";
 static NSString *const kInfoKeyMusicName = @"MusicName";
@@ -99,51 +83,39 @@ static NSString *const kInfoKeyBpmMin = @"BpmMin";
 static NSString *const kInfoKeyBpmMax = @"BpmMax";
 static NSString *const kInfoKeyOptions = @"Options";
 
-// The initial used when a tune has no sortable reading, or its reading falls in no katakana row.
 // @ghidraAddress 0x3cebb8
 static NSString *const kNoYomiInitial = @"#";
 
-// The number of decode types with a registered decryption key; a larger index selects no key.
 static const int kDecodeTypeCount = 2;
 
-// The inclusive one-based level range accepted from the archive metadata.
 static const int kLevelMinimum = 1;
 static const int kLevelMaximum = 15;
 
-// The blowfish key length used for the derived MD5 key.
 static const int kBlowfishKeyLength = 16;
 
-// The brown tint applied to the brown name-strip artwork. Each pooled constant is a single
-// precision quotient widened to double, so the divisions are spelled in float to reproduce the
-// stored bits exactly rather than the nearer double a double division would give.
+// Each pooled constant is a single-precision quotient widened to double, so the divisions are
+// spelled in float to reproduce the stored bits exactly.
 static const CGFloat kBrownTintRed = 78.0f / 255.0f;   // @ghidraAddress 0x2fcf38
 static const CGFloat kBrownTintGreen = 69.0f / 255.0f; // @ghidraAddress 0x2fcf40
 static const CGFloat kBrownTintBlue = 58.0f / 255.0f;  // @ghidraAddress 0x2fcf48
 
-// The opaque alpha component used for every tint colour.
 static const CGFloat kTintAlpha = 1.0;
 
-// The scale factor forced onto a double-resolution image.
 static const CGFloat kDoubleScale = 2.0;
 
-// The screen scale above which a double-resolution asset is preferred.
 static const CGFloat kRetinaScaleThreshold = 1.0;
 
-// Registry caches mapping a tune identifier to an overriding sort name.
 // @ghidraAddress 0x3dc2d8 (g_pMusicSortNameOverrides)
 // @ghidraAddress 0x3dc2e0 (g_pArtistSortNameOverrides)
 static NSMutableDictionary *g_pMusicSortNameOverrides;
 static NSMutableDictionary *g_pArtistSortNameOverrides;
 
-// Builds the two sort-name caches. The binary registers this in __mod_init_func rather than
-// hanging it off a +load or +initialize, so it runs before any tune is loaded.
 // @ghidraAddress 0x669e8
 __attribute__((constructor)) static void InitializeGlobalDictionaries(void) {
     g_pMusicSortNameOverrides = [[NSMutableDictionary alloc] init];
     g_pArtistSortNameOverrides = [[NSMutableDictionary alloc] init];
 }
 
-// The katakana rows, in the reading order used to pick a title's index bucket.
 // @ghidraAddress 0x3ceb18
 static NSString *const g_yomiGroups[] = {
     @"ァアィイゥウェエォオ",
@@ -158,12 +130,10 @@ static NSString *const g_yomiGroups[] = {
     @"ヮワヰヱヲンヴヵヶ",
 };
 
-// The hiragana initial labelling each katakana row.
 // @ghidraAddress 0x3ceb68
 static NSString *const g_yomiLabels[] = {
     @"あ", @"か", @"さ", @"た", @"な", @"は", @"ま", @"や", @"ら", @"わ"};
 
-// Decodes @p data into an image, preferring nil over an empty image.
 static UIImage *ImageFromData(NSData *data) {
     if (data == nil) {
         return nil;
@@ -171,7 +141,6 @@ static UIImage *ImageFromData(NSData *data) {
     return [UIImage imageWithData:data];
 }
 
-// Decodes @p data and re-wraps it as a double-resolution image.
 static UIImage *DoubleResolutionImageFromData(NSData *data) {
     UIImage *image = ImageFromData(data);
     if (image == nil) {
@@ -182,13 +151,11 @@ static UIImage *DoubleResolutionImageFromData(NSData *data) {
                          orientation:UIImageOrientationUp];
 }
 
-// The black tint colour used by the black name-strip images. The binary spells this out as
-// colorWithRed:0 green:0 blue:0 alpha:1, which is exactly +blackColor.
+// The binary spells this out as colorWithRed:0 green:0 blue:0 alpha:1, which is exactly +blackColor.
 static UIColor *BlackTintColor(void) {
     return UIColor.blackColor;
 }
 
-// The brown tint colour used by the brown name-strip images.
 static UIColor *BrownTintColor(void) {
     return [UIColor colorWithRed:kBrownTintRed
                            green:kBrownTintGreen
@@ -196,7 +163,6 @@ static UIColor *BrownTintColor(void) {
                            alpha:kTintAlpha];
 }
 
-// Orders two integer keys, ranking the larger key later, matching the binary's -1/0/1 result.
 static NSComparisonResult OrderByValue(int left, int right) {
     if (right > left) {
         return NSOrderedAscending;
@@ -204,7 +170,6 @@ static NSComparisonResult OrderByValue(int left, int right) {
     return (right < left) ? NSOrderedDescending : NSOrderedSame;
 }
 
-// Orders two lengths, ranking the longer length later, matching the binary's -1/0/1 result.
 static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     if (right > left) {
         return NSOrderedAscending;
@@ -213,11 +178,8 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 }
 
 @interface MusicData ()
-// Returns the katakana-row bucket of @p text's first character, the last row when no row matches,
-// or -1 when @p text is empty.
 // @ghidraAddress 0x5ea48
 + (int)GetYomiIndex:(NSString *)text;
-// Returns the hiragana initial for a katakana-row bucket, or @c "#" when out of range.
 // @ghidraAddress 0x5eb44
 + (NSString *)GetYomiString:(int)index;
 @end
@@ -265,8 +227,7 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 + (NSMutableData *)decodeBF:(NSMutableData *)data Key:(const char *)key KeyLength:(int)keyLength {
     /** @ghidraAddress 0x5eb78 */
     unsigned char digest[kBlowfishKeyLength];
-    // The binary allocates this with operator new[] and frees it with operator delete[], so the
-    // original translation unit was Objective-C++; malloc stands in until the file is renamed.
+    // The binary allocates this with operator new[], so the original file was Objective-C++.
     char *derived = (char *)malloc((size_t)keyLength);
     for (int index = 0; index < keyLength; ++index) {
         derived[index] = (char)index + key[index];
@@ -274,7 +235,6 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     ComputeMd5Digest(derived, (CC_LONG)keyLength, digest);
     free(derived);
     BFCodec *codec = [[BFCodec alloc] init];
-    // The digest is raw key material; the schedule reads it back as unsigned bytes regardless.
     [codec cipherInit:(const char *)digest keyLength:kBlowfishKeyLength];
     if (![codec decipher:data]) {
         return nil;
@@ -747,14 +707,12 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 
 #pragma mark - Brown title-strip member data
 
-// Tints @p imageData's decoded image brown and PNG-encodes it.
 static NSData *BrownImageData(MusicData *self, NSData *imageData) {
     UIImage *image = [UIImage imageWithData:imageData];
     return UIImagePNGRepresentation([self setColor:image withColor:BrownTintColor()]);
 }
 
-// The same, for the six accessors that reject a missing member before decoding it. The two
-// accessors that read the archive directly skip this guard.
+// The two accessors that read the archive directly skip this nil guard.
 static NSData *GuardedBrownImageData(MusicData *self, NSData *imageData) {
     if (imageData == nil) {
         return nil;
@@ -1037,8 +995,7 @@ static NSData *GuardedBrownImageData(MusicData *self, NSData *imageData) {
 
 - (UIImage *)artistNameImageBlackMedium {
     /** @ghidraAddress 0x62c8c */
-    // Yes, the medium and hard accessors tint the unsuffixed artist strip. The binary sends
-    // -artistNameImageWhite2x and -artistNameImageWhiteData here, not the medium or hard variants.
+    // Yes, the binary tints the unsuffixed artist strip here, not the medium variant.
     return [self setColor:[self artistNameImageWhite] withColor:BlackTintColor()];
 }
 

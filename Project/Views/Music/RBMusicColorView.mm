@@ -10,48 +10,33 @@
 #import "engineglobals.h"
 #import "soundeffectmanager.h"
 
-// The three play-colour slots this selector builds a button for.
 constexpr int kColorSlotCount = 3;
 
-// The play-colour values. Colour 0 and colour 1 are the two concrete colours; any other value is
-// the "both" slot the hosting view later resolves to a colour with a coin flip.
+// Any colour value other than these two is the "both" slot, resolved with a coin flip later.
 enum {
     kColorSlot0 = 0,
     kColorSlot1 = 1,
 };
 
-// The user theme (RBUserSettingData.thema); the brown theme (2) uses the flash-highlighted layout.
 constexpr int kThemeBrown = 2;
 
-// The layout-offset the iPad idiom Colette layout seeds for the brown theme (8.0, the
-// 0x41000000 single-precision literal written by the initialiser).
 static const float kBrownLayoutOffset = 8.0f;
 
-// The themed selection sound-effect slot played when a colour button is tapped.
 constexpr int kSoundEffectSelect = 1;
 
-// The fully-opaque overlay opacity. The selected colour's name overlay is shown at the current
-// rival alpha instead, so the others use this value.
 static const CGFloat kOverlayAlphaOpaque = 1.0;
 
-// The rival-alpha clamp range.
 static const float kRivalAlphaMin = 0.0f;
 static const float kRivalAlphaMax = 1.0f;
 
-// The autoresizing mask applied to the colour buttons and their image layers: the four flexible
-// margins (0x3f = flexible left, right, top, bottom, width, and height).
 static const UIViewAutoresizing kColorAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin |
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The half factor (the 0x3fe0000000000000 literal, d8) used to centre image layers over a button.
 static const CGFloat kHalf = 0.5;
-// The two-point vertical nudge applied to the base and name overlays.
 static const CGFloat kOverlayNudge = 2.0;
 
-// The colour-button image name tables, indexed by colour slot. Decoded from the CFString tables at
-// @0x35ae18 (base), @0x35ae30 (name), @0x35ae60 (you), and @0x35ae78 (rival).
 static NSString *const kColorBaseImageNames[] = {
     @"02_music_detail/det_col_1a",
     @"02_music_detail/det_col_2a",
@@ -70,13 +55,10 @@ static NSString *const kColorYouImageNames[] = {
 static NSString *const kColorRivalImageNames[] = {
     @"02_music_detail/det_col_rival_1",
     @"02_music_detail/det_col_rival_2",
-    // Slot 2 points at the same CFString as the "you" table's slot 2: the binary deduplicates the
-    // literal rather than shipping a rival-specific random image.
+    // The binary shares the "you" table's slot 2 literal here rather than a rival-specific image.
     @"02_music_detail/det_col_random",
 };
 
-// The selected-state image table used on every non-brown theme, indexed by colour slot
-// (@0x35ae48); the brown theme instead uses the single det_dif_sel_10 image for every slot.
 static NSString *const kColorSelectedImageNames[] = {
     @"02_music_detail/det_col_sel_1",
     @"02_music_detail/det_col_sel_2",
@@ -84,83 +66,54 @@ static NSString *const kColorSelectedImageNames[] = {
 };
 static NSString *const kBrownSelectedImageName = @"02_music_detail/det_dif_sel_10";
 
-// The toggle-button and first-info image names.
 static NSString *const kToAlphaButtonImageName = @"02_music_detail/det_col_br_1";
 static NSString *const kToColorButtonImageName = @"02_music_detail/det_col_br_2";
 static NSString *const kFirstInfoImageName = @"02_music_detail/det_col_br_3";
 
-// The number of image layers created by the initialiser's alpha branches.
 enum {
     kAlphaLayerFirst = 0,
     kAlphaLayerSecond = 1,
     kAlphaLayerThird = 2,
 };
 
-// ---- SetupView geometry, decoded from the .const pools referenced by @0xc2efc ----
-
-// The colour-button horizontal origins on the compact (non-variant) layout, decoded from the guard
-// table at @0x301180 (g_flColorButtonX table): {16, 194, 105}.
 static const CGFloat kCompactButtonX[] = {16.0, 194.0, 105.0};
-// The compact colour-button frame: origin y then size (0x4022... = 9.0, g_dLayoutMetricNinety =
-// 90.0, and g_dCustomizeArtworkWideLimelightX = 68.0).
 static const CGFloat kCompactButtonY = 9.0;
 static const CGFloat kCompactButtonWidth = 90.0;
 static const CGFloat kCompactButtonHeight = 68.0;
-// The compact alpha-change base-image frame (g_dSliderRowHeightWide = 40.0, 0x4037... = 23.0,
-// g_dMenuButtonHeightNarrow = 42.0, and DAT_1002eec40 = 44.0).
 static const CGFloat kCompactAlphaChangeX = 40.0;
 static const CGFloat kCompactAlphaChangeY = 23.0;
 static const CGFloat kCompactAlphaChangeWidth = 42.0;
 static const CGFloat kCompactAlphaChangeHeight = 44.0;
-// The compact toggle-button frame (4.0, DAT_100301140 = 74.0, 0x403e... = 30.0, 0x4035... = 21.0).
 static const CGFloat kCompactToggleX = 4.0;
 static const CGFloat kCompactToggleY = 74.0;
 static const CGFloat kCompactToggleWidth = 30.0;
 static const CGFloat kCompactToggleHeight = 21.0;
-// The compact colour-bar frame (g_dPopupBaseOriginXWide = 112.0, 0x4039... = 25.0,
-// DAT_1003010b0 = 158.0, and DAT_1002eeec0 = 38.0).
 static const CGFloat kCompactColorBarX = 112.0;
 static const CGFloat kCompactColorBarY = 25.0;
 static const CGFloat kCompactColorBarWidth = 158.0;
 static const CGFloat kCompactColorBarHeight = 38.0;
 
-// The iPad idiom (Colette) layout is laid out relative to layoutOffset. The colour-button
-// horizontal offsets per slot (added to layoutOffset), decoded from the LAB_1000c34fc arms:
-// slot 0 = g_flCollectionStartYNarrow (34.0), slot 1 = DAT_100301178 (312.0),
-// slot 2 = DAT_100301174 (173.0).
 static const CGFloat kVariantButtonXOffset[] = {34.0, 312.0, 173.0};
-// The variant colour-button frame origin y then square size (0x4039... = 25.0 and
-// DAT_1002eece0 = 110.0).
 static const CGFloat kVariantButtonY = 25.0;
 static const CGFloat kVariantButtonSize = 110.0;
-// The variant alpha-change base-image frame: x = layoutOffset + DAT_1002fcf90 (58.0), then
-// DAT_100301160 (51.0) and g_dCustomizeArtworkNarrowSize (62.0) for the square size.
 static const CGFloat kVariantAlphaChangeXOffset = 58.0;
 static const CGFloat kVariantAlphaChangeY = 51.0;
 static const CGFloat kVariantAlphaChangeSize = 62.0;
-// The variant toggle-button frame: x = layoutOffset + (brown ? -4.0 : 2.0), y from a theme pair
-// (brown = DAT_100301150 = 148.0, else DAT_100301148 = 153.0), size g_dUnlockFrameCapInsetWide
-// (36.0) and 0x4038... (24.0).
 static const CGFloat kVariantToggleXBrownOffset = -4.0;
 static const CGFloat kVariantToggleXOffset = 2.0;
 static const CGFloat kVariantToggleYBrown = 148.0;
 static const CGFloat kVariantToggleY = 153.0;
 static const CGFloat kVariantToggleWidth = 36.0;
 static const CGFloat kVariantToggleHeight = 24.0;
-// The variant colour-bar frame: x = layoutOffset + DAT_100301170 (176.0), then DAT_1002ec6e0
-// (50.0), g_dMenuButtonHeightWide (230.0), and DAT_1002eecd8 (64.0).
 static const CGFloat kVariantColorBarXOffset = 176.0;
 static const CGFloat kVariantColorBarY = 50.0;
 static const CGFloat kVariantColorBarWidth = 230.0;
 static const CGFloat kVariantColorBarHeight = 64.0;
 
-// The first-info flash effect timing (0x3e800000 = 0.25 duration, 0x3f800000 = 1.0 start, and
-// g_flFlashMinOpacity = 0.2 end).
 static const CGFloat kFirstInfoFlashDuration = 0.25;
 static const CGFloat kFirstInfoFlashStart = 1.0;
 static const CGFloat kFirstInfoFlashEnd = 0.2;
 
-// One layout leg's decoded geometry.
 namespace {
 struct ColorGeometry {
     CGFloat buttonX;
@@ -183,8 +136,7 @@ struct ColorGeometry {
 } // namespace
 
 @interface RBMusicColorView ()
-// De-inlined SetupView tail; the binary emits it in-line after the third loop iteration and it is
-// not a distinct selector.
+// De-inlined SetupView tail; the binary emits it in-line and it is not a distinct selector.
 - (void)buildToggleButtonsAndColorBar:(const ColorGeometry &)geometry;
 @end
 
@@ -288,8 +240,6 @@ struct ColorGeometry {
         [self.buttonImageBases addObject:baseView];
 
         [self addSubview:button];
-        // The stacked overlays are subviews of the button, centred within its own bounds at half
-        // its width and height (the binary reads the button's frame size back twice for this).
         CGRect buttonFrame = button.frame;
         CGFloat layerCenterX = buttonFrame.size.width * kHalf;
         CGFloat layerCenterY = buttonFrame.size.height * kHalf;
@@ -306,8 +256,6 @@ struct ColorGeometry {
         [button addSubview:selectedView];
         [self.selectedImages addObject:selectedView];
         if ([RBUserSettingData sharedInstance].thema == kThemeBrown && !isPad) {
-            // On the compact brown layout the selected overlay starts fully transparent instead of
-            // flashing.
             selectedView.alpha = 0.0;
         } else {
             [selectedView SetFlashEffectFast];
@@ -360,9 +308,6 @@ struct ColorGeometry {
     }
 }
 
-// De-inlined tail of SetupView (the binary emits it in-line after the third loop iteration): the
-// alpha toggle button with its optional first-info hint, the colour toggle button, and the colour
-// bar. It runs once, using the final iteration's decoded geometry.
 - (void)buildToggleButtonsAndColorBar:(const ColorGeometry &)geometry {
     CGRect toggleFrame =
         CGRectMake(geometry.toggleX, geometry.toggleY, geometry.toggleWidth, geometry.toggleHeight);
@@ -433,8 +378,6 @@ struct ColorGeometry {
         [self.buttonImageBases[kAlphaLayerFirst] setHidden:NO];
         [self.buttonImageBases[kAlphaLayerSecond] setHidden:YES];
         [self.buttonImageBases[kAlphaLayerThird] setHidden:YES];
-        // The colour-1 arm keeps only the second selected ring, the second YOU caption, and the
-        // first RIVAL caption visible.
     } else if (self.color == kColorSlot0) {
         [self.buttonImages[kAlphaLayerFirst] setAlpha:kOverlayAlphaOpaque];
         [self.buttonImages[kAlphaLayerSecond] setAlpha:self.rivalAlpha];

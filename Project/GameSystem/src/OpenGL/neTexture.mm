@@ -11,14 +11,11 @@
 
 namespace ne {
 
-// The texture cache's circular-list head-holder, created lazily by EnsureCacheList.
 C_TEXTURE **g_ppTextureCacheHead = nullptr; // @ghidraAddress 0x3cff30
 
-// The running total of the bytes held by all live textures, accumulated as textures are uploaded
-// and released. @ghidraAddress 0x3cff28
+// @ghidraAddress 0x3cff28
 int g_dwTotalTextureMemory = 0;
 
-// Sampler-parameter indices and the default values a freshly created texture is given.
 enum {
     kTexParamMinFilter = 0,
     kTexParamMagFilter = 1,
@@ -30,8 +27,6 @@ constexpr int kTexFilterNearest = 0;
 
 /** @ghidraAddress 0x319d0 */
 C_TEXTURE::C_TEXTURE() {
-    // Every other field is zeroed by its in-class initialiser; the scale defaults to 1 and the flag
-    // records whether the device is an iPad.
     m_flScale = 1.0f;
     m_fFlag60 = IsPad();
 }
@@ -42,7 +37,6 @@ C_TEXTURE::C_TEXTURE() {
  */
 C_TEXTURE::~C_TEXTURE() {
     g_dwTotalTextureMemory -= m_nByteSize;
-    // Splice the entry out of the cache list when both links are set.
     if (m_pPrev != nullptr && m_pNext != nullptr) {
         m_pPrev->m_pNext = m_pNext;
         m_pNext->m_pPrev = m_pPrev;
@@ -73,7 +67,6 @@ void C_TEXTURE::SetSourcePath(const char *pszPath) {
 /** @ghidraAddress 0x33c78 */
 C_TEXTURE *C_TEXTURE::FindOrLoadCached(const char *pszName) {
     C_TEXTURE *pSentinel = *g_ppTextureCacheHead;
-    // Walk the circular cache list; a key match bumps the reference count and returns the entry.
     for (C_TEXTURE *pEntry = pSentinel->m_pPrev; pEntry != pSentinel; pEntry = pEntry->m_pPrev) {
         if (pEntry->m_pKeyName != nullptr && std::strcmp(pEntry->m_pKeyName, pszName) == 0) {
             pEntry->AddRef();
@@ -81,15 +74,13 @@ C_TEXTURE *C_TEXTURE::FindOrLoadCached(const char *pszName) {
         }
     }
 
-    // Not cached: construct a new entry and load the image. On a load failure the binary abandons
-    // the entry without freeing it; that is reproduced here.
+    // On a load failure the binary abandons the entry without freeing it.
     auto *pNewEntry = new C_TEXTURE();
     if (pNewEntry->LoadFromUIImage(pszName) == 0) {
         return nullptr;
     }
 
     pNewEntry->AddRef();
-    // Splice the new entry in right after the sentinel, at the head of the live list.
     C_TEXTURE *pOldPrev = pSentinel->m_pPrev;
     pOldPrev->m_pNext = pNewEntry;
     pNewEntry->m_pPrev = pOldPrev;
@@ -103,8 +94,7 @@ void C_TEXTURE::EnsureCacheList() {
     if (g_ppTextureCacheHead != nullptr) {
         return;
     }
-    // Value-initialisation zeroes the head cell (the binary stores a null there before the sentinel
-    // is ready); the sentinel is then a self-linked one-element circular list.
+    // Value-initialisation zeroes the head cell, as the binary does before the sentinel is ready.
     g_ppTextureCacheHead = new C_TEXTURE *();
     auto *pSentinel = new C_TEXTURE();
     *g_ppTextureCacheHead = pSentinel;
@@ -119,9 +109,7 @@ C_TEXTURE **C_TEXTURE::GetCacheList() {
 
 /** @ghidraAddress 0x31af4 */
 void C_TEXTURE::Release() {
-    // Decrement the reference count and destroy the object once it reaches zero. The binary
-    // dereferences the object before its now-redundant null check, so callers pass a live object;
-    // delete dispatches the same virtual destructor the binary tail-calls through the vtable.
+    // The binary's null check here is redundant; it dereferences the object first.
     if (ReleaseRef() == 0) {
         delete this;
     }
@@ -152,9 +140,7 @@ int C_TEXTURE::LoadFromUIImage(const char *pszName) {
         nPotHeight <<= 1;
     }
 
-    // Draw the image into a zeroed, top-left-origin RGBA8888 bitmap. CoreGraphics uses a
-    // bottom-left origin, so the context is flipped vertically before the image is drawn at its
-    // original size into the top-left of the (larger) power-of-two buffer.
+    // CoreGraphics has a bottom-left origin, so the context is flipped for a top-left bitmap.
     const CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
     const int nRgbaStride = nPotWidth * 4;
     m_nByteSize = nPotHeight * nRgbaStride;
@@ -216,7 +202,6 @@ void C_TEXTURE::InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *
     pRenderer->GenTexture(&m_nGLHandle);
     pRenderer->BindTexture2d(m_nGLHandle);
 
-    // Give the new texture the default sampler state: repeat wrap on both axes, nearest filtering.
     pRenderer->SetTextureParameter(kTexParamWrapS, kTexWrapRepeat);
     pRenderer->SetTextureParameter(kTexParamWrapT, kTexWrapRepeat);
     pRenderer->SetTextureParameter(kTexParamMinFilter, kTexFilterNearest);
@@ -271,7 +256,6 @@ C_TEXTURE *C_TEXTURE::CreateAndCache(int nWidth,
     }
 
     pEntry->AddRef();
-    // Splice the new entry in at the head of the live list (right after the sentinel).
     C_TEXTURE *pSentinel = *g_ppTextureCacheHead;
     C_TEXTURE *pOldPrev = pSentinel->m_pPrev;
     pOldPrev->m_pNext = pEntry;
@@ -292,8 +276,7 @@ void C_TEXTURE::SetCachedTextureParameter(neGLESRenderer *pRenderer, int nIndex,
 
 /** @ghidraAddress 0x32020 */
 void C_TEXTURE::ReleaseGLHandle() {
-    // Guarded by the source path so only reloadable entries drop their handle; the handle is zeroed
-    // after deletion to guard against a double free on the next teardown.
+    // Guarded by the source path so only reloadable entries drop their handle.
     if (m_pSourcePath != nullptr && m_nGLHandle != 0) {
         neGLESRenderer::GetShared()->DeleteTexture(m_nGLHandle);
         m_nGLHandle = 0;
@@ -326,9 +309,7 @@ int C_TEXTURE::ReloadFromSourceName() {
         nPotHeight <<= 1;
     }
 
-    // Draw the image vertically flipped into a zeroed RGBA8888 power-of-two bitmap (see
-    // LoadFromUIImage for the origin-flip rationale). Unlike LoadFromUIImage this reload path does
-    // not re-record the content scale or source path.
+    // Unlike LoadFromUIImage this reload path does not re-record the content scale or source path.
     const CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
     const int nRgbaStride = nPotWidth * 4;
     m_nByteSize = nPotHeight * nRgbaStride;

@@ -25,12 +25,6 @@
     <true />
     <key>MinimumOSVersion</key>
     <string>@IOS_DEPLOYMENT_TARGET@</string>
-    <!--
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-      <string>gamekit</string>
-    </array>
-    -->
     <key>UIRequiresFullScreen</key>
     <true />
     <key>UIBackgroundModes</key>
@@ -154,10 +148,8 @@
         </array>
       </dict>
     </dict>
-    <!-- The app predates dark mode by seven years and has no dark assets: every colour it draws is
-       chosen for a light interface. Without this, iOS 13+ renders its UIKit controls dark against
-       artwork that assumes light, which is what makes the store unreadable on a dark-themed
-       device. Pinning the style restores the only appearance the app was ever designed for. -->
+    <!-- The app has no dark assets, so on iOS 13+ its UIKit controls would render dark against
+       artwork that assumes a light interface, leaving the store unreadable. -->
   <key>UIUserInterfaceStyle</key>
   <string>Light</string>
 </dict>

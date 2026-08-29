@@ -26,52 +26,35 @@
 #include "touchmanager.h"
 #include "vectormath.h"
 
-// The process-wide Classic result-window layer, created lazily by shared().
 static ResultWindowClassicLayer *g_pClassicResultLayer = nullptr; // @ghidraAddress 0x3dd2f8
 
-// The gesture hold-release timeout, in milliseconds (@ghidraAddress 0x302d5c), and the themed voice
-// the release cue plays.
+// @ghidraAddress 0x302d5c
 static constexpr float kGestureHoldTimeout = 3300.0f;
 static constexpr int kGestureReleaseVoiceId = 7;
 
-// The constructor's non-zero seeds: the fully-opaque sprite alpha, the touch id a region carries
-// while nothing is tracking it, and the sound-effect handle meaning nothing is playing.
 static constexpr unsigned int kFullAlpha = 255;
 static constexpr int kNoTouchId = -1;
 static constexpr int kNoSePlayHandle = -1;
 
-// The Classic pad parts table (declared in classic_parts_data_table.h): zero-initialised here to
-// match the binary's __common segment, filled at runtime.
 PartsDataRecord g_aClassicPartsPad[kClassicPartsRecordBound] = {}; // @ghidraAddress 0x3d6650
 
-// The Classic pad parts anchor table (declared in classic_parts_data_table.h): zero-initialised
-// here to match the binary's __common segment, filled at runtime.
 S_VECTOR2 g_aClassicPartsAnchorPad[kClassicPartsAnchorRecordCount] = {}; // @ghidraAddress 0x3d7cd0
 
-// The Classic ribbon-trail vertex storage (declared in classic_parts_data_table.h):
-// zero-initialised here to match the binary's __common segment, filled at runtime.
 S_VECTOR2 g_aClassicTrailVertices[kTrailVertexTotal] = {}; // @ghidraAddress 0x3dd080
 
-// The per-trail vertex counts, read-only data in the binary.
 const int g_aClassicTrailVertexCounts[] = {19, 19, 19, 19}; // @ghidraAddress 0x304190
 
-// The Classic phone-layout position tables (declared in classic_parts_data_table.h):
-// zero-initialised here to match the binary's __common segment, filled at runtime.
 PhoneAnchorRecord g_aClassicPositionPhoneLandscape[kClassicPositionRecordCount] =
     {}; // @ghidraAddress 0x3d84c0
 PhoneAnchorRecord g_aClassicPositionPhonePortrait[kClassicPositionRecordCount] =
     {}; // @ghidraAddress 0x3d80e8
 
-// The Classic phone-layout separator tables (declared in classic_parts_data_table.h):
-// zero-initialised here to match the binary's __common segment, filled at runtime.
 PhoneLayoutRecord g_aClassicSeparatorPhonePortrait[kClassicSeparatorRecordCount] =
     {}; // @ghidraAddress 0x3d88a0
 PhoneLayoutRecord g_aClassicSeparatorPhoneLandscape[kClassicSeparatorRecordCount] =
     {}; // @ghidraAddress 0x3d8c40
 
-// The Classic phone-layout position-by-state tables. Their record count is not bounds-checked by
-// the accessor; it is inferred as four from the gaps between the runtime-filled symbols
-// (0x3d8fd8, 0x3d9030, 0x3d9080, each 0x50 = four 0x14-byte records apart).
+// The accessor bounds-checks nothing; four is inferred from the 0x50 gaps between the tables.
 constexpr int kClassicPositionByStateRecordCount = 4;
 PhoneLayoutRecord g_aClassicPositionPhoneState[kClassicPositionByStateRecordCount] =
     {}; // @ghidraAddress 0x3d8fd8
@@ -80,23 +63,18 @@ PhoneLayoutRecord g_aClassicPositionPhoneStateLandscape[kClassicPositionByStateR
 PhoneLayoutRecord g_aClassicPositionPhoneStatePortrait[kClassicPositionByStateRecordCount] =
     {}; // @ghidraAddress 0x3d9030
 
-// The single Classic phone-layout centre-position records (declared in classic_parts_data_table.h):
-// zero-initialised here to match the binary's __common segment, filled at runtime.
 PhoneLayoutRect g_ClassicCenterPositionPhoneState = {};     // @ghidraAddress 0x3d90d0
 PhoneLayoutRect g_ClassicCenterPositionPhonePortrait = {};  // @ghidraAddress 0x3d90e0
 PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape = {}; // @ghidraAddress 0x3d90f0
 
-// The fixed landscape offsets the customize overlays add to their base positions. These are not
-// standalone globals: 0x3d8058 through 0x3d8070 fall inside the anchor table based at 0x3d7cd0
-// (indices 113 through 116), and the load-time initialiser is what fills them. Modelling them as
-// separate statics would give them their own zeroed storage, and both overlays would add nothing.
+// 0x3d8058 through 0x3d8070 fall inside the anchor table based at 0x3d7cd0, so these must be
+// indices; separate statics would get their own zeroed storage and both overlays would add nothing.
 constexpr int kCustomizeOverlayLandscapeAnchor = 113; // 0x3d8058
 constexpr int kNameplateBackingAnchor = 114;          // 0x3d8060
 constexpr int kNameplateNameAnchor = 115;             // 0x3d8068
 constexpr int kNameplateLevelAnchor = 116;            // 0x3d8070
 
-// The Classic phone parts table (@ghidraAddress 0x303580): static read-only sprite descriptors, one
-// per result-window part, giving each part's placement offset, size, and UV-palette index.
+// @ghidraAddress 0x303580
 const PartsDataRecord g_aClassicPartsPhone[kClassicPhonePartsRecordCount] = {
     {1, 0.0f, 0.0f, 1024.0f, 1024.0f, 0}, {1, 0.0f, 0.0f, 57.0f, 20.0f, 1},
     {1, 0.0f, 0.0f, 9.0f, 9.0f, 2},       {1, 0.0f, 0.0f, 1.0f, 9.0f, 3},
@@ -163,9 +141,6 @@ const PartsDataRecord g_aClassicPartsPhone[kClassicPhonePartsRecordCount] = {
     {1, 22.0f, 5.0f, 44.0f, 10.0f, 124},  {1, 51.0f, 5.0f, 102.0f, 10.0f, 125},
 };
 
-// The shared UV-palette table (declared in classic_parts_data_table.h) the Classic result window
-// indexes by a parts record's UV-palette index. Read-only ROM data transcribed from the binary;
-// the entry count is set by the span up to the next table rather than by any bound in the code.
 // @ghidraAddress 0x2f1b28
 const UvPaletteEntry g_aClassicUvPalette[] = {
     {0.0f, 0.0f, 0.75f, 1.0f},
@@ -410,9 +385,6 @@ const UvPaletteEntry g_aClassicUvPalette[] = {
     {0.49609375f, 0.04296875f, 0.13476562f, 0.0390625f},
 };
 
-// The glyph UV-palette table (declared in classic_parts_data_table.h) the Classic glyph dispatcher
-// indexes by a glyph record's UV-palette index; distinct from the part palette above. Read-only
-// ROM data transcribed from the binary, bounded the same way.
 // @ghidraAddress 0x2f4dc8
 const UvPaletteEntry g_aClassicGlyphUvPalette[] = {
     {0.0f, 0.0f, 1.0f, 1.0f},
@@ -545,8 +517,6 @@ const UvPaletteEntry g_aClassicGlyphUvPalette[] = {
 
 /** @ghidraAddress 0x115094 */
 ResultWindowClassicLayer::ResultWindowClassicLayer() {
-    // The base constructor and the zero-initialised members clear the layer; the binary writes
-    // those zeroes out explicitly, so only the non-zero defaults remain here.
     m_nDefaultAlpha = kFullAlpha;
     for (GestureTouchRegion &region : m_aGestureRegions) {
         region.nTouchId = kNoTouchId;
@@ -555,9 +525,6 @@ ResultWindowClassicLayer::ResultWindowClassicLayer() {
     m_nRevealSeHandle = kNoSePlayHandle;
     m_bMainAssetSubState = true;
 
-    // Each trail draws a fixed-length strip out of the shared vertex storage: the pointer table
-    // at 0x3cf458 gives the four starts, one stride apart, and the count table gives each one's
-    // length.
     for (int nTrail = 0; nTrail < kTrailCount; ++nTrail) {
         m_apTrails[nTrail] =
             new Polygon2dTrail(g_aClassicTrailVertexCounts[nTrail],
@@ -568,7 +535,6 @@ ResultWindowClassicLayer::ResultWindowClassicLayer() {
 /** @ghidraAddress 0x1151fc */
 ResultWindowClassicLayer *ResultWindowClassicLayer::shared() {
     if (g_pClassicResultLayer == nullptr) {
-        // The binary allocates the raw 0x1c0-byte object and runs the constructor at 0x115094.
         g_pClassicResultLayer = new ResultWindowClassicLayer();
     }
     return g_pClassicResultLayer;
@@ -578,7 +544,6 @@ ResultWindowClassicLayer *ResultWindowClassicLayer::shared() {
 const PartsDataRecord *ResultWindowClassicLayer::getPartsData(int nIndex) const {
     assert(nIndex >= 0 && nIndex < kClassicPartsRecordBound);
 
-    // The pad build reads the runtime-filled pad table; the phone build reads the static table.
     return IsPad() ? &g_aClassicPartsPad[nIndex] : &g_aClassicPartsPhone[nIndex];
 }
 
@@ -586,32 +551,25 @@ const PartsDataRecord *ResultWindowClassicLayer::getPartsData(int nIndex) const 
 const PartsDataRecord *ResultWindowClassicLayer::getPartsData_Phone(int nIndex) const {
     assert(nIndex >= 0 && nIndex < kClassicPhonePartsRecordCount);
 
-    // This accessor always reads the static phone parts table.
     return &g_aClassicPartsPhone[nIndex];
 }
 
 namespace {
 
-// The texture-name table entries the result window loads (@ghidraAddress 0x3cea80 and 0x3ceab0).
+// @ghidraAddress 0x3cea80 and 0x3ceab0
 constexpr const char *kBackgroundTextureName = "00_texture/sel_bg";
 constexpr const char *kPartsTextureName = "00_texture/result_parts";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x304170). Slot 1 (the parts atlas)
-// holds the most sprites; the rest are small fixed banks.
+// @ghidraAddress 0x304170
 constexpr unsigned int kSlotCapacities[] = {1, 400, 1, 1, 1, 2, 2, 0};
 
-// The per-slot texture-field selector (@ghidraAddress 0x304150): the index (0 = background, 1 =
-// parts) into the layer's two texture fields for each slot that binds a texture. A slot binds a
-// texture only when it is one of the first two or the last (the middle slots share the atlas
-// already bound by the batch they mirror).
+// Index into the layer's two texture fields; 3 means the slot binds none.
+// @ghidraAddress 0x304150
 constexpr int kSlotTextureField[] = {0, 1, 3, 3, 3, 3, 3, 0};
 
-// The default sprite alpha and scale the builder seeds before creating the batches.
 constexpr unsigned int kDefaultAlpha = 0xff;
 constexpr float kDefaultScale = 1.0f;
 
-// The slot range whose members do not bind a texture: slots kFirstUntexturedSlot through
-// kFirstUntexturedSlot + kUntexturedSlotSpan - 1 (that is, slots 2 through 6).
 constexpr int kFirstUntexturedSlot = 2;
 constexpr int kUntexturedSlotSpan = 5;
 
@@ -619,7 +577,6 @@ constexpr int kUntexturedSlotSpan = 5;
 
 namespace {
 
-// The play-record cell ids the tweet reads per side.
 constexpr unsigned int kCellScore = 0;
 constexpr unsigned int kCellMaxCombo = 2;
 constexpr unsigned int kCellJust = 3;
@@ -628,17 +585,13 @@ constexpr unsigned int kCellGood = 5;
 constexpr unsigned int kCellMiss = 6;
 constexpr unsigned int kCellJustReflec = 7;
 
-// The two score columns (the local player and the rival) the share image draws.
 constexpr int kShareSideCount = 2;
 
-// The achievement rate is reported as a percentage: the stored rate times this scale.
 constexpr float kSharePercentScale = 100.0f; // 1000.0 * 0.1, as the binary computes it.
 
-// The themed sound effect fired when the share begins.
 constexpr int kSoundEffectShare = 5;
 
-// The default player name and the tweet body format (music name, side-one score and rate, and the
-// App Store link), reproduced verbatim from the binary. The patched build drops the link.
+// The patched build drops the App Store link from the tweet body.
 static NSString *const kSharePlayerName = @"なまえ";
 #ifdef ENABLE_PATCHES
 static NSString *const kShareTweetFormat = @"%@をプレー！ Score:%d AR:%0.1f #rb_plus";
@@ -648,9 +601,6 @@ static NSString *const kShareStoreUrl =
     @"http://itunes.apple.com/jp/app/reflec-beat-plus/id472140433";
 #endif
 
-// Builds the classic result-screen Twitter share image from the current play result and posts it
-// through the view controller. This variant uses the light (white) title and artist images. A free
-// function that reads only the game-system, score-tracker, and app-delegate singletons.
 // @ghidraAddress 0x117628
 void PostResultToTwitter() {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectShare);
@@ -685,7 +635,6 @@ void PostResultToTwitter() {
         [pCreater setName:kSharePlayerName Side:nSide];
     }
 
-    // The tweet body reports the local player's (side one) score and percentage rate.
     MusicData *pTweetMusic = AppDelegate.appDelegate.musicData;
     NSString *musicName = pTweetMusic.musicName;
     const int nScore = pTracker->GetPlayRecordCell(1, kCellScore);
@@ -703,93 +652,64 @@ void PostResultToTwitter() {
 
 namespace {
 
-// The anchor modes that offset a base coordinate relative to the play-field viewport. Mode 0 (and
-// any value outside this range) leaves the coordinate unshifted.
+// Any mode outside this range leaves the coordinate unshifted.
 enum AnchorMode {
-    kAnchorNone = 0,                // No offset.
-    kAnchorHalfHeight = 1,          // y += viewportHeight / 2.
-    kAnchorFullHeight = 2,          // y += viewportHeight.
-    kAnchorHalfWidth = 3,           // x += viewportWidth / 2.
-    kAnchorHalfWidthHalfHeight = 4, // x += viewportWidth / 2, y += viewportHeight / 2.
-    kAnchorHalfWidthFullHeight = 5, // x += viewportWidth / 2, y += viewportHeight.
-    kAnchorFullWidth = 6,           // x += viewportWidth.
-    kAnchorFullWidthHalfHeight = 7, // x += viewportWidth, y += viewportHeight / 2.
-    kAnchorFullWidthFullHeight = 8, // x += viewportWidth, y += viewportHeight.
+    kAnchorNone = 0,
+    kAnchorHalfHeight = 1,
+    kAnchorFullHeight = 2,
+    kAnchorHalfWidth = 3,
+    kAnchorHalfWidthHalfHeight = 4,
+    kAnchorHalfWidthFullHeight = 5,
+    kAnchorFullWidth = 6,
+    kAnchorFullWidthHalfHeight = 7,
+    kAnchorFullWidthFullHeight = 8,
 };
 
-// The part-id upper bound the sprite dispatcher ignores at or above.
 constexpr unsigned int kPartIdBound = 0xf0;
-// The sprite colour intensities for the main pass and the half-intensity shadow pass.
 constexpr unsigned int kIntensityFull = 0xff;
 constexpr unsigned int kIntensityShadow = 0x80;
 
-// The glyph banks that carry special digit-sequence layout: the two score-column banks and the
-// rating-column bank (which draw a paired glyph and shift the first glyph), plus the banks whose
-// trailing '1' is kerned.
 constexpr unsigned int kScoreColumnBankA = 0x85;
 constexpr unsigned int kScoreColumnBankB = 0x9b;
 constexpr unsigned int kRatingColumnBank = 0xb1;
 constexpr unsigned int kKernBankPlus4A = 0x4d;
 constexpr unsigned int kKernBankPlus4B = 0x57;
 constexpr unsigned int kKernBankPlus2 = 0x72;
-// The maximum number of digits RenderDigitSequence splits a value into.
 constexpr int kMaxDigitCount = 6;
 
-// The digit glyph bank RenderScoreDigitsCompact draws from, and the maximum digits it shows.
 constexpr unsigned int kCompactDigitBank = 0x72;
 constexpr int kCompactMaxDigits = 4;
 
-// The character-code upper bound the glyph dispatcher ignores at or above.
 constexpr unsigned int kCharCodeBound = 0x7e;
 
-// The dot glyph character code drawn between the integer and fractional parts.
 constexpr unsigned int kDotGlyph = 0x7d;
 
-// The dot glyph part id RenderScorePaddedWithDot inserts after the ones digit, and its minimum
-// digit count.
 constexpr unsigned int kPaddedDotPart = 0x7c;
 constexpr int kPaddedMinDigits = 2;
 
-// The glyph character codes RenderDecimalWithDotGlyph draws: a leading glyph, the digit bank (its
-// '0'), and the narrow dot glyph inserted after the ones digit. It shows at least two significant
-// digits, out of a maximum of four.
 constexpr unsigned int kDecimalLeadingGlyph = 0x45;
 constexpr unsigned int kDecimalDigitBank = 0x39;
 constexpr unsigned int kDecimalDotGlyph = 0x43;
 constexpr int kDecimalMinDigits = 2;
 constexpr int kDecimalMaxDigits = 4;
-// The fixed per-glyph advance and the centring bias RenderDecimalWithDotGlyph uses (the dot glyph
-// is tucked two pixels tighter than a full advance).
 constexpr float kDecimalGlyphAdvance = 6.0f;
 constexpr float kDecimalCenterBias = 2.0f;
 constexpr float kDecimalDotAdvance = 2.0f;
 
-// The glyph codes RenderRatioDigits draws: the digit bank (its '0') and the separator glyph placed
-// between the numerator and denominator groups. It shows at least one significant digit per group,
-// out of a maximum of four.
 constexpr unsigned int kRatioDigitBank = 0x39;
 constexpr unsigned int kRatioSeparatorGlyph = 0x46;
 constexpr int kRatioMaxDigits = 4;
-// RenderRatioDigits lays glyphs out on a fixed seven-pixel advance, drawing each digit six pixels
-// left of the advancing cursor. Centring reserves the separator's nominal width plus a two-pixel
-// bias; the cursor pre-steps a full advance before the separator and is tightened one extra pixel
-// after it.
 constexpr float kRatioGlyphAdvance = 7.0f;
 constexpr float kRatioDigitInset = 6.0f;
 constexpr float kRatioSeparatorWidth = 6.0f;
 constexpr float kRatioCenterBias = 2.0f;
 constexpr float kRatioSeparatorTighten = 1.0f;
 
-// The digit bank RenderDigitRowSpacedByWidth draws from (its '0'), its maximum digit count, the
-// nominal glyph width used to centre the run, and the extra pixel added to each glyph's own width
-// when advancing.
 constexpr unsigned int kRowDigitBank = 0x39;
 constexpr int kRowMaxDigits = 4;
 constexpr float kRowNominalGlyphWidth = 7.0f;
 constexpr float kRowGlyphSpacing = 1.0f;
 
-// Offsets a base coordinate by half or full viewport dimensions per the anchor mode, shared by the
-// phone position accessors.
 inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const float flWidth = pGameSystem->GetViewportWidth();
@@ -834,13 +754,11 @@ inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
 void ResultWindowClassicLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const {
     assert(nIndex >= 0 && nIndex < kClassicPositionRecordCount);
 
-    // The orientation flag selects the portrait table; otherwise the landscape table is used.
     const PhoneAnchorRecord &record = m_bPortrait ? g_aClassicPositionPhonePortrait[nIndex] :
                                                     g_aClassicPositionPhoneLandscape[nIndex];
     pOutPosition->x = record.flX;
     pOutPosition->y = record.flY;
 
-    // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutPosition->x, &pOutPosition->y);
 }
 
@@ -848,7 +766,6 @@ void ResultWindowClassicLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosi
 const PhoneLayoutRecord *ResultWindowClassicLayer::getSeparator_Phone(int nIndex) const {
     assert(nIndex >= 0 && nIndex < kClassicSeparatorRecordCount);
 
-    // The orientation flag selects the portrait table; otherwise the landscape table is used.
     return m_bPortrait ? &g_aClassicSeparatorPhonePortrait[nIndex] :
                          &g_aClassicSeparatorPhoneLandscape[nIndex];
 }
@@ -856,7 +773,6 @@ const PhoneLayoutRecord *ResultWindowClassicLayer::getSeparator_Phone(int nIndex
 /** @ghidraAddress 0x114e9c */
 void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
                                                         PhoneLayoutRect *pOutRect) const {
-    // The iPad uses the state table; the phone uses its landscape or portrait table by orientation.
     const PhoneLayoutRecord &record =
         IsPad() ? g_aClassicPositionPhoneState[nIndex] :
                   (m_bPortrait ? g_aClassicPositionPhoneStatePortrait[nIndex] :
@@ -866,23 +782,17 @@ void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
     pOutRect->flWidth = record.flWidth;
     pOutRect->flHeight = record.flHeight;
 
-    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor
-    // mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutRect->flX, &pOutRect->flY);
 }
 
 /** @ghidraAddress 0x115008 */
 void ResultWindowClassicLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
-    // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
     if (IsPad()) {
         *pOutRect = g_ClassicCenterPositionPhoneState;
-        (void)GameSystem::GetGameSystem(); // The binary tail-calls the singleton getter and
-                                           // discards it.
+        (void)GameSystem::GetGameSystem(); // Yes, the binary discards this call's result.
         return;
     }
 
-    // Otherwise the orientation flag selects the portrait or landscape record, and the leading
-    // coordinate is shifted by half the viewport width and height.
     const PhoneLayoutRect &record =
         m_bPortrait ? g_ClassicCenterPositionPhonePortrait : g_ClassicCenterPositionPhoneLandscape;
     *pOutRect = record;
@@ -891,13 +801,11 @@ void ResultWindowClassicLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect
 
 /** @ghidraAddress 0x1171a0 */
 void ResultWindowClassicLayer::UpdateGestureTouchTracking() {
-    // Only the first four regions are hit-box regions; the fifth is the drag slider handled
-    // elsewhere.
+    // The fifth region is the drag slider, handled elsewhere.
     constexpr int kHitBoxRegionCount = 4;
     for (int nRegion = 0; nRegion < kHitBoxRegionCount; ++nRegion) {
         GestureTouchRegion &region = m_aGestureRegions[nRegion];
 
-        // A disabled region drops any tracked touch and clears its flags.
         if (!region.bEnabled) {
             region.nTouchId = -1;
             region.bDown = false;
@@ -907,7 +815,6 @@ void ResultWindowClassicLayer::UpdateGestureTouchTracking() {
 
         TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
         if (region.nTouchId == -1) {
-            // Unclaimed: latch the first freshly-pressed touch that lands inside the region's box.
             for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
                 TouchPoint *pTouch = pTouchManager->GetActiveTouch(nIndex);
                 if (!pTouch->bIsNew) {
@@ -925,8 +832,6 @@ void ResultWindowClassicLayer::UpdateGestureTouchTracking() {
                 }
             }
         } else {
-            // Claimed: track the held touch. Releasing it clears the region, latching the tap edge
-            // when it lifted inside the box.
             TouchPoint *pTouch = pTouchManager->FindTouchById(region.nTouchId);
             if (pTouch == nullptr) {
                 region.nTouchId = -1;
@@ -942,7 +847,7 @@ void ResultWindowClassicLayer::UpdateGestureTouchTracking() {
                 if (pTouch->bEnded) {
                     region.nTouchId = -1;
                     if (bInside) {
-                        // The tap-edge latch also clears the down flag (a single halfword store).
+                        // The binary latches the edge and clears the down flag in one store.
                         region.bDown = false;
                         region.bTapEdge = true;
                     }
@@ -953,19 +858,13 @@ void ResultWindowClassicLayer::UpdateGestureTouchTracking() {
 }
 
 namespace {
-// The fully-opaque alpha level the panel-shown gate compares against.
 constexpr int kFullyOpaqueAlpha = 255;
-// The side-slider drag threshold, in pixels, past the touch's start X in either direction.
 constexpr float kSliderDragThreshold = 30.0f;
-// The slider's two settle-target directions.
 constexpr float kSliderDirectionRight = 1.0f;
 constexpr float kSliderDirectionLeft = -1.0f;
-// The themed sound effect the slider toggle fires.
 constexpr int kSliderToggleSoundEffect = 7;
 } // namespace
 
-// The score-animation channel indices, their fixed effect-channel durations, and the per-channel
-// stagger delays past the base start time.
 namespace {
 constexpr int kScoreChannel = 0;
 constexpr int kEffectChannelA = 1;
@@ -983,8 +882,6 @@ constexpr int kTrailDuration = 500;
 
 /** @ghidraAddress 0x1173d8 */
 void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
-    // The result panel is interactive only once its reveal is complete and the screen fade is gone:
-    // the panel alpha channel must read fully opaque and the fade overlay must be fully clear.
     const int nPanelAlpha =
         static_cast<int>(m_aScoreAnimChannels[kScoreChannel].GetCurrent() * kFullyOpaqueAlpha);
     const float flChannelC = m_aScoreAnimChannels[kEffectChannelC].GetCurrent();
@@ -995,8 +892,6 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
     m_aGestureRegions[0].bEnabled = nPanelAlpha == kFullyOpaqueAlpha && flFadeAlpha == 0.0f;
     if (flFadeAlpha != 0.0f ||
         static_cast<int>(flChannelC * static_cast<float>(nPanelAlpha)) != kFullyOpaqueAlpha) {
-        // Not fully shown: disable the swipe regions, and the share region when Twitter is
-        // available.
         m_aGestureRegions[1].bEnabled = false;
         m_aGestureRegions[2].bEnabled = false;
         if (m_bTwitterAvailable) {
@@ -1005,8 +900,6 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
         return;
     }
 
-    // Fully shown: the swipe regions follow the device (their enable flag mirrors the is-pad flag),
-    // and the share region follows Twitter availability.
     if (IsPad()) {
         m_aGestureRegions[1].bEnabled = true;
         m_aGestureRegions[2].bEnabled = true;
@@ -1015,8 +908,6 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
         m_aGestureRegions[3].bEnabled = true;
     }
 
-    // Track a horizontal swipe over the centre box: claim a fresh touch inside it, then release it
-    // as a left or right swipe once it moves past the drag threshold from its start X.
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     if (m_nSliderTouchId == -1) {
         for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
@@ -1038,7 +929,6 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
     } else {
         TouchPoint *pTouch = pTouchManager->FindTouchById(m_nSliderTouchId);
         if (pTouch == nullptr) {
-            // The touch is gone: stop tracking.
             m_nSliderTouchId = -1;
         } else {
             const float flX = static_cast<float>(pTouch->nCurrentX);
@@ -1049,11 +939,9 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
                 m_aGestureRegions[1].bTapEdge = true; // A right swipe.
                 m_nSliderTouchId = -1;
             }
-            // Within the drag deadzone the touch keeps tracking (its id is retained).
         }
     }
 
-    // On a swipe in single-player, toggle the slider value and fire the toggle sound.
     if ((GameSystem::GetGameSystem()->GetGameType() | 2) == 2 &&
         (m_aGestureRegions[1].bTapEdge || m_aGestureRegions[2].bTapEdge)) {
         m_flSlideTimer =
@@ -1064,7 +952,6 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
         SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSliderToggleSoundEffect);
     }
 
-    // On the share gesture, consume the edge and post the result to Twitter.
     if (m_bTwitterAvailable && m_aGestureRegions[3].bTapEdge) {
         m_aGestureRegions[3].bTapEdge = false;
         PostResultToTwitter();
@@ -1141,11 +1028,8 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
                                                    bool bPadRight,
                                                    unsigned int nAlpha,
                                                    float flSpacing) {
-    // The glyphs draw into the parts slot at unit scale.
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split the value into decimal digits (least-significant first), tracking the most-significant
-    // non-zero digit.
     int aDigits[kMaxDigitCount] = {};
     int nMostSignificant = 0;
     for (int i = 0; i < nDigitCount; ++i) {
@@ -1155,7 +1039,6 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
         }
         nValue /= 10;
     }
-    // An all-zero value still shows one digit when the leading-zero flag is set.
     if (nMostSignificant == 0 && bLeadingZero) {
         nMostSignificant = 1;
     }
@@ -1199,7 +1082,6 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
 
         EmitPartSprite(0.0f, 1.0f, 1.0f, kGlyphSlot, nPartId, drawPos, nAlpha, 0);
         drawPos.x -= flSpacing;
-        // A paired column draws a second glyph ten ids up from the base.
         if (bFirstPaired) {
             const PartsDataRecord *pPaired = getPartsData(static_cast<int>(nGlyphBase + 10));
             drawPos.x -= pPaired->flWidth;
@@ -1212,7 +1094,6 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
         }
     }
 
-    // Pad the remaining leading positions with dimmed zeros.
     if (bPadRight && nMostSignificant + 1 < nDigitCount) {
         for (int nRemaining = (nDigitCount - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {
             const PartsDataRecord *pRecord = getPartsData(static_cast<int>(nGlyphBase));
@@ -1235,8 +1116,6 @@ void ResultWindowClassicLayer::DispatchGlyphSpriteFromTable(unsigned int nSlot,
     if (nCharCode >= kCharCodeBound) {
         return;
     }
-    // The glyph metrics come from the parts table indexed by the character code; the texture
-    // rectangle from the glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
     const unsigned int nIntensity = bDimmed ? kIntensityShadow : kIntensityFull;
@@ -1259,7 +1138,6 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
                                                         unsigned int nAlpha) {
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split the integer part into up to four digits (at least one significant).
     int aInteger[kCompactMaxDigits] = {};
     int nIntegerLen = 0;
     for (int i = 0; i < kCompactMaxDigits; ++i) {

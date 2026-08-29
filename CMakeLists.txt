@@ -1,24 +1,7 @@
-# CMakeLists.txt — REFLEC BEAT plus reconstruction  (root)
-#
-# The original 4.5.8 binary (rb458) is arm64, so the default slice set is simply
-# arm64; add arm64e with -DIOS_ARCHS="arm64 arm64e" if your toolchain has arm64e
-# app codegen. This file builds a NATIVE iOS .app. Configure with `-G Xcode` plus
-# the leetal/ios-cmake toolchain to build the .app target from the per-directory
-# source tree:
-#
-#   cmake -G Xcode -DCMAKE_TOOLCHAIN_FILE=/path/to/ios.toolchain.cmake -DPLATFORM=OS64 ..
-#
-# Theos is supported too, but NOT through CMake: it has its own hand-maintained, fixed
-# Theos application Makefile under ./theos/ (build with `make -C theos`). See theos/Makefile.
-#
-# Every knob below is a CACHE entry, so ALL of them (bundle id, name, version, archs,
-# deployment target, tool paths) are overridable on the command line with -D<name>=..
-
 cmake_minimum_required(VERSION 3.14)
 
-# Documentation switches sit before project() because a docs-only configure must
-# not probe for the Objective-C toolchain: the GitHub Pages runner is Linux and
-# has no OBJC/OBJCXX compilers, so that mode declares no languages at all.
+# Declared before project() so a docs-only configure declares no languages: the GitHub Pages runner
+# is Linux and has no Objective-C compiler to probe for.
 option(BUILD_DOCS "Build documentation." OFF)
 option(BUILD_DOCS_ONLY "Build documentation only." OFF)
 
@@ -30,18 +13,12 @@ else()
             LANGUAGES C CXX OBJC OBJCXX)
 endif()
 
-# ---------------------------------------------------------------------------
-# Documentation (Doxygen). The ghidraAddress alias implements this project's
-# custom @ghidraAddress tag, which ties a reconstructed routine to its function
-# in the original binary (address relative to the program's image base).
-# DOXYGEN_VERBATIM_VARS stops CMake re-quoting the alias, so the embedded
-# Doxygen-side quoting reaches the Doxyfile intact.
-# ---------------------------------------------------------------------------
 if(BUILD_DOCS OR BUILD_DOCS_ONLY)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
     set(DOXYGEN_QT_AUTOBRIEF YES)
+    # Without VERBATIM_VARS, CMake re-quotes the alias and the Doxygen-side quoting is lost.
     set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
     set(DOXYGEN_ALIASES [[ghidraAddress="\par Ghidra address:^^"]])
     set(DOXYGEN_ENABLE_PREPROCESSING YES)
@@ -60,9 +37,6 @@ if(BUILD_DOCS_ONLY)
     return()
 endif()
 
-# ---------------------------------------------------------------------------
-# User-facing options (all overridable via -D...)
-# ---------------------------------------------------------------------------
 set(IOS_ARCHS "arm64" CACHE STRING "Space-separated architecture slices")
 set(IOS_DEPLOYMENT_TARGET "12.0" CACHE STRING "Minimum iOS version")
 if(DEFINED DEPLOYMENT_TARGET)                 # leetal/ios-cmake spelling
@@ -79,50 +53,27 @@ set(RESOURCES_DIR    "" CACHE PATH "Directory of the ORIGINAL extracted .app who
                                    "(images, sounds, data files, fonts, ...) are copied "
                                    "verbatim into the built bundle. Leave empty to build code only.")
 
-# The endpoint pieces, each defaulting to what the shipped binary uses, so an unconfigured build is
-# unchanged. Override them to point a build at private or replacement servers. Every one reaches the
-# sources as an RB_-prefixed macro; see Project/RBMacros.h. API_HOST is also added to the in-app
-# link allow-list in Project/RBWebView.m.
 set(API_SCHEME    "https"              CACHE STRING "URL scheme of the game's secure API")
 set(API_HOST      "akx.s.konaminet.jp" CACHE STRING "Hostname of the game's secure API")
 set(API_BASE_PATH "/akx/main/cgi/"     CACHE STRING "CGI base path every endpoint is built under")
 
-# Konami's Applilink SDK: the application identifier, the environment selector ("0" production,
-# "1" staging, "2" and "3" sandbox, "4" development), and the base URL each environment selects.
 set(APPLILINK_APP_ID "10" CACHE STRING "Applilink application identifier")
-set(APPLILINK_ENV    "0"  CACHE STRING "Applilink server environment selector")
+set(APPLILINK_ENV    "0"  CACHE STRING
+    "Applilink environment: 0 production, 1 staging, 2 and 3 sandbox, 4 development")
 set(APPLILINK_URL_PRODUCTION  "https://www.applilink.jp"     CACHE STRING "Applilink production URL")
 set(APPLILINK_URL_STAGING     "https://st.es.i-revoinf.jp"   CACHE STRING "Applilink staging URL")
 set(APPLILINK_URL_DEVELOPMENT "https://dev.es.i-revoinf.jp"  CACHE STRING "Applilink development URL")
 set(APPLILINK_URL_SANDBOX     "https://sandbox.applilink.jp" CACHE STRING "Applilink sandbox URL")
 
-# ENABLE_PATCHES compiles in preservation patches guarded by #ifdef ENABLE_PATCHES
-# (patched code under the #ifdef, the original under #else). It is NOT part of the
-# original binary, so it defaults OFF and the shipped build matches the binary. It
-# is a plain cache option, so it can be enabled in ANY build configuration with
-# -DENABLE_PATCHES=ON.
+# Defaults OFF so an unconfigured build matches the shipped binary.
 option(ENABLE_PATCHES "Compile in preservation patches (skip dead service flows)" OFF)
-
-# SKIP_TUTORIAL suppresses the first-run walkthroughs. It only takes effect alongside
-# ENABLE_PATCHES, because the gates it removes are guarded by both.
 option(SKIP_TUTORIAL "Never start the first-run tutorials (requires ENABLE_PATCHES)" OFF)
-
-# RBPDBG compiles in the optional runtime os_log diagnostics (tagged "RBPDBG"; see
-# Project/GameSystem/src/neDebugLog.h). It is NOT part of the original binary, so it
-# defaults OFF and the shipped build matches the binary. It is a plain cache option,
-# so it can be enabled in ANY build configuration with -DRBPDBG=ON. Call sites need
-# no #ifdef: with RBPDBG off the helpers collapse to no-ops.
 option(RBPDBG "Compile in the RBPDBG runtime diagnostics (os_log)" OFF)
 
-# RBPDBGINFO emits DWARF and keeps the frame pointer, so a debugger can read locals and struct
-# members on the device rather than being reduced to raw offsets. It deliberately leaves the
-# optimisation level alone: changing that changes code generation, and a crash under investigation
-# has to reproduce identically to the build that showed it. Mirrors RBPDBGINFO in theos/Makefile.
+# The optimisation level is deliberately left alone: changing it changes code generation, and a
+# crash under investigation has to reproduce identically to the build that showed it.
 option(RBPDBGINFO "Emit debug info (DWARF) without altering optimisation" OFF)
 
-# ---------------------------------------------------------------------------
-# Toolchain discovery (informational)
-# ---------------------------------------------------------------------------
 if(NOT XCODE_PATH)
     find_program(XCODE_SELECT xcode-select)
     if(XCODE_SELECT)
@@ -139,7 +90,6 @@ if(XCODE_PATH AND EXISTS "${XCODE_PATH}")
 endif()
 message(STATUS "ReflecBeatPlus: archs='${IOS_ARCHS}' iOS>=${IOS_DEPLOYMENT_TARGET}")
 
-# Frameworks actually #import-ed across the sources.
 set(SYS_FRAMEWORKS
     UIKit Foundation CoreFoundation CoreGraphics CoreImage QuartzCore
     OpenGLES AudioToolbox AVFoundation OpenAL
@@ -148,33 +98,20 @@ set(SYS_FRAMEWORKS
     AdSupport
     GameKit CoreLocation MapKit)
 
-# =========================================================================
-# NATIVE / Xcode — real .app target, fed by per-directory CMakeLists.
-# =========================================================================
 set(INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in" "${INFO_PLIST}" @ONLY)
 
-# Single app target, fed by per-directory CMakeLists (each appends its own translation
-# units via target_sources(rbplus ...) and puts its dir on the include path).
-#
-# NOTE: per-directory static libraries are deliberately NOT used. Unlike C, Objective-C
-# classes referenced only by name/selector (NSStringFromClass, imageNamed:, string-keyed
-# lookups) carry no link-time reference, so the linker strips whole classes/categories out
-# of a static archive — you have to paper over it with -force_load/-ObjC. That is not the
-# clean "C static lib" model, so we keep one translation-unit set in a single target.
+# Per-directory static libraries are deliberately not used: an Objective-C class referenced only by
+# name or selector carries no link-time reference, so the linker strips it out of a static archive.
 add_executable(rbplus MACOSX_BUNDLE)
 target_include_directories(rbplus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Project")
 
 add_subdirectory(Project)
 
-# --- Vendored SSZipArchive / minizip and DAProgressOverlayView (3rdparty/) ---------------
-# SSZipArchive (with its bundled minizip 2.9.2) provides the .zip extraction the resource
-# downloader and replay-data loaders use; DAProgressOverlayView is the circular download
-# progress overlay the unlock view uses. Both are ARC.
 set(_zip "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/SSZipArchive")
 set(_dap "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/DAProgressOverlayView")
-# UnZipArchive is the older Google Code "ziparchive" class the chart loader messages by name; it
-# builds against SSZipArchive's bundled minizip, which still provides the legacy unz/zip API.
+# The chart loader messages UnZipArchive by name; it builds against SSZipArchive's bundled minizip,
+# which still provides the legacy unz/zip API.
 set(_uza "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/ziparchive")
 set(_minizip_sources
     "${_zip}/minizip/mz_compat.c"
@@ -198,11 +135,8 @@ target_sources(rbplus PRIVATE
     "${_zip}/SSZipArchive.m"
     ${_minizip_sources})
 target_include_directories(rbplus PRIVATE "${_zip}" "${_dap}" "${_uza}")
-# The defines are SSZipArchive's own podspec set. minizip is vendored upstream C
-# we do not patch: pin it to gnu17 (C23 rejects some of its old constructs; this
-# per-source -std lands after the target-wide one, so it wins) and silence its
-# warnings entirely with -w (it inherits the target-wide -Wall/-Wextra, and we do
-# not fix third-party source).
+# C23 rejects some of vendored minizip's constructs, and this per-source -std lands after the
+# target-wide one, so it wins. The defines are SSZipArchive's own podspec set.
 set(_minizip_defines "HAVE_INTTYPES_H;HAVE_PKCRYPT;HAVE_STDINT_H;HAVE_WZAES;HAVE_ZLIB")
 set_source_files_properties(${_minizip_sources}
     PROPERTIES COMPILE_OPTIONS "-std=gnu17;-w" COMPILE_DEFINITIONS "${_minizip_defines}")
@@ -210,35 +144,23 @@ set_source_files_properties("${_zip}/SSZipArchive.m" "${_dap}/DAProgressOverlayV
     "${_uza}/UnZipArchive.mm"
     PROPERTIES COMPILE_OPTIONS "-w" COMPILE_DEFINITIONS "${_minizip_defines}")
 
-# Compiler options as real -flags (not XCODE_ATTRIBUTE build settings) so they
-# apply under every generator and can be overridden per source file. Language
-# standards are per-language (AppleClang 15 / LLVM 16 spells C23 / C++23 gnu2x /
-# gnu++2b); ARC and its exception cleanup are Objective-C only; stack variables
-# are zero-initialised (matching the binary's memset-zeroed work areas; the flag
-# is non-experimental as of clang 16).
+# Real -flags rather than XCODE_ATTRIBUTE build settings, so they apply under every generator and
+# can be overridden per source file.
 target_compile_options(rbplus PRIVATE
     $<$<COMPILE_LANGUAGE:C,OBJC>:-std=gnu2x>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-std=gnu++2b>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-stdlib=libc++>
-    # Keep u8"" literals as char[] (C-era UTF-8 strings used as const char*);
-    # C++20 otherwise makes them char8_t[].
+    # Keeps u8"" literals as char[]; C++20 otherwise makes them char8_t[].
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-fno-char8_t>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-fobjc-arc>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-fobjc-arc-exceptions>
-    # libc++ hardening (Xcode's CLANG_CXX_STANDARD_LIBRARY_HARDENING "fast").
-    # The CI toolchain is AppleClang 15 / LLVM 16, whose libc++ predates the
-    # _LIBCPP_HARDENING_MODE macro (LLVM 18+); the effective knob there is
-    # _LIBCPP_ENABLE_ASSERTIONS, which newer libc++ still honours (mapped to the
-    # hardened mode). ABI-neutral, low overhead: bad indices / iterators trap
-    # instead of corrupting memory.
+    # The CI toolchain's libc++ predates _LIBCPP_HARDENING_MODE, so assertions are the effective
+    # knob; newer libc++ still honours it.
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-D_LIBCPP_ENABLE_ASSERTIONS=1>
     -ftrivial-auto-var-init=zero)
 
-# Warnings: most of Xcode's recommended GCC_WARN_* / CLANG_WARN_* set as real -W
-# flags (warnings only -- there is no -Werror, so the build stays green). The
-# noisy conversion / cast / pedantic families are deliberately left off: this is
-# a faithful binary reconstruction with intentional narrowing, pointer-in-int and
-# reinterpret casts.
+# Warnings only -- there is no -Werror, so the build stays green. The conversion, cast, and pedantic
+# families are left off: this reconstruction narrows and reinterpret-casts on purpose.
 target_compile_options(rbplus PRIVATE
     -Wall
     -Wextra
@@ -250,27 +172,22 @@ target_compile_options(rbplus PRIVATE
     -Wunreachable-code
     -Wconditional-uninitialized
     -Winfinite-recursion
-    # C++ / Objective-C++
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Woverloaded-virtual>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Wnon-virtual-dtor>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Wdelete-non-abstract-non-virtual-dtor>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Wrange-loop-analysis>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Wextra-semi>
-    # Objective-C / Objective-C++
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wundeclared-selector>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wblock-capture-autoreleasing>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wobjc-literal-conversion>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wduplicate-method-match>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wimplicit-retain-self>)
 
-# The reconstruction faithfully uses the OpenGL ES 1.1 API, which Apple
-# deprecated wholesale on iOS 12 with no in-place replacement (Metal is a
-# separate stack). Silence the blanket ES deprecation warnings rather than
-# rewrite the renderer.
+# The reconstruction faithfully uses OpenGL ES 1.1, which iOS 12 deprecated wholesale with no
+# in-place replacement.
 target_compile_definitions(rbplus PRIVATE GLES_SILENCE_DEPRECATION)
 
-# The configurable endpoints, each consumed as a bare string literal by the matching RB_ macro in
-# Project/RBMacros.h.
+# Each is consumed as a bare string literal by the matching RB_ macro in Project/RBMacros.h.
 target_compile_definitions(rbplus PRIVATE
     RB_API_SCHEME="${API_SCHEME}"
     RB_API_HOST="${API_HOST}"
@@ -282,30 +199,20 @@ target_compile_definitions(rbplus PRIVATE
     RB_APPLILINK_URL_DEVELOPMENT="${APPLILINK_URL_DEVELOPMENT}"
     RB_APPLILINK_URL_SANDBOX="${APPLILINK_URL_SANDBOX}")
 
-# When ENABLE_PATCHES is enabled, define it for every translation unit; the
-# generator expression is config-agnostic, so it applies in Debug, Release, and
-# any other configuration alike.
 target_compile_definitions(rbplus PRIVATE $<$<BOOL:${ENABLE_PATCHES}>:ENABLE_PATCHES=1>)
 
-# SKIP_TUTORIAL is only meaningful with ENABLE_PATCHES, so it is defined only when both are on.
 target_compile_definitions(rbplus PRIVATE
     $<$<AND:$<BOOL:${ENABLE_PATCHES}>,$<BOOL:${SKIP_TUTORIAL}>>:SKIP_TUTORIAL=1>)
 
-# When RBPDBG is enabled, define it for every translation unit; the generator
-# expression is config-agnostic, so it applies in Debug, Release, and any other
-# configuration alike.
 target_compile_definitions(rbplus PRIVATE $<$<BOOL:${RBPDBG}>:RBPDBG=1>)
 
-# The same debug-info flags theos/Makefile applies under RBPDBGINFO.
+# Mirrors the debug-info flags theos/Makefile applies under RBPDBGINFO.
 if(RBPDBGINFO)
   target_compile_options(rbplus PRIVATE -g -fstandalone-debug -fno-omit-frame-pointer)
   target_link_options(rbplus PRIVATE -g)
 endif()
 
-# Build git SHA, captured at configure time for the RBPDBG startup banner so a
-# captured log always identifies exactly which build produced it. Diagnostics only
-# (the banner is compiled out unless RBPDBG); falls back to "unknown" when git is
-# unavailable.
+# Identifies which build produced a captured RBPDBG log.
 execute_process(COMMAND git -C ${CMAKE_SOURCE_DIR} rev-parse --short=12 HEAD
                 OUTPUT_VARIABLE RBPDBG_BUILD_SHA
                 OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -326,7 +233,6 @@ set_target_properties(rbplus PROPERTIES
     XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
     # This build is never submitted to the App Store.
     XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_SKIP_APP_STORE_DEPLOYMENT "YES"
-    # Turn the static analyzer's checkers on.
     XCODE_ATTRIBUTE_CLANG_ANALYZER_LOCALIZABILITY_EMPTY_CONTEXT "YES"
     XCODE_ATTRIBUTE_CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED "YES"
     XCODE_ATTRIBUTE_CLANG_ANALYZER_DIVIDE_BY_ZERO "YES"
@@ -344,10 +250,8 @@ set_target_properties(rbplus PROPERTIES
     XCODE_ATTRIBUTE_CLANG_ANALYZER_SECURITY_BUFFER_OVERFLOW_EXPERIMENTAL "YES"
     XCODE_ATTRIBUTE_CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER "YES"
     XCODE_ATTRIBUTE_CLANG_ANALYZER_USE_AFTER_MOVE "YES"
-    # Run the static analyzer in its deep (cross-function) mode.
     XCODE_ATTRIBUTE_CLANG_STATIC_ANALYZER_MODE "Deep"
     XCODE_ATTRIBUTE_CLANG_STATIC_ANALYZER_MODE_ON_ANALYZE_ACTION "Deep"
-    # Extra clang-tidy bugprone checks.
     XCODE_ATTRIBUTE_CLANG_TIDY_BUGPRONE_ASSERT_SIDE_EFFECT "YES"
     XCODE_ATTRIBUTE_CLANG_TIDY_BUGPRONE_INFINITE_LOOP "YES"
     XCODE_ATTRIBUTE_CLANG_TIDY_BUGPRONE_MOVE_FORWARDING_REFERENCE "YES"

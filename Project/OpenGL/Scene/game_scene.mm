@@ -1,11 +1,3 @@
-//
-//  game_scene.mm
-//  REFLEC BEAT plus
-//
-//  The gameplay scene, rb::GameScene. Reconstructed from Ghidra project rb458, program rb458.
-//  @ghidraAddress values are relative to the program image base.
-//
-
 #include "game_scene.h"
 
 #include <cassert>
@@ -90,134 +82,92 @@
 
 namespace {
 
-// The initial mode the constructor seeds; the state machine advances from here on the first frame.
 constexpr int kInitialMode = 2;
 
-// The alternate play mode, in which the auto-pause note-convergence heuristic is disabled.
 constexpr int kAlternatePlayMode = 1;
 
-// The scene states below kStateBound that ignore a pause request: each set bit is a state index
-// whose scene should not pause the play timer (menu, loading, and result states). State 0x11 (the
-// active-play state) pauses without latching the game-wide paused flag; every other state takes the
-// general path that also latches it.
+// Each set bit is a state index whose scene ignores a pause request.
 constexpr int kStateBound = 0x14;
 constexpr unsigned int kIgnorePauseStateMask = 0xd7c03;
 constexpr int kActivePlayState = 0x11;
 
-// The themed sound-effect slot for the decide/confirm cue.
 constexpr int kSoundEffectDecide = 1;
 
-// The scene-transition fade-in duration, in play-timer units.
 constexpr float kSceneFadeDuration = 1000.0f;
 
-// The scene states the exit transitions advance into.
 constexpr int kPauseExitState = 0xe;
 constexpr int kMusicReleaseState = 0xd;
 constexpr int kGameSceneState13 = 0x13;
 
-// The play states this step selects between: the note-play wait state and the past-effect state.
 constexpr int kStateWaitNotes = 5;
 constexpr int kStatePastEffect = 6;
 
-// The playing state the preview resumes into.
 constexpr int kStatePlaying = 0x11;
 
-// The result-theme display state EnterResultThemeState advances to.
 constexpr int kStateResultTheme = 0xb;
 
-// The gameplay-presentation state StartGameplayPresentation advances to, the intro-voice cue it
-// plays, and the fade-in duration (in milliseconds) it primes the layers with.
 constexpr int kStatePresenting = 7;
 constexpr int kIntroVoiceCue = 2;
 constexpr float kPresentationFadeInDuration = 1000.0f; // @ghidraAddress 0x2f8540
 
-// The note-play state BeginMusicPlaybackAndTimer advances to once the intro is done.
 constexpr int kStateNotePlay = 8;
 
-// The state the exit transitions and the play-field entry step both advance to: its handler resets
-// note playback. Also the play-time threshold (in play time) ExitToMusicList waits past before
-// tearing down.
 constexpr int kStateResetPlayback = 1;
 constexpr int kExitDelay = 0x5dc;
 
-// The bind state ReloadMusicForRestart advances to, and the ghost style that seeds the RNG from a
-// saved replay.
 constexpr int kStateBindChart = 2;
 constexpr int kGhostStyleReplay = 1;
 
-// The play-ready state AdvanceToPlayReadyState advances to, and the gauge grow-animation from-value
-// (also the marker fade-in's marker value) it primes the layers with.
 constexpr int kStatePlayReady = 4;
 constexpr float kGaugeGrowFromValue = 450.0f; // @ghidraAddress 0x308dd8
 
-// The result-voice cue and the clear-cue sound-effect slots, and the clear-rate threshold at or
-// above which the clear cue plays.
 constexpr int kResultVoiceCue = 0x13;
 constexpr int kClearCueSoundEffect = 8;
 constexpr float kClearRateThreshold = 0.7f; // @ghidraAddress 0x2fd008
 
-// The theme identifiers selecting the full-combo layer whose effect flags a playback reset clears.
 constexpr int kThemaClassic = 0;
 constexpr int kThemaLimelight = 1;
 constexpr int kThemaColette = 2;
 
-// The three result-window text-instancer slots whose textures are cleared at teardown.
 constexpr int kResultTextSlot0 = 2;
 constexpr int kResultTextSlot1 = 3;
 constexpr int kResultTextSlot2 = 4;
 
-// The themed voice bank the result screen loads.
 constexpr int kResultVoiceId = 2;
 
-// The player side the result bonuses are computed for (the single-player side).
 constexpr unsigned int kResultSide = 1;
 
-// The difficulties the chart loader selects a sheet and music track for. Special reuses the basic
-// chart.
 constexpr int kDifficultyBasic = 0;
 constexpr int kDifficultyMedium = 1;
 constexpr int kDifficultyHard = 2;
 constexpr int kDifficultySpecial = 3;
 
-// The score-record cell holding the miss count, and its values: full-combo (0), one miss (1), two
-// or more misses (2).
 constexpr unsigned int kMissCell = 6;
 constexpr int kMissFullCombo = 0;
 constexpr int kMissOne = 1;
 constexpr int kMissTwo = 2;
 
-// The minimum clear rank (of the B/A/AA/AAA/AAAP ladder) that earns the clear bonus.
 constexpr int kMinClearRank = 2;
 
-// The clear ranks, in ladder order, selecting the rank bonus.
 constexpr int kRankB = 1;
 constexpr int kRankA = 2;
 constexpr int kRankAA = 3;
 constexpr int kRankAAA = 4;
 constexpr int kRankAAAP = 5;
 
-// The pastel-field bonus types (the field-10 statistic must be zero for either to apply).
 constexpr int kPastelBonusNormal = 1;
 constexpr int kPastelBonusBlack = 2;
 
-// The last playable level: reaching its threshold stops the level-up unlock loop.
 constexpr unsigned int kNoLevelThreshold = 0xffffffff;
 
-// The note-spawn scan converts the timer's play time to a scroll line (×1000) and looks 1500 units
-// ahead; a note whose time is within the line spawns.
 constexpr float kNoteLineScale = 1000.0f;       // @ghidraAddress 0x2f8540
 constexpr float kNoteSpawnLookahead = -1500.0f; // @ghidraAddress 0x308b60
 
-// The dwFlags bit marking a head note that is paired with a tail; the pair must also be due before
-// the head spawns.
 constexpr unsigned int kNoteHasPairFlag = 1u << 3;
 
-// The head-note sentinel start time (an unpaired note), and how many consecutive not-yet-due notes
-// end the scan.
 constexpr int kHeadNoteStartTime = -1;
 constexpr int kNotDueScanLimit = 10;
 
-// The five result bonuses shared by the Limelight and Colette themes.
 struct SharedResultBonuses {
     float flClear = 0.0f;
     float flMiss = 0.0f;
@@ -225,18 +175,14 @@ struct SharedResultBonuses {
     float flFirstPlay = 0.0f; // Includes the pastel-field bonus when one applies.
 };
 
-// Accumulates the clear, miss, rank, and first-play (plus pastel-field) bonuses common to the
-// Limelight and Colette result screens.
 SharedResultBonuses
 ComputeSharedResultBonuses(GameSystem *pGameSystem, ScoreTracker *pTracker, RBBonusData *pBonus) {
     SharedResultBonuses out;
 
-    // Clear bonus: earned once the clear rank reaches A.
     if (pTracker->GetPlayRecordRank(kResultSide) >= kMinClearRank) {
         out.flClear = pBonus.clearBonus;
     }
 
-    // Miss bonus: a full combo, a single miss, or two-or-more misses each earn a different bonus.
     const int nMisses = pTracker->GetPlayRecordCell(kResultSide, kMissCell);
     if (nMisses == kMissTwo) {
         out.flMiss = pBonus.miss2Bonus;
@@ -246,7 +192,6 @@ ComputeSharedResultBonuses(GameSystem *pGameSystem, ScoreTracker *pTracker, RBBo
         out.flMiss = pBonus.fullComboBonus;
     }
 
-    // Rank bonus: one bonus per clear-rank tier.
     switch (pTracker->GetPlayRecordRank(kResultSide)) {
     case kRankB:
         out.flRank = pBonus.rankBBonus;
@@ -267,7 +212,6 @@ ComputeSharedResultBonuses(GameSystem *pGameSystem, ScoreTracker *pTracker, RBBo
         break;
     }
 
-    // First-play bonus, plus a pastel-field bonus when the field-10 statistic is zero.
     if (pGameSystem->GetIsFirstPlay()) {
         out.flFirstPlay = pBonus.firstPlayBonus;
     }
@@ -282,14 +226,11 @@ ComputeSharedResultBonuses(GameSystem *pGameSystem, ScoreTracker *pTracker, RBBo
     return out;
 }
 
-// The chart loader uses the full-detail sheet (rather than the light one) only on iPad and only for
-// the single-player game types (0 and 2); every other case takes the light sheet.
+// Only the iPad's single-player game types (0 and 2) take the full-detail sheet.
 bool UsesFullDetailSheet(GameSystem *pGameSystem) {
     return IsPad() && (pGameSystem->GetGameType() | 2) == 2;
 }
 
-// Reports whether the active theme's intro animation is still playing, so gameplay must keep
-// waiting.
 bool IsThemeIntroStillAnimating(int nThema) {
     if (nThema == kThemaClassic) {
         return BackgroundSpriteManager::shared()->IsActive();
@@ -309,9 +250,6 @@ namespace rb {
 
 /** @ghidraAddress 0x14a21c */
 GameScene::GameScene() {
-    // The scene-base constructor ran first and the compiler installed the play dispatch vtable;
-    // seed the play state (the base fields and the reserved sub-state are already
-    // zero-initialised).
     m_nState = 0;
     m_nPlayTime = 0;
     m_nMode = kInitialMode;
@@ -321,7 +259,6 @@ GameScene::GameScene() {
 void GameScene::GetInstance(GameScene **ppOut) {
     if (*ppOut == nullptr) {
         GameScene *pScene = new GameScene();
-        // Register the scene in the engine's per-frame list at priority 1.
         pScene->InsertSorted(1);
         *ppOut = pScene;
     }
@@ -329,8 +266,6 @@ void GameScene::GetInstance(GameScene **ppOut) {
 
 /** @ghidraAddress 0x14aff8 */
 void GameScene::AdvanceGameSceneStateFrom11() {
-    // Only the active-play state advances; the binary's 64-bit store also clears the accumulated
-    // play time.
     if (m_nState == kActivePlayState) {
         m_nState = kActivePlayState + 1;
         m_nPlayTime = 0;
@@ -339,58 +274,47 @@ void GameScene::AdvanceGameSceneStateFrom11() {
 
 /** @ghidraAddress 0x14afec */
 void GameScene::SetGameSceneState13() {
-    // The binary's 64-bit store sets the state and clears the play time together.
     m_nState = kGameSceneState13;
     m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14a510 */
 void GameScene::ClearLayerStateField() {
-    // The binary clears the state and the play time together with one 64-bit store.
     m_nState = 0;
     m_nPlayTime = 0;
 }
 
 namespace {
 
-// The score-readout position the Limelight and Colette themes push the player field to; the Classic
-// theme leaves it unscaled (@ghidraAddress 0x2fd008).
+// @ghidraAddress 0x2fd008
 constexpr float kThemedScorePosition = 0.70f;
 constexpr float kDefaultScorePosition = 1.0f;
 
-// The play sides the score readout, gauge mirror, and theme layers are configured for.
 constexpr int kSideLeft = 0;
 constexpr int kSideRight = 1;
 
-// The game types: the first and third configure the left side, the second the right. Any other
-// value is a programming error and trips the binary's assertion.
 constexpr int kGameTypeSingle = 0;
 constexpr int kGameTypeVersus = 1;
 constexpr int kGameTypeReplay = 2;
 
-// The themes, selecting which theme and result layer the scene seeds.
 constexpr int kThemaClassic = 0;
 constexpr int kThemaLimelight = 1;
 constexpr int kThemaColette = 2;
 
-// The play mode that owns the chart; the others enter with one already bound.
 constexpr int kModeNormal = 0;
 
-// The note-sheet touch radius by note type, on the phone and on the iPad
-// (@ghidraAddress 0x308de0 and 0x308dec).
+// @ghidraAddress 0x308de0 and 0x308dec
 constexpr int kSheetRadiusPhone[] = {96, 80, 68};
 constexpr int kSheetRadiusPad[] = {72, 62, 52};
 
-// The play colour by difficulty (@ghidraAddress 0x308df8). The binary indexes this table rather
-// than passing the difficulty straight through, though every entry maps to itself.
+// The binary indexes this table though every entry maps to itself.
+// @ghidraAddress 0x308df8
 constexpr int kPlayColorByDifficulty[] = {0, 1, 2, 3};
 
-// The intro thresholds, in play time, the scene seeds for every mode.
 constexpr float kPresentationDelay = 500.0f;
 constexpr float kIntroSecondDelay = 700.0f;
 constexpr float kReadyDelay = 2500.0f;
 
-// The effect intensities the play-colour lane is driven at when the rival side is shown or hidden.
 constexpr float kEffectShown = 1.0f;
 constexpr float kEffectHidden = 0.0f;
 
@@ -398,12 +322,10 @@ constexpr float kEffectHidden = 0.0f;
 
 /** @ghidraAddress 0x14a518 */
 void GameScene::Init() {
-    // Recover every cached texture first; the layers below bind them as they refresh.
     (void)ne::C_TEXTURE::GetCacheList(); // Yes, the binary discards this call's result.
     ne::C_TEXTURE::ReloadAll();
 
-    // Re-read the player's theme into every play-field layer. The Colette layers are absent from
-    // this sweep in the binary.
+    // The Colette layers are absent from this sweep in the binary.
     BgLayer::GetBackgroundLayer()->RefreshThema();
     AltFrameLayer::shared()->RefreshThema();
     MainFrameLayer::shared()->RefreshThema();
@@ -447,14 +369,12 @@ void GameScene::Init() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const int nGameType = pGameSystem->GetGameType();
 
-    // The two themed skins pull the score readout in; the Classic theme leaves it where it is.
     const float flScorePosition = (m_nThema == kThemaColette || m_nThema == kThemaLimelight) ?
                                       kThemedScorePosition :
                                       kDefaultScorePosition;
     PlayerFieldLayer::shared()->SetScorePosition(flScorePosition, kSideLeft);
     PlayerFieldLayer::shared()->SetScorePosition(flScorePosition, kSideRight);
 
-    // The player's three effect-size preferences.
     const float flBoundsSize = RBUserSettingData.sharedInstance.boundsEffectSize;
     const float flDamageSize = RBUserSettingData.sharedInstance.damageEffectSize;
     const float flExplosionSize = RBUserSettingData.sharedInstance.explosionEffectSize;
@@ -466,7 +386,6 @@ void GameScene::Init() {
     ExplosionEffectLayer::shared()->SetEffectType(kSideLeft, nExplosionType);
     ExplosionEffectLayer::shared()->SetEffectType(kSideRight, nExplosionType);
 
-    // The iPad draws the alternate frame, the phone the main frame.
     if (IsPad()) {
         AltFrameLayer::shared()->SetFrameType(pGameSystem->GetFrameType());
         AltFrameLayer::shared()->SetFrameMode(pGameSystem->GetDifficulty());
@@ -481,7 +400,6 @@ void GameScene::Init() {
 
     BgLayer::GetBackgroundLayer()->SetBackgroundType(pGameSystem->GetBackgroundType());
 
-    // The touch radius is smaller on the iPad, whose play field is laid out larger.
     const int *pSheetRadius = IsPad() ? kSheetRadiusPad : kSheetRadiusPhone;
     pGameSystem->SetSheetRadius(static_cast<float>(pSheetRadius[pGameSystem->GetNoteType()]));
 
@@ -489,8 +407,6 @@ void GameScene::Init() {
     ReflecGaugeLayer::shared()->SetGaugeStyle(nGaugeStyle);
     ClearGaugeLayer::shared()->SetGaugeStyle(nGaugeStyle);
 
-    // The versus game type plays the right side; the single and replay types the left. Any other
-    // value trips the binary's assertion.
     if (nGameType != kGameTypeSingle && nGameType != kGameTypeVersus &&
         nGameType != kGameTypeReplay) {
         assert(0);

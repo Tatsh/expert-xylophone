@@ -1,17 +1,13 @@
 #include "audioformat.h"
 
-// The bytes-per-frame and bits-per-channel of the AudioUnit canonical 32-bit sample format.
 #define kCanonicalBytesPerFrame 4
 #define kCanonicalBitsPerChannel 32
 
-// The AudioUnit canonical format flags (signed integer, packed, non-interleaved) with 24 fraction
-// bits, i.e. 8.24 fixed point. Spelled as the numeric value the binary embeds; it is
-// kAudioFormatFlagsAudioUnitCanonical for a 32-bit sample.
+// Equivalent to kAudioFormatFlagsAudioUnitCanonical for a 32-bit sample, i.e. 8.24 fixed point.
 #define kCanonicalFormatFlags                                                                      \
     (kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked |                                  \
      kAudioFormatFlagIsNonInterleaved | (24 << kLinearPCMFormatFlagsSampleFractionShift))
 
-// Signed 16-bit interleaved linear PCM parameters.
 #define kPcm16BitsPerChannel 16
 #define kPcm16BytesPerSample 2
 #define kPcm16FormatFlags (kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger)

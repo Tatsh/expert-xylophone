@@ -28,47 +28,29 @@
 #include "touch_point.h"
 #include "touchmanager.h"
 
-// The process-wide Colette result-window layer, created lazily by shared().
 static ResultWindowColetteLayer *g_pColetteResultLayer = nullptr; // @ghidraAddress 0x3dc598
 
-// The phone-layout anchor-position tables (declared in phone_anchor_table.h): zero-initialised here
-// to match the binary's __common segment, filled at runtime by the result-layout-table
-// initialisers.
 PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount] = {}; // @ghidraAddress 0x3d4d50
 PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghidraAddress 0x3d5530
 
-// The non-phone anchor-box tables (declared in anchor_box_table.h): zero-initialised here to match
-// the binary's __common segment, filled at runtime by the result-layout-table initialisers.
 AnchorBoxRecord g_aAnchorBoxPad[kAnchorBoxRecordCount] = {};      // @ghidraAddress 0x3d6530
 AnchorBoxRecord g_aAnchorBoxPortrait[kAnchorBoxRecordCount] = {}; // @ghidraAddress 0x3d6580
 AnchorBoxRecord g_aAnchorBoxDefault[kAnchorBoxRecordCount] = {};  // @ghidraAddress 0x3d65d0
 
-// The Colette phone-layout separator tables (declared in anchor_box_table.h): zero-initialised here
-// to match the binary's __common segment, filled at runtime.
 PhoneLayoutRecord g_aColetteSeparatorPhoneDefault[kColetteSeparatorRecordCount] =
     {}; // @ghidraAddress 0x3d5d10
 PhoneLayoutRecord g_aColetteSeparatorPhonePortrait[kColetteSeparatorRecordCount] =
     {}; // @ghidraAddress 0x3d6120
 
-// The Colette colour-marker outline points and their origin (declared in anchor_box_table.h):
-// zero-initialised here, filled at runtime.
 S_VECTOR2 g_aColetteColorMarkerPoints[kColetteColorMarkerPointCount] =
     {};                                    // @ghidraAddress 0x3dc320
 S_VECTOR2 g_ColetteColorMarkerOrigin = {}; // @ghidraAddress 0x3dc590
 
-// The result-window layout position bank (declared in result_layout_position_table.h):
-// zero-initialised here to match the binary's __common segment, filled at runtime by the
-// result-layout-table initialisers.
 S_VECTOR2 g_aResultLayoutPosition[kResultLayoutPositionCount] = {}; // @ghidraAddress 0x3d4630
 
-// The Colette parts tables (declared in parts_data_table.h): zero-initialised here to match the
-// binary's __common segment, filled at runtime.
 PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount] = {};        // @ghidraAddress 0x3d0010
 PartsDataRecord g_aColettePartsPhone[kColettePhonePartsRecordCount] = {}; // @ghidraAddress 0x3d20b0
 
-// The Colette part UV-palette table the part-sprite emitters index by a parts record's UV-palette
-// index; distinct from the glyph palette below. Read-only ROM data transcribed from the binary; the
-// entry count is set by the span up to the next table rather than by any bound in the code.
 // @ghidraAddress 0x2f39d8
 const UvPaletteEntry g_aColettePartUvPalette[] = {
     {0.0f, 0.0f, 0.75f, 1.0f},
@@ -392,17 +374,10 @@ const UvPaletteEntry g_aColettePartUvPalette[] = {
     {0.8730469f, 0.9609375f, 0.01171875f, 0.0390625f},
 };
 
-// The single Colette phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor
-// mode): the state record, and the portrait and default records (selected by the is-pad flag and
-// orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
 PhoneLayoutRect g_ColetteCenterPositionPhoneState = {};    // @ghidraAddress 0x3d6620
 PhoneLayoutRect g_ColetteCenterPositionPhonePortrait = {}; // @ghidraAddress 0x3d6630
 PhoneLayoutRect g_ColetteCenterPositionPhoneDefault = {};  // @ghidraAddress 0x3d6640
 
-// The Colette glyph UV-palette table the dimmable-glyph emitter indexes by a parts record's
-// UV-palette index; distinct from the shared Limelight palette (@c g_aUvPalette). Read-only ROM
-// data transcribed from the binary; the entry count is set by the span up to the next table rather
-// than by any bound in the code.
 // @ghidraAddress 0x2f5e88
 const UvPaletteEntry g_aColetteGlyphUvPalette[] = {
     {0.107421875f, 0.28027344f, 0.0009765625f, 0.0009765625f},
@@ -746,67 +721,54 @@ const UvPaletteEntry g_aColetteGlyphUvPalette[] = {
 
 namespace {
 
-// The texture-name table entries the result window loads (@ghidraAddress 0x3cea80 and 0x3ceab0).
+// @ghidraAddress 0x3cea80 and 0x3ceab0
 constexpr const char *kBackgroundTextureName = "00_texture/sel_bg";
 constexpr const char *kPartsTextureName = "00_texture/result_parts";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x2fe874). Slot 1 (the parts atlas)
-// holds the most sprites; the rest are small fixed banks.
+// @ghidraAddress 0x2fe874
 constexpr unsigned int kSlotCapacities[] = {1, 500, 1, 1, 1, 2, 2, 1};
 
-// The slot that draws the result-parts atlas, and the slot that draws the overlay texture. The
-// per-slot source table (@ghidraAddress 0x2fe854) selects the layer texture field for each: slot 1
-// binds the parts atlas (+0x18) and slot 7 binds the overlay (+0x20).
+// @ghidraAddress 0x2fe854
 constexpr int kPartsSlot = 1;
 constexpr int kOverlaySlot = 7;
 
-// The sprite colour intensities for the main pass and the half-intensity dimmed pass.
 constexpr unsigned int kIntensityFull = 0xff;
 constexpr unsigned int kIntensityDimmed = 0x80;
 
-// The bonus voice-cue delay threshold, in milliseconds (@ghidraAddress 0x2fcffc), and the themed
-// voice id the cue plays.
+// Milliseconds. @ghidraAddress 0x2fcffc
 constexpr float kBonusCueThreshold = 3700.0f;
 constexpr int kBonusCueVoiceId = 7;
 
-// The fixed glyph-table base indices and parts scale the builder stamps into the layer.
 constexpr int kGlyphBaseA = 0x4e;
 constexpr int kGlyphBaseB = 0x45;
 constexpr int kGlyphBaseC = 0x3a;
 constexpr float kPartsScale = 1.0f;
 
-// The anchor modes that offset a base coordinate relative to the play-field viewport. Mode 0 (and
-// any value outside this range) leaves the coordinate unshifted.
+// Any mode outside this range leaves the coordinate unshifted.
 enum AnchorMode {
-    kAnchorNone = 0,                // No offset.
-    kAnchorHalfHeight = 1,          // y += viewportHeight / 2.
-    kAnchorFullHeight = 2,          // y += viewportHeight.
-    kAnchorHalfWidth = 3,           // x += viewportWidth / 2.
-    kAnchorHalfWidthHalfHeight = 4, // x += viewportWidth / 2, y += viewportHeight / 2.
-    kAnchorHalfWidthFullHeight = 5, // x += viewportWidth / 2, y += viewportHeight.
-    kAnchorFullWidth = 6,           // x += viewportWidth.
-    kAnchorFullWidthHalfHeight = 7, // x += viewportWidth, y += viewportHeight / 2.
-    kAnchorFullWidthFullHeight = 8, // x += viewportWidth, y += viewportHeight.
+    kAnchorNone = 0,
+    kAnchorHalfHeight = 1,
+    kAnchorFullHeight = 2,
+    kAnchorHalfWidth = 3,
+    kAnchorHalfWidthHalfHeight = 4,
+    kAnchorHalfWidthFullHeight = 5,
+    kAnchorFullWidth = 6,
+    kAnchorFullWidthHalfHeight = 7,
+    kAnchorFullWidthFullHeight = 8,
 };
 
-// The show tween's channels: an alpha fade-in plus four offset/scale channels. The offset/scale
-// channels ease from their current value toward one, holding the fixed start-scale in their
-// duration slot and the real per-channel duration (the base duration plus a stagger) in the elapsed
-// slot, which cascades the four channels in.
 constexpr float kShowTweenTarget = 1.0f;
-// The offset/scale channels' ramp duration, in milliseconds; the paired 1.0 target is the low
-// word of the same 64-bit store. @ghidraAddress 0x439600003f800000 (high word)
+// Milliseconds; the paired 1.0 target is the low word of the same 64-bit store.
+// @ghidraAddress 0x439600003f800000 (high word)
 constexpr float kShowTweenChannelDuration = 300.0f;
 constexpr float kShowStagger0 = -100.0f; // @ghidraAddress 0x2fcfec
 constexpr float kShowStagger1 = 700.0f;  // @ghidraAddress 0x2fcff0
 constexpr float kShowStagger2 = 1500.0f; // @ghidraAddress 0x2fcff4
 
-// The pixel distance a tracked swipe touch must travel from its start to register, and the themed
-// sound-effect slot the result-page toggle plays.
+// Pixels a tracked touch must travel from its start to register.
 constexpr float kSwipeThreshold = 30.0f;
 constexpr int kSoundEffectSwipeToggle = 7;
 
-// The tween channel indices: the alpha fade and the four offset/scale channels.
 enum ResultTweenChannelIndex {
     kTweenAlpha = 0,
     kTweenChannel1 = 1,
@@ -815,15 +777,12 @@ enum ResultTweenChannelIndex {
     kTweenChannel4 = 4,
 };
 
-// The "none" sentinel for a tracked touch id.
 constexpr int kNoTouchId = -1;
 
 } // namespace
 
 /** @ghidraAddress 0x7aba8 */
 ResultWindowColetteLayer::ResultWindowColetteLayer() {
-    // The base constructor and the zero-initialised members clear the layer; the constructor then
-    // seeds the touch-id fields to the "none" sentinel.
     m_nSwipeTouchId = kNoTouchId;
     for (auto &region : m_aTouchRegion) {
         region.nTouchId = kNoTouchId;
@@ -833,8 +792,6 @@ ResultWindowColetteLayer::ResultWindowColetteLayer() {
 /** @ghidraAddress 0x73edc */
 ResultWindowColetteLayer *ResultWindowColetteLayer::shared() {
     if (g_pColetteResultLayer == nullptr) {
-        // The binary allocates the raw 0x180-byte object and runs the constructor, which chains the
-        // base-layer constructor and zero-clears the layer's state.
         g_pColetteResultLayer = new ResultWindowColetteLayer();
     }
     return g_pColetteResultLayer;
@@ -854,12 +811,9 @@ void ResultWindowColetteLayer::InitializeResultWindowSprites() {
     m_pBackgroundTexture = ne::C_TEXTURE::FindOrLoadCached(kBackgroundTextureName);
     m_pPartsTexture = ne::C_TEXTURE::FindOrLoadCached(kPartsTextureName);
 
-    // Build one sprite instancer per slot, register it in the global scene tree, make it visible,
-    // and reset its sprite count. The parts slot binds the parts atlas and the overlay slot binds
-    // the overlay texture (which the builder leaves unset, so it binds null here). The batches are
-    // the screen-space kind (the bl at 0x73fb4 targets CreateSpriteInstancer at 0x30804, not
-    // CreateWorldSpriteBatch at 0x31834), so the layout bank's coordinates are read straight
-    // against the orthographic projection's top-left origin.
+    // Screen-space batches: the bl at 0x73fb4 targets CreateSpriteInstancer, not
+    // CreateWorldSpriteBatch, so the layout bank's coordinates go straight to the orthographic
+    // projection's top-left origin.
     for (int nSlot = 0; nSlot < kSlotCount; ++nSlot) {
         m_apSlots[nSlot] = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         m_apSlots[nSlot]->RegisterGlobal();
@@ -885,8 +839,6 @@ void ResultWindowColetteLayer::InitializeResultScreenFlags() {
 
 /** @ghidraAddress 0x740ec */
 void ResultWindowColetteLayer::StartShowTween(float flDuration) {
-    // The alpha channel fades from its current value to fully opaque over the duration; a
-    // non-positive duration snaps it opaque immediately.
     FloatTween &alpha = m_aTween[kTweenAlpha];
     alpha.SetFrom(alpha.GetCurrent());
     alpha.SetTo(kShowTweenTarget);
@@ -897,9 +849,7 @@ void ResultWindowColetteLayer::StartShowTween(float flDuration) {
         alpha.SetCurrent(kShowTweenTarget);
     }
 
-    // The four offset/scale channels each ease from their current value toward one over a fixed
-    // ramp, and stagger their lead-in delays so they cascade. The stagger order matches the binary
-    // (channel 2, 1, then 4 and 3).
+    // The stagger order matches the binary: channel 2, 1, then 4 and 3.
     const float aStaggered[] = {
         flDuration + kShowStagger0, flDuration + kShowStagger1, flDuration + kShowStagger2};
     const int aChannel[] = {kTweenChannel2, kTweenChannel1, kTweenChannel4, kTweenChannel3};
@@ -916,8 +866,6 @@ void ResultWindowColetteLayer::StartShowTween(float flDuration) {
 
 /** @ghidraAddress 0x74190 */
 void ResultWindowColetteLayer::StartHideTween(float flDuration) {
-    // Every channel eases from its current value to zero over the duration; a non-positive duration
-    // snaps each to zero immediately.
     for (FloatTween &channel : m_aTween) {
         channel.SetFrom(channel.GetCurrent());
         channel.SetTo(0.0f);
@@ -928,12 +876,10 @@ void ResultWindowColetteLayer::StartHideTween(float flDuration) {
             channel.SetCurrent(0.0f);
         }
     }
-    // The panel is no longer active once it begins hiding.
     m_bBonusCueArmed = false;
 }
 
 namespace {
-// Whether a point lies within a hit-box rectangle (corner to corner plus extent).
 bool IsInsideBox(float flX, float flY, const PhoneLayoutRect &box) {
     return box.flX <= flX && flX <= box.flX + box.flWidth && box.flY <= flY &&
            flY <= box.flY + box.flHeight;
@@ -944,7 +890,6 @@ bool IsInsideBox(float flX, float flY, const PhoneLayoutRect &box) {
 void ResultWindowColetteLayer::UpdateTouchHitRegions() {
     for (int nRegion = 0; nRegion < kTouchRegionCount; ++nRegion) {
         ResultTouchRegion &region = m_aTouchRegion[nRegion];
-        // A disabled region drops any tracked touch and clears its state.
         if (!region.bEnabled) {
             region.nTouchId = -1;
             region.bDown = false;
@@ -953,7 +898,6 @@ void ResultWindowColetteLayer::UpdateTouchHitRegions() {
 
         TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
         if (region.nTouchId == -1) {
-            // Claim the first fresh touch that lands inside the region's anchor box.
             for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
                 TouchPoint *pTouch = pTouchManager->GetActiveTouch(nIndex);
                 if (!pTouch->bIsNew) {
@@ -970,8 +914,6 @@ void ResultWindowColetteLayer::UpdateTouchHitRegions() {
                 }
             }
         } else {
-            // Track the claimed touch: press stays down while inside; a release latches a tap-edge
-            // when the touch was inside the box.
             TouchPoint *pTouch = pTouchManager->FindTouchById(region.nTouchId);
             if (pTouch == nullptr) {
                 region.nTouchId = -1;
@@ -994,7 +936,6 @@ void ResultWindowColetteLayer::UpdateTouchHitRegions() {
         }
     }
 
-    // In tutorial mode, drive the touch-hint flags from the live touch count.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive()) {
         TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
         const int nCount = pTouchManager->GetActiveTouchCount();
@@ -1015,13 +956,11 @@ void ResultWindowColetteLayer::UpdateTouchHitRegions() {
 void ResultWindowColetteLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const {
     assert(nIndex >= 0 && nIndex < kPhoneAnchorRecordCount);
 
-    // The portrait flag selects the portrait table; otherwise the default table is used.
     const PhoneAnchorRecord &record =
         m_bPortrait ? g_aPhoneAnchorPortrait[nIndex] : g_aPhoneAnchorDefault[nIndex];
     pOutPosition->x = record.flX;
     pOutPosition->y = record.flY;
 
-    // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const float flWidth = pGameSystem->GetViewportWidth();
     const float flHeight = pGameSystem->GetViewportHeight();
@@ -1061,17 +1000,14 @@ void ResultWindowColetteLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosi
 
 /** @ghidraAddress 0x73ce4 */
 void ResultWindowColetteLayer::getPosition(int nIndex, PhoneLayoutRect *pOutRect) const {
-    // Select the pad table on an iPad, otherwise the portrait or default table by orientation.
     const AnchorBoxRecord &record = IsPad()     ? g_aAnchorBoxPad[nIndex] :
                                     m_bPortrait ? g_aAnchorBoxPortrait[nIndex] :
                                                   g_aAnchorBoxDefault[nIndex];
-    // Copy the record's leading 16-byte box.
     pOutRect->flX = record.flX;
     pOutRect->flY = record.flY;
     pOutRect->flWidth = record.flWidth;
     pOutRect->flHeight = record.flHeight;
 
-    // Offset the box origin by half or full viewport dimensions per the record's anchor mode.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const float flWidth = pGameSystem->GetViewportWidth();
     const float flHeight = pGameSystem->GetViewportHeight();
@@ -1113,7 +1049,6 @@ void ResultWindowColetteLayer::getPosition(int nIndex, PhoneLayoutRect *pOutRect
 PartsDataRecord *ResultWindowColetteLayer::getPartsData(int nIndex) const {
     assert(nIndex >= 0 && nIndex < kColettePartsRecordCount);
 
-    // The pad build uses the pad table; the phone build uses the phone table.
     return IsPad() ? &g_aColettePartsPad[nIndex] : &g_aColettePartsPhone[nIndex];
 }
 
@@ -1121,22 +1056,17 @@ PartsDataRecord *ResultWindowColetteLayer::getPartsData(int nIndex) const {
 PartsDataRecord *ResultWindowColetteLayer::getPartsData_Phone(int nIndex) const {
     assert(nIndex >= 0 && nIndex < kColettePhonePartsRecordCount);
 
-    // This accessor always reads the phone parts table.
     return &g_aColettePartsPhone[nIndex];
 }
 
 /** @ghidraAddress 0x73e50 */
 void ResultWindowColetteLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
-    // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
     if (IsPad()) {
         *pOutRect = g_ColetteCenterPositionPhoneState;
-        (void)GameSystem::GetGameSystem(); // The binary tail-calls the singleton getter and
-                                           // discards it.
+        (void)GameSystem::GetGameSystem(); // Yes, the binary discards this call's result.
         return;
     }
 
-    // Otherwise the orientation flag selects the portrait or default record, and the leading
-    // coordinate is shifted by half the viewport width and height.
     const PhoneLayoutRect &record =
         m_bPortrait ? g_ColetteCenterPositionPhonePortrait : g_ColetteCenterPositionPhoneDefault;
     *pOutRect = record;
@@ -1148,30 +1078,23 @@ void ResultWindowColetteLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect
 
 namespace {
 
-// The three element anchor ids ComputeElementBounds resolves: the centre panel, the score block,
-// and the music-info block.
 constexpr int kElementAnchorCentre = 1;
 constexpr int kElementAnchorScore = 5;
 constexpr int kElementAnchorMusicInfo = 0x46;
 
-// The phone-layout anchor-position record indices for each element's two corners.
 constexpr int kPhonePosCentre = 1;
 constexpr int kPhonePosScoreMin = 3;
 constexpr int kPhonePosScoreMax = 4;
 constexpr int kPhonePosMusicInfoMin = 0x43;
 constexpr int kPhonePosMusicInfoMax = 0x44;
 
-// The phone-layout parts record indices supplying each element's corner sizes. These are distinct
-// from the position indices above: the size record the binary inflates by is not the same index as
-// the position it inflates around.
+// Not the same indices as the positions above; the binary inflates by a different record.
 constexpr int kPhoneSizeCentre = 1;
 constexpr int kPhoneSizeScoreMin = 3;
 constexpr int kPhoneSizeScoreMax = 9;
 constexpr int kPhoneSizeMusicInfoMin = 79;
 constexpr int kPhoneSizeMusicInfoMax = 85;
 
-// The iPad-layout parts and position record indices for each element's two corners (the parts
-// record supplies the element size, the position record its placement; both share the index).
 constexpr int kPadRecScoreMin = 5;
 constexpr int kPadRecScoreMax = 8;
 constexpr int kPadRecMusicInfoMin = 70;
@@ -1184,12 +1107,8 @@ void ResultWindowColetteLayer::ComputeElementBounds(int nAnchorId,
                                                     S_VECTOR2 *pMin,
                                                     S_VECTOR2 *pMax) const {
     if (IsPad()) {
-        // The iPad layout places the corners from the fixed result-layout table and takes the
-        // element size from the pad parts table.
         switch (nAnchorId) {
         case kElementAnchorCentre: {
-            // The centre panel's bounds are its anchor box: the origin, and the origin plus the
-            // extent.
             PhoneLayoutRect box{};
             getPosition(0, &box);
             pMin->x = box.flX;
@@ -1222,8 +1141,6 @@ void ResultWindowColetteLayer::ComputeElementBounds(int nAnchorId,
         return;
     }
 
-    // The phone layout resolves both corner positions through the phone anchor resolver and takes
-    // the element size from the phone parts table.
     switch (nAnchorId) {
     case kElementAnchorCentre: {
         const PartsDataRecord &rec = g_aColettePartsPhone[kPhoneSizeCentre];
@@ -1264,7 +1181,6 @@ void ResultWindowColetteLayer::ComputeElementBounds(int nAnchorId,
 
 namespace {
 
-// The play-record cell ids the tweet reads per side.
 constexpr unsigned int kCellScore = 0;
 constexpr unsigned int kCellMaxCombo = 2;
 constexpr unsigned int kCellJust = 3;
@@ -1273,17 +1189,13 @@ constexpr unsigned int kCellGood = 5;
 constexpr unsigned int kCellMiss = 6;
 constexpr unsigned int kCellJustReflec = 7;
 
-// The two score columns (the local player and the rival) the share image draws.
 constexpr int kShareSideCount = 2;
 
-// The achievement rate is reported as a percentage: the stored rate times this scale.
 constexpr float kSharePercentScale = 100.0f; // 1000.0 * 0.1, as the binary computes it.
 
-// The themed sound effect fired when the share begins.
 constexpr int kSoundEffectShare = 5;
 
-// The default player name and the tweet body format (music name, side-one score and rate, and the
-// App Store link), reproduced verbatim from the binary. The patched build drops the link.
+// The patched build drops the App Store link from the tweet body.
 static NSString *const kSharePlayerName = @"なまえ";
 #ifdef ENABLE_PATCHES
 static NSString *const kShareTweetFormat = @"%@をプレー！ Score:%d AR:%0.1f #rb_plus";
@@ -1293,9 +1205,6 @@ static NSString *const kShareStoreUrl =
     @"http://itunes.apple.com/jp/app/reflec-beat-plus/id472140433";
 #endif
 
-// Builds a Twitter share image from the current play result and posts it through the view
-// controller. A free function that reads only the game-system, score-tracker, and app-delegate
-// singletons.
 // @ghidraAddress 0x746fc
 void PostResultToTwitter() {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectShare);
@@ -1331,7 +1240,6 @@ void PostResultToTwitter() {
         [pCreater setName:kSharePlayerName Side:nSide];
     }
 
-    // The tweet body reports the local player's (side one) score and percentage rate.
     MusicData *pTweetMusic = AppDelegate.appDelegate.musicData;
     NSString *musicName = pTweetMusic.musicName;
     const int nScore = pTracker->GetPlayRecordCell(1, kCellScore);
@@ -1345,16 +1253,13 @@ void PostResultToTwitter() {
     [pViewController PostTwitter:pCreater Text:tweet];
 }
 
-// The alpha scale that turns a normalised tween level into a 0-255 channel (@ghidraAddress
-// 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kAlphaScale = 255.0f;
 
 } // namespace
 
 /** @ghidraAddress 0x7427c */
 void ResultWindowColetteLayer::ProcessResultScreenInput() {
-    // The panel is interactive only once its reveal is complete and the screen fade has cleared:
-    // the alpha channel must read fully opaque and the fade overlay must be gone.
     const float flPanelAlpha = m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale;
     const float flChannel3 = m_aTween[kTweenChannel3].GetCurrent();
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
@@ -1364,7 +1269,6 @@ void ResultWindowColetteLayer::ProcessResultScreenInput() {
     if (flFadeAlpha != 0.0f ||
         static_cast<int>(flChannel3 * static_cast<float>(static_cast<unsigned int>(
                                           static_cast<int>(flPanelAlpha)))) != 0xff) {
-        // Not fully shown yet: disable the swipe and share regions.
         m_aTouchRegion[1].bEnabled = false;
         m_aTouchRegion[2].bEnabled = false;
         if (m_bTwitterAvailable) {
@@ -1373,8 +1277,6 @@ void ResultWindowColetteLayer::ProcessResultScreenInput() {
         return;
     }
 
-    // Fully shown: the swipe regions follow the device (their enable flag mirrors the is-pad flag),
-    // and the share region follows Twitter availability.
     if (IsPad()) {
         m_aTouchRegion[1].bEnabled = true;
         m_aTouchRegion[2].bEnabled = true;
@@ -1383,8 +1285,6 @@ void ResultWindowColetteLayer::ProcessResultScreenInput() {
         m_aTouchRegion[3].bEnabled = true;
     }
 
-    // Track a vertical swipe: claim a touch inside the centre box, then release it as an up or down
-    // swipe once it moves past the threshold from its start Y.
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     if (m_nSwipeTouchId == -1) {
         for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
@@ -1420,8 +1320,6 @@ void ResultWindowColetteLayer::ProcessResultScreenInput() {
     }
 
 applySwipe:
-    // On a completed swipe (in a single-player game), set the swipe direction, toggle the result
-    // page, and play the toggle sound effect.
     if ((GameSystem::GetGameSystem()->GetGameType() | 2U) == 2 &&
         (m_aTouchRegion[1].bTapEdge || m_aTouchRegion[2].bTapEdge)) {
         m_flSwipeDir = m_aTouchRegion[1].bTapEdge ? 1.0f : -1.0f;
@@ -1431,7 +1329,6 @@ applySwipe:
         SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectSwipeToggle);
     }
 
-    // A tap on the share region posts the result to Twitter.
     if (m_bTwitterAvailable && m_aTouchRegion[3].bTapEdge) {
         m_aTouchRegion[3].bTapEdge = false;
         PostResultToTwitter();
@@ -1445,7 +1342,6 @@ void ResultWindowColetteLayer::UpdateResultTouchInput() {
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
     UpdateTouchHitRegions();
 
-    // The panel is interactive only once fully shown and the screen fade has cleared.
     m_aTouchRegion[3].bEnabled = false;
     const bool bFadeClear = flFadeAlpha == 0.0f;
     m_aTouchRegion[0].bEnabled = static_cast<int>(flPanelAlpha) == 0xff && bFadeClear;
@@ -1455,8 +1351,6 @@ void ResultWindowColetteLayer::UpdateResultTouchInput() {
     m_aTouchRegion[1].bEnabled = bShown;
     m_aTouchRegion[2].bEnabled = bShown;
 
-    // The tutorial game phase overrides the interactive flags: early phases lock all input, the
-    // active phase locks only the primary region, and the final phase forces the primary on.
     switch (GameSystem::GetGameSystem()->GetTutorialPhase()) {
     case 0:
     case 1:
@@ -1480,7 +1374,6 @@ void ResultWindowColetteLayer::UpdateResultTouchInput() {
         return;
     }
 
-    // Track a horizontal flick on the centre title box to switch result pages.
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     if (m_nSwipeTouchId == -1) {
         for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
@@ -1503,7 +1396,6 @@ void ResultWindowColetteLayer::UpdateResultTouchInput() {
         TouchPoint *pTouch = pTouchManager->FindTouchById(m_nSwipeTouchId);
         if (pTouch != nullptr) {
             const float flX = static_cast<float>(pTouch->nCurrentX);
-            // Only the swipe-enabled regions register a flick; otherwise the touch just tracks.
             if (!(m_aTouchRegion[1].bEnabled && m_aTouchRegion[2].bEnabled)) {
                 if (m_flSwipeStartY - kSwipeThreshold <= flX &&
                     flX <= m_flSwipeStartY + kSwipeThreshold) {
@@ -1522,8 +1414,6 @@ void ResultWindowColetteLayer::UpdateResultTouchInput() {
     }
 
 applyFlick:
-    // On a completed flick (single-player game), set the page direction, mark the page dirty,
-    // toggle the page index, and play the toggle sound effect.
     if ((GameSystem::GetGameSystem()->GetGameType() | 2U) == 2) {
         if (m_aTouchRegion[1].bTapEdge || m_aTouchRegion[2].bTapEdge) {
             m_flSwipeDir = m_aTouchRegion[1].bTapEdge ? 1.0f : -1.0f;
@@ -1551,26 +1441,21 @@ void ResultWindowColetteLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
 }
 
 namespace {
-// The Update timers' constants.
-// The positive swipe-decay divisor (the impulse settles toward zero) (@ghidraAddress 0x2fd050 =
-// -300).
+// @ghidraAddress 0x2fd050
 constexpr float kSwipeDecayRateDown = -300.0f;
-// The negative swipe-decay divisor (@ghidraAddress 0x2eedcc = 300).
+// @ghidraAddress 0x2eedcc
 constexpr float kSwipeDecayRateUp = 300.0f;
-// The decoration rotation counter's wrap period.
 constexpr int kRotationWrap = 0xc0;
-// The frames per decoration animation index (@ghidraAddress 0x2fcff8 = 48).
+// @ghidraAddress 0x2fcff8
 constexpr float kRotationFramesPerIndex = 48.0f;
-// The last decoration animation frame index.
 constexpr int kRotationFrameMax = 3;
 
-// The five tween channels' advance order the update uses (channels 2 and 3 are advanced swapped).
+// Channels 2 and 3 are advanced swapped, as the binary does.
 constexpr int kTweenAdvanceOrder[] = {0, 1, 3, 2, 4};
 } // namespace
 
 /** @ghidraAddress 0x7aef8 */
 void ResultWindowColetteLayer::Update(float flDeltaTime) {
-    // Off an iPad, keep the portrait-orientation flag in sync with the viewport aspect.
     if (!IsPad()) {
         const float flWidth = GameSystem::GetGameSystem()->GetViewportWidth();
         const bool bPortrait = flWidth <= GameSystem::GetGameSystem()->GetViewportHeight();
@@ -1579,14 +1464,10 @@ void ResultWindowColetteLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the five open/close tween channels. Each shares FloatTween's six-float layout and the
-    // binary drives it through FloatTween::Advance, so advance each through that view.
     for (int nChannel : kTweenAdvanceOrder) {
         m_aTween[nChannel].Advance(flDeltaTime);
     }
 
-    // Decay the signed swipe impulse toward zero, at differing rates by sign, clamping on the zero
-    // crossing.
     if (m_flSwipeDir > 0.0f) {
         m_flSwipeDir += flDeltaTime / kSwipeDecayRateDown;
         if (m_flSwipeDir < 0.0f) {
@@ -1599,8 +1480,6 @@ void ResultWindowColetteLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame
-    // index.
     int nCounter = static_cast<int>(static_cast<float>(m_nRotationCounter) + flDeltaTime);
     if (nCounter > kRotationWrap) {
         nCounter %= kRotationWrap;
@@ -1617,15 +1496,12 @@ void ResultWindowColetteLayer::Update(float flDeltaTime) {
 
     UpdateBonusSoundCueTimer(flDeltaTime);
 
-    // The input pass: the tutorial-gated touch pass while the menu tutorial is active, otherwise
-    // the standard swipe pass.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive()) {
         UpdateResultTouchInput();
     } else {
         ProcessResultScreenInput();
     }
 
-    // Dispatch to the iPad or phone render path.
     if (IsPad()) {
         RenderResultScoreBonusPanel();
     } else {
@@ -1650,7 +1526,6 @@ void ResultWindowColetteLayer::renderSpriteInstanceFromSlot(int nSlot,
         return;
     }
 
-    // Map the whole used image within its power-of-two allocation.
     const S_VECTOR2 uvSize{static_cast<float>(pTexture->GetImageWidth()) /
                                static_cast<float>(pTexture->GetAllocWidth()),
                            static_cast<float>(pTexture->GetImageHeight()) /

@@ -1,8 +1,3 @@
-# CMakeLists.txt — Project/OpenGL/Layer/Limelight
-#
-# Adds this directory's translation units (and headers, for Xcode) to the single app target
-# defined in the root CMakeLists, and puts the directory on the include path. Bare filenames.
-
 target_sources(rbplus PRIVATE
     full_combo_limelight_layer.mm
     limelight_effect_layer.mm

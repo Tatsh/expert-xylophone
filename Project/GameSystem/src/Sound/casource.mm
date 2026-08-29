@@ -1,11 +1,3 @@
-//
-//  casource.mm
-//  REFLEC BEAT plus
-//
-//  A decoded one-shot sound buffer (the caplayer engine's caSource). Reconstructed from Ghidra
-//  project rb458, program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "casource.h"
 
 #include <cstring>
@@ -14,21 +6,17 @@
 
 namespace {
 
-// The client PCM format the source is decoded to: 16-bit signed packed linear PCM, one frame per
-// packet, so a frame is two bytes per channel.
 constexpr int kClientBitsPerChannel = 16;
 constexpr int kClientBytesPerChannel = kClientBitsPerChannel / 8;
 
-// The largest signed allocation the decode buffer is clamped to, matching the binary's overflow
-// guard.
+// Matches the binary's overflow guard on the decode buffer's allocation.
 constexpr long kMaxAllocation = 0x7fffffff;
 
 } // namespace
 
 /** @ghidraAddress 0x4d39c */
 caSource::~caSource() {
-    // Free the decoded PCM block; the binary clears the pointer and size afterwards, which the
-    // object's destruction makes moot.
+    // The binary also clears the pointer and size, which destruction makes moot.
     delete[] static_cast<unsigned char *>(m_pBuffer);
 }
 
@@ -42,7 +30,6 @@ int caSource::FreeBuffer() {
 
 /** @ghidraAddress 0x4d3d0 */
 int caSource::LoadFromPath(const char *szPath, bool bLoop) {
-    // Build a file URL from the path and load through it; a path that does not form a URL fails.
     CFURLRef url =
         CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault,
                                                 reinterpret_cast<const UInt8 *>(szPath),
@@ -86,8 +73,6 @@ int caSource::ReadAudioFormat(ExtAudioFileRef hAudioFile, AudioStreamBasicDescri
         return 0;
     }
 
-    // Set the client format to 16-bit signed packed linear PCM, keeping the file's sample rate and
-    // channel count.
     pAsbd->mFormatID = kAudioFormatLinearPCM;
     pAsbd->mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
     pAsbd->mBitsPerChannel = kClientBitsPerChannel;
@@ -108,8 +93,6 @@ int caSource::ReadAudioPcmData(ExtAudioFileRef hAudioFile, AudioStreamBasicDescr
         return 0;
     }
 
-    // Reallocate and zero the PCM buffer sized by ReadAudioFormat (the allocation is clamped to the
-    // maximum signed size, matching the binary's overflow guard).
     if (m_pBuffer != nullptr) {
         delete[] static_cast<unsigned char *>(m_pBuffer);
         m_pBuffer = nullptr;
@@ -127,8 +110,6 @@ int caSource::ReadAudioPcmData(ExtAudioFileRef hAudioFile, AudioStreamBasicDescr
         return 0;
     }
 
-    // Read frames into the buffer until it is full: each pass points a one-buffer AudioBufferList
-    // at the next unfilled span and reads as many frames as remain.
     int nRemaining = static_cast<int>(m_dwBufferSize);
     if (nRemaining < 1) {
         return 1;
@@ -162,7 +143,6 @@ int caSource::ReadRingBuffer(void *pDst, int nCount, int *pTotalRead, int *pRead
     int nTotalCopied = 0;
     auto *pOut = static_cast<unsigned char *>(pDst);
     while (nCount != 0) {
-        // Clamp this chunk so it does not run past the end of the PCM block.
         int nChunk = nCount;
         if (nReadPos + nChunk >= static_cast<int>(m_dwBufferSize)) {
             nChunk = static_cast<int>(m_dwBufferSize) - nReadPos;
@@ -179,8 +159,6 @@ int caSource::ReadRingBuffer(void *pDst, int nCount, int *pTotalRead, int *pRead
         if (nCount == 0) {
             break;
         }
-        // More was requested than remained: a non-looping sound stops here; a looping sound wraps
-        // the read position (and its consumed counter) back to the start and continues.
         if (!m_bLoop) {
             break;
         }

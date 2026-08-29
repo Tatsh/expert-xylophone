@@ -26,36 +26,24 @@
 #include "touchmanager.h"
 #include "vectormath.h"
 
-// The process-wide Limelight result-window layer, created lazily by shared().
 static LimelightResultLayer *g_pLimelightResultLayer = nullptr; // @ghidraAddress 0x3de008
 
-// The number of records in each Limelight phone-layout anchor-position table.
 constexpr int kLimelightPhoneAnchorRecordCount = 88;
 
-// The Limelight phone-layout anchor-position tables, zero-initialised in the binary's __common
-// segment and filled at runtime by the result-layout-table initialisers; the orientation flag
-// selects between them.
 PhoneAnchorRecord
     g_aLimelightPhoneAnchorDefault[kLimelightPhoneAnchorRecordCount]; // @ghidraAddress 0x3dad10
 PhoneAnchorRecord
     g_aLimelightPhoneAnchorPortrait[kLimelightPhoneAnchorRecordCount]; // @ghidraAddress 0x3db130
 
-// The number of records in each Limelight phone-layout separator table.
 constexpr int kLimelightSeparatorRecordCount = 52;
 
-// The Limelight phone-layout separator tables (0x14-stride PhoneLayoutRecord), zero-initialised in
-// the binary's __common segment and filled at runtime; the orientation flag selects between them.
 PhoneLayoutRecord
     g_aLimelightSeparatorPhoneDefault[kLimelightSeparatorRecordCount]; // @ghidraAddress 0x3db550
 PhoneLayoutRecord
     g_aLimelightSeparatorPhonePortrait[kLimelightSeparatorRecordCount]; // @ghidraAddress 0x3db960
 
-// The number of records in each Limelight phone-layout by-state position table.
 constexpr int kLimelightPositionByStateRecordCount = 4;
 
-// The Limelight phone-layout by-state position tables (0x14-stride PhoneLayoutRecord): the state
-// table (used on the iPad), and the portrait and default tables (selected by the orientation flag
-// on the phone). Zero-initialised in the binary's __common segment and filled at runtime.
 PhoneLayoutRecord
     g_aLimelightPositionPhoneState[kLimelightPositionByStateRecordCount]; // @ghidraAddress 0x3dbd70
 PhoneLayoutRecord
@@ -65,27 +53,17 @@ PhoneLayoutRecord
     g_aLimelightPositionPhoneStateDefault[kLimelightPositionByStateRecordCount]; // @ghidraAddress
                                                                                  // 0x3dbe10
 
-// The single Limelight phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor
-// mode): the state record, and the portrait and default records (selected by the is-pad flag and
-// orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
 PhoneLayoutRect g_LimelightCenterPositionPhoneState = {};    // @ghidraAddress 0x3dbe60
 PhoneLayoutRect g_LimelightCenterPositionPhonePortrait = {}; // @ghidraAddress 0x3dbe70
 PhoneLayoutRect g_LimelightCenterPositionPhoneDefault = {};  // @ghidraAddress 0x3dbe80
 
-// The Limelight phone parts anchor table (declared in limelight_parts_data_table.h):
-// zero-initialised here to match the binary's __common segment, filled at runtime.
 S_VECTOR2 g_aLimelightPartsAnchorPhone[kLimelightPartsAnchorRecordCount] =
     {}; // @ghidraAddress 0x3da8e8
 
-// The Limelight colour-marker outline points and their origin (declared in
-// limelight_parts_data_table.h): zero-initialised here, filled at runtime.
 S_VECTOR2 g_aLimelightColorMarkerPoints[kLimelightColorMarkerPointCount] =
     {};                                      // @ghidraAddress 0x3ddd90
 S_VECTOR2 g_LimelightColorMarkerOrigin = {}; // @ghidraAddress 0x3de000
 
-// The shared UV-palette table (declared in limelight_parts_data_table.h) the part emitters index
-// by a parts record's UV-palette index. Read-only ROM data transcribed from the binary; the entry
-// count is set by the span up to the next table rather than by any bound in the code.
 // @ghidraAddress 0x2f2a28
 const UvPaletteEntry g_aUvPalette[] = {
     {0.0f, 0.0f, 0.75f, 1.0f},
@@ -341,9 +319,6 @@ const UvPaletteEntry g_aUvPalette[] = {
     {0.0029296875f, 0.9326172f, 0.0009765625f, 0.0009765625f},
 };
 
-// The Limelight glyph UV-palette table (declared in limelight_parts_data_table.h) the pad-glyph
-// emitter indexes by a parts record's UV-palette index; distinct from the part palette above. Its
-// 142 entries match kLimelightPadGlyphRecordBound.
 // @ghidraAddress 0x2f55a8
 const UvPaletteEntry g_aLimelightGlyphUvPalette[] = {
     {0.0f, 0.0f, 1.0f, 1.0f},
@@ -492,35 +467,26 @@ const UvPaletteEntry g_aLimelightGlyphUvPalette[] = {
 
 namespace {
 
-// The atlases the result window loads (@ghidraAddress 0x3cea80 and 0x3ceab0).
+// @ghidraAddress 0x3cea80 and 0x3ceab0
 constexpr const char *kBackgroundTextureName = "00_texture/sel_bg";
 constexpr const char *kPartsTextureName = "00_texture/result_parts";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x308a60). Slot 1 (the parts atlas)
-// holds the most sprites; the rest are small fixed banks.
+// @ghidraAddress 0x308a60
 constexpr unsigned int kSlotCapacities[] = {1, 400, 1, 1, 1, 2, 2, 1};
 
-// The per-slot texture-field selector (@ghidraAddress 0x308a40): the field index (0 = background,
-// 1 = parts, 2 = overlay) into the layer's three texture fields for each slot that binds a texture.
-// A slot binds a texture only when it is one of the first two or the last; the middle slots share
-// the atlas already bound by the batch they mirror.
+// The field index (0 = background, 1 = parts, 2 = overlay) into the layer's three texture fields;
+// 4 binds none. @ghidraAddress 0x308a40
 constexpr int kSlotTextureField[] = {0, 1, 4, 4, 4, 4, 4, 2};
 
-// The base scale the builder seeds before creating the batches.
 constexpr float kBaseScale = 0.7f;
 
-// The non-zero defaults the constructor seeds: the default part alpha, and the "none" sentinels for
-// the current result step and each button's tracked touch id.
 constexpr int kDefaultPartAlpha = 0xff;
 constexpr int kNoStep = -1;
 constexpr int kNoTouchId = -1;
 
-// The slot range whose members do not bind a texture: slots kFirstUntexturedSlot through
-// kFirstUntexturedSlot + kUntexturedSlotSpan - 1 (that is, slots 2 through 6).
 constexpr int kFirstUntexturedSlot = 2;
 constexpr int kUntexturedSlotSpan = 5;
 
-// The play-record cell ids the tweet reads per side.
 constexpr unsigned int kCellScore = 0;
 constexpr unsigned int kCellMaxCombo = 2;
 constexpr unsigned int kCellJust = 3;
@@ -529,17 +495,13 @@ constexpr unsigned int kCellGood = 5;
 constexpr unsigned int kCellMiss = 6;
 constexpr unsigned int kCellJustReflec = 7;
 
-// The two score columns (the local player and the rival) the share image draws.
 constexpr int kShareSideCount = 2;
 
-// The achievement rate is reported as a percentage: the stored rate times this scale.
 constexpr float kSharePercentScale = 100.0f; // 1000.0 * 0.1, as the binary computes it.
 
-// The themed sound effect fired when the share begins.
 constexpr int kSoundEffectShare = 5;
 
-// The default player name and the tweet body format (music name, side-one score and rate, and the
-// App Store link), reproduced verbatim from the binary. The patched build drops the link.
+// The patched build drops the App Store link from the tweet body.
 static NSString *const kSharePlayerName = @"なまえ";
 #ifdef ENABLE_PATCHES
 static NSString *const kShareTweetFormat = @"%@をプレー！ Score:%d AR:%0.1f #rb_plus";
@@ -549,9 +511,6 @@ static NSString *const kShareStoreUrl =
     @"http://itunes.apple.com/jp/app/reflec-beat-plus/id472140433";
 #endif
 
-// Builds the Limelight result-screen Twitter share image from the current play result and posts it
-// through the view controller. This variant uses the dark (black) title and artist images. A free
-// function that reads only the game-system, score-tracker, and app-delegate singletons.
 // @ghidraAddress 0x124570
 void PostResultToTwitterBlack() {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectShare);
@@ -586,7 +545,6 @@ void PostResultToTwitterBlack() {
         [pCreater setName:kSharePlayerName Side:nSide];
     }
 
-    // The tweet body reports the local player's (side one) score and percentage rate.
     MusicData *pTweetMusic = AppDelegate.appDelegate.musicData;
     NSString *musicName = pTweetMusic.musicName;
     const int nScore = pTracker->GetPlayRecordCell(1, kCellScore);
@@ -600,21 +558,18 @@ void PostResultToTwitterBlack() {
     [pViewController PostTwitter:pCreater Text:tweet];
 }
 
-// The anchor modes that offset a base coordinate relative to the play-field viewport. Mode 0 (and
-// any value outside this range) leaves the coordinate unshifted.
 enum AnchorMode {
-    kAnchorNone = 0,                // No offset.
-    kAnchorHalfHeight = 1,          // y += viewportHeight / 2.
-    kAnchorFullHeight = 2,          // y += viewportHeight.
-    kAnchorHalfWidth = 3,           // x += viewportWidth / 2.
-    kAnchorHalfWidthHalfHeight = 4, // x += viewportWidth / 2, y += viewportHeight / 2.
-    kAnchorHalfWidthFullHeight = 5, // x += viewportWidth / 2, y += viewportHeight.
-    kAnchorFullWidth = 6,           // x += viewportWidth.
-    kAnchorFullWidthHalfHeight = 7, // x += viewportWidth, y += viewportHeight / 2.
-    kAnchorFullWidthFullHeight = 8, // x += viewportWidth, y += viewportHeight.
+    kAnchorNone = 0,
+    kAnchorHalfHeight = 1,
+    kAnchorFullHeight = 2,
+    kAnchorHalfWidth = 3,
+    kAnchorHalfWidthHalfHeight = 4,
+    kAnchorHalfWidthFullHeight = 5,
+    kAnchorFullWidth = 6,
+    kAnchorFullWidthHalfHeight = 7,
+    kAnchorFullWidthFullHeight = 8,
 };
 
-// Offsets a base coordinate by half or full viewport dimensions per the anchor mode.
 inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const float flWidth = pGameSystem->GetViewportWidth();
@@ -657,9 +612,6 @@ inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
 
 /** @ghidraAddress 0x12abb4 */
 LimelightResultLayer::LimelightResultLayer() {
-    // The base constructor and the zero-initialised members clear the layer; the constructor then
-    // seeds the non-zero defaults: the default part alpha, the current-step "none" sentinel, and
-    // each button's "none" touch id.
     m_nDefaultAlpha = kDefaultPartAlpha;
     m_nCurrentStep = kNoStep;
     for (ResultButtonRecord &button : m_aButtons) {
@@ -670,33 +622,27 @@ LimelightResultLayer::LimelightResultLayer() {
 /** @ghidraAddress 0x123d54 */
 LimelightResultLayer *LimelightResultLayer::shared() {
     if (g_pLimelightResultLayer == nullptr) {
-        // The binary allocates the raw 0x170-byte object and runs its initialiser, which chains the
-        // base-layer constructor and seeds the layer's state.
         g_pLimelightResultLayer = new LimelightResultLayer();
     }
     return g_pLimelightResultLayer;
 }
 
 namespace {
-// The Update timers' constants.
-// The positive slide-timer divisor (the timer counts toward zero) (@ghidraAddress 0x2fd050 = -300).
+// @ghidraAddress 0x2fd050
 constexpr float kSlideTimerRateDown = -300.0f;
-// The negative slide-timer divisor (@ghidraAddress 0x2eedcc = 300).
+// @ghidraAddress 0x2eedcc
 constexpr float kSlideTimerRateUp = 300.0f;
-// The decoration rotation counter wraps at this frame count (@ghidraAddress the 0xc0 modulus).
 constexpr int kRotationWrap = 0xc0;
-// The frames per decoration animation index (@ghidraAddress 0x2fcff8 = 48).
+// @ghidraAddress 0x2fcff8
 constexpr float kRotationFramesPerIndex = 48.0f;
-// The last decoration animation frame index.
 constexpr int kRotationFrameMax = 3;
 
-// The five bonus channels' advance order the update uses (channels 2 and 3 are advanced swapped).
+// The binary advances channels 2 and 3 swapped.
 constexpr int kBonusAdvanceOrder[] = {0, 1, 3, 2, 4};
 } // namespace
 
 /** @ghidraAddress 0x12adac */
 void LimelightResultLayer::Update(float flDeltaTime) {
-    // Off an iPad, keep the portrait-orientation flag in sync with the viewport aspect.
     if (!IsPad()) {
         const float flWidth = GameSystem::GetGameSystem()->GetViewportWidth();
         const bool bPortrait = flWidth <= GameSystem::GetGameSystem()->GetViewportHeight();
@@ -705,14 +651,10 @@ void LimelightResultLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the five bonus channels. The channel shares FloatTween's six-float layout and the
-    // binary drives it through FloatTween::Advance, so advance each through that view.
     for (int nChannel : kBonusAdvanceOrder) {
         m_aBonusAnimChannels[nChannel].Advance(flDeltaTime);
     }
 
-    // Advance the signed slide/settle timer toward zero, at differing rates by sign, and clamp on
-    // the zero crossing.
     if (m_flSlideTimer > 0.0f) {
         m_flSlideTimer += flDeltaTime / kSlideTimerRateDown;
         if (m_flSlideTimer < 0.0f) {
@@ -725,8 +667,6 @@ void LimelightResultLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame
-    // index.
     int nCounter = static_cast<int>(static_cast<float>(m_nRotationCounter) + flDeltaTime);
     if (nCounter > kRotationWrap) {
         nCounter %= kRotationWrap;
@@ -744,7 +684,6 @@ void LimelightResultLayer::Update(float flDeltaTime) {
     UpdateBonusSoundCueTimer(flDeltaTime);
     UpdatePhoneTouchAndShare();
 
-    // Dispatch to the Limelight (iPad) or phone (portrait) render path.
     if (IsPad()) {
         RenderLimelightResultWindow();
     } else {
@@ -775,9 +714,6 @@ void LimelightResultLayer::InitializePhoneSpriteInstancers() {
     ne::C_TEXTURE *const apTextureFields[] = {
         m_pBackgroundTexture, m_pPartsTexture, m_pOverlayTexture};
 
-    // Build one sprite instancer per slot, register it in the global scene tree, make it visible,
-    // and clear its sprite count. The two edge slots bind a texture per the selector; the middle
-    // slots (2 through 6) share the atlas of the batch they mirror, so they bind none here.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         m_apSprites[nSlot] = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         m_apSprites[nSlot]->RegisterGlobal();
@@ -804,8 +740,6 @@ void LimelightResultLayer::SetPhoneInstancerTextureAndScale(unsigned int nPhoneI
         return;
     }
 
-    // The image's point size (its pixels over the retina scale) and its fraction of the allocated
-    // power-of-two texture.
     const float flPointWidth = static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetScale();
     const float flPointHeight =
         static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetScale();
@@ -822,17 +756,9 @@ void LimelightResultLayer::SetPhoneInstancerTextureAndScale(unsigned int nPhoneI
     }
 }
 
-// The runtime-filled pad parts table (zero storage in __common, seeded at load by the initialiser
-// at 0x12af9c, whose Ghidra name calls it the phone table but which fills this one).
 // @ghidraAddress 0x3d9100
 PartsDataRecord g_aLimelightPartsPad[kLimelightPartsRecordBound] = {};
 
-// The phone parts table is baked read-only data in __TEXT,__const (0x1002ec690-0x100310887), not
-// __common: the load-time initialiser at 0x12af9c only stores into 0x3d9100-0x3da8e8,
-// 0x3da8f0-0x3dbe90 and 0x3ddd90-0x3de008, and its only reads from this page stop at 0x307ce0.
-// The binary holds 142 records here (0x307cf0-0x308a40), matching the 0x8e bound in
-// getPartsData_Phone at 0x1238d0; the accessor at 0x123838 still bounds both tables at 255, so the
-// remaining entries stay zero.
 // @ghidraAddress 0x307cf0
 PartsDataRecord g_aLimelightPartsPhone[kLimelightPartsRecordBound] = {
     {1, 0.0f, 0.0f, 1024.0f, 1024.0f, 0}, {1, 0.0f, 0.0f, 57.0f, 20.0f, 1},
@@ -912,8 +838,6 @@ PartsDataRecord g_aLimelightPartsPhone[kLimelightPartsRecordBound] = {
 PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) {
     assert(static_cast<int>(nIndex) >= 0 && nIndex < kLimelightPartsRecordBound);
 
-    // The pad table is the runtime-filled one at 0x3d9100 and the phone table the baked rodata at
-    // 0x307cf0, per the binary's `csel x0,x9,x8,ne` after IsPad(): a true result selects 0x3d9100.
     return ::IsPad() ? &g_aLimelightPartsPad[nIndex] : &g_aLimelightPartsPhone[nIndex];
 }
 
@@ -921,7 +845,6 @@ PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) {
 PartsDataRecord *LimelightResultLayer::getPartsData_Phone(int nIndex) {
     assert(nIndex >= 0 && nIndex < kLimelightPadGlyphRecordBound);
 
-    // The pad parts table doubles as the phone glyph-metrics table.
     return &g_aLimelightPartsPhone[nIndex];
 }
 
@@ -929,19 +852,16 @@ PartsDataRecord *LimelightResultLayer::getPartsData_Phone(int nIndex) {
 void LimelightResultLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const {
     assert(nIndex >= 0 && nIndex < kLimelightPhoneAnchorRecordCount);
 
-    // The orientation flag selects the portrait table; otherwise the default table is used.
     const PhoneAnchorRecord &record = m_bPortrait ? g_aLimelightPhoneAnchorPortrait[nIndex] :
                                                     g_aLimelightPhoneAnchorDefault[nIndex];
     pOutPosition->x = record.flX;
     pOutPosition->y = record.flY;
 
-    // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutPosition->x, &pOutPosition->y);
 }
 
 /** @ghidraAddress 0x123b5c */
 void LimelightResultLayer::getPositionByState_Phone(int nIndex, PhoneLayoutRect *pOutRect) const {
-    // The iPad uses the state table; the phone uses its portrait or default table by orientation.
     const PhoneLayoutRecord &record =
         IsPad() ? g_aLimelightPositionPhoneState[nIndex] :
                   (m_bPortrait ? g_aLimelightPositionPhoneStatePortrait[nIndex] :
@@ -951,8 +871,6 @@ void LimelightResultLayer::getPositionByState_Phone(int nIndex, PhoneLayoutRect 
     pOutRect->flWidth = record.flWidth;
     pOutRect->flHeight = record.flHeight;
 
-    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor
-    // mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutRect->flX, &pOutRect->flY);
 }
 
@@ -960,7 +878,6 @@ void LimelightResultLayer::getPositionByState_Phone(int nIndex, PhoneLayoutRect 
 const PhoneLayoutRecord *LimelightResultLayer::getSeparator_Phone(int nIndex) const {
     assert(nIndex >= 0 && nIndex < kLimelightSeparatorRecordCount);
 
-    // The orientation flag selects the portrait table; otherwise the default table is used.
     return m_bPortrait ? &g_aLimelightSeparatorPhonePortrait[nIndex] :
                          &g_aLimelightSeparatorPhoneDefault[nIndex];
 }
@@ -976,12 +893,10 @@ void LimelightResultLayer::RenderPhoneSpriteFieldAligned(unsigned int nSlot,
         return;
     }
 
-    // The part's texture rectangle comes from the glyph UV palette, indexed by the part's frame.
     const PartsDataRecord &part = g_aLimelightPartsPhone[nPartIndex];
     const UvPaletteEntry &uv = g_aLimelightGlyphUvPalette[part.nUvPaletteIndex];
 
-    // The separator record supplies the base position, its viewport anchor mode, and (in its
-    // carried width and height) the sprite's X scale and rotation.
+    // The separator's carried width and height are the sprite's X scale and rotation.
     const PhoneLayoutRecord *pSeparator = getSeparator_Phone(static_cast<int>(nSeparatorIndex));
 
     float flAnchorX = 0.0f;
@@ -1004,7 +919,6 @@ void LimelightResultLayer::RenderPhoneSpriteFieldAligned(unsigned int nSlot,
 
 /** @ghidraAddress 0x123cc8 */
 void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
-    // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
     if (IsPad()) {
         *pOutRect = g_LimelightCenterPositionPhoneState;
         (void)GameSystem::GetGameSystem(); // The binary tail-calls the singleton getter and
@@ -1012,8 +926,6 @@ void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) co
         return;
     }
 
-    // Otherwise the orientation flag selects the portrait or default record, and the leading
-    // coordinate is shifted by half the viewport width and height.
     const PhoneLayoutRect &record = m_bPortrait ? g_LimelightCenterPositionPhonePortrait :
                                                   g_LimelightCenterPositionPhoneDefault;
     *pOutRect = record;
@@ -1033,9 +945,6 @@ void LimelightResultLayer::EmitPhonePartWithOffset(unsigned int nSlot,
     if (nCharCode >= kLimelightPadGlyphRecordBound) {
         return;
     }
-    // The glyph metrics come from the pad parts table indexed by the character code; the texture
-    // rectangle from the Limelight glyph UV palette. The sprite is placed at the position plus the
-    // offset.
     const PartsDataRecord *pGlyph = &g_aLimelightPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
     const unsigned int nIntensity = bShadowPass ? 0x80 : 0xff;
@@ -1064,11 +973,8 @@ void LimelightResultLayer::RenderPhonePartWithOffset(unsigned int nSlot,
     if (nCharCode >= kLimelightPadGlyphRecordBound) {
         return;
     }
-    // Resolve the base position by index and add the offset.
     S_VECTOR2 position{};
     getPosition_Phone(nPositionIndex, &position);
-    // The glyph metrics come from the pad parts table indexed by the character code; the texture
-    // rectangle from the Limelight glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aLimelightPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
     const unsigned int nIntensity = bShadowPass ? 0x80 : 0xff;
@@ -1101,7 +1007,6 @@ void LimelightResultLayer::EmitPhoneHalfScaleTexturedPart(unsigned int nSlot,
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flTextureScale = pTexture->GetScale();
-    // The quad is sized by the texture's scale factor and centred by anchoring at half its size.
     const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
     const S_VECTOR2 anchor{spriteSize.x * 0.5f, spriteSize.y * 0.5f};
     const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
@@ -1122,9 +1027,6 @@ void LimelightResultLayer::EmitPhoneHalfScaleTexturedPart(unsigned int nSlot,
 
 namespace {
 
-// The digit glyph bank RenderPhoneNumberDigitsRow draws from (its '0'), its maximum digit count,
-// the nominal glyph width used to centre the run, and the extra pixel added to each glyph's own
-// width when advancing. The glyphs draw into the parts slot.
 constexpr unsigned int kPhoneRowGlyphSlot = 1;
 constexpr unsigned int kPhoneRowDigitBank = 0x39;
 constexpr int kPhoneRowMaxDigits = 4;
@@ -1134,9 +1036,6 @@ constexpr float kPhoneRowGlyphSpacing = 1.0f;
 } // namespace
 
 namespace {
-// The total-score digit layout: the number of digit places, the minimum drawn, the ones-place and
-// higher-place glyph banks, the marker glyph drawn below the ones digit, the marker's x and y
-// offsets, the between-digit gap, the tenths scale, and the alpha-halving factor.
 constexpr int kTotalScoreDigits = 7;
 constexpr int kTotalScoreMinDigits = 2;
 constexpr unsigned int kTotalScoreOnesBank = 0x71;
@@ -1148,12 +1047,8 @@ constexpr float kTotalScoreDigitGap = -2.0f;
 constexpr float kTotalScoreTenthsScale = 10.0f;
 constexpr float kTotalScoreDimFactor = 0.5f;
 
-// The paired ones-place glyph sits ten part ids above the digit-zero base.
 constexpr unsigned int kPhonePairedGlyphOffset = 10;
 
-// The multiplier digit layout: the digit count, the minimum drawn, the digit glyph bank, and the
-// marker glyph drawn beside the ones digit. It shares the total-score tenths scale, gap, and dim
-// factor.
 constexpr int kMultiplierDigits = 3;
 constexpr int kMultiplierMinDigits = 2;
 constexpr unsigned int kMultiplierDigitBank = 0x81;
@@ -1170,7 +1065,6 @@ void LimelightResultLayer::RenderPhoneNumber(float flSpacing,
                                              unsigned int nFlags,
                                              int bPadZeros,
                                              unsigned int nAlpha) {
-    // Split the value into up to nMaxDigits digits (ones first), tracking the significant count.
     int aDigits[3] = {};
     int nSignificant = 0;
     for (int i = 0; i < nMaxDigits; ++i) {
@@ -1180,21 +1074,15 @@ void LimelightResultLayer::RenderPhoneNumber(float flSpacing,
         }
         nValue /= 10;
     }
-    // When only the ones place is significant and the show-zero flag is set, draw a second (zero)
-    // digit as well. The digit slot is already zero from the split.
     const bool bShowZero = (nFlags & 1) != 0;
     if (nSignificant == 0 && bShowZero) {
         nSignificant = 1;
     }
 
-    // Start at the base position plus the offset.
     S_VECTOR2 cursor = *pPosition;
     S_VECTOR2 offset = *pOffset;
     AddVector2(&cursor, &offset);
 
-    // Draw each significant digit right to left, stepping the cursor left by the glyph's own width
-    // less the spacing. When the paired flag is set, a second glyph ten ids up is drawn beside the
-    // ones digit.
     const bool bPaired = (nFlags & 1) != 0;
     for (int i = 0; i <= nSignificant; ++i) {
         const unsigned int nGlyph = aDigits[i] + nBasePartId;
@@ -1209,7 +1097,6 @@ void LimelightResultLayer::RenderPhoneNumber(float flSpacing,
         }
     }
 
-    // Dim-pad the remaining leading positions with the base glyph.
     if (bPadZeros && nSignificant + 1 < nMaxDigits) {
         for (int nPad = (nMaxDigits - 1) - nSignificant; nPad != 0; --nPad) {
             cursor.x -= getPartsData_Phone(static_cast<int>(nBasePartId))->flWidth;
@@ -1223,7 +1110,6 @@ void LimelightResultLayer::RenderPhoneNumber(float flSpacing,
 void LimelightResultLayer::RenderPhoneMultiplierDigitSprites(float flMultiplier,
                                                              const S_VECTOR2 *pPosition,
                                                              unsigned int nAlpha) {
-    // The multiplier is scaled to tenths and split into three digits (ones first).
     const int nValue = static_cast<int>(flMultiplier * kTotalScoreTenthsScale);
     int aDigits[kMultiplierDigits] = {};
     int nSignificant = 0;
@@ -1242,7 +1128,6 @@ void LimelightResultLayer::RenderPhoneMultiplierDigitSprites(float flMultiplier,
     const float flPosY = pPosition->y;
     unsigned int nCurrentAlpha = nAlpha;
     for (int i = 0; i < kMultiplierDigits; ++i) {
-        // Leading positions beyond the significant digits draw at half alpha.
         if (i == nDrawCount) {
             nCurrentAlpha = static_cast<unsigned int>(static_cast<float>(nCurrentAlpha & 0xff) *
                                                       kTotalScoreDimFactor);
@@ -1260,7 +1145,6 @@ void LimelightResultLayer::RenderPhoneMultiplierDigitSprites(float flMultiplier,
                                     1.0f,
                                     1.0f);
         flBaseline = flDrawX + kTotalScoreDigitGap;
-        // The marker glyph is drawn at the post-advance baseline, beside the ones digit.
         if (i == 0) {
             RenderPhoneResultSpriteById(1,
                                         kMultiplierMarkerGlyph,
@@ -1277,12 +1161,10 @@ void LimelightResultLayer::RenderPhoneMultiplierDigitSprites(float flMultiplier,
 /** @ghidraAddress 0x12a928 */
 void LimelightResultLayer::RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPosition,
                                                        unsigned int nAlpha) {
-    // The total score is the sum of the five result-bonus values, scaled to tenths.
     const int nTotal = static_cast<int>((m_flExperienceBonus + m_flClearBonus + m_flMissBonus +
                                          m_flRankBonus + m_flFirstPlayBonus) *
                                         kTotalScoreTenthsScale);
 
-    // Split into seven digits (ones first), tracking the significant count.
     int aDigits[kTotalScoreDigits] = {};
     int nSignificant = 0;
     int nRemaining = nTotal;
@@ -1300,11 +1182,9 @@ void LimelightResultLayer::RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPositio
     const float flY = pPosition->y;
     unsigned int nCurrentAlpha = nAlpha;
     for (int i = 0; i < kTotalScoreDigits; ++i) {
-        // The between-digit gap precedes every place after the ones digit.
         if (i != 0) {
             flCursorX += kTotalScoreDigitGap;
         }
-        // Leading positions beyond the significant digits draw at half alpha.
         if (i == nDrawCount) {
             nCurrentAlpha = static_cast<unsigned int>(static_cast<float>(nCurrentAlpha & 0xff) *
                                                       kTotalScoreDimFactor);
@@ -1320,7 +1200,6 @@ void LimelightResultLayer::RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPositio
                                     0.0f,
                                     1.0f,
                                     1.0f);
-        // A marker glyph sits below and just left of the ones digit.
         if (i == 0) {
             RenderPhoneResultSpriteById(
                 1,
@@ -1339,8 +1218,6 @@ void LimelightResultLayer::RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPositio
 void LimelightResultLayer::RenderPhoneNumberDigitsRow(int nValue,
                                                       const S_VECTOR2 *pPosition,
                                                       unsigned int nAlpha) {
-    // Split the value into up to four digits (ones first), tracking the count of significant
-    // digits, rendering at least one.
     int aDigits[kPhoneRowMaxDigits] = {};
     int nSignificant = 0;
     for (int i = 0; i < kPhoneRowMaxDigits; ++i) {
@@ -1354,8 +1231,6 @@ void LimelightResultLayer::RenderPhoneNumberDigitsRow(int nValue,
         nSignificant = 1;
     }
 
-    // Centre the run about the position using the nominal glyph width, then step left by each
-    // glyph's own width (plus one pixel) as it is drawn.
     const int nHalfWidth =
         static_cast<int>(static_cast<float>(nSignificant) * kPhoneRowNominalGlyphWidth);
     float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f;
@@ -1374,9 +1249,6 @@ void LimelightResultLayer::RenderPhoneNumberDigitsRow(int nValue,
 
 namespace {
 
-// The percent-value glyph banks and layout: the parts slot, the digit bank ('0'), the leading
-// percent marker glyph, the decimal-point glyph, the minimum digit count drawn, the fixed per-glyph
-// advance, the extra centring pad, and the point's own advance.
 constexpr unsigned int kPercentSlot = 1;
 constexpr unsigned int kPercentDigitBank = 0x39;
 constexpr unsigned int kPercentMarkerGlyph = 0x45;
@@ -1392,7 +1264,6 @@ constexpr float kPercentPointAdvance = 2.0f;
 void LimelightResultLayer::RenderPhonePercentValue(int nValue,
                                                    const S_VECTOR2 *pPosition,
                                                    unsigned int nAlpha) {
-    // Split the value into up to four digits (ones first), tracking the significant-digit count.
     int aDigits[4] = {};
     int nSignificant = 0;
     for (int i = 0; i < 4; ++i) {
@@ -1404,14 +1275,11 @@ void LimelightResultLayer::RenderPhonePercentValue(int nValue,
     }
     const int nDrawCount = nSignificant < kPercentMinDigits ? kPercentMinDigits : nSignificant;
 
-    // Centre the run about the position: one advance per drawn digit plus the leading marker,
-    // rounded and halved, then step left by one advance before the marker.
     const int nHalfWidth = static_cast<int>(
         static_cast<float>(nDrawCount + 1) * kPercentGlyphAdvance + kPercentCentrePad);
     float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f - kPercentGlyphAdvance;
     const float flY = pPosition->y;
 
-    // The leading percent marker.
     RenderPhoneResultSpriteById(
         kPercentSlot, kPercentMarkerGlyph, S_VECTOR2{flCursorX, flY}, nAlpha, 0, 0.0f, 1.0f, 1.0f);
 
@@ -1425,7 +1293,6 @@ void LimelightResultLayer::RenderPhonePercentValue(int nValue,
                                     0.0f,
                                     1.0f,
                                     1.0f);
-        // The decimal point follows the ones digit.
         if (i == 0) {
             flCursorX -= kPercentPointAdvance;
             RenderPhoneResultSpriteById(kPercentSlot,

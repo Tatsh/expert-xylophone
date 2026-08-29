@@ -1,14 +1,3 @@
-//
-//  RBUnlockView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockView). Verified against
-//  the arm64 disassembly: -setupView's idiom- and theme-dependent soft-float geometry and
-//  -reloadData's scroll-content layout were recovered from the register moves the decompiler folds
-//  into pseudo-variables. This is an Objective-C++ file because it preloads the C++ shot-sound and
-//  themed sound-effect engine singletons.
-//
-
 #import "RBUnlockView.h"
 
 #import "AppDelegate.h"
@@ -39,20 +28,15 @@
 #import "shotsoundmanager.h"
 #import "soundeffectmanager.h"
 
-// The framed backdrop drawn behind the lime-point count.
 static NSString *const kPointBackgroundImageName = @"04_customize/cus_fram_lockp";
 
-// The JSON keys read out of the unlock-catalogue response.
 static NSString *const kRewardBannerListKey = @"RewardBannerList";
 static NSString *const kRewardBannerURLKey = @"URL";
 static NSString *const kUnlockIDKey = @"ID";
-// The music-info response key echoed back from the request's random key.
 static NSString *const kUnlockKeyEchoKey = @"Key";
 
-// The "@2x" retina marker inserted into or stripped from a banner URL before its extension.
 static NSString *const kRetinaSuffix = @"@2x";
 
-// The JSON body keys sent with the reward-check request.
 static NSString *const kRewardCheckTargetKey = @"target";
 static NSString *const kRewardCheckUserIDKey = @"user_id";
 static NSString *const kRewardCheckPasswordKey = @"passwd";
@@ -60,17 +44,13 @@ static NSString *const kRewardCheckNonceKey = @"nonce";
 static NSString *const kRewardCheckRewardIDKey = @"reward_id";
 static NSString *const kRewardCheckAppliIDKey = @"appli_id";
 
-// The JSON keys read out of the reward-check response.
 static NSString *const kRewardCheckNonceEchoKey = @"CK";
 static NSString *const kRewardListKey = @"RewardList";
 static NSString *const kAppliIDKey = @"AppliID";
 static NSString *const kRewardPointKey = @"Point";
 
-// The content type of the reward-check request body.
 static NSString *const kJsonContentType = @"application/json";
 
-// The item type values decided by the confirmation popup; each routes to a different
-// RBExperienceData grant.
 typedef enum {
     RBUnlockItemTypeBGM = 0,
     RBUnlockItemTypeShot = 1,
@@ -81,36 +61,26 @@ typedef enum {
     RBUnlockItemTypeThema = 10,
 } RBUnlockItemType;
 
-// The sound-effect slots played by the picker.
 constexpr int kSoundEffectPopupCancel = 4;
 constexpr int kSoundEffectUnlocked = 9;
 
-// The tutorial type launched once a music item has been unlocked during the customise walkthrough.
 constexpr NSInteger kTutorialTypeExperience = 0x20;
 
-// The reward banner button is inset ten points from the scroll view's left and top, and its width
-// and height each leave a twenty-point margin.
 constexpr CGFloat kRewardButtonInset = 10.0;
 constexpr CGFloat kRewardButtonMargin = 20.0;
 
-// Each package row, and the reward banner, are laid out at this fixed height, by device idiom.
 constexpr CGFloat kPackageRowHeightNarrow = 124.0;
 constexpr CGFloat kPackageRowHeightWide = 144.0;
 
-// The gap left above the first package row, and between one row and the next, by device idiom.
 constexpr CGFloat kPackageRowGapNarrow = 4.0;
 constexpr CGFloat kPackageRowGapWide = 10.0;
 
-// On the narrow font, the reward banner occupies eighty per cent of a row height above the first
-// package row.
 constexpr CGFloat kRewardBannerRowFactor = 0.8;
 
-// The lime-point backdrop sits centred horizontally, at a idiom-dependent vertical offset.
 constexpr CGFloat kPointBackgroundCenterFactor = 0.5;
 constexpr CGFloat kPointBackgroundTopNarrow = 34.0;
 constexpr CGFloat kPointBackgroundTopWide = 70.0;
 
-// The lime-point count label geometry, chosen by device idiom and theme.
 constexpr CGFloat kPointLabelNarrowX = 112.0;
 constexpr CGFloat kPointLabelNarrowY = 44.0;
 constexpr CGFloat kPointLabelNarrowWidth = 114.0;
@@ -122,37 +92,25 @@ constexpr CGFloat kPointLabelLimelightHeight = 36.0;
 constexpr CGFloat kPointLabelColetteY = 90.0;
 constexpr CGFloat kPointLabelColetteHeight = 40.0;
 
-// The gap between the lime-point backdrop and the package scroll view, by device idiom.
 constexpr CGFloat kScrollTopMarginNarrow = 4.0;
 constexpr CGFloat kScrollTopMarginWide = 10.0;
 
-// The extra scroll content height left below the last package row, by device idiom.
 constexpr CGFloat kScrollContentPadNarrow = 45.0;
 constexpr CGFloat kScrollContentPadWide = 70.0;
 
-// The loading spinner's dimmed backdrop and rounded corner.
 constexpr CGFloat kSpinnerBackgroundAlpha = 0.5;
 constexpr CGFloat kSpinnerCornerRadius = 5.0;
 
-// The number of trailing characters of a banner URL that make up its file extension, spliced around
-// when the "@2x" retina marker is inserted.
 constexpr NSUInteger kFileExtensionLength = 4;
 
-// The length of the nonce generated for the reward-check request.
 constexpr int kNonceLength = 0x20;
 
-// The confirmation popup ignores taps once its fade-out has dimmed it below this alpha.
 constexpr CGFloat kPopupInteractiveAlpha = 0.01;
 
-// The download-progress spinner is inset three points from the cell's artwork bounds.
 constexpr CGFloat kProgressOverlayInset = 3.0;
 
-// The music-info request key echoed back to guard against a stale response is masked to sixteen
-// bits.
 constexpr int kUnlockRandomKeyModulus = 0xffff;
 
-// The unlock reveal steps the progress overlay from empty to full over eleven ticks, advancing it
-// by a tenth each and spacing the ticks a twentieth of a second apart.
 constexpr int kProgressStepCount = 11;
 constexpr float kProgressIncrement = 0.1;
 constexpr float kProgressTickFraction = 0.05;
@@ -170,10 +128,8 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     return self;
 }
 
-// The binary's -dealloc (0x991a4) only chains to [super dealloc]; under ARC that chaining is
-// automatic, so no override is reconstructed. The strong subview ivars and the weak
-// parentCustomView/selectedView/selectedCell references are cleared by the compiler-generated
-// .cxx_destruct (0x99ea0).
+// The binary's -dealloc only chains to [super dealloc], which ARC does for us, so it has no
+// override here.
 
 - (void)setParentView:(RBCustomView *)parentView {
     self.parentCustomView = parentView;
@@ -190,7 +146,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                 forControlEvents:UIControlEventTouchUpInside];
     self.rewardButton.exclusiveTouch = YES;
 
-    // The lime-point backdrop, centred horizontally and dropped by a idiom-dependent offset.
     UIImage *backgroundImage = [UIImage imageWithName:kPointBackgroundImageName];
     self.pointBackgroundView = [[UIImageView alloc] initWithImage:backgroundImage];
     CGFloat backgroundTop = (!isPad) ? kPointBackgroundTopNarrow : kPointBackgroundTopWide;
@@ -205,8 +160,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     self.pointLabel.imageType = RBNumberLabelImageTypeDecimal;
     [self.pointBackgroundView addSubview:self.pointLabel];
 
-    // The lime-point count label geometry and the scroll-view top margin are chosen by device idiom
-    // and, for the wide font, by theme.
     CGFloat scrollTopMargin = kScrollTopMarginWide;
     if (!isPad) {
         self.pointLabel.frame = CGRectMake(kPointLabelNarrowX,
@@ -229,7 +182,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         }
     }
 
-    // The package scroll view fills the width below the lime-point backdrop.
     CGFloat scrollTop = scrollTopMargin + self.pointBackgroundView.bottom;
     self.scrollView =
         [[UIScrollView alloc] initWithFrame:CGRectMake(0.0,
@@ -238,7 +190,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                                                        self.frame.size.height - scrollTop)];
     [self addSubview:self.scrollView];
 
-    // The loading spinner, dimmed and rounded, pinned to the view centre.
     self.activityIndicatorView = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     self.activityIndicatorView.backgroundColor =
@@ -254,20 +205,16 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 - (void)reloadData {
     BOOL isPad = IsPad();
 
-    // Each package row, the reward banner, and the row spacing are sized by the iPad idiom.
     CGFloat rowHeight = (!isPad) ? kPackageRowHeightNarrow : kPackageRowHeightWide;
     CGFloat rowGap = (!isPad) ? kPackageRowGapNarrow : kPackageRowGapWide;
     CGFloat viewWidth = self.frame.size.width;
 
     self.pointLabel.number = [[RBExperienceData sharedInstance] getPoint];
 
-    // Clear the previous packages out of the scroll view.
     for (UIView *subview in self.scrollView.subviews) {
         [subview removeFromSuperview];
     }
 
-    // Lay the reward banner button out at the top when a banner is available, and start each row of
-    // packages below it.
     CGFloat contentTop = 0.0;
     if (self.rewardBannerUrl) {
         if (self.rewardButton) {
@@ -282,7 +229,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
             [bannerDownloader
                 startDownloadWithProceed:^(ImageDownloader *downloader) {
                   /** @ghidraAddress 0x1952e0 */
-                  // Global no-op proceed block.
                 }
                 success:^(ImageDownloader *downloader) {
                   /** @ghidraAddress 0x1952e4 */
@@ -308,15 +254,12 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                 }
                 failure:^(ImageDownloader *downloader){
                     /** @ghidraAddress 0x1955dc */
-                    // Global no-op failure block.
                 }];
         }
         contentTop =
             (!isPad) ? (rowGap + rowHeight * kRewardBannerRowFactor) : (rowHeight + rowGap);
     }
 
-    // One collection view per package, stacked down the scroll view. Each row is drawn at the fixed
-    // row height but advances by that height plus the row gap.
     CGFloat rowTop = contentTop;
     for (RBUnlockPackageData *packageData in [[RBUnlockData sharedInstance] getPackage]) {
         RBUnlockCollectionView *collectionView = [[RBUnlockCollectionView alloc]
@@ -328,7 +271,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         rowTop += rowHeight + rowGap;
     }
 
-    // Size the scroll content to fit every row plus a idiom-dependent bottom pad.
     CGFloat bottomPad = (!isPad) ? kScrollContentPadNarrow : kScrollContentPadWide;
     self.scrollView.contentSize = CGSizeMake(self.frame.size.width, rowTop + bottomPad);
 }
@@ -347,8 +289,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
           /** @ghidraAddress 0x195858 */
           NSDictionary *json = [downloader getDataInJSON];
 
-          // On the Limelight theme, take the first reward banner and normalise its URL for the
-          // current retina state before storing.
           if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeLimelight &&
               [json[kRewardBannerListKey] count]) {
               NSDictionary *banner = json[kRewardBannerListKey][0];
@@ -410,7 +350,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         }
         failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x1963ac */
-          // Dispatch the stop-indicator/show-error handler to the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf.activityIndicatorView stopAnimating];
           });
@@ -492,8 +431,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 
 - (void)didSelectView:(RBUnlockCollectionView *)view
          selectedCell:(RBUnlockCollectionCell *)selectedCell {
-    // Ignore taps while the confirmation popup is still visible (its fade-out has not yet dimmed it
-    // below the interactive threshold).
+    // Ignore taps until the confirmation popup's fade-out has dimmed it below the threshold.
     if (self.popupView && self.popupView.alpha > kPopupInteractiveAlpha) {
         return;
     }
@@ -503,13 +441,11 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 
     RBUnlockPackageItemData *itemData = selectedCell.itemData;
     if (!selectedCell.badgeView.isHidden) {
-        // Already unlocked: re-download the item's content directly.
         selectedCell.enabled = NO;
         [self getMusicInfoWithMusicID:itemData.identity];
         return;
     }
 
-    // Not yet unlocked: present the confirmation popup over the menu.
     UIView *hostView = [AppDelegate appDelegate].viewController.view;
     self.popupView = [[RBCustomInfoPopupView alloc] initWithFrame:hostView.bounds];
     self.popupView.itemData = itemData;
@@ -528,7 +464,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     float currentPoints = [[RBExperienceData sharedInstance] getPoint];
     RBUnlockPackageItemData *itemData = self.popupView.itemData;
 
-    // Reject the unlock when the player cannot afford it.
     if ((float)itemData.point > currentPoints) {
         [UIAlertView showAlertShortageOfPoint];
         return;
@@ -537,14 +472,12 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     [[RBExperienceData sharedInstance] addPoint:-(float)itemData.point];
     self.pointLabel.number = [[RBExperienceData sharedInstance] getPoint];
 
-    // Record the unlock for the customise walkthrough when it is running on the Colette theme.
     if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
         [RBTutorialManager isTutorialCustomize]) {
         [RBTutorialManager setUnlockedItemInfo:self.popupView.itemData.type
                                         itemId:self.popupView.itemData.identity];
     }
 
-    // Grant the unlock into RBExperienceData according to the item type.
     switch (static_cast<RBUnlockItemType>(self.popupView.itemData.type)) {
     case RBUnlockItemTypeBGM:
         [[RBExperienceData sharedInstance] addBGMType:self.popupView.itemData.identity];
@@ -562,8 +495,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         [[RBExperienceData sharedInstance] addBackgroundType:self.popupView.itemData.identity];
         break;
     case RBUnlockItemTypeMusic:
-        // Music items grant, dismiss the popup, and then start the track download; they take no
-        // further server-report or progress-overlay steps here.
+        // Music items return early, taking no server-report or progress-overlay step.
         [[RBExperienceData sharedInstance] addMusicID:self.popupView.itemData.identity];
         [self.popupView hideAnimation];
         [[RBExperienceData sharedInstance] save];
@@ -583,7 +515,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                                       point:[[RBExperienceData sharedInstance] getPoint]];
     [self.popupView hideAnimation];
 
-    // Play the unlock reveal over the tapped cell, ticking the progress overlay to full.
     self.progressOverlayView =
         [[DAProgressOverlayView alloc] initWithFrame:self.selectedCell.imageView.bounds];
     [self.selectedCell.imageView addSubview:self.progressOverlayView];
@@ -605,7 +536,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     }
     [self reloadData];
 
-    // On the customise walkthrough, re-enable the set button and launch the experience tutorial.
     if ([RBTutorialManager isTutorialCustomize]) {
         self.parentCustomView.getCustomButtonView.enabled = YES;
         [self.parentCustomView.musicMenuView.tutorialView
@@ -622,8 +552,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 #pragma mark Music download
 
 - (void)getMusicInfoWithMusicID:(unsigned int)musicID {
-    // Overlay the tapped cell's frame artwork, or its plain artwork when the frame is hidden, with
-    // a progress spinner inset from the artwork bounds.
     if (!self.selectedCell.frameImageView.isHidden) {
         self.progressOverlayView = [[DAProgressOverlayView alloc]
             initWithFrame:CGRectInset(self.selectedCell.frameImageView.bounds,
@@ -670,8 +598,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     NSDictionary *json = [downloader getDataInJSON];
     NSNumber *echoedKey = json[kUnlockKeyEchoKey];
 
-    // The response is only trusted when it carries a key that matches the request's random key and
-    // parses into store music info; anything else is a network error.
     StoreMusicInfo *musicInfo = nil;
     if (json && echoedKey && self.unlockRandomKey == echoedKey.intValue) {
         musicInfo = [[StoreMusicInfo alloc] initWithDictionary:json];

@@ -2,8 +2,6 @@
 
 #import "deviceenvironment.h"
 
-// The synonym dictionary is persisted as JSON under this name in the application-support directory,
-// seeded on first run from the identically named bundled resource.
 static NSString *const kSearchExpandDictResource = @"SearchExpandDict";
 static NSString *const kSearchExpandDictType = @"txt";
 static NSString *const kSearchExpandDictFileName = @"SearchExpandDict.txt";
@@ -39,8 +37,7 @@ static NSString *const kSearchExpandDictFileName = @"SearchExpandDict.txt";
 }
 
 - (BOOL)addSearchInfo:(NSString *)addSearchInfo addWords:(NSDictionary *)addWords {
-    // The parameter's method-type encoding is @"NSDictionary", yet the binary feeds it straight to
-    // arrayWithArray:, so it is used as a word array here.
+    // The encoding says NSDictionary, yet the binary feeds it straight to arrayWithArray:.
     NSMutableArray *words = [NSMutableArray arrayWithArray:(NSArray *)addWords];
     id existing = self.expandDict[addSearchInfo];
     if (existing != nil) {

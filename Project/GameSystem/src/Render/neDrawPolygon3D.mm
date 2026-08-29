@@ -14,59 +14,47 @@ namespace ne {
 
 namespace {
 
-// The scale mapping a normalised [0, 1] UV coordinate to the signed 16-bit fixed-point stored in
-// the vertex buffer (@ghidraAddress 0x2eed04 for U, 0x2eed08 for V).
+// @ghidraAddress 0x2eed04, 0x2eed08
 constexpr float kUvFixedPointScale = 32767.0f;
 
-// The sentinel stored in an unset per-vertex attribute offset.
 constexpr int kUnsetOffset = -1;
 
-// The default texture-sampler parameters (min filter, mag filter, s wrap, t wrap) the constructor
-// seeds (@ghidraAddress 0x2eecf0).
+// Min filter, mag filter, s wrap, t wrap.
+// @ghidraAddress 0x2eecf0
 constexpr int kDefaultTexParams[] = {0, 0, 7, 7};
 
-// The interleaved byte size of a 3D vertex position (three floats).
 constexpr unsigned int kPositionStride = 0xc;
 
-// The divisor normalising an 8-bit colour channel to the [0, 1] alpha weight (@ghidraAddress
-// 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kColorChannelMax = 255.0f;
 
-// The minimum draw index count below which the mesh is skipped (fewer than one triangle).
 constexpr int kMinDrawIndexCount = 2;
 
-// The number of components in a 3D vertex position and the number of sampler parameters re-applied
-// to a bound texture each draw.
 constexpr int kPositionComponentCount = 3;
 constexpr int kTextureParamCount = 4;
 
-// The neIGLES render-capability indices the pass touches by name; every capability from
-// kEnableAlphaTest + 1 through kEnableStateResetMax is force-disabled by the reset loop.
 enum {
-    kEnableAlphaTest = 0,        // GL_ALPHA_TEST: disabled.
-    kEnableBlend = 1,            // GL_BLEND: enabled for the draw.
-    kEnableStateResetMax = 0x21, // The last general capability cleared by the reset loop.
-    kEnableTexture2d = 0x22,     // GL_TEXTURE_2D: on only when the mesh has a texture.
-    kEnableMatrixPalette = 0x23, // GL_MATRIX_PALETTE_OES: on only for a skinned mesh.
+    kEnableAlphaTest = 0,
+    kEnableBlend = 1,
+    kEnableStateResetMax = 0x21,
+    kEnableTexture2d = 0x22,
+    kEnableMatrixPalette = 0x23,
 };
 
-// The neIGLES vertex-array client-state indices the pass toggles.
 enum {
-    kClientColor = 0,       // The colour array.
-    kClientMatrixIndex = 1, // The palette matrix-index array.
-    kClientNormal = 2,      // The normal array (always off here).
-    kClientTexCoord = 4,    // The texture-coordinate array.
-    kClientVertex = 5,      // The position array.
-    kClientWeight = 6,      // The skinning weight array.
+    kClientColor = 0,
+    kClientMatrixIndex = 1,
+    kClientNormal = 2,
+    kClientTexCoord = 4,
+    kClientVertex = 5,
+    kClientWeight = 6,
 };
 
-// The neIGLES matrix modes used: the model-view matrix and the per-instance palette matrix.
 enum {
     kMatrixModeModelView = 0,
     kMatrixModePalette = 3,
 };
 
-// The neIGLES blend factors and the mesh blend modes selecting the destination factor.
 enum {
     kBlendOne = 1,
     kBlendOneMinusSrcAlpha = 5,
@@ -85,12 +73,10 @@ C_DRAW_POLYGON_3D::C_DRAW_POLYGON_3D(unsigned int nDrawMode,
                                      bool bVertexBufferExternal,
                                      unsigned int nIndexCount,
                                      bool bIndexBufferExternal) {
-    // The base C_RENDER constructor and the derived vtable are installed by the compiler.
     m_nDrawMode = nDrawMode;
     m_nVertexFormat = nVertexFormat;
     m_nVertexCount = nVertexCount;
     m_nVertexStride = 0;
-    // The per-vertex attribute offsets start unset; the buffer allocator derives the real ones.
     m_nPositionOffset = kUnsetOffset;
     m_nUvOffset = kUnsetOffset;
     m_nColorOffset = kUnsetOffset;

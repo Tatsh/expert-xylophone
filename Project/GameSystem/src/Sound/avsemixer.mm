@@ -1,11 +1,3 @@
-//
-//  avsemixer.mm
-//  REFLEC BEAT plus
-//
-//  The AVFoundation sound-effect voice mixer (AVSeMixer). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "avsemixer.h"
 
 #import "AVBus.h"
@@ -16,7 +8,6 @@ constexpr unsigned int kBusHandleIdMask = 0xffff;
 constexpr int kBusHandleIndexShift = 16;
 // The mixer normalises an integer 0..127 volume to the 0..1 gain the voices take.
 constexpr float kVolumeScale = 127.0f;
-// FindFreeBusIndex and IsBusFree treat any status other than "playing" as reusable.
 constexpr int kBusStatusPlaying = AVBusStatusPlaying;
 } // namespace
 
@@ -51,7 +42,6 @@ AVBus *AVSeMixer::BusForHandle(unsigned int dwHandle) {
         return nil;
     }
     AVBus *pBus = m_pBuses[nIndex];
-    // The handle only resolves when the voice still holds the id it was acquired with.
     if ([pBus currentID] != (dwHandle & kBusHandleIdMask)) {
         return nil;
     }
@@ -141,9 +131,7 @@ bool AVSeMixer::SetBusVolumeByHandle(unsigned int dwHandle, int nVolume) {
 
 /** @ghidraAddress 0x47d5c */
 void AVSeMixer::SuspendAllBuses() {
-    // The binary loops m_nVoiceCount times but allocates a fresh throwaway AVBus each iteration and
-    // pauses that, rather than pausing the pooled voices — reproduced faithfully. (A newly created
-    // voice begins paused, so this is effectively a no-op with an allocation per voice.)
+    // The binary pauses a freshly allocated throwaway AVBus each iteration, not the pooled voices.
     for (int nVoice = 0; nVoice < m_nVoiceCount; ++nVoice) {
         AVBus *pBus = [[AVBus alloc] init];
         [pBus pause];
@@ -152,8 +140,7 @@ void AVSeMixer::SuspendAllBuses() {
 
 /** @ghidraAddress 0x47e08 */
 void AVSeMixer::ResumeAllBuses() {
-    // As with SuspendAllBuses, the binary allocates a throwaway AVBus per voice and un-pauses it
-    // rather than touching the pooled voices — reproduced faithfully.
+    // As in SuspendAllBuses, the binary un-pauses a throwaway AVBus, not the pooled voices.
     for (int nVoice = 0; nVoice < m_nVoiceCount; ++nVoice) {
         AVBus *pBus = [[AVBus alloc] init];
         [pBus offPause];

@@ -1,11 +1,3 @@
-//
-//  linear_tween.cpp
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458. The shared five-float linear tween.
-//  Pure C++.
-//
-
 #include "linear_tween.h"
 
 void LinearTween::Advance(float flDelta) {

@@ -1,11 +1,3 @@
-//
-//  note_result_layer.mm
-//  REFLEC BEAT plus
-//
-//  The note-result effect layer (NoteResultLayer). Reconstructed from Ghidra project rb458, program
-//  rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "note_result_layer.h"
 
 #include <cassert>
@@ -20,66 +12,48 @@
 #include "neTexture.h"
 #include "sprite_uv_table.h"
 
-// The process-wide note-result effect layer, created lazily by shared().
 static NoteResultLayer *g_pNoteResultLayer = nullptr; // @ghidraAddress 0x3df238
 
 namespace {
 
-// The layer's initial animation state and its default per-quad scale.
 constexpr int kInitialState = 1;
 constexpr float kInitialScale = 1.0f;
 
-// The gm_parts2 atlas the star and digit sprites draw from.
 constexpr const char *kAtlasTextureName = "00_texture/gm_parts2";
-// The star instancer's sprite capacity.
 constexpr unsigned int kSpriteCapacity = 0x40;
-// The base sprite size on the pad and (halved) on the phone.
 constexpr float kBaseSizePad = 1.0f;
 constexpr float kBaseSizePhone = 0.5f;
 
-// The star-quad layout: twelve quads in four vertical rows of three columns each.
 constexpr int kRowCount = 4;
 constexpr int kColumnCount = 3;
-// The half-scale applied to the normalised column and slope when placing a quad.
 constexpr float kLayoutHalf = 0.5f;
-// The normalised x columns each row spans: the near rows use the narrower spread, the far rows the
-// wider one.
 constexpr float kColumnsNear[kColumnCount] = {-0.5f, 0.0f, 0.5f};
 constexpr float kColumnsFar[kColumnCount] = {-0.8f, 0.0f, 0.8f};
-// The fixed y base each row is offset by (@ghidraAddress 0x30f850 = 115.2, 0x2ef180 = 96.0,
-// 0x30f848 = -115.2, 0x30f844 = -96.0).
+// @ghidraAddress 0x30f850 = 115.2, 0x2ef180 = 96.0, 0x30f848 = -115.2, 0x30f844 = -96.0
 constexpr float kRowBaseTop = 115.2f;
 constexpr float kRowBaseUpperMid = 96.0f;
 constexpr float kRowBaseLowerMid = -115.2f;
 constexpr float kRowBaseBottom = -96.0f;
 
-// The maximum number of digits a quad's numeric label can show.
 constexpr int kMaxDigits = 5;
 constexpr int kDigitBase = 10;
-// The atlas-record index of digit glyph zero (digits follow the seven star-frame records).
+// Digit glyphs follow the seven star-frame records.
 constexpr int kDigitRecordBase = 7;
 
-// The per-frame divisor that animates the kind-zero star through its four frames.
 constexpr float kFrameCycleDivisor = 33.3333321f; // @ghidraAddress 0x2fee10
-// The scale converting the per-quad scale into the sprite alpha byte.
-constexpr float kAlphaScale = 255.0f; // @ghidraAddress 0x2eed00
-// A quad's lifetime, past which it deactivates.
-constexpr float kQuadLifetime = 1000.0f; // @ghidraAddress 0x2f8540
-// The number of animation frames the kind-zero (spinning) star cycles through.
+constexpr float kAlphaScale = 255.0f;             // @ghidraAddress 0x2eed00
+constexpr float kQuadLifetime = 1000.0f;          // @ghidraAddress 0x2f8540
 constexpr int kSpinFrameCount = 4;
 
-// The star animation frame chosen for each quad kind.
 constexpr int kFrameKindTwo = 5;
 constexpr int kFrameKindOne = 4;
 constexpr int kFrameKindOther = 6;
 
-// The single-player game type: on it, the left side's labels lay out mirrored.
+// In the single-player game type the left side's labels lay out mirrored.
 constexpr int kGameTypeSinglePlayer = 1;
 
-// The digit-glyph advance is ten pixels per base-size unit, laid out towards the mirrored side.
 constexpr float kDigitAdvance = 10.0f;
 
-// The maximum value of an opaque colour channel.
 constexpr unsigned int kColorMax = 255;
 
 } // namespace
@@ -128,7 +102,6 @@ void NoteResultLayer::SetScale(float flValue, int nWhich) {
     }
 }
 
-// The pad star-glyph layout table: the seven star-frame records followed by the ten digit glyphs.
 // @ghidraAddress 0x30f858
 const StarSpriteDescriptor g_aStarGlyphTablePad[] = {
     {{29.0f, 12.0f}, {58.0f, 24.0f}, 201},
@@ -150,7 +123,6 @@ const StarSpriteDescriptor g_aStarGlyphTablePad[] = {
     {{0.0f, 8.0f}, {12.0f, 16.0f}, 217},
 };
 
-// The phone star-glyph layout table: the seven star-frame records followed by the ten digit glyphs.
 // @ghidraAddress 0x30f9ac
 const StarSpriteDescriptor g_aStarGlyphTablePhone[] = {
     {{32.0f, 13.0f}, {64.0f, 26.0f}, 330},
@@ -174,9 +146,6 @@ const StarSpriteDescriptor g_aStarGlyphTablePhone[] = {
 
 /** @ghidraAddress 0x1893f0 */
 void NoteResultLayer::BuildQuadPositions() {
-    // One row's layout: the three normalised x columns, the runtime lane slope its y is scaled by,
-    // and the fixed y base it is offset by. The lane slopes are seeded by the play-field layout
-    // pass.
     struct RowLayout {
         const float *pColumns;
         float flSlope;
@@ -206,7 +175,6 @@ void NoteResultLayer::CreateSpriteInstancer() {
         return;
     }
 
-    // The pad draws the stars at full size; the phone halves them.
     m_flBaseSize = IsPad() ? kBaseSizePad : kBaseSizePhone;
 
     BuildQuadPositions();
@@ -238,7 +206,6 @@ void NoteResultLayer::EmitStarSprite(float flSize,
     m_pSprites->SetSpriteSize(m_nSpriteCount, descriptor.size);
     m_pSprites->SetSpriteUvOrigin(m_nSpriteCount, S_VECTOR2{uv.flOriginU, uv.flOriginV});
     m_pSprites->SetSpriteUvSize(m_nSpriteCount, S_VECTOR2{uv.flSizeU, uv.flSizeV});
-    // A flipped sprite is drawn rotated a half-turn.
     m_pSprites->SetSpriteRotation(m_nSpriteCount, bFlip ? static_cast<float>(M_PI) : 0.0f);
     m_pSprites->SetSpriteScale(m_nSpriteCount, flSize, flSize);
     m_pSprites->SetSpriteColor(m_nSpriteCount, kColorMax, kColorMax, kColorMax, nAlpha);
@@ -260,7 +227,6 @@ void NoteResultLayer::Update(float flDeltaTime) {
             continue;
         }
 
-        // Advance the quad's timer and retire it once it has run past its lifetime.
         float flTimer = quad.flTimer + flDeltaTime;
         if (flTimer <= 0.0f) {
             flTimer = 0.0f;
@@ -271,12 +237,10 @@ void NoteResultLayer::Update(float flDeltaTime) {
             continue;
         }
 
-        // The first six quads (the near rows) belong to side 0; the mirroring only applies to a
-        // single-player left-side label.
+        // The first half of the quads are the near rows, which belong to side 0.
         const bool bLeftGroup = nQuad < (kPositionCount / 2);
         const bool bMirror = nGameType == kGameTypeSinglePlayer && bLeftGroup;
 
-        // Project the quad's world position to the screen and scale both axes out of device pixels.
         float aProjected[] = {m_aQuadPos[nQuad].x, m_aQuadPos[nQuad].y, 0.0f, 1.0f};
         ProjectWorldToScreenCurrent(aProjected);
         const float flScreenScale = pGameSystem->GetScreenScale();
@@ -286,13 +250,9 @@ void NoteResultLayer::Update(float flDeltaTime) {
         const float flGroupScale = bLeftGroup ? m_flScaleA : m_flScaleB;
         const unsigned int nAlpha = static_cast<unsigned int>(flGroupScale * kAlphaScale);
 
-        // The star is shifted up or down from the projected y depending on which label side it sits
-        // on.
         const float flStarShift =
             bMirror ? m_flBaseSize * kDigitAdvance : m_flBaseSize * -kDigitAdvance;
 
-        // Choose the star animation frame from the quad kind: kinds one and two are fixed frames,
-        // kind zero spins through four frames on the timer, anything else uses the default frame.
         int nFrame;
         if (quad.nJudge == 2) {
             nFrame = kFrameKindTwo;
@@ -310,8 +270,6 @@ void NoteResultLayer::Update(float flDeltaTime) {
         S_VECTOR2 starPos{flScreenX, flScreenY + flStarShift};
         EmitStarSprite(m_flBaseSize, starPos, bMirror, nAlpha, pTable[nFrame]);
 
-        // Decode the quad's numeric label into up to five digits, least-significant first, tracking
-        // how many are significant.
         int aDigits[kMaxDigits] = {};
         int nDigitCount = 0;
         int nRemaining = quad.nNumber;
@@ -330,7 +288,6 @@ void NoteResultLayer::Update(float flDeltaTime) {
             flTotalWidth += m_flBaseSize + m_flBaseSize + glyph.size.x * m_flBaseSize;
         }
 
-        // The digit run sits above or below the label and advances towards the mirrored side.
         float flDigitY;
         float flDigitOffset;
         if (bMirror) {
@@ -355,6 +312,5 @@ void NoteResultLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Publish the live sprite count to the instancer.
     m_pSprites->SetSpriteCount(m_nSpriteCount);
 }

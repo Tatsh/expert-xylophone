@@ -10,39 +10,33 @@
 #import "RecommendCore.h"
 #import "RecommendWebAPI.h"
 
-// Applilink error codes reported through appListFailLoadWithError:.
 enum {
-    RecommendAdWebViewErrorCodeSdkUnavailable = 0x401,     // SDK not usable on this environment.
-    RecommendAdWebViewErrorCodeAdTrackingDisabled = 0x404, // Advertising tracking is disabled.
-    RecommendAdWebViewErrorCodeNoAd = 0x40a,               // No recommend advert is available.
-    RecommendAdWebViewErrorCodeLoadCancelled = 0x40b,      // The advert load was cancelled.
+    RecommendAdWebViewErrorCodeSdkUnavailable = 0x401,
+    RecommendAdWebViewErrorCodeAdTrackingDisabled = 0x404,
+    RecommendAdWebViewErrorCodeNoAd = 0x40a,
+    RecommendAdWebViewErrorCodeLoadCancelled = 0x40b,
 };
 
-// Banner-detail status returned by RecommendWebAPI getBannerDetailWithAdModel:callback:.
 static const int RecommendAdWebViewBannerStatusHasAd = 1;
 
-// Web-view load status stored in webViewStatus.
 enum {
     RecommendAdWebViewStatusIdle = 0,
     RecommendAdWebViewStatusStarted = 1,
     RecommendAdWebViewStatusFinished = 2,
 };
 
-// Advert models whose banner enables free scrolling rather than a fixed advert area.
 enum {
     RecommendAdWebViewAdModelScrollableBanner = 1,
     RecommendAdWebViewAdModelScrollableInterstitial = 4,
 };
 
-// UIWebView cancellation and policy-change error codes ignored during the advert load.
 enum {
-    RecommendAdWebViewWebKitFrameLoadInterrupted = 102,     // 0x66
-    RecommendAdWebViewWebKitPlugInWillHandleLoad = 204,     // 0xcc
+    RecommendAdWebViewWebKitFrameLoadInterrupted = 102,
+    RecommendAdWebViewWebKitPlugInWillHandleLoad = 204,
     RecommendAdWebViewURLErrorCancelled = -999,             // NSURLErrorCancelled
     RecommendAdWebViewURLErrorFrameLoadInterrupted = -1009, // NSURLErrorNotConnectedToInternet
 };
 
-// Web-view request timeout, in seconds, for advert loads.
 static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
 
 @implementation RecommendAdWebView
@@ -200,8 +194,6 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
                                                             RecommendAdWebViewErrorCodeNoAd]];
                                             return;
                                         }
-                                        // Continues into the RecommendCore advert-list cache
-                                        // step, which builds and loads the advert web request.
                                         [[RecommendCore sharedInstance]
                                             appliListCacheWithCallBack:^(id list,
                                                                          NSError *cacheError) {

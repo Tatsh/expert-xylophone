@@ -1,20 +1,3 @@
-//
-//  RBCustomSelectCollectionView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCustomSelectCollectionView).
-//  Verified against the arm64 disassembly. This is an Objective-C++ file because -setupView,
-//  -sliderChanged:, -reloadData, and the tap handlers reach the C++ engine singletons
-//  (ShotSoundManager, SoundEffectManager, LevelTables, GameSystem, and the play timer).
-//
-//  The class is a UIView hosting one customize category. Most categories build a paged
-//  RBCollectionView of RBCustomSelectCollectionCell items with a UIPageControl; the note (5) and
-//  gauge (6) categories instead lay out fixed image buttons; and the shot (1), explosion (2), and
-//  timing (8) categories add a slider control. -reloadData builds the item catalogue for the
-//  current theme from either the level-threshold takeover tables (Classic theme) or the
-//  experience-data unlock tables (the two other themes).
-//
-
 #import "RBCustomSelectCollectionView.h"
 
 #import "RBBGMManager.h"
@@ -40,40 +23,28 @@
 #import "shotsoundmanager.h"
 #import "soundeffectmanager.h"
 
-// The player theme identifiers -reloadData branches on.
 enum {
     kThemaClassic = 0,
     kThemaLimelight = 1,
     kThemaColette = 2,
 };
 
-// The tag stamped on the highlight overlay image view that each button embeds; -viewWithTag: finds
-// it again when refreshing the highlight state.
 constexpr NSInteger kHighlightOverlayTag = 10000;
 
-// The themed sound-effect slot played when a note-size or gauge-style button changes the selection.
 constexpr int kSoundEffectDecide = 1;
 
-// The mixer channel a shot-sound audition plays on.
 constexpr unsigned long kShotPreviewChannel = 1;
 
-// The fade/preview time passed to RBBGMManager when auditioning a newly selected background-music
-// item. The binary reads this from g_flFlashTimingControlPointX2 (0x2f856c = 0.8).
 // @ghidraAddress 0x2f856c (g_flFlashTimingControlPointX2)
 constexpr float kBgmPreviewTime = 0.8f;
 
-// The control tags used to route -sliderChanged: to the setting each slider edits. They match the
-// slider's RBCustomizeItemType.
 constexpr NSInteger kSliderTagShotVolume = RBCustomizeItemTypeShot;
 constexpr NSInteger kSliderTagEffectSize = RBCustomizeItemTypeExplosion;
 constexpr NSInteger kSliderTagTiming = RBCustomizeItemTypeTiming;
 
-// The note-skin category lays out three fixed size buttons, and the gauge category two fixed style
-// buttons.
 constexpr int kNoteSizeButtonCount = 3;
 constexpr int kGaugeStyleButtonCount = 2;
 
-// The framed background image name for each category, indexed by RBCustomizeItemType.
 // @ghidraAddress 0x35b158 (g_pFrameBackgroundImageNames)
 static NSString *const kFrameBackgroundImageNames[] = {
     @"04_customize/cus_fram_bgm",
@@ -87,80 +58,51 @@ static NSString *const kFrameBackgroundImageNames[] = {
     @"04_customize/cus_fram_time",
 };
 
-// The note-size button highlight overlay image.
 static NSString *const kSelectionOverlayImageName = @"04_customize/cus_sel_2";
-// The gauge-style button images (unselected style 0, selected style 1) and its highlight overlay.
 static NSString *const kGaugeStyleButtonImageName0 = @"04_customize/cus_gs_bt_0";
 static NSString *const kGaugeStyleButtonImageName1 = @"04_customize/cus_gs_bt_1";
 static NSString *const kGaugeStyleOverlayImageName = @"04_customize/cus_gs_bt_eff";
-// The note-item button image name format (the item id fills the placeholder).
 static NSString *const kNoteItemImageNameFormat = @"04_customize/cus_iobj_%@";
 
-// The framed background image stretches vertically below its top cap: the top inset is the
-// idiom-dependent cap and the bottom inset is the rest of the image
-// (UIEdgeInsetsMake(capInset, 0, imageHeight - capInset, 0)). The cap also serves as the top edge
-// of the content laid out inside the frame. The wide value is read from the pool at 0x301158.
 constexpr CGFloat kBackgroundCapInsetWide = 36.0; // @ghidraAddress 0x301158
 constexpr CGFloat kBackgroundCapInsetNarrow = 25.0;
-// The background view centres horizontally within the grid.
 constexpr CGFloat kCenterFactor = 0.5;
 
-// The paged collection's height, indexed by RBCustomizeItemType, by device idiom. The shot
-// category is taller to make room for the volume slider; the note category is slightly taller
-// than the default; the gauge and timing rows are short fixed heights. Mirrors the stack table
-// -setupView builds at 0x1558c8 from the pool floats at 0x30be70/0x2f855c/0x301f78/0x2eedc8/
-// 0x30be74.
 constexpr float kCollectionHeightsWide[] = {
     80.0f, 150.0f, 80.0f, 80.0f, 80.0f, 90.0f, 51.0f, 0.0f, 51.0f};
 constexpr float kCollectionHeightsNarrow[] = {
     72.0f, 200.0f, 72.0f, 72.0f, 72.0f, 72.0f, 51.0f, 0.0f, 51.0f};
 
-// The RBMusicGridLayout item edge length for the paged categories.
 constexpr CGFloat kGridItemSizeWide = 68.0;   // @ghidraAddress 0x2eea00
 constexpr CGFloat kGridItemSizeNarrow = 62.0; // @ghidraAddress 0x2eea20
-// The RBMusicGridLayout page inset: a idiom-dependent top and bottom inset and fixed left and
-// right insets.
 constexpr CGFloat kGridPageInsetSideWide = 5.0;
 constexpr CGFloat kGridPageInsetSideNarrow = 3.0;
 constexpr CGFloat kGridPageInsetHorizontal = 8.0;
 
-// The gauge-style buttons are inset from the button area's two ends by a idiom-dependent amount:
-// the left button sits the inset right of the area's left edge, the right button the inset left of
-// the area's right edge.
 constexpr CGFloat kGaugeButtonEndInsetWide = 66.0;   // @ghidraAddress 0x30be60
 constexpr CGFloat kGaugeButtonEndInsetNarrow = 33.0; // @ghidraAddress 0x2eeeb8
-// The gauge buttons' top offset: on the wide layout a theme-indexed pair (default, Colette) read
-// from the table at 0x30be80; a fixed offset on the narrow layout.
 constexpr CGFloat kGaugeButtonTopWideOther = 45.0;   // @ghidraAddress 0x30be80
 constexpr CGFloat kGaugeButtonTopWideColette = 59.0; // @ghidraAddress 0x30be88
 constexpr CGFloat kGaugeButtonTopNarrow = 22.0;
-// The gauge-button area and the paged collection are both centred against the framed background's
-// width less this shave.
 constexpr CGFloat kFrameContentWidthShave = 2.0;
 
-// The timing slider sits a idiom-dependent margin below the vertical centre.
 constexpr CGFloat kTimingSliderMarginWide = 8.0;
 constexpr CGFloat kTimingSliderMarginNarrow = 4.0;
 
-// The page control row's fixed height.
 constexpr CGFloat kPageControlHeight = 20.0;
 
-// The page control's transform scale and the per-theme indicator tints (white levels). On the
-// Classic theme the binary never writes the page-indicator tint register, so the dots inherit the
-// 0.5 left over from the frame maths; keep that value to match.
 constexpr CGFloat kPageControlScale = 0.8; // @ghidraAddress 0x2eea40
 constexpr CGFloat kCurrentPageTintClassic = 1.0;
+// The binary never writes the Classic page-indicator tint, so its dots keep the 0.5 the frame
+// maths left in the register.
 constexpr CGFloat kPageIndicatorTintClassic = 0.5;
 constexpr CGFloat kCurrentPageTintThemed = 0.5;
 constexpr CGFloat kPageIndicatorTintThemed = 0.667; // @ghidraAddress 0x2eea48
 
-// The page control hides when the content spans fewer than this many pages.
 constexpr long kPageControlMinPageCount = 2;
 
 @interface RBCustomSelectCollectionView ()
 
-// The backing store for the customize category; the binary keeps an int ivar with explicit
-// accessors rather than a declared property.
 @property(nonatomic, assign) RBCustomizeItemType customizeType;
 
 @end
@@ -178,15 +120,13 @@ constexpr long kPageControlMinPageCount = 2;
     return self;
 }
 
-// The binary's -.cxx_destruct (0x15a050) only nils the four object ivars; under ARC the compiler
-// generates that, so no override is reconstructed.
+// The binary's -.cxx_destruct only nils the object ivars, which ARC generates.
 
 #pragma mark Setup
 
 - (void)setupView {
     BOOL wideFont = IsPad();
 
-    // The framed background stretches below its idiom-dependent top cap and centres horizontally.
     UIImage *originalImage = [UIImage imageWithName:kFrameBackgroundImageNames[self.customizeType]];
     CGFloat capInset = wideFont ? kBackgroundCapInsetWide : kBackgroundCapInsetNarrow;
     UIImage *frameImage = [originalImage

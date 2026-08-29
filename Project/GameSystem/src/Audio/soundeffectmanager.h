@@ -98,11 +98,9 @@ public:
     static constexpr int kSharedSlotCount = 36;
 
 private:
-    // Constructs the manager: clears every loaded flag and marks every resource id unloaded.
     // @ghidraAddress 0x1cc4ac
     SoundEffectManager();
 
-    // Loads one themed sound effect from the bundle into a slot (unless already loaded).
     // @ghidraAddress 0x1cc548
     void LoadThemedSoundEffect(int theme, int slot);
 

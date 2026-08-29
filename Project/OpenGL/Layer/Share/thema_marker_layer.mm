@@ -12,22 +12,20 @@
 #include "neTexture.h"
 #import "s_vector2.h"
 
-// The process-wide theme-marker layer, created lazily by shared().
 static ThemaMarkerLayer *g_pThemaMarkerLayer = nullptr; // @ghidraAddress 0x3deed0
 
 namespace {
 
-// The atlas the markers draw from (@ghidraAddress 0x3ceaa0).
+// @ghidraAddress 0x3ceaa0
 constexpr const char *kTextureName = "00_texture/gm_parts1";
 
-// Which of the two batches each marker group draws into (@ghidraAddress 0x30de28).
+// @ghidraAddress 0x30de28
 constexpr int kMarkerBatch[] = {0, 0, 1, 1, 1, 1};
 
-// How many sprites each marker group emits (@ghidraAddress 0x30de40).
+// @ghidraAddress 0x30de40
 constexpr int kMarkerSpriteCount[] = {1, 1, 1, 1, 4, 4};
 
-// Per-marker layout (@ghidraAddress 0x30de58): the anchor (half the size), the size, and the index
-// into the UV table below.
+// @ghidraAddress 0x30de58
 struct MarkerLayout {
     float flAnchorX;
     float flAnchorY;
@@ -44,9 +42,8 @@ constexpr MarkerLayout kMarkerLayout[] = {
     {248.0f, 34.0f, 496.0f, 124.0f, 100},
 };
 
-// The UV table (@ghidraAddress 0x2ef668, entry = base + nUvIndex * 0x10): the UV origin and UV size
-// mapped to each marker. Only the six entries the markers use (indices 95 through 100) are listed,
-// keyed by their table index.
+// Only the six entries the markers use (indices 95 through 100) are listed, keyed by table index.
+// @ghidraAddress 0x2ef668
 struct UvEntry {
     int nIndex;
     float flOriginU;
@@ -63,23 +60,17 @@ constexpr UvEntry kUvTable[] = {
     {100, 0.48828f, 0.87695f, 0.48438f, 0.12109f},
 };
 
-// The marker count for the Classic theme versus the others.
 constexpr int kClassicMarkerCount = 6;
 constexpr int kOtherMarkerCount = 4;
 constexpr int kClassicThema = 0;
 
-// The batch that draws in 3D (its vertex flag is set), and the additive-style vertex flag value.
 constexpr int k3dBatch = 1;
 
-// The bitmask of marker groups (0, 2, and 4) whose Y is mirrored by the play side; the others take
-// the opposite mirror selector.
+// Groups 0, 2, and 4 are the ones mirrored by the play side.
 constexpr unsigned int kSideMirroredGroupMask = 0x15;
-// The first marker group of the tall band (groups 4 and 5, double-height) and of the mid band
-// (groups 2 and 3, single-height); groups 0 and 1 set only the Y position.
 constexpr int kTallBandFirstGroup = 4;
 constexpr int kMidBandFirstGroup = 2;
 constexpr int kBandGroupSpan = 2;
-// The two mirrored Y positions, indexed by the side selector.
 constexpr int kMirrorSlotCount = 2;
 
 const UvEntry &LookupUv(int nUvIndex) {
@@ -91,8 +82,6 @@ const UvEntry &LookupUv(int nUvIndex) {
     return kUvTable[0];
 }
 
-// The danger/warning brightness maps a normalised level onto [kDangerBrightnessBase,
-// kDangerBrightnessBase + kDangerBrightnessRange] = [0.3, 1.0].
 constexpr float kDangerBrightnessRange = 0.7f;
 constexpr float kDangerBrightnessBase = 0.3f;
 
@@ -104,14 +93,10 @@ ThemaMarkerLayer::ThemaMarkerLayer() {
     m_flScaleY = 1.0f;
     m_flDangerBrightness = 1.0f;
 
-    // The binary seeds the whole per-group scale block to 1.0 with _memset_pattern16 at 0x17fc74,
-    // from the 16-byte pattern at 0x30de10 over the 24 bytes at this + 0x70.
     for (float &flTransform : m_aTransform) {
         flTransform = 1.0f;
     }
 
-    // Assign each marker group a non-overlapping index range within its batch, accumulating each
-    // batch's total sprite capacity as it goes.
     for (int nMarker = 0; nMarker < kMarkerLayoutCount; ++nMarker) {
         const int nBatch = kMarkerBatch[nMarker];
         m_aMarkerBaseIndex[nMarker] = m_aBatchCapacity[nBatch];
@@ -122,7 +107,6 @@ ThemaMarkerLayer::ThemaMarkerLayer() {
 /** @ghidraAddress 0x17fccc */
 ThemaMarkerLayer *ThemaMarkerLayer::shared() {
     if (g_pThemaMarkerLayer == nullptr) {
-        // The binary allocates the raw 0x98-byte object and runs the constructor.
         g_pThemaMarkerLayer = new ThemaMarkerLayer();
     }
     return g_pThemaMarkerLayer;
@@ -134,19 +118,15 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
         return;
     }
 
-    // The Classic theme shows six marker groups; the others show four.
     const int nThema = [RBUserSettingData.sharedInstance thema];
     m_nMarkerCount = nThema == kClassicThema ? kClassicMarkerCount : kOtherMarkerCount;
 
-    // The markers hang beneath the shared background layer's render object rather than the global
-    // scene root.
+    // The markers hang beneath the background layer's render object, not the global scene root.
     BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
     ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
 
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTextureName);
 
-    // Build the two sprite batches, each sized to hold all the marker groups routed to it; mark the
-    // 3D batch's vertex flag.
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
         ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_aBatchCapacity[nBatch]));
@@ -161,8 +141,6 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
         }
     }
 
-    // Emit each marker group's sprites into its batch: the anchor and size come from the layout
-    // table, the UV origin and size from the UV table, all at white with zero alpha.
     for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
         const MarkerLayout &layout = kMarkerLayout[nMarker];
         const UvEntry &uv = LookupUv(layout.nUvIndex);
@@ -186,11 +164,9 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
 void ThemaMarkerLayer::SetupMarkers() {
     RefreshThema();
 
-    // The Classic theme shows six marker groups; the others show four.
     const int nThema = [RBUserSettingData.sharedInstance thema];
     m_nMarkerCount = nThema == kClassicThema ? kClassicMarkerCount : kOtherMarkerCount;
 
-    // Reload the atlas and re-bind it to both existing batches.
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTextureName);
     for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         if (pSprite != nullptr) {
@@ -198,8 +174,6 @@ void ThemaMarkerLayer::SetupMarkers() {
         }
     }
 
-    // Re-emit each marker group's sprites: the anchor and size from the layout table, the UV origin
-    // and size from the UV table, all white with zero alpha and a zero position.
     for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
         const MarkerLayout &layout = kMarkerLayout[nMarker];
         const UvEntry &uv = LookupUv(layout.nUvIndex);
@@ -227,7 +201,6 @@ void ThemaMarkerLayer::StartFadeOut(float flDuration) {
     m_fadeChannel.SetEnd(0.0f);
     m_fadeChannel.SetDuration(flDuration);
     m_fadeChannel.SetElapsed(0.0f);
-    // A non-positive duration snaps straight to transparent and marks the colour dirty.
     if (flDuration <= 0.0f) {
         m_fadeChannel.SetCurrent(0.0f);
         m_bFadeColorDirty = true;
@@ -241,7 +214,6 @@ void ThemaMarkerLayer::StartFadeIn(float flDuration, float flMarker) {
     m_fadeChannel.SetEnd(1.0f);
     m_fadeChannel.SetDuration(flDuration);
     m_fadeChannel.SetElapsed(0.0f);
-    // A non-positive duration snaps straight to opaque and marks the colour dirty.
     if (flDuration <= 0.0f) {
         m_fadeChannel.SetCurrent(1.0f);
         m_bFadeColorDirty = true;
@@ -261,8 +233,6 @@ void ThemaMarkerLayer::RenderThemaMarkerFrame() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const int nPlaySide = pGameSystem->GetPlayColor();
 
-    // The two mirrored Y positions: the near-lane slope (and its negative) scaled by the
-    // sheet-inset half-height.
     const float flInsetHalfY = pGameSystem->GetSheetInsetHalfY();
     const float aMirroredY[kMirrorSlotCount] = {g_flPlayfieldNearLaneSlope * flInsetHalfY,
                                                 g_flPlayfieldNearLaneSlopeNeg * flInsetHalfY};
@@ -274,7 +244,6 @@ void ThemaMarkerLayer::RenderThemaMarkerFrame() {
         const int nBaseIndex = m_aMarkerBaseIndex[nGroup];
         ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[kMarkerBatch[nGroup]];
 
-        // Groups 0, 2, and 4 mirror by the play side; the others take the opposite selector.
         float flY = 0.0f;
         if (nGroup < static_cast<int>(kMarkerLayoutCount)) {
             const bool bSideMirrored = ((1u << nGroup) & kSideMirroredGroupMask) != 0;
@@ -285,9 +254,6 @@ void ThemaMarkerLayer::RenderThemaMarkerFrame() {
         for (int nSprite = 0; nSprite < kMarkerSpriteCount[nGroup]; ++nSprite) {
             const int nIndex = nBaseIndex + nSprite;
             pBatch->SetSpritePositionY(nIndex, flY);
-            // The tall band (groups 4, 5) is double-height with a bottom-centred anchor; the mid
-            // band (groups 2, 3) is single-height with a centred anchor; the top band (groups 0, 1)
-            // keeps its built size.
             if (nGroup - kTallBandFirstGroup < kBandGroupSpan &&
                 nGroup - kTallBandFirstGroup >= 0) {
                 pBatch->SetSpriteSize(nIndex, S_VECTOR2{flWidth, flRadius + flRadius});
@@ -302,8 +268,6 @@ void ThemaMarkerLayer::RenderThemaMarkerFrame() {
 }
 
 namespace {
-// The low-gauge danger fade-in ramp: it begins at 450 units and rises with a 130-unit slope,
-// capping at 550 for the top marker groups (0, 1) and at 580 for the band groups (2, 3).
 // @ghidraAddress 0x308dd8, 0x30dde8, 0x30ddec, 0x30ddf0, 0x3041a8
 constexpr float kDangerRampStart = 450.0f;
 constexpr float kDangerRampOffset = -450.0f;
@@ -311,17 +275,13 @@ constexpr float kDangerRampDivisor = 130.0f;
 constexpr float kDangerRampCapTop = 550.0f;
 constexpr float kDangerRampCapBand = 580.0f;
 
-// The band groups (2, 3) whose per-group alpha scale the ramp drives, versus the top groups (0, 1)
-// whose per-slot vertical scale it drives.
 constexpr int kDangerBandFirstGroup = 2;
 constexpr int kDangerBandGroupSpan = 2;
 constexpr int kDangerTopGroupCount = 2;
 
-// The wobble timer's cap (@ghidraAddress 0x30ddf8), its cosine phase offset (@ghidraAddress
-// 0x30de20 = -0.075) and scale (@ghidraAddress 0x2f85a0 = 2*PI folds in as the doubled phase), plus
-// the two X-offset amplitudes (22 and 27 pixels) and the half vertical scale.
+// @ghidraAddress 0x30ddf8, 0x30de20, 0x2f85a0
 constexpr float kWobbleTimerCap = 6000.0f;
-// The wrap the timer adds back once it passes the cap (@ghidraAddress 0x30ddf4).
+// @ghidraAddress 0x30ddf4
 constexpr float kWobbleTimerWrap = -6000.0f;
 constexpr double kWobblePhaseOffset = -0.075;
 const double kWobblePi = M_PI;
@@ -329,27 +289,21 @@ constexpr float kWobbleAmplitudeA = 22.0f;
 constexpr float kWobbleAmplitudeB = 27.0f;
 constexpr float kWobbleHalfScale = 0.5f;
 
-// The marker groups the wobble animates: 4 and 5 (i.e. group & ~1 == 4).
 constexpr int kWobbleGroupBase = 4;
 
-// The wobble base X positions of the four slots, cached once at load from a table
-// (@ghidraAddress 0x30de00 -> 0x3deee0).
+// @ghidraAddress 0x30de00 -> 0x3deee0
 constexpr float kWobbleBaseX[] = {206.0f, -205.0f, -90.0f, 101.0f};
 
-// The per-slot vertical scales the wobble writes (slots 0 and 1 are fixed; slots 2 and 3 take the
-// paired cosine).
 constexpr float kWobbleScaleY0 = 0.5f;
 } // namespace
 
 /** @ghidraAddress 0x18066c */
 void ThemaMarkerLayer::AnimateEffects(float flDelta) {
-    // The danger ramp advances its timer toward the band cap, then ramps each marker group's alpha.
     if (m_flDangerTimer < kDangerRampCapBand) {
         m_flDangerTimer = std::min(m_flDangerTimer + flDelta, kDangerRampCapBand);
         for (int nGroup = 0; nGroup < m_nMarkerCount; ++nGroup) {
             if (nGroup - kDangerBandFirstGroup >= 0 &&
                 nGroup - kDangerBandFirstGroup < kDangerBandGroupSpan) {
-                // Band groups store the ramp in their per-group alpha scale (capping at 580).
                 float flRamp;
                 if (m_flDangerTimer < kDangerRampStart) {
                     flRamp = 0.0f;
@@ -363,7 +317,6 @@ void ThemaMarkerLayer::AnimateEffects(float flDelta) {
                 }
                 m_aTransform[nGroup] = flRamp;
             } else if (nGroup < kDangerTopGroupCount) {
-                // Top groups ramp each slot's vertical scale directly (capping at 550).
                 ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[kMarkerBatch[nGroup]];
                 const int nBaseIndex = m_aMarkerBaseIndex[nGroup];
                 for (int nSprite = 0; nSprite < kMarkerSpriteCount[nGroup]; ++nSprite) {
@@ -381,14 +334,11 @@ void ThemaMarkerLayer::AnimateEffects(float flDelta) {
         }
     }
 
-    // The wobble advances its own timer, then sweeps groups 4 and 5's four slots on cosine curves.
-    // The binary wraps the timer rather than clamping it: once it passes the cap it adds the
-    // negated cap back, so the sweep loops instead of sticking at phase 1.0.
+    // The binary wraps the timer rather than clamping it, so the sweep loops instead of sticking.
     const float flWobbleAdvanced = m_flWobbleTimer + flDelta;
     m_flWobbleTimer =
         flWobbleAdvanced > kWobbleTimerCap ? flWobbleAdvanced + kWobbleTimerWrap : flWobbleAdvanced;
     const float flPhase = std::max(0.0f, std::min(m_flWobbleTimer / kWobbleTimerCap, 1.0f));
-    // The paired-slot phase (doubled) with and without the -0.075 offset.
     const float flCosOffset = static_cast<float>(
         std::cos((static_cast<double>(flPhase) + kWobblePhaseOffset) * 2.0 * kWobblePi));
     const float flCosPlain =
@@ -429,16 +379,14 @@ void ThemaMarkerLayer::AnimateEffects(float flDelta) {
 }
 
 namespace {
-// The full-alpha byte the per-slot modulation scales (@ghidraAddress 0x2eed00), and the extra dim
-// factor the band groups (2, 3) apply (@ghidraAddress 0x2f856c = 0.8).
+// @ghidraAddress 0x2eed00, 0x2f856c
 constexpr float kMarkerAlphaScale = 255.0f;
 constexpr float kBandDimFactor = 0.8f;
 } // namespace
 
 /** @ghidraAddress 0x1804a4 */
 void ThemaMarkerLayer::RefreshMarkerAlpha(float flDelta) {
-    // Advance the fade tween: it eases from its start to its end over its duration, but its elapsed
-    // baseline is offset by the active-marker value.
+    // The fade tween's elapsed baseline is offset by the active-marker value.
     const float flTarget = m_fadeChannel.GetDuration() + m_flActiveMarker;
     if (flTarget > m_fadeChannel.GetElapsed()) {
         const float flElapsed = std::min(m_fadeChannel.GetElapsed() + flDelta, flTarget);
@@ -459,8 +407,6 @@ void ThemaMarkerLayer::RefreshMarkerAlpha(float flDelta) {
     }
     m_bFadeColorDirty = false;
 
-    // Recompute every marker slot's alpha from the fade value, its per-group scale, and a
-    // group-specific modulation.
     for (int nGroup = 0; nGroup < m_nMarkerCount; ++nGroup) {
         ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[kMarkerBatch[nGroup]];
         const int nBaseIndex = m_aMarkerBaseIndex[nGroup];
@@ -482,8 +428,7 @@ void ThemaMarkerLayer::RefreshMarkerAlpha(float flDelta) {
                 flAlpha = flBase * m_flDangerBrightness * m_flScaleX * kBandDimFactor;
                 break;
             default:
-                // Groups 4 and 5 use the fade value times the Y scale, ignoring the per-group
-                // scale.
+                // Groups 4 and 5 ignore the per-group scale.
                 flAlpha = m_fadeChannel.GetCurrent() * kMarkerAlphaScale * m_flScaleY;
                 break;
             }

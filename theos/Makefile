@@ -1,22 +1,13 @@
 THEOS_MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 PROJECT_ROOT       := $(patsubst %/,%,$(dir $(THEOS_MAKEFILE_DIR)))
 
-# The CMake build names the app "REFLEC BEAT plus"; Theos variable prefixes cannot
-# contain spaces, so this project is ReflecBeatPlus here (see Resources/Info.plist).
 export ARCHS  = arm64 arm64e
 export TARGET = iphone:clang:latest:12.0
 
-# These mirror the CMake cache entries of the same names: the pieces of every secure API endpoint,
-# and Konami's Applilink SDK identifiers and per-environment base URLs. Each defaults to what the
-# shipped binary uses and reaches the sources as an RB_-prefixed macro (see Project/RBMacros.h), so
-# an unconfigured build is unchanged. Override on the command line, for example
-# `make -C theos API_HOST=my.server.example API_BASE_PATH=/cgi/`.
 API_SCHEME    ?= https
 API_HOST      ?= akx.s.konaminet.jp
 API_BASE_PATH ?= /akx/main/cgi/
 
-# The Applilink environment selector is "0" production, "1" staging, "2" and "3" sandbox, and
-# "4" development; each selects one of the base URLs below.
 APPLILINK_APP_ID          ?= 10
 APPLILINK_ENV             ?= 0
 APPLILINK_URL_PRODUCTION  ?= https://www.applilink.jp
@@ -34,9 +25,6 @@ API_DEFINES := -DRB_API_SCHEME='"$(API_SCHEME)"' \
                -DRB_APPLILINK_URL_DEVELOPMENT='"$(APPLILINK_URL_DEVELOPMENT)"' \
                -DRB_APPLILINK_URL_SANDBOX='"$(APPLILINK_URL_SANDBOX)"'
 
-# ENABLE_PATCHES mirrors the CMake option of the same name: it compiles in the preservation
-# patches guarded by #ifdef ENABLE_PATCHES. Off by default so a plain build matches the binary;
-# enable with `make -C theos ENABLE_PATCHES=1`.
 ENABLE_PATCHES ?= 0
 ifneq ($(ENABLE_PATCHES),0)
 PATCH_DEFINES := -DENABLE_PATCHES=1
@@ -44,9 +32,6 @@ else
 PATCH_DEFINES :=
 endif
 
-# SKIP_TUTORIAL mirrors the CMake option of the same name: it suppresses the first-run walkthroughs.
-# It only takes effect alongside ENABLE_PATCHES, because the gates it removes are guarded by both;
-# enable with `make -C theos ENABLE_PATCHES=1 SKIP_TUTORIAL=1`.
 SKIP_TUTORIAL ?= 0
 ifneq ($(ENABLE_PATCHES),0)
 ifneq ($(SKIP_TUTORIAL),0)
@@ -54,10 +39,6 @@ PATCH_DEFINES += -DSKIP_TUTORIAL=1
 endif
 endif
 
-# RBPDBG mirrors the CMake option of the same name: it compiles in the os_log diagnostics declared
-# in Project/GameSystem/src/neDebugLog.h. Off by default so a plain build matches the binary; enable
-# with `make -C theos RBPDBG=1`. The build SHA stamps the startup banner so a captured log
-# identifies which build produced it.
 RBPDBG ?= 0
 ifneq ($(RBPDBG),0)
 RBPDBG_BUILD_SHA := $(shell git -C $(PROJECT_ROOT) rev-parse --short=12 HEAD 2>/dev/null \
@@ -67,11 +48,6 @@ else
 DEBUG_DEFINES :=
 endif
 
-# RBPDBGINFO emits DWARF and keeps the symbol table, so lldb can read locals and struct members on
-# the device instead of being reduced to `memory read` at hand-computed offsets. It deliberately
-# does not touch the optimisation level: changing that would change code generation, and a crash
-# under investigation has to reproduce identically to the build that showed it. Enable with
-# `make -C theos RBPDBGINFO=1`, usually alongside RBPDBG=1.
 RBPDBGINFO ?= 0
 ifneq ($(RBPDBGINFO),0)
 # Do not add FINALPACKAGE=1 alongside this: that is what strips the result.
@@ -82,6 +58,8 @@ endif
 
 include $(THEOS)/makefiles/common.mk
 
+# Theos variable prefixes cannot contain spaces, so the app the CMake build calls
+# "REFLEC BEAT plus" is ReflecBeatPlus here (see Resources/Info.plist).
 APPLICATION_NAME = ReflecBeatPlus
 
 ReflecBeatPlus_FILES = $(shell find $(PROJECT_ROOT)/Project \
@@ -111,7 +89,6 @@ ReflecBeatPlus_CCFLAGS = -std=gnu++2b -stdlib=libc++ -fno-char8_t \
                          -Woverloaded-virtual -Wnon-virtual-dtor \
                          -Wdelete-non-abstract-non-virtual-dtor -Wrange-loop-analysis -Wextra-semi
 
-# SSZipArchive's own podspec define set, needed by its bundled minizip too.
 MINIZIP_DEFINES := -DHAVE_INTTYPES_H -DHAVE_PKCRYPT -DHAVE_STDINT_H -DHAVE_WZAES -DHAVE_ZLIB
 $(PROJECT_ROOT)/3rdparty/SSZipArchive/SSZipArchive.m_CFLAGS = $(MINIZIP_DEFINES) -w
 $(foreach _mz,$(wildcard $(PROJECT_ROOT)/3rdparty/SSZipArchive/minizip/*.c),\

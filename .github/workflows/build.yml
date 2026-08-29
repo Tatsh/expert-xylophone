@@ -2,9 +2,6 @@ concurrency:
   cancel-in-progress: true
   group: build-${{ github.ref }}
 env:
-  # Debug so the artefact carries DWARF and can be debugged on device. This is the compile gate,
-  # not a shipping build, and the reconstruction is verified against the binary by reading rather
-  # than by running an optimised build.
   BUILD_CONFIG: 'Debug'
   IOS_CMAKE_REF: '21598aa550701d20654c032328f7e8710a14099b'
 jobs:
@@ -63,11 +60,9 @@ jobs:
           echo "Built app: $APP"
           codesign --force --sign - --timestamp=none "$APP"
           codesign --verify --verbose=2 "$APP"
-          # dwarf-with-dsym leaves the linked binary holding only a debug map naming .o files from
-          # the build machine, so the app alone cannot be debugged: the DWARF is in the .dSYM, and
-          # it ships inside the bundle so a single download carries both. That invalidates the
-          # ad-hoc signature above, which does not matter here because the .ipa is re-signed with
-          # Impactor before it reaches a device.
+          # The app alone cannot be debugged, so the .dSYM ships inside the bundle. That
+          # invalidates the ad-hoc signature above, which is fine: the .ipa is re-signed
+          # before it reaches a device.
           DSYM="$(find build -type d -name 'REFLEC BEAT plus.app.dSYM' -print -quit)"
           test -n "$DSYM" || { echo 'no .dSYM found; the build is not emitting debug info'; exit 1; }
           rm -rf Payload Rbplus-adhoc.ipa

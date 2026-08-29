@@ -1,6 +1,3 @@
-// The extend-note store page controller implementation. It lists the purchasable extend-note packs,
-// drives their purchase, restore, and download flows, and hosts the pad detail overlay.
-
 #import "RBStoreExtendPageViewController.h"
 
 #import <StoreKit/StoreKit.h>
@@ -37,77 +34,57 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The shared translucent-panel white value used by the store manage and web screens. It is a
-// file-scope global defined in another store screen, so it is declared here rather than redefined.
+static const NSInteger kPackTableViewTag = 10000;
+static const NSInteger kLoadingTitleLabelTag = 10001;
+static const NSInteger kErrorMessageLabelTag = 10002;
+static const NSInteger kBannerLabelTag = 100000;
+static const NSInteger kBannerImageViewTag = 100001;
+static const NSInteger kCampaignImageViewTag = 100002;
 
-// View tags looked up with -[UIView viewWithTag:] against the page view or the pack table. The
-// pack table and its banner overlays keep the tags the binary assigns in loadView.
-static const NSInteger kPackTableViewTag = 10000;      // 0x2710 pack list table view.
-static const NSInteger kLoadingTitleLabelTag = 10001;  // 0x2711 loading/error title label.
-static const NSInteger kErrorMessageLabelTag = 10002;  // 0x2712 error message label.
-static const NSInteger kBannerLabelTag = 100000;       // 0x186a0 banner title label.
-static const NSInteger kBannerImageViewTag = 100001;   // 0x186a1 banner background image.
-static const NSInteger kCampaignImageViewTag = 100002; // 0x186a2 campaign banner image.
-
-// UIAlertView tags distinguishing which alert invoked a delegate callback.
 enum {
-    kAlertTagRestoreDownload = 0x1e,   // "Download restored notes?" prompt.
-    kAlertTagRestoreConfirm = 0x1f,    // "Begin App Store restore?" confirmation.
-    kAlertTagPurchaseLimitType = 0x20, // Purchase-limit-type selection.
-    kAlertTagPurchasePack = 0x21,      // "Purchase this pack?" confirmation.
-    kAlertTagUserAgeConfirm = 0x22,    // Age-check retry / network-error confirmation.
+    kAlertTagRestoreDownload = 0x1e,
+    kAlertTagRestoreConfirm = 0x1f,
+    kAlertTagPurchaseLimitType = 0x20,
+    kAlertTagPurchasePack = 0x21,
+    kAlertTagUserAgeConfirm = 0x22,
 };
 
-// The affirmative button index in the two-button confirmation alerts.
 static const NSInteger kAlertButtonConfirm = 1;
 
-// In the purchase-limit-type alert, button indices 1..3 select a concrete limit type; index 4 and
-// above opens the external KONAMI information page instead.
+// Button indices 1..3 select a limit type; 4 and above opens the KONAMI information page.
 static const NSInteger kPurchaseLimitTypeMaxButton = 4;
 
-// The layout mode passed to the modal dialog: 0 = simple message, 1 = message with progress.
 static const NSInteger kModalDialogLayoutMessage = 0;
 static const NSInteger kModalDialogLayoutProgress = 1;
 
-// The -moveToPackID sentinel meaning "no pending pack to open".
 static const int kNoPendingPackID = -1;
 
-// initWithCapacity: for the artwork downloader cache.
 static const NSUInteger kArtworkDownloaderCapacity = 0x20;
 
-// Purchase-limit thresholds in yen, indexed by RBUserSettingData.purchaseLimitType. A value of -1
-// (index out of range) means "no limit", so the third selectable type is unlimited. The first two
-// entries really are both 5000 in the shipped table at 0x30bef0.
+// Indexed by RBUserSettingData.purchaseLimitType; both leading entries really are 5000 in the
+// shipped table at 0x30bef0.
 static const int kPurchaseLimitYen[] = {5000, 5000, 20000};
 static const int kPurchaseLimitNone = -1;
 
-// The number of purchase-limit-type thresholds.
 static const unsigned int kPurchaseLimitTypeCount = 3;
 
-// The currency code that RBUserSettingData tracks purchase totals against.
 static NSString *const kCurrencyCodeJPY = @"JPY";
 
-// The external information page opened when the player declines the purchase-limit selection.
 static NSString *const kKonamiInfoURLString = @"http://www.konami.jp/";
 
-// The stringWithFormat: template producing the decimal pack identifier stored on the app delegate.
 static NSString *const kPackIDFormat = @"%d";
 
-// The StoreExtendNoteInfoDownloader age-check server "status" success value.
 static const int kAgeCheckStatusOK = 0;
 
-// Background colour of the store page (light grey), as 8-bit channel values.
 static const CGFloat kStoreBackgroundRed = 226.0 / 255.0;
 static const CGFloat kStoreBackgroundGreen = 227.0 / 255.0;
 static const CGFloat kStoreBackgroundBlue = 228.0 / 255.0;
 
-// The autoresizing mask that flexes in every direction so a view tracks its host's bounds.
 static const UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// Autoresizing-mask bitfields, named after the flag combinations the binary uses.
 static const UIViewAutoresizing kMaskFlexibleWidthHeight = 0x12;          // W|H centred.
 static const UIViewAutoresizing kMaskFlexibleTopWidthHeight = 0x25;       // W|H|TopMargin.
 static const UIViewAutoresizing kMaskFlexibleBottomWidth = 0xd;           // W|LMargin|RMargin.
@@ -115,105 +92,81 @@ static const UIViewAutoresizing kMaskFlexibleTopBottomWidth = 0x29;       // W|T
 static const UIViewAutoresizing kMaskFlexibleWidthBottomMargins = 0x15;   // W|H|BottomMargin.
 static const UIViewAutoresizing kMaskFlexibleTopBottomWidthHeight = 0x2d; // W|H|Top|Bottom.
 
-// Pad-layout geometry constants (points), recovered from the disassembly float loads.
-static const CGFloat kPadHeaderBaseY = 171.0;           // Baseline below which the label sits.
-static const CGFloat kPadPackLabelOriginX = 27.0;       // Pack-label frame origin.x.
-static const CGFloat kPadPackLabelBoundsWidth = 720.0;  // Pack-label bounds width after sizeToFit.
-static const CGFloat kSliderRowHeightWide = 40.0;       // Reused engine row-height constant.
-static const CGFloat kShowMoreButtonBottomInset = 15.0; // Show-more button offset from bottom.
-static const CGFloat kShowMoreIndicatorSize = 24.0;     // Activity-indicator square side.
-static const CGFloat kPadTableTopSpacing = 16.0;        // Padding above and below the pack table.
-static const CGFloat kPadTableWidth = 728.0;            // Pack table frame width.
-static const CGFloat kPadTableHeightInset = -76.0;      // Added to view height for the table.
-static const CGFloat kPadTableCenterYOffset = 76.0;     // Table centre offset from half-height.
-static const CGFloat kPadTableCornerRadius = 8.0;       // Rounded corner radius.
-static const CGFloat kPadTableBorderWidth = 1.5;        // Border stroke width.
-static const CGFloat kScrollIndicatorInset = 4.0;       // Scroll-indicator top and bottom inset.
-// The detail pad view is built at the shared wide popup size: the engine's g_dPopupBaseHeightWide
-// (680.0) tall by 650.0 wide (@0x2eec30). The height reuses the same engine global the music popup
-// uses, quoted here as a literal until that global is recovered as a shared extern.
+static const CGFloat kPadHeaderBaseY = 171.0;
+static const CGFloat kPadPackLabelOriginX = 27.0;
+static const CGFloat kPadPackLabelBoundsWidth = 720.0;
+static const CGFloat kSliderRowHeightWide = 40.0; // Reused engine row-height constant.
+static const CGFloat kShowMoreButtonBottomInset = 15.0;
+static const CGFloat kShowMoreIndicatorSize = 24.0;
+static const CGFloat kPadTableTopSpacing = 16.0;
+static const CGFloat kPadTableWidth = 728.0;
+static const CGFloat kPadTableHeightInset = -76.0;
+static const CGFloat kPadTableCenterYOffset = 76.0;
+static const CGFloat kPadTableCornerRadius = 8.0;
+static const CGFloat kPadTableBorderWidth = 1.5;
+static const CGFloat kScrollIndicatorInset = 4.0;
+// The height duplicates the engine's g_dPopupBaseHeightWide (0x2eec30), not yet a shared extern.
 static const CGFloat kPadDetailBaseHeight = 680.0;
 static const CGFloat kPadDetailWidth = 650.0;
-static const CGFloat kPadDetailCenterYOffset = -44.0; // Detail-view centre Y offset.
-static const CGFloat kBannerLabelHeight = 25.0;       // 0x186a0 banner label height.
-static const CGFloat kBannerLabelFontSize = 15.0;     // 0x186a0 banner label font.
-static const CGFloat kPackLabelFontSize = 18.0;       // Pack-table header label font.
-static const CGFloat kErrorTitleFontSizePhone = 16.0; // Error message font (phone).
-static const CGFloat kErrorTitleFontSizePad = 18.0;   // Error message font (pad).
-static const CGFloat kErrorMessageTopOffset = 20.0;   // Error message label centre offset.
+static const CGFloat kPadDetailCenterYOffset = -44.0;
+static const CGFloat kBannerLabelHeight = 25.0;
+static const CGFloat kBannerLabelFontSize = 15.0;
+static const CGFloat kPackLabelFontSize = 18.0;
+static const CGFloat kErrorTitleFontSizePhone = 16.0;
+static const CGFloat kErrorTitleFontSizePad = 18.0;
+static const CGFloat kErrorMessageTopOffset = 20.0;
 
-// Greyscale colour whites (8-bit channel values expressed as fractions).
-static const CGFloat kTableBackgroundWhite = 47.0 / 255.0; // Pack table background.
-static const CGFloat kTableBorderWhite = 143.0 / 255.0;    // Pack table border.
-static const CGFloat kLabelTextWhite = 158.0 / 255.0;      // Label text colour.
-static const CGFloat kCoverDimAlpha = 0.5;                 // Pad cover-view dim alpha.
-// The pool slot at 0x2ec718 that both the label shadow and the close animation read holds
-// (double)0.3f, not the double 0.3, so both are spelled as float literals.
-static const CGFloat kLabelShadowAlpha = 0.3f; // Label drop-shadow alpha.
+static const CGFloat kTableBackgroundWhite = 47.0 / 255.0;
+static const CGFloat kTableBorderWhite = 143.0 / 255.0;
+static const CGFloat kLabelTextWhite = 158.0 / 255.0;
+static const CGFloat kCoverDimAlpha = 0.5;
+// The pool slot at 0x2ec718 holds (double)0.3f, not the double 0.3, hence the float literal.
+static const CGFloat kLabelShadowAlpha = 0.3f;
 
-// The "show more" backing views are laid out with a fixed margin from the edges of the table, and
-// their vertical origin trails the current content by a device-dependent gap.
-static const CGFloat kShowMoreSideMargin = 50.0;          // Left inset and right-edge inset.
-static const int kShowMoreContentGapPad = 300;            // Vertical gap below content on the pad.
-static const int kShowMoreContentGapPhone = 100;          // Vertical gap below content on phone.
-static const CGFloat kShowMoreButtonCenterYOffset = 25.0; // Extra drop for the button centre.
+static const CGFloat kShowMoreSideMargin = 50.0;
+static const int kShowMoreContentGapPad = 300;
+static const int kShowMoreContentGapPhone = 100;
+static const CGFloat kShowMoreButtonCenterYOffset = 25.0;
 
-// UIView animation options and durations for the pad detail-overlay transitions.
 static const UIViewAnimationOptions kDetailOpenAnimationOptions = 0x30000; // Curve ease-in-out.
 static const NSTimeInterval kDetailOverlayOpenDuration = 0.3;   // @ghidraAddress 0x3010a0
 static const NSTimeInterval kDetailOverlayCloseDuration = 0.3f; // @ghidraAddress 0x2ec718
 
-// Row heights (points), read from the two-entry tables the height callback indexes: the pad's at
-// 0x30bed0 and the phone's at 0x30bee0, each holding the "more" row first and the pack row second.
-// A genuine pack row is tall; the trailing "show more"/spinner row is short.
 static const CGFloat kPhonePackRowHeight = 80.0; // @ghidraAddress 0x30bee8
 static const CGFloat kPhoneMoreRowHeight = 60.0; // @ghidraAddress 0x30bee0
 static const CGFloat kPadPackRowHeight = 140.0;  // @ghidraAddress 0x30bed8
 static const CGFloat kPadMoreRowHeight = 60.0;   // @ghidraAddress 0x30bed0
 
-// The pad packs two products per table row (a left and a right cell view).
 static const NSInteger kPadProductsPerRow = 2;
 
-// This table is a single flat section.
 static const NSInteger kExtendNoteSectionCount = 1;
 
-// "More"/spinner cell label point sizes: the pad uses a larger bold system font.
 static const CGFloat kMoreCellFontSizePhone = 15.0;
 static const CGFloat kMoreCellFontSizePad = 18.0;
 
-// Alternating-row background tints. A pad pack row is drawn at a flat mid-white; a phone pack row
-// alternates its background colour by parity between two near-white greys.
 static const CGFloat kPadEvenRowWhite = 0.5;
 static const CGFloat kPhoneEvenRowWhite = 0.8;          // @ghidraAddress 0x2eea40
 static const CGFloat kPhoneOddRowWhite = 193.0 / 255.0; // @ghidraAddress 0x30bec0
 
-// The "more"/loading footer label white component (text and shadow). @ghidraAddress 0x2ec720
+// @ghidraAddress 0x2ec720
 static const CGFloat kMoreCellTextWhite = 0.4f;
 
-// The floating-banner bottom margin kept clear beneath the pinned banner while scrolling. The
-// campaign banner additionally pins against half its own height rather than its full height.
+// The campaign banner pins against half its own height rather than its full height.
 static const CGFloat kBannerBottomMarginPhone = 100.0;
 static const CGFloat kBannerBottomMarginPad = 300.0;
 static const CGFloat kCampaignBannerAnchorFraction = 0.5;
 
-// The pad packs two products per row, so a linear product index is halved (>> 1) to get the row.
 static const NSInteger kPadRowShift = 1;
 
-// setPurchaseState: argument marking a detail cell as purchased.
 static const NSInteger kPurchaseStatePurchased = 1;
 
-// Row-animation passed to reloadRowsAtIndexPaths:withRowAnimation:.
 static const UITableViewRowAnimation kReloadRowAnimation = UITableViewRowAnimationNone;
 
-// Section index of the purchased-note table. The pad packs two products per row into section zero;
-// the phone (page controller) layout uses one product per row in section one.
 static const NSInteger kPurchasedTableSectionPad = 0;
 static const NSInteger kPurchasedTableSectionPhone = 1;
 
-// UITableViewCellStyleDefault.
 static const NSInteger kTableViewCellStyleDefault = 0;
 
-// Forward declarations of the de-inlined helpers, defined at the bottom of the file.
 static inline UIImage *StoreExtendPageArtworkForInfo(RBStoreExtendPageViewController *self,
                                                      StoreExtendNoteInfo *info,
                                                      NSIndexPath *indexPath);
@@ -232,9 +185,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                                                    CGFloat anchorFraction);
 
 @interface RBStoreExtendPageViewController () {
-    // Set on the pad (wide-font) layout; drives the two-column pack table and detail overlay.
     BOOL m_IsPad;
-    // Set while a "show more" page fetch is in flight, suppressing further fetches.
     BOOL m_IsLoadingMoreList;
 }
 @end
@@ -254,7 +205,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.extendNoteListCtrl setDelegate:self];
         self.artworkDownloaders =
             [[NSMutableDictionary alloc] initWithCapacity:kArtworkDownloaderCapacity];
-        // IsPad() is nonzero on the pad/wide layout, zero on the phone.
         m_IsPad = IsPad();
         self.moveToPackID = kNoPendingPackID;
     }
@@ -278,7 +228,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     const CGRect viewBounds = self.view.bounds;
 
     if (!m_IsPad) {
-        // Phone layout: a single full-bounds pack table view, created lazily.
         if ([self.view viewWithTag:kPackTableViewTag] == nil) {
             UITableView *tableView = [[UITableView alloc] initWithFrame:viewBounds
                                                                   style:UITableViewStylePlain];
@@ -293,8 +242,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             [self.view addSubview:tableView];
         }
     } else {
-        // Pad layout: header label, "show more" control, a rounded pack table, a dimming cover
-        // view, and the floating note-detail pad view.
         CGRect headerFrame = self.tabBarController.rotatingHeaderView.frame;
         CGFloat labelBaseY = kPadHeaderBaseY - headerFrame.size.height;
 
@@ -306,7 +253,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.packTableLabel setFont:[UIFont systemFontOfSize:kPackLabelFontSize]];
         [self.packTableLabel setText:g_pLocalizedSequences];
         [self.packTableLabel sizeToFit];
-        // Widen the label's bounds to the fixed pack-table width, keeping its fitted height.
         [self.packTableLabel setBounds:CGRectMake(0.0,
                                                   0.0,
                                                   kPadPackLabelBoundsWidth,
@@ -321,15 +267,11 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [showMore setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
         [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
         [showMore sizeToFit];
-        // Anchor the button just above the view's bottom edge.
         [showMore setCenter:CGPointMake(viewBounds.size.width * 0.5,
                                         viewBounds.size.height - showMore.bounds.size.height * 0.5 -
                                             kShowMoreButtonBottomInset)];
         [showMore setAutoresizingMask:kMaskFlexibleBottomWidth];
         [showMore setHidden:YES];
-        // The selector reference at 0x3c4798 decodes to "selectShowMore", with no argument, and
-        // that is the method this class implements at 0x165708. Registering the colon form named a
-        // selector nothing implements, so the button threw when tapped.
         [showMore addTarget:self
                       action:@selector(selectShowMore)
             forControlEvents:UIControlEventTouchUpInside];

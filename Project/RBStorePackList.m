@@ -8,38 +8,27 @@
 #import "StoreUtil.h"
 #import "engineglobals.h"
 
-// The default genre presented before any catalogue page has loaded, with identifier zero. Its name
-// is a three-character CFString literal at 0x36eee0 whose data lives at 0x41c800; that __cstring
-// region is not mapped in the Ghidra image, so the exact three characters could not be recovered.
-// "ALL" is the length-matching best guess and is unverified at the byte level.
+// "ALL" is a length-matching guess: the literal's __cstring data is not mapped in the image.
 static NSString *const kStoreDefaultGenreName = @"ALL"; // @ghidraAddress 0x36eee0
 static const int kStoreDefaultGenreID = 0;
 
-// The number of packs requested per catalogue page.
 static const int kStorePackListPageSize = 10;
 
-// The purchase-limit type is reset to this "unset" tier, and the running purchase total is zeroed,
-// when a newer purchase month is reported by the server.
 static const int kPurchaseLimitTypeUnset = 0;
 static const int kPurchaseTotalReset = 0;
 
-// The purchase-limit type must be below this bound (the age-tier count) to be reset.
 static const int kPurchaseLimitTypeCount = 3;
 
-// The queued deep-link ("open store") pack identifier is only valid when strictly positive.
 static const int kInvalidPackID = 0;
 
-// The initial capacities used when building the model's mutable collections.
 enum {
     kPackInfoInitialCapacity = 50,
     kGenreInitialCapacity = 8,
     kProductIDSetCapacity = 10,
 };
 
-// The result of -indexOfObjectIdenticalTo: when the object is absent.
 static const NSUInteger kNotFoundIndex = NSNotFound;
 
-// The catalogue JSON dictionary keys.
 static NSString *const kStoreJSONKeyVersion = @"Version";
 static NSString *const kStoreJSONKeyDate = @"Date";
 static NSString *const kStoreJSONKeyPackList = @"PackList";
