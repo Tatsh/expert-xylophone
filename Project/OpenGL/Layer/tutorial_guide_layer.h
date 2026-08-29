@@ -158,7 +158,7 @@ private:
      * @brief Looks up a keyframe step table by time, returning the value of the range that contains
      * it.
      *
-     * The table is a flat array of three-float groups @c {rangeStart, rangeEnd, value}, where each
+     * The table is a flat array of three-float groups `{rangeStart, rangeEnd, value}`, where each
      * group's end equals the next group's start. The value is returned as its raw 32-bit
      * representation (the binary returns it in an integer register); callers reinterpret it as
      * needed.

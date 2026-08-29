@@ -19,8 +19,8 @@
 // Source constant the receipt-check salt is carved out of; only a 27-character slice is used.
 static NSString *const kReceiptSaltSource = @"2012 Konami Digital Entertainment";
 
-// The slice of @c kReceiptSaltSource used as the salt: 27 characters starting at index 2, giving
-// @c "12 Konami Digital Entertain".
+// The slice of kReceiptSaltSource used as the salt: 27 characters starting at index 2, giving
+// "12 Konami Digital Entertain".
 static const NSUInteger kReceiptSaltLocation = 2;
 static const NSUInteger kReceiptSaltLength = 27;
 

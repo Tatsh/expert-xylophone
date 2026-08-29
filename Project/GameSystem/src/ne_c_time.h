@@ -6,9 +6,11 @@
 #pragma once
 
 /**
- * A media-time stamp used by the engine timers. Its sole field is the media time in seconds. The
- * binary reaches the two timer helpers through a @c double pointer to this first field (which, for
- * a single-field object, is the object address); they are modelled here as members.
+ * @brief A media-time stamp used by the engine timers.
+ *
+ * Its sole field is the media time in seconds. The binary reaches the two timer helpers through a
+ * @c double pointer to this first field (which, for a single-field object, is the object address);
+ * they are modelled here as members.
  * Reconstructed type @c C_TIME: engine class.
  */
 class C_TIME {

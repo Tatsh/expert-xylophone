@@ -6,10 +6,12 @@
 #pragma once
 
 /**
- * The shot (tap) sound sub-manager. It holds thirty-three shot slots, each with four judgement
- * variants, keyed by resource id and a shared loaded flag; the application preloads the whole bank
- * through @c LoadAll before a picker is shown, and plays a slot through @c PlaySlot. The 32-bit
- * offset comments are documentation only.
+ * @brief The shot (tap) sound sub-manager.
+ *
+ * It holds thirty-three shot slots, each with four judgement variants, keyed by resource id and a
+ * shared loaded flag; the application preloads the whole bank through @c LoadAll before a picker
+ * is shown, and plays a slot through @c PlaySlot. The 32-bit offset comments are documentation
+ * only.
  * Reconstructed type @c ShotSoundManager: engine class, 0x24c bytes.
  */
 class ShotSoundManager {

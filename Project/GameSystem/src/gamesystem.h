@@ -23,8 +23,10 @@ class GameScene;
 }
 
 /**
- * The global game-system singleton. Its setters are compiled inline in the binary as writes to the
- * named fields below; the 32-bit offset comments are documentation only.
+ * @brief The global game-system singleton.
+ *
+ * Its setters are compiled inline in the binary as writes to the named fields below; the 32-bit
+ * offset comments are documentation only.
  */
 class GameSystem {
 public:

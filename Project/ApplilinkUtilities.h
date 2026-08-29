@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Filter a list to the objects whose key matches a value.
  *
- * The list is filtered with a @c "%K MATCHES %@" predicate, treating @p forKey as the key path and
+ * The list is filtered with a `"%K MATCHES %@"` predicate, treating @p forKey as the key path and
  * @p object as the pattern.
  * @param narrowedListWithList The list to filter.
  * @param object The value the key must match.

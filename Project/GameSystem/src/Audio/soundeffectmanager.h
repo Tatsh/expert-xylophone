@@ -6,9 +6,11 @@
 #pragma once
 
 /**
- * The themed sound-effect manager. It holds three theme banks of twenty slots plus thirty-six
- * shared slots, keyed by the current theme; the application plays a slot through
- * @c PlayThemedSoundEffect. The 32-bit offset comments are documentation only.
+ * @brief The themed sound-effect manager.
+ *
+ * It holds three theme banks of twenty slots plus thirty-six shared slots, keyed by the current
+ * theme; the application plays a slot through @c PlayThemedSoundEffect. The 32-bit offset comments
+ * are documentation only.
  * Reconstructed type @c SoundEffectManager: engine class, 0x1e8 bytes.
  */
 class SoundEffectManager {

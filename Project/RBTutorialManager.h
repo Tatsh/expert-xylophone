@@ -211,7 +211,7 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 @property(nonatomic, weak, nullable) UIView *tutorialView;
 
 /**
- * @brief The pending unlocked-item info: a flat @c {itemInfo, itemId} pair queued by
+ * @brief The pending unlocked-item info: a flat `{itemInfo, itemId}` pair queued by
  * @c +setUnlockedItemInfo:itemId:.
  * @ghidraAddress 0x364d0 (getter)
  */
@@ -219,7 +219,7 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 
 /**
  * @brief A copy of the pending unlocked-item info pair.
- * @return A copy of the queued @c {itemInfo, itemId} array.
+ * @return A copy of the queued `{itemInfo, itemId}` array.
  * @ghidraAddress 0x36308
  */
 + (nullable NSArray *)getUnlockedItemInfo;

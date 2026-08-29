@@ -8,8 +8,10 @@
 class GameSystem;
 
 /**
- * The sheet-layer geometry helpers. Each takes the target GameSystem, so they are modelled as
- * static members of the sheet-layer helper class (its full type is not yet reconstructed).
+ * @brief The sheet-layer geometry helpers.
+ *
+ * Each takes the target GameSystem, so they are modelled as static members of the sheet-layer
+ * helper class (its full type is not yet reconstructed).
  */
 class SheetLayer {
 public:

@@ -8,8 +8,10 @@
 class caSource;
 
 /**
- * One playback voice (mixer bus): the sound bound to it, its ring-read cursors, a rolling
- * generation counter, and its playback state. The 32-bit offset comments are documentation only.
+ * @brief One playback voice (mixer bus): the sound bound to it, its ring-read cursors, a rolling
+ * generation counter, and its playback state.
+ *
+ * The 32-bit offset comments are documentation only.
  * Reconstructed type @c caVoice: engine mixer-voice struct, 0x20 bytes.
  */
 class caVoice {

@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * The value is looked up under @p localizedMessage in the reward bundle's @c "Message" strings
  * table. A built-in English default is supplied for each of the two recognised keys:
- * @c "RewardNetworkAppListTitle" falls back to @c "App List" and
+ * @c "RewardNetworkAppListTitle" falls back to `"App List"` and
  * @c "RewardNetworkAppListCloseButton" falls back to @c "Close"; any other key falls back to the
  * empty string.
  * @param localizedMessage The message key to look up.

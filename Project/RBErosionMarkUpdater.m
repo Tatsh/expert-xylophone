@@ -2,28 +2,14 @@
 
 #import "AppDelegate.h"
 #import "RBCoreDataManager.h"
+#import "RBErosionMarkUpdaterAlertController.h"
+#import "RBErosionMarkUpdaterScoreView.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
 #import "ScoreData.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
-
-// Local declarations for the two sibling classes reconstructed separately. These members belong in
-// the siblings' own headers (RBErosionMarkUpdaterAlertController and
-// RBErosionMarkUpdaterScoreView).
-@interface RBErosionMarkUpdaterAlertController : UIAlertController
-@end
-
-@interface RBErosionMarkUpdaterScoreView : UIView
-@property(strong, nonatomic, nullable) UIView *dialogView;
-@property(strong, nonatomic, nullable) UILabel *titleLabel;
-@property(strong, nonatomic, nullable) UILabel *messageLabel;
-- (nullable instancetype)initWithFrame:(CGRect)frame delegate:(nullable id)delegate;
-- (void)showAnimation:(nullable void (^)(void))completion;
-- (void)hideAnimation:(nullable void (^)(void))completion;
-- (void)remove;
-@end
 
 /// The tune identifier of the erosion-mark record whose scores this dialog corrects.
 static const unsigned int kErosionMarkTuneID = 99999344; // 0x5f5e470

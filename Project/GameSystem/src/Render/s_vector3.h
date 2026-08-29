@@ -6,10 +6,11 @@
 #pragma once
 
 /**
- * A three-component float vector used by the engine's matrix and camera maths. Modelled on
- * @c S_VECTOR2: the binary passes these helpers a raw @c float[3], and this POD layout of three
- * consecutive floats matches it exactly, so a pointer to one is interchangeable with that pointer.
- * The components are public so the maths reads as @c v->x rather than an indexed access.
+ * @brief A three-component float vector used by the engine's matrix and camera maths.
+ *
+ * Modelled on @c S_VECTOR2: the binary passes these helpers a raw @c float[3], and this POD layout
+ * of three consecutive floats matches it exactly, so a pointer to one is interchangeable with that
+ * pointer. The components are public so the maths reads as @c v->x rather than an indexed access.
  *
  * As with @c S_VECTOR2, the three components carry two interchangeable name pairs that overlay the
  * same storage: @c x / @c y / @c z for a position or direction, and @c r / @c g / @c b for a

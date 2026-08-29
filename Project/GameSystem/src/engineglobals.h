@@ -38,7 +38,7 @@ void BuildGaugeThresholdArrays(void);
 #ifdef __OBJC__
 /**
  * @brief The network API request-descriptor table, keyed by endpoint name (startup,
- * v3_ssl_resource, v3_packlist); each value is @c {method: GET, param: [target]}. Seeded once at
+ * v3_ssl_resource, v3_packlist); each value is `{method: GET, param: [target]}`. Seeded once at
  * startup by @c InitializeApiRequestTable.
  * @ghidraAddress 0x3dc270
  */
@@ -497,23 +497,83 @@ void InitializeUiColorConstants(void);
  */
 extern UIColor *g_pPaletteDimmingCoverColor;
 #endif
-// The per-channel palette colour components (each n/255), read by InitializeUIColorPalette.
-// Doubles.
-extern const double g_PaletteColorGreenGrassRed;   /*!< @ghidraAddress 0x2ef5e8 */
-extern const double g_PaletteColorGreenGrassGreen; /*!< @ghidraAddress 0x2ef5f0 */
-extern const double g_PaletteColorMagentaRed;      /*!< @ghidraAddress 0x2ef5f8 */
-extern const double g_PaletteColorMagentaGreen;    /*!< @ghidraAddress 0x2ef600 */
-extern const double g_PaletteColorMagentaBlue;     /*!< @ghidraAddress 0x2ef608 */
-extern const double g_PaletteColorDarkGreenRed;    /*!< @ghidraAddress 0x2ef610 */
-extern const double g_PaletteColorDarkGreenGreen;  /*!< @ghidraAddress 0x2ef618 */
-extern const double g_PaletteColorLeafGreenRed;    /*!< @ghidraAddress 0x2ef620 */
-extern const double g_PaletteColorLeafGreenGreen;  /*!< @ghidraAddress 0x2ef628 */
-extern const double g_PaletteColorSteelBlueRed;    /*!< @ghidraAddress 0x2ef630 */
-extern const double g_PaletteColorSteelBlueGreen;  /*!< @ghidraAddress 0x2ef638 */
-extern const double g_PaletteColorSteelBlueBlue;   /*!< @ghidraAddress 0x2ef640 */
-extern const double g_PaletteColorGoldRed;         /*!< @ghidraAddress 0x2ef648 */
-extern const double g_PaletteColorGoldGreen;       /*!< @ghidraAddress 0x2ef650 */
-extern const double g_PaletteColorGoldBlue;        /*!< @ghidraAddress 0x2ef658 */
+// The per-channel palette colour components, read by InitializeUIColorPalette. Three of the five
+// colours have no blue component in the binary, so none is declared here.
+/**
+ * @brief The green-grass palette colour's red component, 63/255.
+ * @ghidraAddress 0x2ef5e8
+ */
+extern const double g_PaletteColorGreenGrassRed;
+/**
+ * @brief The green-grass palette colour's green component, 0.654902.
+ * @ghidraAddress 0x2ef5f0
+ */
+extern const double g_PaletteColorGreenGrassGreen;
+/**
+ * @brief The magenta palette colour's red component, 254/255.
+ * @ghidraAddress 0x2ef5f8
+ */
+extern const double g_PaletteColorMagentaRed;
+/**
+ * @brief The magenta palette colour's green component, 33/255.
+ * @ghidraAddress 0x2ef600
+ */
+extern const double g_PaletteColorMagentaGreen;
+/**
+ * @brief The magenta palette colour's blue component, 0.972549.
+ * @ghidraAddress 0x2ef608
+ */
+extern const double g_PaletteColorMagentaBlue;
+/**
+ * @brief The dark-green palette colour's red component, 2/255.
+ * @ghidraAddress 0x2ef610
+ */
+extern const double g_PaletteColorDarkGreenRed;
+/**
+ * @brief The dark-green palette colour's green component, 111/255.
+ * @ghidraAddress 0x2ef618
+ */
+extern const double g_PaletteColorDarkGreenGreen;
+/**
+ * @brief The leaf-green palette colour's red component, 26/255.
+ * @ghidraAddress 0x2ef620
+ */
+extern const double g_PaletteColorLeafGreenRed;
+/**
+ * @brief The leaf-green palette colour's green component, 151/255.
+ * @ghidraAddress 0x2ef628
+ */
+extern const double g_PaletteColorLeafGreenGreen;
+/**
+ * @brief The steel-blue palette colour's red component, 133/255.
+ * @ghidraAddress 0x2ef630
+ */
+extern const double g_PaletteColorSteelBlueRed;
+/**
+ * @brief The steel-blue palette colour's green component, 173/255.
+ * @ghidraAddress 0x2ef638
+ */
+extern const double g_PaletteColorSteelBlueGreen;
+/**
+ * @brief The steel-blue palette colour's blue component, 217/255.
+ * @ghidraAddress 0x2ef640
+ */
+extern const double g_PaletteColorSteelBlueBlue;
+/**
+ * @brief The gold palette colour's red component, 229/255.
+ * @ghidraAddress 0x2ef648
+ */
+extern const double g_PaletteColorGoldRed;
+/**
+ * @brief The gold palette colour's green component, 183/255.
+ * @ghidraAddress 0x2ef650
+ */
+extern const double g_PaletteColorGoldGreen;
+/**
+ * @brief The gold palette colour's blue component, 49/255.
+ * @ghidraAddress 0x2ef658
+ */
+extern const double g_PaletteColorGoldBlue;
 /**
  * @brief Seeds every @c g_pPalette* colour above. Run once at startup.
  * @ghidraAddress 0x55120
@@ -536,7 +596,11 @@ void InitializeGaugeAngleTable(void);
  * @ghidraAddress 0x3dc6e0
  */
 extern CGPoint g_difficultyNumberOffsetPad;
-extern CGPoint g_difficultyNumberOffsetPhone; /*!< @ghidraAddress 0x3dc6f0 */
+/**
+ * @brief The phone layout's difficulty-number image centre offset, added over the button centre.
+ * @ghidraAddress 0x3dc6f0
+ */
+extern CGPoint g_difficultyNumberOffsetPhone;
 /**
  * @brief Seeds @c g_difficultyNumberOffsetPad and @c g_difficultyNumberOffsetPhone. Run once at
  * startup.
@@ -575,7 +639,11 @@ void InitializeSettingLayoutGlobals(void);
  * @ghidraAddress 0x3dc2a0
  */
 extern CGPoint g_extendNoteNumberOffsetPad;
-extern CGPoint g_extendNoteNumberOffsetPhone; /*!< @ghidraAddress 0x3dc2b0 */
+/**
+ * @brief The phone layout's extend-note difficulty-number image centre offset.
+ * @ghidraAddress 0x3dc2b0
+ */
+extern CGPoint g_extendNoteNumberOffsetPhone;
 /**
  * @brief Seeds @c g_extendNoteNumberOffsetPad and @c g_extendNoteNumberOffsetPhone. Run once at
  * startup.

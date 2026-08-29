@@ -5,6 +5,12 @@
 
 #pragma once
 
+/**
+ * @brief The engine namespace: the renderer, its scene-graph nodes, and the per-frame task base.
+ *
+ * Its members carry the binary's own RTTI names, which is why they keep the engine's uppercase
+ * @c C_ and @c S_ prefixes rather than the project's usual CamelCase.
+ */
 namespace ne {
 
 /**

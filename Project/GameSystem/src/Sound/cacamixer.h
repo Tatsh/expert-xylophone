@@ -12,8 +12,9 @@
 class caSource;
 
 /**
- * The Core Audio voice mixer: a spatial-mixer AudioUnit and its array of playback voices. The
- * former free engine functions that took the mixer as their first argument are its instance
+ * @brief The Core Audio voice mixer: a spatial-mixer AudioUnit and its array of playback voices.
+ *
+ * The former free engine functions that took the mixer as their first argument are its instance
  * methods. Only the members those methods touch are modelled; the 32-bit offset comments are
  * documentation only.
  * Reconstructed type @c caCAMixer: engine class.

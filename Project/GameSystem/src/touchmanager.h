@@ -8,9 +8,11 @@
 #include "touch_point.h"
 
 /**
- * The global touch manager. The application obtains it through @c FetchSharedSingleton and commits
- * each frame through @c CompactTouchList. The Objective-C GL view feeds it raw touch phases through
- * @c AddTouchPoint, @c UpdateTouchPoint, @c HandleTouchMoved, and @c MarkAllTouchesEnded.
+ * @brief The global touch manager.
+ *
+ * The application obtains it through @c FetchSharedSingleton and commits each frame through
+ * @c CompactTouchList. The Objective-C GL view feeds it raw touch phases through @c AddTouchPoint,
+ * @c UpdateTouchPoint, @c HandleTouchMoved, and @c MarkAllTouchesEnded.
  * Reconstructed type @c TouchManager: engine class, slot array at +0x0, count at +0x100.
  */
 class TouchManager {

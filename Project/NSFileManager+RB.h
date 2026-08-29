@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The cached temporary directory path.
  *
- * Uses @c NSTemporaryDirectory when available, otherwise falls back to a @c "Temporary Files"
+ * Uses @c NSTemporaryDirectory when available, otherwise falls back to a `"Temporary Files"`
  * directory under the caches directory.
  * @return The cached path.
  * @ghidraAddress 0x1ca478

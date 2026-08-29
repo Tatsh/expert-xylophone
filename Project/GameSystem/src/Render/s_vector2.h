@@ -6,9 +6,10 @@
 #pragma once
 
 /**
- * A two-component float vector shared with the engine's sheet-layout helpers. Its components are
- * public (a deliberate exception to the usual encapsulation, shared with @c S_VECTOR3) so the maths
- * reads as @c v.x rather than through accessors.
+ * @brief A two-component float vector shared with the engine's sheet-layout helpers.
+ *
+ * Its components are public (a deliberate exception to the usual encapsulation, shared with
+ * @c S_VECTOR3) so the maths reads as @c v.x rather than through accessors.
  *
  * The two components carry three interchangeable name pairs that overlay the same storage, so a
  * value reads naturally in whatever role it is playing: @c x / @c y for a position or offset,

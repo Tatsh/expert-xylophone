@@ -11,8 +11,9 @@ class caCAMixer;
 class caSource;
 
 /**
- * The one-shot voice-player subsystem, reached through @c AudioManager's @c sePlayer ivar. The
- * former free engine functions that took the @c caPlayerMgr as their first argument are its
+ * @brief The one-shot voice-player subsystem, reached through @c AudioManager's @c sePlayer ivar.
+ *
+ * The former free engine functions that took the @c caPlayerMgr as their first argument are its
  * instance methods. Only the members the reconstructed methods touch are modelled; the 32-bit
  * offset comments are documentation only.
  */

@@ -8,10 +8,11 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 /**
- * A single decoded sound: the source file's sample rate and channel count, and the fully-decoded
- * 16-bit signed PCM data block. Populated from an @c ExtAudioFileRef by @c ReadAudioFormat (which
- * fills the format fields and computes the buffer size) and @c ReadAudioPcmData (which allocates
- * and decodes the PCM).
+ * @brief A single decoded sound: the source file's sample rate and channel count, and the
+ * fully-decoded 16-bit signed PCM data block.
+ *
+ * Populated from an @c ExtAudioFileRef by @c ReadAudioFormat (which fills the format fields and
+ * computes the buffer size) and @c ReadAudioPcmData (which allocates and decodes the PCM).
  * Reconstructed type @c caSource: engine sound-buffer struct.
  */
 class caSource {

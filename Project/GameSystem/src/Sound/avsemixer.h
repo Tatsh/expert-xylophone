@@ -12,12 +12,14 @@
 @class AVBus;
 
 /**
- * The AVFoundation sound-effect voice mixer: a fixed pool of @c AVBus voices held in an
- * @c NSMutableArray. Play handles pack a voice index in bits 16 and up and the voice's current id
- * in the low 16 bits, so a handle resolves back to a voice by bounds-checking the index and
- * matching the id. The former free engine functions that took the mixer as their first argument are
- * its instance methods. Only the members those methods touch are modelled; the trailing @c // +0xNN
- * offset comments are documentation only.
+ * @brief The AVFoundation sound-effect voice mixer: a fixed pool of @c AVBus voices held in an
+ * @c NSMutableArray.
+ *
+ * Play handles pack a voice index in bits 16 and up and the voice's current id in the low 16 bits,
+ * so a handle resolves back to a voice by bounds-checking the index and matching the id. The
+ * former free engine functions that took the mixer as their first argument are its instance
+ * methods. Only the members those methods touch are modelled; the trailing @c // +0xNN offset
+ * comments are documentation only.
  * Reconstructed type @c AVSeMixer: engine sound mixer.
  */
 class AVSeMixer {

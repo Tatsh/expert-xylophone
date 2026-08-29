@@ -10,10 +10,12 @@
 class AVSeMixer;
 
 /**
- * The AVFoundation sound-effect source manager, reached through @c AudioManager's @c seAVPlayer
- * ivar. It owns the voice mixer (@c AVSeMixer), a call-name-to-index dictionary, and a growable
- * array of source records, and vends bus play handles for registered sources. The former free
- * engine functions that took the manager as their first argument are its instance methods. Only the
+ * @brief The AVFoundation sound-effect source manager, reached through @c AudioManager's
+ * @c seAVPlayer ivar.
+ *
+ * It owns the voice mixer (@c AVSeMixer), a call-name-to-index dictionary, and a growable array of
+ * source records, and vends bus play handles for registered sources. The former free engine
+ * functions that took the manager as their first argument are its instance methods. Only the
  * members those methods touch are modelled; the trailing @c // +0xNN offset comments are
  * documentation only.
  * Reconstructed type @c AudioSourceSlot: AVFoundation SE manager.

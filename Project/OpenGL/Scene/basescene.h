@@ -7,6 +7,12 @@
 
 #include "ctask.h"
 
+/**
+ * @brief The game namespace: the scenes and play-field layers built on top of the @c ne engine.
+ *
+ * Its members carry the binary's own RTTI names, so a mangled name such as @c N2rb9BaseSceneE
+ * resolves directly to the class documented here.
+ */
 namespace rb {
 
 /**

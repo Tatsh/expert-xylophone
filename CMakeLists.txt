@@ -49,6 +49,9 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
         "NS_ENUM(type,name)=enum name : type"
         "NS_OPTIONS(type,name)=enum name : type"
         "NS_CLOSED_ENUM(type,name)=enum name : type")
+    # A .m's @interface Foo () extension is a class in Doxygen's model, indexed beside the real
+    # Foo as "Foo()" with an empty description. Nothing public is declared in one.
+    set(DOXYGEN_EXTRACT_LOCAL_CLASSES NO)
     set(DOXYGEN_EXCLUDE "${CMAKE_SOURCE_DIR}/Project/bf_init_bytes.inc")
     find_package(Doxygen REQUIRED)
     doxygen_add_docs(docs README.md Project ALL)
