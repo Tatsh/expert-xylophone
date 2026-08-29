@@ -149,19 +149,17 @@ public:
 
 private:
     // +0x00: implicit vtable pointer.
-    // +0x08/+0x10: a self-linked ring distinct from the parent/child/sibling tree below.
-    C_RENDER *m_pLinkPrev = {};    // +0x08
-    C_RENDER *m_pLinkNext = {};    // +0x10
-    int m_nField18 = {};           // +0x18: node state not yet recovered.
-    C_RENDER *m_pParent = {};      // +0x20
-    C_RENDER *m_pChildHead = {};   // +0x28
-    C_RENDER *m_pSiblingPrev = {}; // +0x30
-    C_RENDER *m_pSiblingNext = {}; // +0x38
-    // +0x40: the element type is not yet recovered, so it is modelled as a raw byte buffer.
-    unsigned char *m_pBuffer = {};      // +0x40
+    C_RENDER *m_pLinkPrev = {};         // +0x08: a self-linked ring, distinct from the tree below.
+    C_RENDER *m_pLinkNext = {};         // +0x10
+    int m_nField18 = {};                // +0x18: node state not yet recovered.
+    C_RENDER *m_pParent = {};           // +0x20
+    C_RENDER *m_pChildHead = {};        // +0x28
+    C_RENDER *m_pSiblingPrev = {};      // +0x30
+    C_RENDER *m_pSiblingNext = {};      // +0x38
+    unsigned char *m_pBuffer = {};      // +0x40: element type not yet recovered.
     unsigned char m_reserved48[8] = {}; // +0x48: node state not yet recovered.
-    float m_mLocalMatrix[16] = {};      // +0x50: local transform.
-    float m_mWorldMatrix[16] = {};      // +0x90: composed world transform.
+    float m_mLocalMatrix[16] = {};      // +0x50
+    float m_mWorldMatrix[16] = {};      // +0x90
     bool m_bDeleteRequest = {};         // +0xd0
     bool m_bVisible = {};               // +0xd1
     // +0xd2..+0xd3 is alignment padding; derived classes place their first member at +0xd4.

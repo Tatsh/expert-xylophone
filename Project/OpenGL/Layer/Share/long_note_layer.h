@@ -93,14 +93,12 @@ private:
      */
     LongNoteLayer();
 
-    ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] =
-        {};                                // +0x10: the per-batch sprite instancers.
-    int m_aSpriteCounts[kBatchCount] = {}; // +0x28: each batch's initial count.
-    bool m_bBuilt = {};                    // +0x34: set once the sprites are built.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10
+    int m_aSpriteCounts[kBatchCount] = {};                     // +0x28
+    bool m_bBuilt = {};                                        // +0x34
     // +0x35..+0x37 is alignment padding before the base offset.
-    // +0x38: the shared pulse clock; the constructor seeds it to -1.
-    float m_flPulseClock = {};
+    float m_flPulseClock = {}; // +0x38: the constructor seeds it to -1.
 
     /**
      * One pooled connector draw record (36 bytes): its active flag, the two shape selectors,

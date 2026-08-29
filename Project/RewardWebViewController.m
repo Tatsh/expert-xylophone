@@ -1,11 +1,3 @@
-//
-//  RewardWebViewController.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458.
-//  See RewardWebViewController.h for the class overview.
-//
-
 #import "RewardWebViewController.h"
 
 #import <UIKit/UIKit.h>
@@ -16,60 +8,48 @@
 #import "ApplilinkUtilities.h"
 #import "RewardCore.h"
 
-// The status-bar-relative vertical inset applied to the base view: 44 points when the navigation
-// bar is shown, 0 when it is hidden.
 static const CGFloat kNavigationBarInsetShown = 44.0;
 static const CGFloat kNavigationBarInsetHidden = 0.0;
 
-// The delay, in seconds, before the loading overlay switches to its touch-active state.
 static const NSTimeInterval kIndicatorActivationDelay = 45.0;
 
-// The mutable request's timeout, in seconds.
 static const NSTimeInterval kRequestTimeout = 30.0;
 
-// The message-table keys for the navigation-bar title and close button.
 static NSString *const kAppListTitleKey = @"RewardNetworkAppListTitle";
 static NSString *const kAppListCloseButtonKey = @"RewardNetworkAppListCloseButton";
 
-// The advert page signals a close either through a "close" navigation or a "command=close" query.
 static NSString *const kCloseNavigation = @"close";
 static NSString *const kCloseNavigationPrefix = @"close:";
 static NSString *const kCloseCommandQuery = @"command=close";
 
-// The system version at and above which the navigation bar is tinted and the modern rotation path
-// is used.
 static const float kSystemVersionIOS7 = 7.0f;
 static const float kSystemVersionIOS8 = 8.0f;
 
-// The redirect dispositions returned by RewardCore -redirectWithRequest:.
 enum {
-    kRedirectAllow = 0,    // Continue loading the request.
-    kRedirectHandled = 1,  // The redirect was handled internally; still load the request.
-    kRedirectExternal = 3, // The redirect opened elsewhere; cancel the request.
+    kRedirectAllow = 0,
+    kRedirectHandled = 1,
+    kRedirectExternal = 3,
 };
 
-// The web-view load states stored in webViewStatus.
 enum {
-    kWebViewStatusIdle = 0,     // No load has started.
-    kWebViewStatusLoading = 1,  // A load is in progress.
-    kWebViewStatusFinished = 2, // The load has finished.
+    kWebViewStatusIdle = 0,
+    kWebViewStatusLoading = 1,
+    kWebViewStatusFinished = 2,
 };
 
-// Web-view/URL error codes handled specially in -webView:didFailLoadWithError:.
 enum {
-    kWebErrorCancelled = -999,       // NSURLErrorCancelled; always ignored.
-    kWebErrorNotConnected = -1009,   // NSURLErrorNotConnectedToInternet; a post-load link failure.
-    kWebErrorPlugInLoadFailed = 204, // WebKit plug-in load failure; ignored on the WebKit domain.
-    kWebErrorFrameLoadFailed = 102,  // WebKit frame-load failure; ignored on the WebKit domain.
+    kWebErrorCancelled = -999,     // NSURLErrorCancelled.
+    kWebErrorNotConnected = -1009, // NSURLErrorNotConnectedToInternet.
+    kWebErrorPlugInLoadFailed = 204,
+    kWebErrorFrameLoadFailed = 102,
 };
 
 @interface RewardWebViewController () <UIWebViewDelegate>
 
-// Set once the view has disappeared or been closed, so a subsequent -loadView just detaches the
-// stale view instead of rebuilding it.
+// Set once the view has closed, so a subsequent -loadView detaches the stale view instead of
+// rebuilding it.
 @property(nonatomic) BOOL viewCloseFlg;
 
-// The reference bounds the layout is derived from, captured in -loadView.
 @property(nonatomic) CGRect baseFrame;
 
 - (void)activeWebView;
@@ -112,7 +92,6 @@ enum {
 // @ 0x21c94c
 - (void)loadView {
     [super loadView];
-    // When the view was closed, this reload just detaches the stale view and returns.
     if (_viewCloseFlg) {
         _viewCloseFlg = NO;
         [self.view removeFromSuperview];
@@ -181,8 +160,7 @@ enum {
 - (void)dealloc {
     [self clearDelegate];
     _viewCloseFlg = NO;
-    // The binary's -[super dealloc] is elided: ARC synthesises the superclass teardown and the
-    // strong-ivar release (the binary's .cxx_destruct at 0x21f498).
+    // ARC synthesises the binary's -[super dealloc] and its .cxx_destruct at 0x21f498.
 }
 
 // @ 0x21d1a8
@@ -212,10 +190,7 @@ enum {
     if (![self shouldAutorotate]) {
         return NO;
     }
-    // The binary shifts the raw orientation rather than naming a UIInterfaceOrientationMask
-    // constant, producing 2, 4, 8 and 0x10 from a jump table. Those are the same values the named
-    // masks hold, since each mask is defined as 1 << its orientation, so the shift is reproduced
-    // here for fidelity rather than because it differs.
+    // The binary shifts the raw orientation instead of naming the masks; the values are the same.
     NSUInteger bit;
     switch (orientation) {
     case UIInterfaceOrientationPortrait:
@@ -238,12 +213,6 @@ enum {
                                      duration:duration];
 }
 
-// Lays the base view, navigation bar, web view, and indicator out to follow the interface
-// orientation, compensating for the status-bar inset and, on the pre-iOS 8 path, applying a manual
-// rotation transform to a free-standing (window or detached) presentation. The original is a long
-// branch-heavy frame-arithmetic routine keyed on system version, Xcode-6 build, and hosting mode;
-// this reconstruction preserves that structure and the observable frames rather than every
-// intermediate register.
 // @ 0x21e0e0
 - (void)rotateWebViewWithInterfaceOrientation:(UIInterfaceOrientation)orientation
                                      duration:(NSTimeInterval)duration {
@@ -254,8 +223,6 @@ enum {
     CGFloat width = screenBounds.size.width;
     CGFloat height = screenBounds.size.height;
 
-    // Determine the status-bar inset. It is dropped for a hidden navigation bar on iOS 7+ and for a
-    // hosted (non-window, parented) presentation.
     CGFloat statusInset;
     BOOL hosted = _parentView && ![_parentView isKindOfClass:[UIWindow class]] &&
                   [ApplilinkUtilities hasParentViewController:_parentView];
@@ -272,8 +239,7 @@ enum {
         }
     }
 
-    // The manual rotation transform is only applied on the pre-iOS 8 (or non-Xcode 6 build) path,
-    // where UIKit does not rotate the window's content for us.
+    // Before iOS 8 (or a non-Xcode 6 build) UIKit does not rotate the window's content for us.
     BOOL legacyRotation =
         [[UIDevice currentDevice].systemVersion floatValue] < kSystemVersionIOS8 ||
         ![ApplilinkCore isBuildXcode6];
@@ -314,7 +280,6 @@ enum {
         }
     }
 
-    // Re-align the view frame for the current orientation and status inset.
     CGFloat originX = 0.0;
     CGFloat originY = 0.0;
     CGFloat viewWidth = _baseFrame.size.width;
@@ -368,7 +333,6 @@ enum {
     self.baseView.frame = baseFrame;
 
     self.indicator.frame = self.view.bounds;
-    // The web view fills the base view starting from its origin.
     self.webView.frame =
         CGRectMake(0, 0, self.baseView.frame.size.width, self.baseView.frame.size.height);
 }
@@ -544,14 +508,12 @@ enum {
     }
 }
 
-// This SDK-facing alias forwards to the isNavigationBarHidden property setter.
 // @ 0x21d2cc
 - (void)setNavigationBarHidden:(BOOL)navigationBarHidden {
     _isNavigationBarHidden = navigationBarHidden;
 }
 
-// The backing store is inverted: the getter returns the raw flag but the setter stores its
-// complement, so a caller asking to enable bounces clears the stored value that -loadView negates.
+// The setter faithfully stores the complement, which -loadView negates back.
 // @ 0x21d708
 - (void)setWebViewBounces:(BOOL)webViewBounces {
     _webViewBounces = !webViewBounces;
@@ -603,8 +565,6 @@ enum {
 
 #pragma mark - Responder chain
 
-// Walks a responder up its chain to decide whether it resolves to a presentable host: a window,
-// application, or view controller counts directly; a plain view recurses to its next responder.
 // @ 0x21f068
 - (BOOL)hasParentViewController:(UIResponder *)responder {
     if ([responder isKindOfClass:[UIWindow class]] ||

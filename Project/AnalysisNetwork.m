@@ -4,7 +4,6 @@
 #import "ApplilinkConsts.h"
 #import "ApplilinkNetworkError.h"
 
-// Forwarded to the caller's callback when the Applilink SDK may not be used in this environment.
 static const NSInteger kApplilinkErrorSdkUnavailable = 0x401;
 
 @implementation AnalysisNetwork

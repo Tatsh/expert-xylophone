@@ -130,8 +130,8 @@ constexpr PauseGaugeRectSize kPauseGaugeRectVariant = {336, 66};
 constexpr PauseGaugeRectSize kPauseGaugeRectDefault = {220, 50};
 } // namespace
 
-// Reached only through the binary's __mod_init_func table (the pointer at 0x358cd0); without the
-// constructor attribute both rectangle tables stay zero and no pause-menu item can be tapped.
+// Runs from the binary's __mod_init_func table (the pointer at 0x358cd0); without the constructor
+// attribute both rectangle tables stay zero and no pause-menu item can be tapped.
 /** @ghidraAddress 0x15145c */
 __attribute__((constructor)) void SeedPauseGaugeLayoutTable(void) {
     @autoreleasepool {
@@ -201,10 +201,10 @@ bool PauseGaugeLayer::CheckPointInRect(float flX, float flY, unsigned int nLaneI
 
 namespace {
 constexpr unsigned int kSecondPlayerLane = 1;
-constexpr unsigned int kArrowSlotBase = 4;    // left/right arrow slot = lane + 4.
-constexpr unsigned int kCenterSlotBase = 7;   // centre element slot = lane + 7.
-constexpr unsigned int kSingleSlotBase = 1;   // single-sprite slot (main frame) = lane + 1.
-constexpr unsigned int kColetteSlotBase = 10; // single-sprite slot (Colette) = lane + 10.
+constexpr unsigned int kArrowSlotBase = 4;
+constexpr unsigned int kCenterSlotBase = 7;
+constexpr unsigned int kSingleSlotBase = 1;
+constexpr unsigned int kColetteSlotBase = 10;
 constexpr float kArrowFlipLeft = 1.0f;
 constexpr float kArrowFlipRight = -1.0f;
 constexpr unsigned int kOpaqueAlpha = 0xff;
@@ -219,8 +219,7 @@ void PauseGaugeLayer::RenderForLane(unsigned int nLaneIndex) {
     unsigned int nAlpha = lane.bDimmed ? 0x80 : kOpaqueAlpha;
 
     const int nThema = RBUserSettingData.sharedInstance.thema;
-    // Limelight and Colette dim the Exit lane while a pastel bonus is active, matching HandleExit,
-    // which refuses to exit under exactly that condition.
+    // Limelight and Colette dim the Exit lane during a pastel bonus, matching HandleExit's refusal.
     unsigned int nLaneAlpha = nAlpha;
     if (nThema == RBUserSettingDataThemeLimelight || nThema == RBUserSettingDataThemeColette) {
         const bool bPastelBonus = GameSystem::GetGameSystem()->GetPastelBonusType() != 0;
@@ -351,8 +350,7 @@ void PauseGaugeLayer::ExecShow() {
             }
         }
     }
-    // A second, sequential test rather than an else: the binary falls straight through from a
-    // successful acquisition into the drag block on the very same frame.
+    // Sequential rather than an else: acquisition falls into the drag block on the same frame.
     if (m_nSelectedTouchId != kNoSelectedTouch) {
         TouchPoint *pTouch = pTouches->FindTouchById(m_nSelectedTouchId);
         if (pTouch == nullptr) {

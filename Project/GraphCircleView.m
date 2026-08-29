@@ -12,7 +12,6 @@ static const CGFloat kLineDashPattern[] = {5.0, 2.0};
 static const CGFloat kDotDiameter = 4.0;
 static const CGFloat kDotRadius = 2.0;
 
-// @c kFewPointEndFraction divides the width to inset each end.
 static const CGFloat kWideEndInset = 30.0;
 static const CGFloat kFewPointEndFraction = 5.0;
 
@@ -24,15 +23,13 @@ static const CGFloat kBottomLabelInset = 20.0;
 
 static const CGFloat kVisibleAlpha = 1.0;
 
-// A cross-file palette global (g_dTranslucentAlpha, near 0x1002ee6a0) cached here until it is
-// recovered.
+// Cached from the cross-file palette global g_dTranslucentAlpha (near 0x1002ee6a0).
 static const CGFloat kTranslucentAlpha = 0.8;
 
 static const NSUInteger kSinglePointCount = 1;
 static const NSUInteger kFewPointLowerCount = 2;
 static const NSUInteger kFewPointUpperCount = 3;
 
-// The minimum line snaps down to the first threshold it is not below.
 static const double kSnapTolerance = 0.001;
 static const float kMinLineSnapThresholds[] = {
     0.0f, 25.0f, 50.0f, 60.0f, 70.0f, 80.0f, 90.0f, 95.0f, 100.0f};

@@ -153,7 +153,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 + (void)initialize {
     /** @ghidraAddress 0x4d778 */
-    // The binary's body is empty; it establishes no one-time state.
 }
 
 + (instancetype)appDelegate {
@@ -217,13 +216,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // RBPDBG: stamps the build's git SHA so a captured log identifies the build that produced it.
     neDebugLog("build sha=%s", RBPDBG_BUILD_SHA);
 
     InitializeDeviceEnvironment();
 
-    // The keychain query and the volume stat are real side effects, so they stay inside the block
-    // that compiles away entirely.
+    // These are real side effects, so they stay inside the block that compiles away entirely.
     if (NE_DBG_FIRST(1)) {
         NSString *listKey = [AppDelegate musicListKey];
         neDebugLog("mulist/prodlist key uuid=%s", listKey.length ? listKey.UTF8String : "(nil)");
@@ -343,9 +340,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     self.window = [[neWindow alloc] initWithFrame:screenBounds];
     self.window.backgroundColor = UIColor.blackColor;
 #ifdef ENABLE_PATCHES
-    // The app has no dark assets, and since iOS 15 an unconfigured bar is transparent at its
-    // scroll edge, showing this black window through the store's bars. These must be set before
-    // any store view controller is built.
+    // Since iOS 15 an unconfigured bar is transparent at its scroll edge, showing this black
+    // window through the store's bars. These must be set before any store view controller is built.
     if (@available(iOS 13.0, *)) {
         self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
 
@@ -361,8 +357,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
             UITabBar.appearance.scrollEdgeAppearance = tabAppearance;
         }
 
-        // The playlist popover's sort row sits in a toolbar, which keeps the modern transparent
-        // scroll-edge appearance and so loses the separating shadow line the original draws.
+        // The playlist popover's sort toolbar otherwise loses the separating shadow line.
         UIToolbarAppearance *toolbarAppearance = [[UIToolbarAppearance alloc] init];
         [toolbarAppearance configureWithOpaqueBackground];
         UIToolbar.appearance.standardAppearance = toolbarAppearance;
@@ -713,8 +708,7 @@ NSString *RBDeviceIdentityUUID(void) {
 + (NSString *)musicListKey {
 #ifdef ENABLE_PATCHES
     // A fixed key, so the purchased-content lists are portable rather than tied to one install's
-    // keychain. See PATCHES.md. Only the lists use this; the identity the server is told is
-    // RBDeviceIdentityUUID, which stays per-install.
+    // keychain. See PATCHES.md.
     return kFixedMusicListKey;
 #else
     return RBKeychainDeviceUUID();
@@ -722,7 +716,7 @@ NSString *RBDeviceIdentityUUID(void) {
 }
 
 static NSString *RBKeychainDeviceUUID(void) {
-    // The five pairs come from the stack setup at 0x50d90-0x50da8, not from the decompile.
+    // @ghidraAddress 0x50d90
     NSDictionary *attributeQuery =
         [NSDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
                                                    (__bridge id)kSecClass,
@@ -763,7 +757,7 @@ static NSString *RBKeychainDeviceUUID(void) {
     CFRelease(uuidString);
     CFRelease(uuid);
 
-    // The five pairs here come from the stack setup at 0x50f9c-0x50fc4.
+    // @ghidraAddress 0x50f9c
     NSMutableDictionary *item =
         [NSMutableDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
                                                           (__bridge id)kSecClass,
@@ -823,8 +817,7 @@ static NSString *RBKeychainDeviceUUID(void) {
                                      adLocation:kRecommendUnreadAdLocation
                                        callback:^(NSInteger status, NSError *error) {
                                          /** @ghidraAddress 0x50a20 */
-                                         // The count field is four bytes in the binary, so the
-                                         // callback's wider status narrows on the way in.
+                                         // The count field is four bytes in the binary.
                                          AppDelegate.appDelegate.unreadRecommendCount =
                                              static_cast<int>(error == nil ? status : 0);
                                        }];
@@ -1004,8 +997,7 @@ static NSString *RBKeychainDeviceUUID(void) {
 /** @ghidraAddress 0x4ee50 */
 - (BOOL)needUpdateTerms {
 #ifdef ENABLE_PATCHES
-    // Accepting the terms POSTs to a Konami endpoint that no longer answers, so acceptance can
-    // never be recorded and the screen returns on every launch. All three title scenes gate on it.
+    // Accepting the terms POSTs to an endpoint that no longer answers, so it can never be recorded.
     return NO;
 #else
     NSString *accepted = RBUserSettingData.sharedInstance.termVersion;
@@ -1061,8 +1053,7 @@ static NSString *RBKeychainDeviceUUID(void) {
 
 /** @ghidraAddress 0x4f0fc */
 + (NSDictionary *)popPushNotificationData {
-    // The binary re-sends appDelegate and pushList for each step rather than holding the list in
-    // a local, and it sends -objectAtIndex:, not the subscript form.
+    // The binary re-sends appDelegate and pushList for each step, and sends -objectAtIndex:.
     if (AppDelegate.appDelegate.pushList != nil && AppDelegate.appDelegate.pushList.count != 0) {
         NSDictionary *data = [AppDelegate.appDelegate.pushList objectAtIndex:0];
         [AppDelegate.appDelegate.pushList removeObjectAtIndex:0];
@@ -1127,7 +1118,6 @@ static NSString *RBKeychainDeviceUUID(void) {
 
 /** @ghidraAddress 0x4d77c */
 - (void)startApplication {
-    // Classify the device OS version so play timing can compensate for the iOS 8.0/8.1 changes.
     if ([UIDevice.currentDevice.systemVersion compare:kOsVersion81
                                               options:NSNumericSearch] == NSOrderedAscending) {
         if ([UIDevice.currentDevice.systemVersion compare:kOsVersion80
@@ -1296,8 +1286,7 @@ static NSString *RBKeychainDeviceUUID(void) {
     self.resourceDownloadViewController = downloadViewController;
     downloadViewController.downloadPath = self.urlString;
     downloadViewController.version = self.version;
-    // Not a deviation: presenting gave a full-screen canvas on the iOS this was built for, and
-    // since iOS 13 the default is an inset sheet, so stating the style restores the original.
+    // Not a deviation: since iOS 13 the default is an inset sheet, so this restores the original.
     downloadViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.viewController presentViewController:downloadViewController animated:NO completion:nil];
 }

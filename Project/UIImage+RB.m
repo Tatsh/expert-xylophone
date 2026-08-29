@@ -57,8 +57,7 @@ static UIImage *RBBundleImage(NSString *resourceName) {
     return [UIImage imageWithContentsOfFile:path];
 }
 
-// On iPad the two passes use opposite tags, so a Retina iPad tries "@2x~ipad" and then "~ipad";
-// only the second pass finds dl_info, the one atlas shipping no "@2x~ipad" variant.
+// On iPad the two passes use opposite tags, so a Retina iPad tries "@2x~ipad" and then "~ipad".
 // @ghidraAddress 0x1a1fc0/0x1a1b6c/0x1a1fa0
 static NSString *RBDeviceAssetTag(BOOL secondPass) {
     if (!IsPad()) {

@@ -1,7 +1,3 @@
-// The extend-note catalogue list model implementation. It downloads the extend-note catalogue in
-// pages, resolves each entry against StoreKit, parses the server dictionary into
-// StoreExtendNoteInfo records, and reports load progress to its delegate.
-
 #import "RBStoreExtendNoteList.h"
 
 #import <StoreKit/StoreKit.h>
@@ -13,29 +9,22 @@
 #import "StoreUtil.h"
 #import "engineglobals.h"
 
-// The number of catalogue items requested per page.
 static const unsigned int kExtendNoteListPageSize = 12;
 
-// initWithCapacity: hints for the record and product-identifier caches.
 static const NSUInteger kExtendNoteInfoCapacity = 50;
 static const NSUInteger kListProductIDCapacity = 50;
 static const NSUInteger kMergeArrayCapacity = 10;
 static const NSUInteger kProductIdentifierSetCapacity = 12;
 
-// The purchase-limit type is stored as a signed setting; a value below this count is a real,
-// player-chosen limit type that a month rollover resets to "unset" (0).
+// A limit type below this count is a real, player-chosen one that a month rollover resets.
 static const int kPurchaseLimitTypeCount = 3;
 
-// The purchase-limit-type sentinel meaning "not yet chosen".
 static const int kPurchaseLimitTypeUnset = 0;
 
-// The running purchase total reset at a month rollover.
 static const int kTotalPurchaseReset = 0;
 
-// The options passed to -compare:options: to compare version strings numerically.
 static const NSStringCompareOptions kVersionCompareOptions = NSNumericSearch;
 
-// Server catalogue and response dictionary keys.
 static NSString *const kKeyNoteList = @"NoteList";
 static NSString *const kKeyPID = @"PID";
 static NSString *const kKeyMusic = @"Music";
@@ -44,12 +33,8 @@ static NSString *const kKeyVersion = @"Version";
 static NSString *const kKeyDate = @"Date";
 static NSString *const kKeyError = @"Error";
 
-// The application bundle's version key.
 static NSString *const kKeyCFBundleVersion = @"CFBundleVersion";
 
-// The store-country code of the resolved StoreKit products, cached across list instances so the
-// server request can be scoped to the player's storefront. It is a file-scope global in the
-// binary, so it is modelled as one here.
 static NSString *g_pStoreCountry = nil;
 
 @implementation RBStoreExtendNoteList
@@ -154,8 +139,7 @@ static NSString *g_pStoreCountry = nil;
 /** @ghidraAddress 0xc07f4 */
 - (void)optionalProductsRequest {
 #ifdef ENABLE_PATCHES
-    // The deep-linked extend note is free too, so this request would hang the same way. The note it
-    // would have priced is already in the catalogue merge.
+    // The deep-linked extend note is free too, so this request would hang.
     return;
 #else
     if ([[AppDelegate appDelegate] getPackIDForOpenStore] == nil) {
@@ -202,7 +186,6 @@ static NSString *g_pStoreCountry = nil;
 /** @ghidraAddress 0xbf768 */
 - (void)updateExtendNoteInfo:(NSDictionary *)dictionary
           SKProductsResponse:(SKProductsResponse *)response {
-    // Wrap each resolved StoreKit product into a record, keyed by its numeric identifier.
     if (response != nil) {
         for (SKProduct *product in response.products) {
             int productID = [StoreUtil productIDToPid:product.productIdentifier];
@@ -213,17 +196,13 @@ static NSString *g_pStoreCountry = nil;
         }
     }
 
-    // Apply the server catalogue entries onto the matching records, collecting the product ids
-    // that carry tune metadata.
     NSMutableArray<NSNumber *> *resolvedProductIDs =
         [[NSMutableArray alloc] initWithCapacity:kMergeArrayCapacity];
     for (NSDictionary *entry in dictionary[kKeyNoteList]) {
         int productID = [entry[kKeyPID] intValue];
         StoreExtendNoteInfo *info = [self getExtendNoteInfoWithProductID:productID];
 #ifdef ENABLE_PATCHES
-        // A record only ever enters the list above by being built from an SKProduct, so with no
-        // StoreKit response nothing matches and the page reports itself empty. The catalogue entry
-        // carries the same fields, so build the record from it directly.
+        // Without a StoreKit response nothing matches, so build the record from the entry itself.
         if (info == nil && entry[kKeyMusic] != nil) {
             info = [[StoreExtendNoteInfo alloc] initWithDictionary:entry];
             if (info != nil) {
@@ -237,8 +216,6 @@ static NSString *g_pStoreCountry = nil;
         }
     }
 
-    // A page fetch advances the paging cursor and records whether more pages remain; the
-    // single-pack optional request does neither.
     if (!self.isOptionalProductRequest) {
         self.fetchedExtendNoteNum = self.fetchedExtendNoteNum + kExtendNoteListPageSize;
         self.extendNoteListContinued = [dictionary[kKeyHasNext] boolValue];
@@ -260,7 +237,6 @@ static NSString *g_pStoreCountry = nil;
 
 /** @ghidraAddress 0xc07f0 */
 - (void)downloaderProceed:(Downloader *)downloader {
-    // Intentionally empty: catalogue progress is not surfaced.
 }
 
 /** @ghidraAddress 0xbfe24 */
@@ -269,7 +245,6 @@ static NSString *g_pStoreCountry = nil;
     NSString *requiredVersion = json[kKeyVersion];
     NSString *appVersion = [NSBundle mainBundle].infoDictionary[kKeyCFBundleVersion];
 
-    // A month rollover resets the accumulated purchase total and any chosen purchase-limit type.
     int lastMonth = [RBUserSettingData sharedInstance].lastPurchaseMonth;
     NSNumber *serverMonth = json[kKeyDate];
     if (serverMonth != nil) {
@@ -284,18 +259,14 @@ static NSString *g_pStoreCountry = nil;
     }
     [[RBUserSettingData sharedInstance] save];
 
-    // Reject the catalogue when the app cannot read its own version, or when the server demands a
-    // newer app version than the running one.
     if (appVersion == nil || (requiredVersion != nil &&
                               [appVersion compare:requiredVersion
                                           options:kVersionCompareOptions] == NSOrderedAscending)) {
 #ifdef ENABLE_PATCHES
-        // Pass the catalogue string as an argument rather than as the format, so its unsubstituted
-        // %1$@/%2$@ placeholders cannot consume varargs that were never pushed.
+        // Passed as an argument so its %1$@/%2$@ placeholders cannot read varargs never supplied.
         NSString *message = [NSString stringWithFormat:@"%@", g_pLocalizedUpdateRequiredFormat];
 #else
-        // The binary passes the format string as the only argument, leaving its positional
-        // %1$@/%2$@ placeholders unsubstituted.
+        // The binary passes the format string itself, leaving its placeholders unsubstituted.
         NSString *message = [NSString stringWithFormat:g_pLocalizedUpdateRequiredFormat];
 #endif
         [self.delegate extendNoteListDownloadError:self errorMessage:message];
@@ -314,7 +285,6 @@ static NSString *g_pStoreCountry = nil;
         return;
     }
 
-    // Collect the product identifiers not yet resolved into StoreKit records.
     NSMutableSet *identifiers = [NSMutableSet setWithCapacity:kProductIdentifierSetCapacity];
     BOOL sawAnyPID = NO;
     for (NSDictionary *entry in noteList) {
@@ -329,20 +299,17 @@ static NSString *g_pStoreCountry = nil;
     }
 
 #ifdef ENABLE_PATCHES
-    // Every extend note is free in a patched build, so there is no App Store product to resolve and
-    // an SKProductsRequest would leave the Sequences tab loading forever, exactly as it does on the
-    // pack list. Dropping the identifiers takes the direct-merge branch below instead.
+    // Every extend note is free here, so an SKProductsRequest would never resolve; take the
+    // direct-merge branch instead.
     [identifiers removeAllObjects];
 #endif
     if (identifiers.count == 0) {
         if (sawAnyPID) {
-            // Every listed product is already resolved; merge the catalogue directly.
             [self updateExtendNoteInfo:json SKProductsResponse:nil];
         } else {
             [self.delegate extendNoteListDownloadError:self errorMessage:g_pLocalizedServerNoData];
         }
     } else {
-        // Hold the catalogue while its products resolve, then fire a StoreKit products request.
         self.tempExtendNoteList = [[NSDictionary alloc] initWithDictionary:json];
         if (self.productsRequest != nil) {
             [self.productsRequest cancel];
@@ -368,7 +335,6 @@ static NSString *g_pStoreCountry = nil;
 /** @ghidraAddress 0xc0b20 */
 - (void)productsRequest:(SKProductsRequest *)request
      didReceiveResponse:(SKProductsResponse *)response {
-    // Cache the storefront country of the resolved products for later scoping.
     if (response.products.count != 0) {
         NSString *country =
             [response.products.lastObject.priceLocale objectForKey:NSLocaleCountryCode];
@@ -383,8 +349,6 @@ static NSString *g_pStoreCountry = nil;
 
     if (self.isOptionalProductRequest) {
         self.isOptionalProductRequest = NO;
-        // When the deep-linked pack is unavailable in this storefront, clear the queued pid so the
-        // store does not try to open it.
         if (response.invalidProductIdentifiers != nil) {
             int queuedPID = [[[AppDelegate appDelegate] getExtendNotePIDForOpenStore] intValue];
             if ([response.invalidProductIdentifiers

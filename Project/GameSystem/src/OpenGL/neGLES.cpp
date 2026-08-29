@@ -25,18 +25,12 @@ constexpr GLenum kPrimitiveToGlMode[] = {
     GL_TRIANGLES,      //
 };
 
-// The number of engine render capabilities (neIGLES::ES_MAX) and vertex-array client states
-// (neIGLES::CS_MAX). They bound the enable- and client-state indices the setters accept.
 constexpr int kEnableStateMax = 0x24;
 constexpr int kClientStateMax = 7;
 
-// The number of engine blend factors (neIGLES::BLEND_SRC_VALUE_MAX / BLEND_DEST_VALUE_MAX). The
-// source table has one extra factor (the destination cannot be a source-only factor).
 constexpr int kBlendSrcMax = 9;
 constexpr int kBlendDestMax = 8;
 
-// Maps an engine enable-state index to its GL capability. The last slot has no GL ES 1.1 name; it
-// is a table entry the engine never enables, kept so the index mapping matches the binary.
 constexpr GLenum kEnableStateToGlCap[] = {
     GL_ALPHA_TEST,               // 0
     GL_BLEND,                    // 1
@@ -76,7 +70,6 @@ constexpr GLenum kEnableStateToGlCap[] = {
     static_cast<GLenum>(0x8840), // 35 (engine table slot with no GL ES 1.1 capability name)
 };
 
-// Maps an engine client-state index to its GL vertex-array client state.
 constexpr GLenum kClientStateToGlArray[] = {
     GL_COLOR_ARRAY,            // 0
     GL_MATRIX_INDEX_ARRAY_OES, // 1
@@ -87,12 +80,8 @@ constexpr GLenum kClientStateToGlArray[] = {
     GL_WEIGHT_ARRAY_OES,       // 6
 };
 
-// Maps an engine matrix-mode index (1..3) to its GL matrix mode; any other index selects
-// model-view.
 constexpr GLenum kMatrixModeToGl[] = {GL_PROJECTION, GL_TEXTURE, GL_MATRIX_PALETTE_OES};
 
-// Maps engine blend factor indices to their GL blend enums. The first two entries (GL_ZERO, GL_ONE)
-// are shared; the source table has the extra GL_SRC_ALPHA_SATURATE at index 8.
 constexpr GLenum kBlendSrcToGl[] = {
     GL_ZERO,                //
     GL_ONE,                 //
@@ -115,12 +104,11 @@ constexpr GLenum kBlendDestToGl[] = {
     GL_ONE_MINUS_DST_ALPHA, //
 };
 
-// The base GL texture-parameter name; the engine parameter type (0..3: mag filter, min filter,
-// wrap S, wrap T) is added to it to form the GL enum (GL_TEXTURE_MAG_FILTER + type).
+// The engine parameter type (0..3: mag filter, min filter, wrap S, wrap T) is added to this base to
+// form the GL enum.
 constexpr GLenum kTexParamTypeBase = GL_TEXTURE_MAG_FILTER;
 constexpr int kTexParamTypeMax = 4;
 
-// Maps an engine texture-parameter value index (0..7) to its GL filter or wrap enum.
 constexpr GLenum kTexParamValueToGl[] = {
     GL_NEAREST,                //
     GL_LINEAR,                 //
@@ -135,7 +123,6 @@ constexpr int kTexParamValueMax = 8;
 
 } // namespace
 
-// The global OpenGL ES render-state singleton, created lazily by neGLESRenderer::EnsureShared.
 neGLESRenderer *g_glesRenderer = nullptr; // @ghidraAddress 0x3dc250
 
 /** @ghidraAddress 0x20f50 */
@@ -164,7 +151,6 @@ void neGLESRenderer::GenBuffer(unsigned int *pOutBuffer) {
 
 /** @ghidraAddress 0x21bd0 */
 void neGLESRenderer::UploadTexture2d(int nFormat, int nWidth, int nHeight, const void *pData) {
-    // The binary asserts the format is in range and not the compressed sentinel before mapping it.
     assert(nFormat > kTexFormatCompressed && nFormat < kTexFormatMax);
     const GLenum glFormat = kEngineFormatToGl[nFormat - 1];
     glTexImage2D(GL_TEXTURE_2D,
@@ -243,9 +229,6 @@ bool neGLESRenderer::IsFramebufferComplete() {
 /** @ghidraAddress 0x2131c */
 int neGLESRenderer::RenderKindToGl(RenderKind nKind) {
     assert(nKind >= 0 && nKind < RENDER_KIND_MAX);
-    // The colour, depth, and stencil attachment enums are consecutive; the binary computes them
-    // inline as GL_COLOR_ATTACHMENT0_OES + kind * (GL_DEPTH_ATTACHMENT_OES -
-    // GL_COLOR_ATTACHMENT0_OES).
     constexpr int kAttachments[] = {
         GL_COLOR_ATTACHMENT0_OES, GL_DEPTH_ATTACHMENT_OES, GL_STENCIL_ATTACHMENT_OES};
     return kAttachments[nKind];
@@ -254,8 +237,6 @@ int neGLESRenderer::RenderKindToGl(RenderKind nKind) {
 /** @ghidraAddress 0x21b6c */
 int TexParamTypeToGl(TexParamType nType) {
     assert(nType >= 0 && nType < kTexParamTypeMax);
-    // The four sampler parameter-name enums are consecutive, so the binary computes the result
-    // inline as GL_TEXTURE_MAG_FILTER + type rather than indexing a table.
     return static_cast<int>(kTexParamTypeBase + nType);
 }
 
@@ -313,8 +294,7 @@ void neGLESRenderer::SetBlendFunc(int nSrcFactor, int nDstFactor) {
     }
     m_nBlendSrc = nSrcFactor;
     m_nBlendDest = nDstFactor;
-    // The binary's embedded __func__ here is BlendSrcValueToGLValue: the value-mapping helpers are
-    // inlined into the setter, each asserting its factor is in range before the table lookup.
+    // The binary inlines the value mappers here; its embedded __func__ is BlendSrcValueToGLValue.
     assert(nSrcFactor >= 0 && nSrcFactor < kBlendSrcMax);
     assert(nDstFactor >= 0 && nDstFactor < kBlendDestMax);
     glBlendFunc(kBlendSrcToGl[nSrcFactor], kBlendDestToGl[nDstFactor]);
@@ -322,7 +302,6 @@ void neGLESRenderer::SetBlendFunc(int nSrcFactor, int nDstFactor) {
 
 /** @ghidraAddress 0x21250 */
 void neGLESRenderer::SetMatrixMode(int nMode, const float *pMatrix) {
-    // The mode switch is cached, but the matrix is loaded every call.
     if (m_nMatrixMode != nMode) {
         m_nMatrixMode = nMode;
         const GLenum glMode =
@@ -334,7 +313,6 @@ void neGLESRenderer::SetMatrixMode(int nMode, const float *pMatrix) {
 
 /** @ghidraAddress 0x21408 */
 void neGLESRenderer::SetViewport(int nX, int nY, int nWidth, int nHeight) {
-    // The viewport is cached; an unchanged rectangle skips the GL call.
     if (m_nViewportX == nX && m_nViewportY == nY && m_nViewportWidth == nWidth &&
         m_nViewportHeight == nHeight) {
         return;
@@ -346,8 +324,6 @@ void neGLESRenderer::SetViewport(int nX, int nY, int nWidth, int nHeight) {
     glViewport(nX, nY, nWidth, nHeight);
 }
 
-// The number of colour channels a packed vertex colour carries, and the sentinel a reset pointer
-// cache stores for its stride.
 namespace {
 constexpr int kColorComponentCount = 4;
 constexpr int kResetStrideSentinel = -1;
@@ -356,7 +332,7 @@ constexpr int kResetStrideSentinel = -1;
 /** @ghidraAddress 0x21634 */
 void neGLESRenderer::SetVertexPointer(const void *pData, int nSize, int nStride) {
     if (m_nArrayBufferBound != 0) {
-        // An array buffer is bound: unbind it so the client pointer takes effect.
+        // Unbind the array buffer so the client pointer takes effect.
         m_nArrayBufferBound = 0;
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         m_nVertexSize = nSize;
@@ -459,7 +435,6 @@ void neGLESRenderer::SetMatrixIndexPointer(const void *pData, int nSize, int nSt
 
 /** @ghidraAddress 0x216dc */
 void neGLESRenderer::ClearVertexPointer(int nStride, int nSize) {
-    // Re-point the array at the bound buffer's default (offset 0) only when the binding changed.
     if (m_nArrayBufferBound != 0 && m_nVertexBufferBinding != m_nArrayBufferBound) {
         m_nVertexBufferBinding = m_nArrayBufferBound;
         m_pVertexPointer = nullptr;
@@ -471,8 +446,7 @@ void neGLESRenderer::ClearVertexPointer(int nStride, int nSize) {
 
 /** @ghidraAddress 0x215f4 */
 void neGLESRenderer::ClearColorPointer(int nStride, int nColorOffset, int nBinding) {
-    (void)nBinding; // The binary reloads the cached binding from m_nArrayBufferBound; the caller's
-                    // scratch value is unused.
+    (void)nBinding; // The binary reloads the binding from m_nArrayBufferBound; unused here.
     if (m_nArrayBufferBound != 0 && m_nColorBufferBinding != m_nArrayBufferBound) {
         m_nColorBufferBinding = m_nArrayBufferBound;
         m_nColorStride = kResetStrideSentinel;
@@ -551,7 +525,6 @@ void neGLESRenderer::BindIndexBuffer(unsigned int dwBuffer) {
 
 /** @ghidraAddress 0x21ab4 */
 void neGLESRenderer::BindTexture2d(unsigned int dwHandle) {
-    // Cache the binding for the active texture unit; skip the GL call when it is unchanged.
     if (m_anTexturePerUnit[m_nActiveTextureUnit] == static_cast<int>(dwHandle)) {
         return;
     }
@@ -561,9 +534,7 @@ void neGLESRenderer::BindTexture2d(unsigned int dwHandle) {
 
 /** @ghidraAddress 0x21ae8 */
 void neGLESRenderer::SetTextureParameter(int nParameter, int nValue) {
-    // Translate the engine parameter type and value enums to GL and apply them to the bound
-    // texture. The binary's embedded __func__ is TexParamValueFuncToGLValue: the type and value
-    // mappers are inlined into this setter, each asserting its argument is in range.
+    // The binary inlines the type and value mappers; its __func__ is TexParamValueFuncToGLValue.
     assert(nParameter >= 0 && nParameter < kTexParamTypeMax);
     assert(nValue >= 0 && nValue < kTexParamValueMax);
     glTexParameteri(GL_TEXTURE_2D,
@@ -573,8 +544,6 @@ void neGLESRenderer::SetTextureParameter(int nParameter, int nValue) {
 
 /** @ghidraAddress 0x21484 */
 void neGLESRenderer::DeleteBuffer(unsigned int dwBuffer) {
-    // Clear the buffer from every cached binding slot so no stale binding references the freed
-    // name, then delete it.
     const int nBuffer = static_cast<int>(dwBuffer);
     if (m_nArrayBufferBound == nBuffer) {
         m_nArrayBufferBound = 0;
@@ -598,7 +567,6 @@ void neGLESRenderer::DeleteBuffer(unsigned int dwBuffer) {
 
 /** @ghidraAddress 0x21a68 */
 void neGLESRenderer::DeleteTexture(unsigned int dwHandle) {
-    // Clear the texture from every per-unit binding cache, then delete it.
     const int nTexture = static_cast<int>(dwHandle);
     for (int nUnit = 0; nUnit < kMaxTextureUnits; ++nUnit) {
         if (m_anTexturePerUnit[nUnit] == nTexture) {
@@ -610,8 +578,6 @@ void neGLESRenderer::DeleteTexture(unsigned int dwHandle) {
 
 /** @ghidraAddress 0x2152c */
 void neGLESRenderer::UploadArrayBufferData(const void *pData, unsigned int nSize, int nUsage) {
-    // A no-op when no array buffer is bound; the usage hint is static unless the caller asks for
-    // dynamic.
     if (m_nArrayBufferBound == 0) {
         return;
     }
@@ -628,14 +594,11 @@ void neGLESRenderer::UploadIndexBufferData(const void *pData, unsigned int nSize
 }
 
 namespace {
-// The matrix-palette extension name scanned for in the GL_EXTENSIONS string.
 constexpr char kMatrixPaletteExtension[] = "GL_OES_matrix_palette";
-// The default palette-matrix count assumed before the real device limit is queried.
 constexpr int kDefaultMaxPaletteMatrices = 9;
-// The matrix mode used to load the projection matrix (1 model-view, 2 projection, 3 texture).
+// Engine matrix modes: 1 model-view, 2 projection, 3 texture.
 constexpr int kMatrixModeProjection = 2;
-// The default orthographic projection: a diagonal scale of 2/65536 on x and y (mapping the engine's
-// 65536-unit space to the [-1, 1] clip range), identity on z and w.
+// Maps the engine's 65536-unit space to the [-1, 1] clip range.
 constexpr float kProjectionScale = 2.0f / 65536.0f;
 constexpr float kDefaultProjection[] = {
     kProjectionScale,
@@ -658,21 +621,14 @@ constexpr float kDefaultProjection[] = {
 } // namespace
 
 namespace {
-// The per-texture-unit sampler defaults the constructor seeds: minification filter, magnification
-// filter, S-wrap, and T-wrap (the GL enum values GL_LINEAR-family / GL_REPEAT the engine uses).
+// Per-unit sampler defaults: minification filter, magnification filter, S-wrap, and T-wrap.
 constexpr int kDefaultTexParams[] = {4, 1, 7, 7};
-// The default blend function factors (source one, destination zero).
 constexpr int kDefaultBlendSrc = 1;
 constexpr int kDefaultBlendDest = 0;
-// The default cull-face mode.
 constexpr int kDefaultCullFace = 1;
-// The unbound sentinel a handle slot holds until an object is bound.
 constexpr int kUnboundHandle = -1;
-// The default current vertex colour red channel (opaque).
 constexpr float kDefaultColorComponent = 1.0f;
-// The colour matrix's default diagonal.
 constexpr float kDefaultColorMatrixDiagonal[] = {1.0f, 1.0f, 0.0f, 1.0f};
-// The value seeded into the +0x030 slot at construction.
 constexpr int kField030Default = 7;
 } // namespace
 
@@ -681,8 +637,6 @@ neGLESRenderer::neGLESRenderer() {
     m_pField000 = nullptr;
     m_pField008 = nullptr;
     m_flCurrentColorR = kDefaultColorComponent;
-    // The viewport, matrix-mode, and palette-matrix caches start cleared, with the width sentinel
-    // and the +0x030 slot seeded from the constant blocks.
     m_nField014 = 0;
     m_nViewportX = 0;
     m_nViewportY = 0;
@@ -695,8 +649,6 @@ neGLESRenderer::neGLESRenderer() {
     m_bDepthTestEnabled = true;
     m_nCullFace = kDefaultCullFace;
     m_nArrayBufferBound = 0;
-    // The colour, vertex, weight, and matrix-index array-pointer caches start empty, their handle
-    // slots unbound and their bindings zero.
     m_pColorPointer = nullptr;
     m_nColorStride = kUnboundHandle;
     m_nColorBufferBinding = 0;
@@ -715,8 +667,6 @@ neGLESRenderer::neGLESRenderer() {
     m_nMatrixIndexStride = kUnboundHandle;
     m_nMatrixIndexSize = 0;
     m_nElementBufferBound = 0;
-    // Each texture unit starts with no bound coordinate array, an unbound stride sentinel, no
-    // binding, no bound texture, and the default sampler parameters.
     for (int nUnit = 0; nUnit < kMaxTextureUnits; ++nUnit) {
         m_apTexCoordPointer[nUnit] = nullptr;
         m_anTexCoordStride[nUnit] = kUnboundHandle;
@@ -729,7 +679,6 @@ neGLESRenderer::neGLESRenderer() {
     m_nBlendSrc = kDefaultBlendSrc;
     m_nBlendDest = kDefaultBlendDest;
     m_nField1dc = kDefaultBlendSrc;
-    // The per-capability enable cache and per-array client-state cache start all-false.
     m_nField20c = 0;
     m_bField20e = false;
     for (int i = 0; i < 4; ++i) {
@@ -743,7 +692,6 @@ neGLESRenderer::neGLESRenderer() {
 
 /** @ghidraAddress 0x20f9c */
 void neGLESRenderer::QueryCaps() {
-    // Scan the space-separated extension list for the matrix-palette extension.
     const char *pExtensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
     for (const char *pSpace = strchr(pExtensions, ' '); pSpace != nullptr;
          pSpace = strchr(pExtensions, ' ')) {
@@ -756,11 +704,9 @@ void neGLESRenderer::QueryCaps() {
         }
         pExtensions = pSpace + 1;
     }
-    // When the palette extension is present, default the count then read the real device limit.
     if (m_bHasMatrixPalette) {
         m_nMaxPaletteMatrices = kDefaultMaxPaletteMatrices;
-        // The binary queries 0x8842, the palette size, not GL_MAX_VERTEX_UNITS_OES (0x86a4), which
-        // is the per-vertex blend-weight count and is a much smaller number on the same device.
+        // The binary queries 0x8842, the palette size, not GL_MAX_VERTEX_UNITS_OES (0x86a4).
         glGetIntegerv(GL_MAX_PALETTE_MATRICES_OES, &m_nMaxPaletteMatrices);
     }
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &m_nMaxTextureSize);

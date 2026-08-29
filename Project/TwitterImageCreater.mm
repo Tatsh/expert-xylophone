@@ -394,7 +394,6 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
 
     int drawCount = significant > 0 ? significant : 1;
     if (dot && drawCount < kScoreColumnCount) {
-        // With a dot, always draw at least two tiles so the leading digit sits beside the dot.
         drawCount = 2;
     }
 
@@ -426,8 +425,7 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
         ++count;
         int previous = remaining;
         remaining = remaining / 10;
-        // The binary tests (previous + 9) against 18 with an unsigned compare, so the loop stops
-        // on any single digit of either sign rather than on every negative value.
+        // The binary's unsigned compare stops on any single digit of either sign.
         if (static_cast<unsigned int>(previous + kMaxSingleDigit) <= 2 * kMaxSingleDigit) {
             break;
         }

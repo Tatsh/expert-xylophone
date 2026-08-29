@@ -311,7 +311,6 @@ constexpr int kThreePointCurve = 3;
 constexpr int kTwoPointCurve = 2;
 constexpr int kFourPointCurve = 4;
 
-// Each group's first sprite kind, indexed by side; kinds advance by one per sprite.
 constexpr int kFanAKindBase[kSideCount] = {0x3b, 0xf};
 constexpr int kFanBKindBase[kSideCount] = {0x3d, 0x11};
 constexpr int kFanDKindBase[kSideCount] = {0x5b, 0x2f};
@@ -327,7 +326,6 @@ constexpr int kLetterKindBias = 0xb;
 constexpr int kFanDStrobePeriod = 6;
 constexpr int kFanDStrobeOnFrames = 3;
 
-// Each mote fan's layout: a screen X and the inset of its row above the near lane's bottom.
 struct MoteLayout {
     float flScreenX;
     int nRowInset;
@@ -750,8 +748,6 @@ void FullComboColetteLayer::Update(float flDelta) {
             effect.m_bActive = false;
         }
 
-        // The rival's side stays silent in the single-player modes, and the binary does not first
-        // check whether a voice is already playing.
         if (!effect.m_bVoiceFired && flClock > kVoiceCueClockMin && flClock < kVoiceCueClockMax) {
             effect.m_bVoiceFired = true;
             const int nRivalSide = (pGameSystem->GetPlayColor() == 0) ? 1 : 0;
@@ -851,8 +847,7 @@ void FullComboColetteLayer::Update(float flDelta) {
                     kFanBAlphaPairs,
                     kFanBOffsetYPairs);
 
-        // The third fan reuses the first fan's kind base rather than continuing from the second's,
-        // because the binary seeds that register once and never refreshes it.
+        // The third fan reuses the first fan's kind base, as the binary does.
         EmitMoteFan(flClock,
                     kFanCLayout,
                     kFanCCount,

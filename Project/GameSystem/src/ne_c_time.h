@@ -29,5 +29,5 @@ public:
     float GetElapsedMilliseconds() const;
 
 private:
-    double m_flTime = {}; // +0x0
+    double m_flTime = {};
 };

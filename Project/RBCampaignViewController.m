@@ -24,132 +24,102 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The sentinel stored in workingIndex and samplePlayedIndex when no row is active.
 static const int kNoActiveIndex = -1;
 
-// The campaign tab-bar item image and the two shared cell state images.
 static NSString *const kTabBarImageName = @"09_store/tab_present";
 static NSString *const kDeleteImageName = @"09_store/manage_delete";
 static NSString *const kDownloadImageName = @"09_store/manage_download";
 
-// The reuse identifier for the campaign list cell.
 static NSString *const kCampaignCellIdentifier = @"StoreCampaignCell";
 
-// The campaign tab label, used for the navigation and tab-bar item titles.
 static NSString *const kGiftTitle = @"Gift";
-// The store back bar-button title.
 static NSString *const kBackButtonTitle = @"Back";
 
-// The maximum number of campaign items requested in one list fetch, starting at offset zero.
 static const int kCampaignListOffset = 0;
 static const int kCampaignListLimit = 20;
 
-// The POST content type for the campaign JSON requests. @ghidraAddress 0x364140
+// @ghidraAddress 0x364140
 static NSString *const kJSONContentType = @"application/json";
 
-// The itunes.apple.com fallback opened when the update alert's action button is tapped.
 static NSString *const kUpdateAppStoreURL =
     @"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=395192484&mt=8";
 
-// The list-item table row heights: 50 points on the phone, 60 on the pad. @ghidraAddress 0x3107b0
+// @ghidraAddress 0x3107b0
 static const CGFloat kRowHeightPhone = 50.0;
 static const CGFloat kRowHeightPad = 60.0;
 
-// The loading-label text colour, a light grey. @ghidraAddress 0x30be90
+// @ghidraAddress 0x30be90
 static const CGFloat kLoadingLabelRed = 226.0f / 255.0f;
 static const CGFloat kLoadingLabelGreen = 227.0f / 255.0f;
 static const CGFloat kLoadingLabelBlue = 228.0f / 255.0f;
 static const CGFloat kOpaqueAlpha = 1.0;
 
-// The label shadow white value used for the loading and error text. @ghidraAddress 0x2eecb8
+// @ghidraAddress 0x2eecb8
 static const CGFloat kLabelShadowWhite = 158.0f / 255.0f;
-// The even-row background white value. @ghidraAddress 0x310790
+// @ghidraAddress 0x310790
 static const CGFloat kAlternateRowWhite = 193.0f / 255.0f;
-// The sample-playback BGM fade-in time.
 static const float kSampleBGMFadeTime = 0.5f;
-// The loading-label point size, and the error-label point sizes per device idiom.
 static const CGFloat kLoadingLabelFontSize = 18.0;
 static const CGFloat kErrorLabelFontSizeDefault = 16.0;
 static const CGFloat kErrorLabelFontSizeWide = 18.0;
-// The error label sits this many points above the view centre. The binary truncates the halved
-// height to an integer and then subtracts, so the offset is an integer, not a CGFloat.
+// The binary truncates the halved height before subtracting, so this offset is an integer.
 static const int kErrorLabelCenterYOffset = 20;
-// The pad detail view's centre sits this far above the cover view's centre.
 static const CGFloat kPadDetailCenterYOffset = -44.0; // @ghidraAddress 0x301220
-// The one-point drop-shadow offset shared by the loading and error labels.
 static const CGFloat kLabelShadowOffset = 1.0;
 
-// The activity indicator is a fixed 24-point square, hosted in a fixed 40-point square container.
 static const CGFloat kActivityIndicatorSize = 24.0;
 static const CGFloat kActivityIndicatorHostSize = 40.0; // @ghidraAddress 0x2ee950
 static const CGFloat kCenterScale = 0.5;
 
-// Three values the binary loads as PC-relative literals out of __text, not as references to the
-// engine globals the reconstruction named. A real global reference would be an adrp/ldr pair
-// against __const, which is how the neighbouring kAlternateRowWhite is in fact loaded.
-
-// The dimming cover behind the pad detail overlay is black at 50% opacity.
 static const CGFloat kPadCoverBlackWhite = 0.0;
 static const CGFloat kPadCoverAlpha = 0.5;
 
-// The banner-artwork cross-fade duration. @ghidraAddress 0x2eece8
+// @ghidraAddress 0x2eece8
 static const NSTimeInterval kBannerFadeDuration = 0.2;
-// The pad detail open/close animation duration. @ghidraAddress 0x3010a0
+// @ghidraAddress 0x3010a0
 static const NSTimeInterval kPadDetailAnimDuration = 0.3;
-// The pad detail overlay is a fixed 650-point square. @ghidraAddress 0x2eec30
+// @ghidraAddress 0x2eec30
 static const CGFloat kPadDetailViewSize = 650.0;
 
-// The tag marking the on-screen serial-code input alert.
 static const NSInteger kSerialCodeAlertTag = 1;
-// The alert dismissal indices: 0 is the cancel/left button, 1 is the confirm/right button.
 static const NSInteger kAlertCancelButtonIndex = 0;
 static const NSInteger kAlertConfirmButtonIndex = 1;
 
-// The action-button kinds carried by a campaign item's buttonType.
 enum {
-    kCampaignButtonInfoDownload = 0, // Download the item's info.
-    kCampaignButtonTerms = 2,        // Show the unlock terms description.
-    kCampaignButtonUpdate = 3,       // Prompt to update the application.
-    kCampaignButtonSerialCode = 4,   // Prompt for a serial code.
+    kCampaignButtonInfoDownload = 0,
+    kCampaignButtonTerms = 2,
+    kCampaignButtonUpdate = 3,
+    kCampaignButtonSerialCode = 4,
 };
 
-// The hideType value that removes an item from the visible row list.
 static const int kCampaignHideTypeHidden = 2;
 
-// The itemType value identifying a downloadable tune.
 static const int kCampaignItemTypeTune = 0;
 
-// The status field value indicating a successful server response.
 static const int kServerStatusSuccess = 0;
 
-// The UTF-8 encoding constant passed to -dataUsingEncoding:.
 static const NSUInteger kUTF8Encoding = NSUTF8StringEncoding;
 
-// The serial-code input alert's single text field index.
 static const NSInteger kSerialCodeTextFieldIndex = 0;
 
-// The dimming cover flexes in every direction so it tracks its host's bounds. @ghidraAddress
-// 0x310450 (g_dwAutoresizingMaskFlexibleAll)
+// @ghidraAddress 0x310450
 static const UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// The table view flexes only its width and height. @ghidraAddress 0x310458
+// @ghidraAddress 0x310458
 static const UIViewAutoresizing kAutoresizingMaskFlexibleSize =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// A fixed-size view kept centred by its four margins: the pad detail view and the indicator host.
 static const UIViewAutoresizing kAutoresizingMaskFlexibleMargins =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// The activity indicator's mask: as above but without the top margin.
 static const UIViewAutoresizing kAutoresizingMaskIndicator = UIViewAutoresizingFlexibleLeftMargin |
                                                              UIViewAutoresizingFlexibleRightMargin |
                                                              UIViewAutoresizingFlexibleBottomMargin;
 
-// The server unlock-list dictionary keys.
 static NSString *const kJSONKeyList = @"List";
 static NSString *const kJSONKeyError = @"Error";
 static NSString *const kJSONKeyStatus = @"Status";
@@ -157,27 +127,20 @@ static NSString *const kJSONKeyURL = @"URL";
 static NSString *const kJSONKeyCampaignId = @"campaignId";
 static NSString *const kJSONKeyUnlocked = @"unlocked";
 static NSString *const kJSONKeyTrue = @"true";
-// The unlock-dictionary keys carrying the granted experience type and identifier.
 static NSString *const kUnlockKeyType = @"Type";
 static NSString *const kUnlockKeyID = @"ID";
-// The campaign-identifier format used to match a checked item against a list entry.
 static NSString *const kCampaignIdFormat = @"%d";
 
 @interface RBCampaignViewController () <UIAlertViewDelegate, UIGestureRecognizerDelegate> {
     // Unused by the campaign page; retained from the shared store layout.
     int infoRandomKey;
 }
-// Whether the pad (wide iPad idiom) layout is active.
 @property(nonatomic, assign) BOOL isPad;
-// The row whose action button is mid-flight, or kNoActiveIndex when none is working.
 @property(nonatomic, assign) int workingIndex;
-// The row whose audio sample is playing, or kNoActiveIndex when none is playing.
 @property(nonatomic, assign) int samplePlayedIndex;
 
 @end
 
-// The four completion branches of the single binary -downloaderFinished:, de-inlined. They are
-// functions rather than methods because the class metadata defines no such selectors.
 static void RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
                                                    Downloader *downloader);
 static void RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller,
@@ -214,10 +177,7 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
     self.imgDelete = [UIImage imageWithName:kDeleteImageName];
     self.imgDownload = [UIImage imageWithName:kDownloadImageName];
 
-    // storeEnd: is the selector the binary registers here (0x3c6190, referenced only from
-    // initWithParent:), and nothing implements it: the sole data reference to the string is that
-    // reference slot, so no method list names it. The back button therefore throws in the original
-    // too. Left as it is rather than given a stand-in.
+    // Nothing implements storeEnd: (0x3c6190), so the back button throws in the original too.
     UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithTitle:kBackButtonTitle
                                                              style:UIBarButtonItemStyleBordered
                                                             target:parent
@@ -286,7 +246,6 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
         StoreCampaignDetailViewPad *detail = [[StoreCampaignDetailViewPad alloc]
             initWithFrame:CGRectMake(0, 0, kPadDetailViewSize, kPadDetailViewSize)];
         self.itemDetailViewPad = detail;
-        // Both components are truncated to an integer, and the y carries a fixed offset.
         self.itemDetailViewPad.center =
             CGPointMake((int)self.coverViewPad.center.x,
                         (int)(self.coverViewPad.center.y + kPadDetailCenterYOffset));
@@ -309,7 +268,6 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
                                                           alpha:g_dAudioManagerResumeFadeInTime];
         self.loadingLabel.shadowOffset = CGSizeMake(0, kLabelShadowOffset);
         self.loadingLabel.textAlignment = NSTextAlignmentCenter;
-        // Only the y is truncated to an integer here; the x keeps its fraction.
         self.loadingLabel.center = CGPointMake(self.view.bounds.size.width * kCenterScale,
                                                (int)(self.view.bounds.size.height * kCenterScale));
         self.loadingLabel.autoresizingMask = kAutoresizingMaskFlexibleSize;
@@ -348,7 +306,6 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
         self.errorLabel.textColor = [UIColor colorWithWhite:kLabelShadowWhite alpha:kOpaqueAlpha];
         self.errorLabel.textAlignment = NSTextAlignmentCenter;
         self.errorLabel.numberOfLines = 0;
-        // The halved height is truncated to an integer before the offset is subtracted.
         self.errorLabel.center = CGPointMake(self.view.bounds.size.width * kCenterScale,
                                              (int)(self.view.bounds.size.height * kCenterScale) -
                                                  kErrorLabelCenterYOffset);
@@ -500,8 +457,6 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
         CGSize size = [cell getItemSize:self.isPad];
         cell.artworkView.frame = CGRectMake(0, 0, size.width, size.height);
         cell.artworkView.image = banner.getImage;
-        // The animation block fades the artwork in. The binary uses the three-argument form and
-        // passes an empty completion block, so that form is kept rather than the shorter one.
         __weak UIImageView *weakArtwork = cell.artworkView;
         [UIView animateWithDuration:kBannerFadeDuration
                          animations:^{
@@ -520,7 +475,6 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
 - (void)tableView:(UITableView *)tableView
       willDisplayCell:(UITableViewCell *)cell
     forRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Alternate rows carry a slightly different translucent background.
     CGFloat white = (indexPath.row & 1) == 0 ? kAlternateRowWhite : g_dTranslucentAlpha;
     cell.backgroundColor = [UIColor colorWithWhite:white alpha:kOpaqueAlpha];
 }
@@ -1091,8 +1045,7 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
                 [self.downloadMusicList addObject:item];
             }
         }
-        // The binary adds the raw -checkNewUnlock return value, as -refreshUnlockBadge does; it
-        // does not normalise it to 0 or 1.
+        // The binary adds the raw -checkNewUnlock return value rather than normalising it to 0/1.
         badgeCount += newUnlockCount;
     }
     [self setBadgeCnt:badgeCount];
@@ -1168,7 +1121,6 @@ static void RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *
 
 /** @ghidraAddress 0x1fe4f8 */
 - (void)storeClose {
-    // The store-close hook is intentionally empty.
 }
 
 @end

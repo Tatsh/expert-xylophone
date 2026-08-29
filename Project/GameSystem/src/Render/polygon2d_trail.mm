@@ -15,7 +15,8 @@ constexpr unsigned char kFullChannel = 0xff;
 
 } // namespace
 
-// The binary inlines this constructor into the owner's constructor (@ghidraAddress 0x115094).
+// The binary inlines this constructor into the owner's constructor.
+// @ghidraAddress 0x115094
 Polygon2dTrail::Polygon2dTrail(int nVertexCount, S_VECTOR2 *pVertices)
     : m_nVertexCount(nVertexCount), m_pVertices(pVertices) {
 }
@@ -71,8 +72,7 @@ void Polygon2dTrail::Update(int nDeltaTime) {
 /** @ghidraAddress 0x11c868 */
 void Polygon2dTrail::Start(int nDuration, int nStartOffset) {
     m_bActive = true;
-    // A negative starting progress delays the reveal: it must climb back to zero before the head
-    // begins to move.
+    // A negative starting progress delays the reveal until it climbs back to zero.
     m_flProgress = static_cast<float>(-nStartOffset);
     m_flRevealLength = static_cast<float>(nDuration);
     m_nHeadIndex = 0;

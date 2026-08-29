@@ -26,8 +26,7 @@ struct LevelUnlockEntry {
  *
  * A lazily constructed singleton. It owns one unlock-level array per category (sized by a per-
  * category count table) built from the packed unlock table, and holds the player's current level as
- * its first field so a threshold check can compare against it. The trailing @c // +0xNN comments
- * document the original 32-bit offsets for reference only.
+ * its first field so a threshold check can compare against it.
  */
 class LevelTables {
 public:
@@ -162,7 +161,7 @@ public:
     static bool SavePlayerLevelData(const int *pLevelExp);
 
 private:
-    int m_nCurrentLevel = {};                   // +0x00: the player's current level.
-    int m_nCurrentExp = {};                     // +0x04: the player's current experience.
-    int *m_apUnlockLevels[kCategoryCount] = {}; // +0x08: per-category item unlock-level arrays.
+    int m_nCurrentLevel = {};
+    int m_nCurrentExp = {};
+    int *m_apUnlockLevels[kCategoryCount] = {};
 };

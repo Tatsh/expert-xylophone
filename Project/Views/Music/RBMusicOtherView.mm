@@ -10,41 +10,26 @@
 
 namespace {
 
-// The sentinel stored in m_PrevSound before any toggle sound has been played.
 constexpr unsigned int kSoundHandleNone = 0xffffffff;
 
-// The themed sound-effect slot played when a toggle is flipped.
 constexpr int kSoundEffectSwitchToggle = 2;
 
-// The RBUserSettingData theme selector for the white theme, on which the pastel toggle is hidden.
 constexpr int kThemeWhite = 0;
 
-// The ghostStyle value that turns the ghost toggle off.
 constexpr int kGhostStyleOff = 0;
-// The ghostStyle value that counts as the ghost toggle being on.
 constexpr int kGhostStyleOn = 1;
 
-// The number of toggle columns on the non-white themes (pastel, ghost, full-just-reflec, and
-// full-combo).
 constexpr int kToggleColumnCountWide = 4;
-// The number of toggle columns on the white theme (ghost, full-just-reflec, and full-combo).
 constexpr int kToggleColumnCountNarrow = 3;
 
-// The fraction of the sub-view's width taken by one column on the non-white themes.
 constexpr double kColumnWidthFactorWide = 0.25;
-// The fraction of the sub-view's width taken by one column on the white theme.
 constexpr double kColumnWidthFactorNarrow = 0.33;
-// The fraction of the sub-view's height at which each column's container starts.
 constexpr double kColumnTopFactor = 0.2;
-// The fraction of the sub-view's height taken by each column's container.
 constexpr double kColumnHeightFactor = 0.6;
-// The fraction of the container's height at which the top-aligned base image sits.
 constexpr double kBaseImageTopFactor = 0.1;
-// The half factor used to centre a child within its parent.
 constexpr double kHalf = 0.5;
 
-// The default region uses the narrower rest inset and track adjustment; the iPad idiom uses the
-// wider pair.
+// The phone idiom takes the narrower pair, the pad the wider.
 constexpr double kBarRestLeftDefault = 11.0;
 constexpr double kBarRestLeftVariant = 18.0;
 constexpr double kBarWidthAdjustDefault = -22.0;
@@ -66,7 +51,6 @@ static NSString *const kFrameImageNames[] = {
 
 static NSString *const kBarImageName = @"02_music_detail/det_oth_bar";
 
-// The autoresizing mask that keeps a toggle container pinned proportionally on all sides.
 constexpr UIViewAutoresizing kContainerAutoresizing =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -75,7 +59,6 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
 } // namespace
 
 @implementation RBMusicOtherView {
-    // The play handle of the most recent toggle sound effect, or kSoundHandleNone.
     unsigned int m_PrevSound;
 }
 
@@ -131,8 +114,6 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
     }
 }
 
-// Builds one toggle column: its container view, the labelled base image, the movable highlight
-// image, the bar image, and the tap gesture recogniser, then seeds its highlight position.
 - (void)buildToggleColumnAtIndex:(int)column
                      columnCount:(int)columnCount
                        imageName:(NSString *)imageName
@@ -186,16 +167,12 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
     container.autoresizingMask = kContainerAutoresizing;
     [self addSubview:container];
 
-    // The binary re-reads the theme here and branches on it, but every branch routes on the font
-    // variant alone: the default region gets the narrower rest geometry and any variant gets the
-    // wider one, so the theme test has no effect on the result.
+    // The binary branches on the theme here, but every branch picks by idiom alone.
     (void)[RBUserSettingData sharedInstance].thema;
     BOOL fontDefault = !IsPad();
     double barRestLeft = fontDefault ? kBarRestLeftDefault : kBarRestLeftVariant;
     double barWidthAdjust = fontDefault ? kBarWidthAdjustDefault : kBarWidthAdjustVariant;
-    // The travel rectangle spans the bar track, not the knob: updateSwitchWithType: parks the knob
-    // at barRect.origin.x + barRect.size.width - knobWidth/2 when on, so this width is the distance
-    // the knob moves.
+    // The travel rectangle spans the bar track, so its width is the distance the knob moves.
     CGRect barRect = CGRectMake(barRestLeft, 0.0, barTrack.width + barWidthAdjust, barTrack.height);
 
     knob.frame =
@@ -299,7 +276,6 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
 
 #pragma mark Toggle handlers
 
-// Plays the toggle sound effect, re-using the previous handle when it is still playing.
 - (void)playToggleSound {
     SoundEffectManager *manager = SoundEffectManager::GetInstance();
     if (m_PrevSound == kSoundHandleNone || !manager->IsPlaying(m_PrevSound)) {

@@ -1,12 +1,3 @@
-//
-//  RBServerAPIManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBServerAPIManager). Verified
-//  against the arm64 disassembly (the dictionaryWithObjects:forKeys:count: argument buffers and the
-//  soft-float unlock point are dropped or reordered by the decompiler).
-//
-
 #import "RBServerAPIManager.h"
 
 #import "AppDelegate.h"
@@ -15,28 +6,20 @@
 #import "RBUserSettingData.h"
 #import "deviceenvironment.h"
 
-// The initial capacity of the live-request array.
 static const NSUInteger kHTTPArrayInitialCapacity = 5;
 
-// A version 2 play log is sent only for music identifiers at or above this value; ordinary
-// selections fall below it and are skipped.
 static const unsigned int kPlayedV2MinMusicID = 99999999;
 
-// The JSON content type used by the play-log and tutorial request bodies.
 static NSString *const kJSONContentType = @"application/json";
 
-// The index of the user identifier within the @c "@@@"-separated server-data pair returned by
-// @c +[AppDelegate getServerData].
 static const NSUInteger kServerDataUserIDIndex = 0;
 
-// Request parameter keys shared across the server API calls.
 static NSString *const kParamKeyTarget = @"target";
 static NSString *const kParamKeyUUID = @"uuid";
 static NSString *const kParamKeyUserID = @"user_id";
 static NSString *const kParamKeyUser = @"user";
 static NSString *const kParamKeyVersion = @"version";
 
-// Request parameter keys for the play-log calls.
 static NSString *const kParamKeyMusic = @"music";
 static NSString *const kParamKeyDif = @"dif";
 static NSString *const kParamKeyMusicID = @"music_id";
@@ -48,12 +31,10 @@ static NSString *const kParamKeyDevice = @"device";
 static NSString *const kParamKeyOS = @"os";
 static NSString *const kParamKeyLocale = @"locale";
 
-// Request parameter keys for the unlock call.
 static NSString *const kParamKeyType = @"type";
 static NSString *const kParamKeyID = @"id";
 static NSString *const kParamKeyTP = @"tp";
 
-// Request parameter key for the tutorial-status call.
 static NSString *const kParamKeyTypes = @"types";
 
 @implementation RBServerAPIManager

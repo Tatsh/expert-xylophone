@@ -192,29 +192,26 @@ private:
     unsigned char m_aReserved08[8] =
         {};                         // +0x08: transient state; the low byte is cleared each call.
     ne::C_TEXTURE *m_pTexture = {}; // +0x10: the gm_tutorial atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x18: the guide sprite instancer.
-    int m_nSpriteCount = {};                    // +0x20: the instancer's initial sprite count.
-    bool m_bBuilt = {};                         // +0x24: set once the tables are built.
-    bool m_bPortrait = {}; // +0x25: whether the viewport is portrait (width <= height).
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x18
+    int m_nSpriteCount = {};                    // +0x20
+    bool m_bBuilt = {};                         // +0x24
+    bool m_bPortrait = {};                      // +0x25: width <= height.
     // +0x26..+0x27 is alignment padding before the cached gauge coordinates.
     // unsigned char m_aPad26[2] = {}; // +0x26
-    float m_flGaugeX = {}; // +0x28: the cached gauge X coordinate (viewport width).
-    float m_flGaugeY = {}; // +0x2c: the cached gauge Y coordinate (viewport height).
-    bool m_bActive = {};   // +0x30: whether the guide is showing; cleared to hide.
+    float m_flGaugeX = {}; // +0x28: the viewport width.
+    float m_flGaugeY = {}; // +0x2c: the viewport height.
+    bool m_bActive = {};   // +0x30
     // +0x31..+0x33 is alignment padding before the animation clock.
     // unsigned char m_aPad31[3] = {}; // +0x31
-    float m_flClock = {};      // +0x34: the guide animation clock, advanced each frame.
-    float m_flStateTimer = {}; // +0x38: the phase state-machine timer, reset on start/reset.
-    short m_nFadeState = {};   // +0x3c: the fade state (1 = fading in).
+    float m_flClock = {};      // +0x34
+    float m_flStateTimer = {}; // +0x38
+    short m_nFadeState = {};   // +0x3c: 1 = fading in.
     // unsigned char m_aReserved3e[2] = {};        // +0x3e: alignment before the keyframe table.
-    Keyframe m_aKeyframes[kKeyframeCount] = {}; // +0x40: the nine keyframe timings.
-    // +0xac: the per-step glyph sprite kinds, indexed by the current keyframe step (values 14
-    // through 22). The finger animator reads this as one flat nine-entry array.
-    int m_aStepGlyphKinds[kKeyframeCount] = {}; // +0xac
-    float m_aCoords[8] = {};                    // +0xd0: four screen-coordinate pairs.
-    // The two per-step coordinate grids, filled from the keyframes and the per-row, per-column
-    // offset tables. The grid at +0xf0 is offset by the table at 0x301f98 and the grid at +0x7b0 by
-    // the table at 0x302058.
-    CoordEntry m_aGridA[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0xf0
-    CoordEntry m_aGridB[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0x7b0
+    Keyframe m_aKeyframes[kKeyframeCount] = {}; // +0x40
+    int m_aStepGlyphKinds[kKeyframeCount] = {}; // +0xac: values 14 through 22.
+    float m_aCoords[8] = {};                    // +0xd0: four coordinate pairs.
+    CoordEntry m_aGridA[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0xf0: from the table at
+                                                                       // 0x301f98.
+    CoordEntry m_aGridB[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0x7b0: from the table at
+                                                                       // 0x302058.
 };

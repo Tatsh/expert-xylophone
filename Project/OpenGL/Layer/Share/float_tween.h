@@ -9,8 +9,7 @@
  * A delayed linear interpolation between two values.
  *
  * After a lead-in delay elapses, the current value ramps linearly from a start to an end value over
- * the ramp duration; @c Advance steps the ramp by one frame and caches the result. The trailing
- * @c // +0xNN comments document the original member offsets for reference only.
+ * the ramp duration; @c Advance steps the ramp by one frame and caches the result.
  *
  * Reconstructed type @c FloatTween: engine tween descriptor, six floats.
  */
@@ -91,10 +90,10 @@ public:
     }
 
 private:
-    float m_flFrom = {};     // +0x00: the start value.
-    float m_flTo = {};       // +0x04: the end value.
-    float m_flDuration = {}; // +0x08: the ramp duration after the delay elapses.
-    float m_flDelay = {};    // +0x0c: the lead-in delay subtracted from the accumulator.
-    float m_flElapsed = {};  // +0x10: the accumulated time, advanced by the frame delta.
-    float m_flCurrent = {};  // +0x14: the last computed value, returned while idle.
+    float m_flFrom = {};
+    float m_flTo = {};
+    float m_flDuration = {};
+    float m_flDelay = {};
+    float m_flElapsed = {};
+    float m_flCurrent = {};
 };

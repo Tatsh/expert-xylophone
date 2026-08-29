@@ -8,42 +8,32 @@
 #import "ApplilinkWebAPI.h"
 #import "Crypto.h"
 
-// The lowest iOS version whose ad-identifier record is stored server-side (through the Applilink
-// pasteboard web API) rather than in a local device pasteboard.
 static const float kRecommendAdIdServerStorageMinimumSystemVersion = 7.0f;
 
-// Format that builds the local pasteboard name from a fixed prefix, the country code, and the
-// category id: "ApplilinkRecommend.AdId_<countryCode>_<categoryId>".
 static NSString *const kRecommendAdIdServiceNameFormat = @"%@_%@_%@";
 static NSString *const kRecommendAdIdServiceNamePrefix = @"ApplilinkRecommend.AdId";
 
-// The pasteboard type under which the archived record is stored on the local device pasteboard.
 static NSString *const kRecommendAdIdPasteboardType = @"applilink.adid";
 
-// Applilink pasteboard web-API endpoint paths, appended to the SSL base URL.
 static NSString *const kRecommendAdIdPathGet = @"/ad/external/pasteboard/get.php";
 static NSString *const kRecommendAdIdPathSet = @"/ad/external/pasteboard/set.php";
 static NSString *const kRecommendAdIdPathDelete = @"/ad/external/pasteboard/delete.php";
 
-// HTTP methods used by the pasteboard web API.
 static NSString *const kRecommendAdIdHTTPMethodGet = @"GET";
 static NSString *const kRecommendAdIdHTTPMethodPost = @"POST";
 
-// Keys of the record dictionary returned to and accepted from callers.
 static NSString *const kRecommendAdIdKeyCountryCode = @"CountryCode";
 static NSString *const kRecommendAdIdKeyCategoryId = @"CategoryId";
 static NSString *const kRecommendAdIdKeyAdIdFrom = @"AdIdFrom";
 static NSString *const kRecommendAdIdKeyAdType = @"AdType";
 static NSString *const kRecommendAdIdKeyEntryDate = @"EntryDate";
 
-// Keys of the web-API request body.
 static NSString *const kRecommendAdIdRequestKeyUdid = @"udid";
 static NSString *const kRecommendAdIdRequestKeyCountryCode = @"country_code";
 static NSString *const kRecommendAdIdRequestKeyCategoryId = @"category_id";
 static NSString *const kRecommendAdIdRequestKeyAdIdFrom = @"ad_id_from";
 static NSString *const kRecommendAdIdRequestKeyAdType = @"ad_type";
 
-// Keys of the web-API response body.
 static NSString *const kRecommendAdIdResponseKeyStatus = @"status";
 static NSString *const kRecommendAdIdResponseKeyErrorCode = @"error_code";
 static NSString *const kRecommendAdIdResponseKeyKind = @"kind";
@@ -52,34 +42,29 @@ static NSString *const kRecommendAdIdResponseKeyCategoryId = @"category_id";
 static NSString *const kRecommendAdIdResponseKeyAdIdFrom = @"ad_id_from";
 static NSString *const kRecommendAdIdResponseKeyAdType = @"ad_type";
 
-// Response @c kind values that map an unsuccessful response to a specific Applilink error.
 static NSString *const kRecommendAdIdKindAuthorization = @"authorization";
 static NSString *const kRecommendAdIdKindParameterError = @"parameter_error";
 
-// The @c NSString encoding used both for the Crypto hashing input and for its decrypted output.
 static const NSStringEncoding kRecommendAdIdStringEncoding = NSUTF8StringEncoding;
 
-// Applilink error codes passed to +localizedApplilinkErrorWithCode:[userInfo:].
 enum {
     kRecommendAdIdErrorCodeGeneric = 1000,
-    kRecommendAdIdErrorParameterError = 1001,        // 0x3e9
-    kRecommendAdIdErrorAuthorization = 1002,         // 0x3ea
-    kRecommendAdIdErrorRequestFailed = 1003,         // 0x3eb
-    kRecommendAdIdErrorServerRejected = 1009,        // 0x3f1
-    kRecommendAdIdErrorPasteboardUnavailable = 1013, // 0x3f5
-    kRecommendAdIdErrorRecordNotFound = 1018,        // 0x3fa
-    kRecommendAdIdErrorUdidUnavailable = 1028,       // 0x404
+    kRecommendAdIdErrorParameterError = 1001,
+    kRecommendAdIdErrorAuthorization = 1002,
+    kRecommendAdIdErrorRequestFailed = 1003,
+    kRecommendAdIdErrorServerRejected = 1009,
+    kRecommendAdIdErrorPasteboardUnavailable = 1013,
+    kRecommendAdIdErrorRecordNotFound = 1018,
+    kRecommendAdIdErrorUdidUnavailable = 1028,
 };
 
-// Response @c error_code sentinel for a well-formed successful response, and the specific
-// server-side error code the response maps to +localizedApplilinkErrorWithCode:.
 enum {
     kRecommendAdIdResponseErrorCodeNone = 100000000,
     kRecommendAdIdResponseErrorCodeServerRejected = 0xc106101,
 };
 
 @interface RecommendAdId () {
-    // The local device pasteboard name; also the Crypto hashing key for locally stored records.
+    // Doubles as the Crypto hashing key for locally stored records.
     NSString *_serviceName;
 }
 
@@ -249,8 +234,6 @@ enum {
         }
         return;
     }
-    // Pre-iOS 7: build the record locally, encrypt each field with the service-name-derived key,
-    // and archive it into a persistent device pasteboard.
     NSData *keyData = [_serviceName dataUsingEncoding:kRecommendAdIdStringEncoding];
     NSData *key = [Crypto createHash:keyData];
     NSData *encryptedAdIdFrom =
@@ -301,9 +284,7 @@ enum {
     pasteboard.persistent = YES;
     NSData *archived = [NSKeyedArchiver archivedDataWithRootObject:record];
     [pasteboard setData:archived forPasteboardType:kRecommendAdIdPasteboardType];
-    // Yes, the binary discards this decrypted round-trip; it is evaluated only for its side
-    // effects.
-    [self convertToData:record];
+    [self convertToData:record]; // Yes, the binary discards this decrypted round-trip.
 }
 
 /** @ghidraAddress 0x203cfc */
@@ -390,9 +371,7 @@ enum {
 
 #pragma mark - Pasteboard web API
 
-// Map an unsuccessful pasteboard-web-API response to an Applilink error code, returning 0 when the
-// response indicates success. This de-inlines the identical classification block that the binary
-// repeats inline in each of the three web-API methods.
+// Returns 0 when the response indicates success.
 static NSInteger RecommendAdIdErrorCodeForResponse(NSDictionary *response) {
     id status = response[kRecommendAdIdResponseKeyStatus];
     if (![status isKindOfClass:[NSString class]] && ![status isKindOfClass:[NSNumber class]]) {

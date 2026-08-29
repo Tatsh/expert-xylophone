@@ -10,7 +10,7 @@
 #import "RewardCore.h"
 
 // ApplilinkViewDelegate is only forward declared in the shared headers, so its selectors are
-// gathered here for the fan-out messages to type-check.
+// gathered here.
 @protocol ApplilinkCoreAdDelegate <NSObject>
 @optional
 - (void)appListDidStart;

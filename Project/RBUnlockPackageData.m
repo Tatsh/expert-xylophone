@@ -1,24 +1,12 @@
-//
-//  RBUnlockPackageData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockPackageData). Verified
-//  against the arm64 disassembly (the fast-enumeration parse and the sort comparator are garbled by
-//  the decompiler; the comparator's self-compare was confirmed as a genuine binary bug, not a
-//  decompiler artefact, from the instruction operands).
-//
-
 #import "RBUnlockPackageData.h"
 
 #import "RBUnlockPackageItemData.h"
 
-// Catalogue-dictionary keys for a package.
 static NSString *const kIdentityDictionaryKey = @"ID";
 static NSString *const kOrderDictionaryKey = @"Order";
 static NSString *const kTitleDictionaryKey = @"Title";
 static NSString *const kDataDictionaryKey = @"Data";
 
-// The debug description format: class, address, identifier, order, title, and item list.
 static NSString *const kDescriptionFormat = @"<%@: %p identity:%zd order:%zd title:%@ data:%@>";
 
 @implementation RBUnlockPackageData
@@ -37,8 +25,7 @@ static NSString *const kDescriptionFormat = @"<%@: %p identity:%zd order:%zd tit
     }
     [items sortUsingComparator:^NSComparisonResult(id lhs, id rhs) {
       /** @ghidraAddress 0x19a884 */
-      // Orders a higher point value first. As in the shipped build, the else branch compares the
-      // right-hand item's point against itself, so it can only ever report the two items as equal.
+      // Yes, the binary compares the right-hand point against itself.
       if ([lhs point] > [rhs point]) {
           return NSOrderedAscending;
       }

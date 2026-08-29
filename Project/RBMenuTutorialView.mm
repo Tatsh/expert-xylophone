@@ -23,7 +23,7 @@
 @interface RBMenuTutorialView () <CAAnimationDelegate>
 @end
 
-// @ghidraAddress 0x3de058 (g_pTutorialClipRect)
+// @ghidraAddress 0x3de058
 extern "C" CGRect g_pTutorialClipRect[];
 
 static NSString *const kTutorialArtworkImageName = @"10_tutorial/tu_tex01";
@@ -117,7 +117,7 @@ constexpr CGFloat kNarrowClipRectScale = 0.5;
 constexpr CGFloat kCursorBobDuration = 0.5;
 constexpr int kCursorBobRepeatCount = 0;
 
-// @ghidraAddress 0x310450 (g_dwAutoresizingMaskFlexibleAll)
+// @ghidraAddress 0x310450
 constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -153,8 +153,7 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
 - (void)dealloc {
     /** @ghidraAddress 0x140cd0 */
-    // The binary's -dealloc only chains to [super dealloc], which ARC does automatically; the
-    // ivars are cleared by the compiler-generated .cxx_destruct (0x141334).
+    // ARC chains to super and clears the ivars in .cxx_destruct (0x141334) implicitly.
 }
 
 #pragma mark - Layout
@@ -983,7 +982,6 @@ static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect t
     [view.messageWindowLayer addAnimation:windowGroup forKey:nil];
     [view.messageLayer addAnimation:messageGroup forKey:nil];
 
-    // The 0.01s move is effectively instant rather than a visible slide.
     __weak UIView *weakContentView = view.contentView;
     [UIView animateWithDuration:0.01
         delay:0.3

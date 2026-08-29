@@ -1,32 +1,18 @@
-//
-//  RBUnlockPackageItemData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockPackageItemData). Verified
-//  against the arm64 disassembly (the description is a variadic stringWithFormat: whose %zd slots
-//  the decompiler cannot fully recover, so the argument order was read from the store order on the
-//  outgoing stack).
-//
-
 #import "RBUnlockPackageItemData.h"
 
-// Entry-dictionary keys for a single unlock item.
 static NSString *const kIdentityDictionaryKey = @"ID";
 static NSString *const kNameDictionaryKey = @"Name";
 static NSString *const kPathDictionaryKey = @"Path";
 static NSString *const kPointDictionaryKey = @"Point";
 static NSString *const kTypeDictionaryKey = @"Type";
 
-// The debug description format: class, address, type, identifier, name, path, and point.
 static NSString *const kDescriptionFormat =
     @"<%@: %p type:%zd identity:%zd name:%@ path:%@ point:%zd>";
 
 @implementation RBUnlockPackageItemData
 
 #ifdef ENABLE_PATCHES
-// Price every item at nothing, so the affordability test in -[RBUnlockView yesButtonTap:] always
-// passes whatever the theme's balance happens to be. Songs still have to be downloaded after being
-// unlocked, unlike BGMs, frames, and the rest; that is -alreadyDownload's business, not this.
+// Price every item at nothing so the affordability test in -[RBUnlockView yesButtonTap:] passes.
 - (int)point {
     return 0;
 }

@@ -124,16 +124,14 @@ private:
         // unsigned char m_aPad9[3]; // +0x09 (alignment padding, compiler-inserted)
     };
 
-    float m_flWidth = {};  // +0x08: the layer's layout width (384), seeded by the constructor.
-    float m_flHeight = {}; // +0x0c: the layer's layout height (1098), seeded by the constructor.
+    float m_flWidth = {};                 // +0x08: 384.
+    float m_flHeight = {};                // +0x0c: 1098.
     ne::C_TEXTURE *m_pEffectTexture = {}; // +0x10: the ti_parts_eff atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};  // +0x18: the gm_parts2 atlas.
     ne::C_TEXTURE *m_pPartsTexture2 = {}; // +0x20: a second gm_parts2 handle.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                                     // +0x28: the per-slot sprite batches.
-    int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x40: each slot's initial count.
-    bool m_bBuilt = {};                         // +0x4c: set once the sprites are built.
-    // +0x4d..+0x4f is alignment padding before the effect records.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x28
+    int m_aSpriteCounts[kSpriteSlotCount] = {};                     // +0x40
+    bool m_bBuilt = {};                                             // +0x4c
     // unsigned char m_aPad4d[3]; // +0x4d (alignment padding, compiler-inserted)
-    EffectRecord m_aEffects[kColorCount] = {}; // +0x50: one effect record per player colour.
+    EffectRecord m_aEffects[kColorCount] = {}; // +0x50
 };

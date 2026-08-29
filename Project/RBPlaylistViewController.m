@@ -8,37 +8,31 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The playlist filter identifiers persisted in RBUserSettingData.playlistID.
 enum {
-    RBPlaylistIDAll = 0,      // The "all songs" filter.
-    RBPlaylistIDNew = 1,      // The "new songs" filter.
-    RBPlaylistIDLevel = 2,    // A per-level filter (playlistLevel selects the level).
-    RBPlaylistIDPlaylist = 3, // A saved playlist (playlistLevel selects the playlist index).
-    RBPlaylistIDAppend = 4,   // The "append" (special) filter.
+    RBPlaylistIDAll = 0,
+    RBPlaylistIDNew = 1,
+    RBPlaylistIDLevel = 2,    // playlistLevel selects the level.
+    RBPlaylistIDPlaylist = 3, // playlistLevel selects the playlist index.
+    RBPlaylistIDAppend = 4,
 };
 
-// The unfiltered-level sentinel stored in RBUserSettingData.playlistLevel.
 static const int kPlaylistLevelNone = -1;
 
-// The playlistType modes.
 enum {
-    RBPlaylistTypeMenu = 0, // The playlist menu / level node.
-    RBPlaylistTypeAdd = 1,  // The add-to-playlist picker.
+    RBPlaylistTypeMenu = 0,
+    RBPlaylistTypeAdd = 1,
 };
 
-// The playlistNode modes.
 enum {
-    RBPlaylistNodeRoot = 0,  // The top-level playlist menu.
-    RBPlaylistNodeLevel = 1, // The level-select node.
+    RBPlaylistNodeRoot = 0,
+    RBPlaylistNodeLevel = 1,
 };
 
-// Table sections.
 enum {
-    kSectionMenu = 0,      // The menu rows (or level rows).
-    kSectionPlaylists = 1, // The user's saved playlists.
+    kSectionMenu = 0,
+    kSectionPlaylists = 1,
 };
 
-// Menu row indices in the root menu's section zero.
 enum {
     kMenuRowAll = 0,
     kMenuRowNew = 1,
@@ -46,55 +40,42 @@ enum {
     kMenuRowAppend = 3,
 };
 
-// The number of difficulty levels tracked in the level node (Level1..Level15).
 static const int kNumDifficultyLevels = 15;
 
-// The sort-segment order matches RBUserSettingData.menuItemSort.
+// The order matches RBUserSettingData.menuItemSort.
 enum {
-    kMenuItemSortMusic = 0,  // Sort by music (segment index zero).
-    kMenuItemSortArtist = 1, // Sort by artist (segment index one).
+    kMenuItemSortMusic = 0,
+    kMenuItemSortArtist = 1,
 };
 
-// The row-descriptor dictionary keys.
 static NSString *const kRowKeyTitle = @"title";
 static NSString *const kRowKeyText = @"text";
 static NSString *const kMusicNameKey = @"NAME";
 
-// The reusable list-cell identifier.
 static NSString *const kCellReuseID = @"cell";
 
-// The row-title formats and header formats.
 static NSString *const kSongsCountFormat = @"%d songs";
 static NSString *const kHeaderMusicFormat = @"%@ - MUSIC -";   // @ghidraAddress cf____MUSIC_
 static NSString *const kHeaderArtistFormat = @"%@ - ARTIST -"; // @ghidraAddress cf____ARTIST_
 
-// The sort segment titles (untranslated literals).
 static NSString *const kHeaderMusicSegmentTitle = @"MUSIC";   // @ghidraAddress cf_MUSIC
 static NSString *const kHeaderArtistSegmentTitle = @"ARTIST"; // @ghidraAddress cf_ARTIST
 
-// On the pad, when the view is taller than this the frame is clamped back to it in
-// -viewWillAppear:.
 static const CGFloat kPadFullHeightThreshold = 524.0; // @ghidraAddress 0x2fee00
 
-// The row accessory / icon image asset names.
 static NSString *const kIconAllImageName = @"01_music_select/sel_playlist_icon_all";
 static NSString *const kIconNewImageName = @"01_music_select/sel_playlist_icon_new";
 static NSString *const kIconLevelImageName = @"01_music_select/sel_playlist_icon_level";
 static NSString *const kIconAppendImageName = @"01_music_select/sel_playlist_icon_append";
 static NSString *const kCheckImageName = @"01_music_select/sel_playlist_check";
 
-// Header title label point sizes.
 static const CGFloat kTitleFontSizePhone = 16.0;
 static const CGFloat kTitleFontSizePad = 18.0;
 
-// The music/artist sort-segment layout: the label height is fourteen points and the control spans
-// the phone mascot-message width.
 static const CGFloat kSortSegmentHeight = 30.0;
 static const CGFloat kSortLabelFontSize = 14.0;
-// UIKit's own segmented-control title size, restated so the patched path can vary only the weight.
+// UIKit's own segmented-control title size.
 static const CGFloat kSortSegmentFontSize = 13.0;
-// The control is a capsule: its corner radius is half its height, outlined a point wide in the
-// unselected segment's colour.
 static const CGFloat kSortSegmentCornerFactor = 0.5;
 static const CGFloat kSortSegmentBorderWidth = 1.0;
 
@@ -102,7 +83,6 @@ static const CGFloat kSortSegmentBorderWidth = 1.0;
 static const CGFloat kBarTintColorMinSystemVersion = 7.0;
 
 @interface RBPlaylistViewController () {
-    // Per-difficulty-level song counts (Level1..Level15), rebuilt by -reloadData in the level node.
     int songCounts[kNumDifficultyLevels];
 }
 @end
@@ -231,30 +211,12 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    // Tint each sort segment: the selected segment gets the current sort's colour and the other
-    // gets the opposite colour, so the music/artist labels always read in their own hue. The
-    // segment subviews are messaged through their private -isSelected / -setTintColor: selectors,
-    // matching the binary.
+    // The binary messages the segment subviews through their private -isSelected and
+    // -setTintColor: selectors.
     NSInteger selected = self.segmentedControl.selectedSegmentIndex;
 #ifdef ENABLE_PATCHES
-    // UISegmentedControl's private subview hierarchy changed after this binary shipped: its
-    // children are no longer segment objects and do not implement -isSelected, so sending it
-    // raises an unrecognised-selector exception and aborts the app as this view appears.
-    //
-    // The four arms above reduce to one rule: the MUSIC segment always letters in musicColor and
-    // ARTIST always in artistColor, whichever is selected. Since exactly one segment is selected,
-    // giving the selected state the current sort's colour and the normal state the other one
-    // reproduces that per-segment colouring through the per-state API. Only the selected one is
-    // emboldened.
-    //
-    // Setting a segment's tintColor is what fills it when it is the selected one and what letters
-    // it when it is not, so the two states differ. The selected segment is a solid block of its
-    // own colour with the title knocked out white; the unselected one is transparent, outlined and
-    // lettered in its colour. The whole control is a capsule, rounded at both ends.
-    //
-    // The colours come from self.musicColor and self.artistColor, which -viewDidLoad sets per
-    // theme from the palette the binary seeds: steel blue and gold on Colette, green and magenta
-    // on Limelight and Classic.
+    // Modern UISegmentedControl subviews no longer implement -isSelected, so the per-segment
+    // tinting is reproduced through the per-state API instead.
     UIColor *selectedColor = (selected == kMenuItemSortMusic) ? self.musicColor : self.artistColor;
     UIColor *normalColor = (selected == kMenuItemSortMusic) ? self.artistColor : self.musicColor;
     self.segmentedControl.backgroundColor = UIColor.clearColor;
@@ -339,7 +301,7 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
         dismissViewControllerAnimated:YES
                            completion:^{
                                /** @ghidraAddress 0x35bd10 */
-                               // The completion is the shared empty global block; nothing to do.
+                               // The binary passes the shared empty global block.
                            }];
 }
 
@@ -368,9 +330,6 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
         }
         self.playlistFiles = [RBPlaylistManager sharedInstance].arrayPlaylist;
     } else if (self.playlistNode == RBPlaylistNodeLevel) {
-        // Tally, per difficulty level, how many songs have a chart at that level. A chart counts
-        // once for basic, again for medium/hard/special only when they differ from the already
-        // counted levels.
         for (int i = 0; i < kNumDifficultyLevels; ++i) {
             songCounts[i] = 0;
         }
@@ -447,8 +406,7 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
         return 1;
     }
 
-    // Level node: the visible row count is the highest populated level (down to level eleven),
-    // plus one. The binary scans from the last level downwards.
+    // The level node shows the highest populated level plus one, never fewer than eleven rows.
     int level = kNumDifficultyLevels - 1;
     while (level > 10 && songCounts[level] <= 0) {
         --level;

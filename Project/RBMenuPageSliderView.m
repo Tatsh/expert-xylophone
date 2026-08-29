@@ -3,11 +3,11 @@
 #import "RBMenuPageSlider.h"
 #import "RBPopupView.h"
 
-// Pins the slider to the bottom edge as the layout changes.
 static const UIViewAutoresizing kSliderAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 
-// The shared menu-view animation duration (0x1002ec718).
+// The shared menu-view animation duration.
+// @ghidraAddress 0x2ec718
 static const NSTimeInterval kSliderRotationFadeDuration = 0.3;
 
 @implementation RBMenuPageSliderView

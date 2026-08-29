@@ -112,18 +112,18 @@ private:
      */
     void SetTitleSprite(unsigned int nKind, const S_VECTOR2 *pPosition, float flScale, int nAlpha);
 
-    int m_nState = {};     // +0x4c: the scene state (0, 1, or 2).
+    int m_nState = {};     // +0x4c: 0, 1, or 2.
     int m_nElapsedMs = {}; // +0x50: the present animation clock, in ms.
     // unsigned char m_aReserved54[4] = {};  // +0x54
-    ne::C_TEXTURE *m_pKonamiTexture = {}; // +0x58: the konami logo texture.
-    ne::C_TEXTURE *m_pBemaniTexture = {}; // +0x60: the bemani logo texture.
-    ne::C_TEXTURE *m_pRatingTexture = {}; // +0x68: the rating (nonage) logo texture.
-    ne::C_SPRITE_INSTANCING_2D *m_apLayers[kLayerCount] = {}; // +0x70: the five logo sprite layers.
-    int m_aLayerState98[kLayerCount] = {}; // +0x98: per-layer state (cleared at construction).
-    int m_aLayerStateAc[kLayerCount] = {}; // +0xac: per-layer state (cleared at construction).
-    bool m_bStarted = {};                  // +0xc0: latched once the start has been triggered.
+    ne::C_TEXTURE *m_pKonamiTexture = {};                     // +0x58
+    ne::C_TEXTURE *m_pBemaniTexture = {};                     // +0x60
+    ne::C_TEXTURE *m_pRatingTexture = {};                     // +0x68: the nonage asset.
+    ne::C_SPRITE_INSTANCING_2D *m_apLayers[kLayerCount] = {}; // +0x70
+    int m_aLayerState98[kLayerCount] = {};                    // +0x98: per-layer state.
+    int m_aLayerStateAc[kLayerCount] = {};                    // +0xac: per-layer state.
+    bool m_bStarted = {};                                     // +0xc0
     // unsigned char m_aReservedC1[3] = {};   // +0xc1
-    LinearTween m_fade; // +0xc4: the logo fade tween (seeded current to one).
+    LinearTween m_fade; // +0xc4: seeded current to one.
 };
 
 } // namespace rb

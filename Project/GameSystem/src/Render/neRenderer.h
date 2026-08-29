@@ -17,8 +17,7 @@ namespace ne {
  * rectangle.
  *
  * Built by @c CreateOrthoViewport or @c CreatePerspectiveViewport and shared by reference count;
- * @c Release drops a reference and destroys the viewport at zero. The trailing
- * @c // +0xNN comments document the original 32-bit member offsets for reference only.
+ * @c Release drops a reference and destroys the viewport at zero.
  *
  * Reconstructed type @c ne::Viewport: engine class, refcount at +0x0.
  */
@@ -146,16 +145,14 @@ public:
     }
 
 private:
-    int m_nRefCount = {}; // +0x00
-    // +0x04..+0x0f is alignment padding placing the projection matrix on a 16-byte boundary.
-    alignas(16) float m_mProjection[16] = {}; // +0x10
-    float m_flFovY = {};                      // +0x50: perspective field of view (zero for ortho).
-    float m_flAspect = {};                    // +0x54: perspective aspect ratio (zero for ortho).
-    int m_nViewX = {};                        // +0x58
-    int m_nViewY = {};                        // +0x5c
-    int m_nViewW = {};                        // +0x60
-    int m_nViewH = {};                        // +0x64
-    // +0x68..+0x6f is tail padding to the 0x70-byte object size.
+    int m_nRefCount = {};
+    alignas(16) float m_mProjection[16] = {};
+    float m_flFovY = {};   // Zero for an orthographic viewport.
+    float m_flAspect = {}; // Zero for an orthographic viewport.
+    int m_nViewX = {};
+    int m_nViewY = {};
+    int m_nViewW = {};
+    int m_nViewH = {};
 };
 
 /**
@@ -163,8 +160,7 @@ private:
  *
  * Built by @c CreateLookAtCamera or @c CreateCameraFromMatrix and installed as the current model
  * node through @c SetCurrentModelNode. Storing both the view and its inverse lets the projection
- * helpers transform points in either direction without recomputing. The trailing @c // +0xNN
- * comments document the original 32-bit member offsets for reference only.
+ * helpers transform points in either direction without recomputing.
  *
  * Reconstructed type @c ne::CameraNode: engine class, refcount at +0x0.
  */
@@ -232,10 +228,9 @@ public:
     }
 
 private:
-    int m_nRefCount = {}; // +0x00
-    // +0x04..+0x0f is alignment padding placing the view matrix on a 16-byte boundary.
-    alignas(16) float m_mView[16] = {}; // +0x10
-    float m_mInverseView[16] = {};      // +0x50
+    int m_nRefCount = {};
+    alignas(16) float m_mView[16] = {};
+    float m_mInverseView[16] = {};
 };
 
 } // namespace ne

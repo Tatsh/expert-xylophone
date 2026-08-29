@@ -2,8 +2,6 @@
 
 /** @ghidraAddress 0x55638 */
 float CalculateCurveInterpolation(const float *pPairs, int nCount, float flQueryX) {
-    // Walk the {x, y} keyframe pairs and linearly interpolate y at flQueryX, clamping to the first
-    // or last keyframe's y when the query falls outside the keyframe x range.
     const float flFirstX = pPairs[0];
     if (flQueryX < flFirstX) {
         return pPairs[1];

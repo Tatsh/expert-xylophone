@@ -21,7 +21,6 @@ constexpr unsigned int kNoSoundHandle = 0xffffffff;
 constexpr int kThemeLimelight = 1;
 constexpr int kThemeColette = 2;
 
-// Seeded by the initialiser; the field is otherwise unused by this view.
 constexpr int kSliderTypeDefault = 0;
 
 constexpr UIViewAutoresizing kAutoresizingFlexibleAll =
@@ -32,8 +31,8 @@ constexpr UIViewAutoresizing kAutoresizingFlexibleAll =
 static NSString *const kSliderBarImageName = @"02_music_detail/det_spd_bar_1";
 static NSString *const kSpeedMarkerImageName = @"02_music_detail/det_spd_bar_2";
 
-// Decoded from the constant pool at 0x100301198 (274), 0x1002ec6e0 (50), 0x1002eeef0 (54),
-// 0x1002fcfd8 (280), 0x100301158 (36), and 0x1002ee948 (60).
+// Constant pool: 0x100301198 (274), 0x1002ec6e0 (50), 0x1002eeef0 (54), 0x1002fcfd8 (280),
+// 0x100301158 (36), and 0x1002ee948 (60).
 constexpr CGFloat kSliderBarDefaultX = 15.0;
 constexpr CGFloat kSliderBarDefaultY = 27.0;
 constexpr CGFloat kSliderBarDefaultWidth = 274.0;
@@ -45,9 +44,8 @@ constexpr CGFloat kSliderBarColetteDefaultWidth = 280.0;
 constexpr CGFloat kSliderBarColetteDefaultHeight = 30.0;
 constexpr CGFloat kSliderBarColetteWideTopInset = 60.0;
 
-// Decoded from the constant pool at 0x1003011b0 (41), 0x1002eeee8 (43), 0x100302480 (402),
-// 0x1003011b8 (220), 0x1003011c8 (82), 0x1002ec6e0 (50), 0x1002eeec0 (38), 0x1003011a0 (261),
-// and 0x1002ef170 (56).
+// Constant pool: 0x1003011b0 (41), 0x1002eeee8 (43), 0x100302480 (402), 0x1003011b8 (220),
+// 0x1003011c8 (82), 0x1002ec6e0 (50), 0x1002eeec0 (38), 0x1003011a0 (261), and 0x1002ef170 (56).
 constexpr CGFloat kBarBaseColetteWideX = 43.0;
 constexpr CGFloat kBarBaseColetteWideY = 41.0;
 constexpr CGFloat kBarBaseColetteWideWidth = 402.0;
@@ -75,7 +73,7 @@ constexpr CGFloat kTapDeadZoneWide = 27.0;
 constexpr CGFloat kTapDeadZoneDefault = 20.0;
 
 @interface RBMusicSpeedView () {
-    unsigned int m_PrevSound; // +0x8
+    unsigned int m_PrevSound;
 }
 @end
 

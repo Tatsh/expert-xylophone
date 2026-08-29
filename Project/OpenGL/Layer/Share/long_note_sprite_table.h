@@ -9,7 +9,7 @@
  * One long-note sprite-type layout entry: the batch it draws into, its anchor and size, and
  * the UV-table index it samples.
  *
- * A 24-byte read-only record indexed by the sprite type (0 through 35). The trailing @c // +0xNN
+ * A 24-byte read-only record indexed by the sprite type (0 through 35). The trailing @c +0xNN
  * comments document the byte offsets within the entry.
  */
 struct LongNoteSpriteType {

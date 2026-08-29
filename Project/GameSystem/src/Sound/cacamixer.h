@@ -175,15 +175,15 @@ public:
 private:
     caVoice *ResolveVoice(unsigned int hVoice);
 
-    AUGraph m_pAUGraph = {};      // +0x00 the Core Audio processing graph
-    AUNode m_nOutputNode = {};    // +0x08 the RemoteIO output node
-    AUNode m_nMixerNode = {};     // +0x0c the 3D spatial-mixer node
-    AudioUnit m_pOutputUnit = {}; // +0x10 the RemoteIO output AudioUnit
-    AudioUnit m_pMixerUnit = {};  // +0x18 the spatial-mixer AudioUnit
-    bool m_bIsRunning = {};       // +0x20 whether the graph is started
+    AUGraph m_pAUGraph = {};      // +0x00
+    AUNode m_nOutputNode = {};    // +0x08
+    AUNode m_nMixerNode = {};     // +0x0c
+    AudioUnit m_pOutputUnit = {}; // +0x10
+    AudioUnit m_pMixerUnit = {};  // +0x18
+    bool m_bIsRunning = {};       // +0x20
     // unsigned char m_aReserved21[3] = {}; // +0x21
-    int m_nVoiceCount = {};       // +0x24 the number of voices/buses
-    caVoice **m_pVoiceArray = {}; // +0x28 the per-bus voice slots
+    int m_nVoiceCount = {};       // +0x24
+    caVoice **m_pVoiceArray = {}; // +0x28
 };
 
 // code: language=Objective-C++

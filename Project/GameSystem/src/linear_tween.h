@@ -108,9 +108,9 @@ public:
     }
 
 private:
-    float m_flStart = {};    // +0x00 interpolation start value
-    float m_flEnd = {};      // +0x04 interpolation end value
-    float m_flDuration = {}; // +0x08 total duration
-    float m_flElapsed = {};  // +0x0c elapsed time so far
-    float m_flCurrent = {};  // +0x10 last computed interpolated value
+    float m_flStart = {};
+    float m_flEnd = {};
+    float m_flDuration = {};
+    float m_flElapsed = {};
+    float m_flCurrent = {};
 };

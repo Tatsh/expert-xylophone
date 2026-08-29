@@ -1,19 +1,9 @@
-//
-//  RBUnlockData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockData). Verified against
-//  the arm64 disassembly.
-//
-
 #import "RBUnlockData.h"
 
 #import "RBUnlockPackageData.h"
 #import "RBUserSettingData.h"
 
-// The dictionary key under which the catalogue version string is supplied.
 static NSString *const kVersionDictionaryKey = @"Version";
-// The dictionary key under which the catalogue package array is supplied.
 static NSString *const kPackageDictionaryKey = @"Package";
 
 /**
@@ -36,10 +26,8 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
       /** @ghidraAddress 0x19b094 */
       /** @ghidraAddress 0x19b190 */
       /** @ghidraAddress 0x19b614 */
-      // The shipped comparator orders a higher package order first. Its second branch compares
-      // the right-hand order against itself, so it can only ever report the two packages as
-      // equal; this reproduces that behaviour faithfully. The compiler emitted this same source
-      // comparator at three addresses (0x19b094, 0x19b190, 0x19b614); all collapse here.
+      // The second branch compares the right-hand order against itself, so it can only report
+      // equal; that matches the binary.
       if ([lhs order] > [rhs order]) {
           return NSOrderedAscending;
       }
@@ -96,8 +84,7 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
     /** @ghidraAddress 0x19b348 */
     const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
     if (theme == RBUserSettingDataThemeColette) {
-        // The shipped tutorial path parses from a nil catalogue, so both the version string and the
-        // package list resolve to empty. This is reproduced faithfully.
+        // The binary parses from a nil catalogue, so both results resolve to empty.
         NSDictionary *tutorialDictionary = nil;
         self.versionColette = tutorialDictionary[kVersionDictionaryKey];
         self.packageColette = RBUnlockDataParsePackages(tutorialDictionary);

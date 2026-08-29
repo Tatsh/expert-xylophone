@@ -59,7 +59,6 @@ static const int kEffectSizeSliderColetteThemaThreshold = 2;
 
 @implementation RBEffectSizeSlider
 
-// The overridden accessors suppress auto-synthesis; the binary keeps the backing ivar.
 @synthesize value = _value;
 
 - (instancetype)initWithDigit:(int)digit {

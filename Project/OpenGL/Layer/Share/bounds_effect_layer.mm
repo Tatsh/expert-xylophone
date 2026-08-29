@@ -14,8 +14,9 @@ constexpr float kInitialEffectSize = 1.0f;
 
 constexpr unsigned char kLaneLightOn = 0xff;
 
-// @ghidraAddress 0x30bf28 anchor, 0x30bf2c size
+// @ghidraAddress 0x30bf28
 constexpr float kEffectAnchor = 84.0f;
+// @ghidraAddress 0x30bf2c
 constexpr float kEffectSize = 168.0f;
 
 // @ghidraAddress 0x30c0c0
@@ -32,8 +33,9 @@ constexpr int kEffectStyleCount = 3;
 constexpr int kSpriteCapacity = 0x5c;
 constexpr int kAdditiveBlendMode = 1;
 
-// @ghidraAddress 0x2feff4 lifetime, 0x30bf20 frame step
+// @ghidraAddress 0x2feff4
 constexpr float kEffectLifetime = 500.0f;
+// @ghidraAddress 0x30bf20
 constexpr float kEffectFrameStep = 20.833334f;
 constexpr int kEffectFrameCount = 24;
 
@@ -175,7 +177,6 @@ void BoundsEffectLayer::Process(float flDelta) {
                 nFrame = kEffectFrameCount - 1;
             }
 
-            // An unknown style, which the sprite build never sets, draws nothing.
             if (m_nStyle >= 0 && m_nStyle < kEffectStyleCount &&
                 nFrame < kEffectFrameCountByStyle[m_nStyle]) {
                 const S_VECTOR2 position{effect.flPosX, effect.flPosY};
@@ -194,7 +195,6 @@ void BoundsEffectLayer::SetEffectSize(float flSize) {
 
 /** @ghidraAddress 0x1754a8 */
 void BoundsEffectLayer::SetLaneLightFlag(float flValue, int nLane) {
-    // The binary truncates the float to the alpha byte the lane's effects draw at.
     const auto nAlpha = static_cast<unsigned char>(static_cast<int>(flValue));
     if (nLane == 1) {
         m_nLaneLightAlpha0 = nAlpha;
@@ -212,8 +212,7 @@ void BoundsEffectLayer::SetBoundsEffectSprite(const S_VECTOR2 *pPosition,
 
     m_pSprite->SetSpritePosition(nIndex, *pPosition);
     m_pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{kEffectAnchor, kEffectAnchor});
-    // Faithful: the binary reuses the anchor's 84 as the width at 0x175954, so the sprite is half
-    // as wide as it is tall.
+    // Faithful: the binary reuses the anchor's 84 as the width at 0x175954.
     m_pSprite->SetSpriteSize(nIndex, S_VECTOR2{kEffectAnchor, kEffectSize});
     m_pSprite->SetSpriteUvOrigin(nIndex, *pUvOrigin);
     m_pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{kEffectUvSizeU, kEffectUvSizeV});

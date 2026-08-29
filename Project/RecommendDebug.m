@@ -2,7 +2,6 @@
 
 #import "RecommendAdData.h"
 
-// The Applilink sandbox test fixtures use these dictionary keys.
 static NSString *const kAdModelKey = @"ad_model";
 static NSString *const kAdLocationKey = @"ad_location";
 static NSString *const kAdTypeKey = @"ad_type";
@@ -51,7 +50,6 @@ static NSString *const kTotalKey = @"Total";
 static NSString *const kAdLocationTop = @"ADL_TOP";
 static NSString *const kRewardNone = @"REWARD_NONE";
 static NSString *const kTargetUrl = @"applilink://ext-app:80/send?url";
-// The shared dummy placeholder for every unset text field in the sandbox fixtures.
 static NSString *const kPlaceholder = @"-";
 static NSString *const kSandboxStartDate = @"2014-07-30 10:00:00";
 static NSString *const kSandboxEndDate = @"2015-07-30 10:00:00";
@@ -86,19 +84,16 @@ static NSString *const kAdTypeIcon = @"3";
 
 /** @ghidraAddress 0x219600 */
 + (NSArray<NSDictionary *> *)bannerList {
-    // The banner list carries the install flag as the string @"0".
     return [self adRecordsWithAdType:kAdTypeBanner installFlg:@"0"];
 }
 
 /** @ghidraAddress 0x21acd0 */
 + (NSArray<NSDictionary *> *)iconList {
-    // The icon list carries the install flag as the number @0.
     return [self adRecordsWithAdType:kAdTypeIcon installFlg:@0];
 }
 
-// Builds the six sandbox advert records that back both bannerList and iconList. The two lists are
-// identical apart from the ad_type value and the type of the install-flag object, so the binary's
-// two large builder methods are recovered as one parameterised helper.
+// The two lists differ only in the ad_type value and the type of the install-flag object, so the
+// binary's two builder methods are recovered as one parameterised helper.
 + (NSArray<NSDictionary *> *)adRecordsWithAdType:(NSString *)adType installFlg:(id)installFlg {
     NSString *const suffixes[] = {@"A", @"B", @"C", @"D", @"E", @"F"};
     NSString *const adIds[] = {@"10241", @"10242", @"10243", @"10244", @"10245", @"10246"};

@@ -19,92 +19,60 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// Shared engine doubles reused as UI geometry and colour components, declared here the same way the
-// other store view controllers reach them (they are not yet in the engine bridge header). The pad
-// text-measurement width doubles as this controller's copyright and terms wrap width; the mascot
-// animation duration doubles as the loading label's text-white component.
 extern const double g_dMascotMessageMaxWidthPad;  // @ghidraAddress 0x2ee930 (300.0)
 extern const double g_dMascotMessageAnimDuration; // @ghidraAddress 0x2eedc0 (0.2)
-// The shared localised "Loading..." store title.
-extern NSString *g_pLocalizedLoadingMixed; // @ghidraAddress 0x3cfca8
+extern NSString *g_pLocalizedLoadingMixed;        // @ghidraAddress 0x3cfca8
 
-// The pack detail table cell reuse identifiers.
 static NSString *const kMusicCellID = @"StoreDetailTableMusicCell";
 static NSString *const kCopyrightCellID = @"StoreDetailTableCopyrightCell";
 static NSString *const kTermCellID = @"StoreDetailTableTermCell";
 
-// Image asset names.
 static NSString *const kStoreDefaultJacketImageName = @"09_store/store_jacket_64";
 static NSString *const kStorePackBg0ImageName = @"09_store/store_pack_bg_0";
 static NSString *const kStorePackBg1ImageName = @"09_store/store_pack_bg_1";
 
-// The three per-difficulty tune levels, laid out as "LEVEL:  <basic> / <medium> / <hard>".
 static NSString *const kLevelFormat = @"LEVEL:  %d / %d / %d";
 
-// The empty copyright placeholder shown when a pack carries no copyright notice.
 static NSString *const kEmptyCopyright = @"";
-// The navigation-bar title set in -init. @ghidraAddress 0x36afc0
+// @ghidraAddress 0x36afc0
 static NSString *const kNavigationTitle = @"info";
 
-// The terms-and-precautions label shown in the trailing terms row, a fixed Japanese literal
-// embedded in the binary and decoded from its UTF-16 data.
 // @ghidraAddress 0x358e20
 static NSString *const kTermCellText = @"規約等および各種注意事項";
 
-// The pack detail header (artwork and purchase button) is a fixed 120 points tall.
 static const CGFloat kDetailHeaderHeight = 120.0;
 
-// The copyright and terms rows are measured against this effectively-unbounded height.
 static const CGFloat kTextMeasureMaxHeight = 9002.0;
 
-// Row heights.
 static const CGFloat kEmptyCopyrightRowHeight = 10.0;
 static const CGFloat kCopyrightRowVerticalPadding = 20.0;
 
-// Font point sizes.
 static const CGFloat kLoadingLabelFontSize = 18.0;
 static const CGFloat kCopyrightFontSize = 10.0;
 
-// The loading label text is drawn 0.2 white; the label centre is nudged 20 points below the view
-// centre and the spinner 10 points above it.
 static const CGFloat kLoadingLabelCenterDrop = 20.0;
 static const CGFloat kSpinnerCenterRise = 10.0;
 
-// The Retina spinner box size.
 static const CGFloat kSpinnerSize = 24.0;
 
-// The pack detail table background and alternating tune-row tints (white component).
 static const CGFloat kTableBackgroundWhite = 0.4;
 static const CGFloat kOddRowBackgroundWhite = 0.71;
 
-// The terms-row link colour (RGB): a mid green over black and blue.
 static const CGFloat kTermLinkGreen = 0.4784313725490196;
 
-// The full sample-play fade time is zero (an immediate stop).
-
-// The half-scale used to centre a view in its host's bounds.
 static const CGFloat kCenterScale = 0.5;
 
-// The pack detail table has a single section: the header plus one row per tune and the two trailing
-// copyright and terms rows.
 static const int kDetailSectionCount = 1;
 
-// The two trailing rows after the tune list: the copyright notice and the terms of use.
 static const int kTrailingRowCount = 2;
 
-// The unset selected-sample row sentinel.
 static const NSInteger kNoSampleRow = -1;
 
-// The unset extend-note product identifier.
 static const int kNoExtendNotePid = -1;
-
-// The tune-cell artwork downloads are keyed by their index path, so a finished image can be routed
-// back to the correct cell.
 
 @implementation RBStoreDetailViewController {
     // The table row whose sample is currently selected, or kNoSampleRow when none.
     NSInteger rowSamplePlayed;
-    // Whether the selected sample is still downloading (vs already playing).
     BOOL isDownloadingSample;
 }
 
@@ -445,13 +413,11 @@ static const int kNoExtendNotePid = -1;
 
     NSString *copyright = nil;
     if (indexPath.row == tuneCount) {
-        // The copyright row.
         copyright = self.packInfo.copyright;
         if (copyright == nil) {
             return kEmptyCopyrightRowHeight;
         }
     } else {
-        // The terms row always wraps the fixed terms sentence.
         copyright = kTermCellText;
     }
 
@@ -468,7 +434,7 @@ static const int kNoExtendNotePid = -1;
     NSInteger tuneCount = self.packInfo.musicInfos.count;
 
     if (indexPath.row < tuneCount) {
-        // A tune row. The binary discards the dequeued cell and always allocates a fresh one.
+        // The binary discards the dequeued cell and always allocates a fresh one.
         (void)[tableView dequeueReusableCellWithIdentifier:kMusicCellID];
         StoreDetailMusicCell *cell =
             [[StoreDetailMusicCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -522,7 +488,6 @@ static const int kNoExtendNotePid = -1;
     }
 
     if (indexPath.row == tuneCount) {
-        // The copyright row.
         StoreDetailCopyrightCell *cell =
             [tableView dequeueReusableCellWithIdentifier:kCopyrightCellID];
         if (cell == nil) {
@@ -544,7 +509,6 @@ static const int kNoExtendNotePid = -1;
         return cell;
     }
 
-    // The terms row (reuses the copyright cell class).
     StoreDetailCopyrightCell *cell = [tableView dequeueReusableCellWithIdentifier:kTermCellID];
     if (cell == nil) {
         cell = [[StoreDetailCopyrightCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -588,7 +552,6 @@ static const int kNoExtendNotePid = -1;
     }
 
     if (indexPath.row > tuneCount) {
-        // The terms row pushes the terms-of-use controller.
         RBTermPhoneViewController *term = [[RBTermPhoneViewController alloc] init];
         [term setViewTypeStore];
         [self.navigationController pushViewController:term animated:YES];
@@ -596,7 +559,6 @@ static const int kNoExtendNotePid = -1;
     }
 
     if (indexPath.row == rowSamplePlayed) {
-        // Tapping the playing row stops it.
         if ([RBBGMManager getInstance].isPushMusic) {
             [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];
             [[RBBGMManager getInstance] popMusic];
@@ -608,7 +570,6 @@ static const int kNoExtendNotePid = -1;
         return;
     }
 
-    // Switching to a new row: stop the currently-playing sample first.
     if (rowSamplePlayed >= 0 && (NSUInteger)rowSamplePlayed < self.packInfo.musicInfos.count) {
         if ([RBBGMManager getInstance].isPushMusic) {
             [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];

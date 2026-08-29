@@ -83,8 +83,6 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)setupView {
-    // Only the width is kept from the frame; the origin is zeroed and the height comes from the
-    // pool rather than from the view.
     CGRect frame = [AppDelegate appDelegate].viewController.view.frame;
     UIToolbar *toolbar = [[UIToolbar alloc]
         initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, kAccessoryToolbarHeight)];

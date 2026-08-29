@@ -61,8 +61,6 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleAll = (UIViewAutoresizi
     return self;
 }
 
-// The binary's -dealloc only chains to super, which ARC does automatically.
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 

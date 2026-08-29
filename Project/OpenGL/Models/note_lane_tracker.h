@@ -103,7 +103,6 @@ private:
      */
     static void ShuffleIndices(int *pArray, int nCount);
 
-    // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual dtor).
-    Random *m_pNoteData = {};               // +0x08: the attached lane-picking generator.
-    NoteLaneSlot m_aSlots[kSlotCount] = {}; // +0x10: the per-player, per-lane occupancy slots.
+    Random *m_pNoteData = {};
+    NoteLaneSlot m_aSlots[kSlotCount] = {};
 };

@@ -1,11 +1,3 @@
-//
-//  RewardWebAPI.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458.
-//  See RewardWebAPI.h for the class overview.
-//
-
 #import "RewardWebAPI.h"
 
 #import "ApplilinkConsts.h"
@@ -17,49 +9,39 @@
 #import "Crypto.h"
 #import "NSStringURLEncoding.h"
 
-// The request timeout, in seconds, applied to every reward request.
 static const float kRewardRequestTimeout = 10.0f;
 
-// The maximum number of installed application identifiers posted in a single install report; any
-// overflow is posted recursively.
 static const NSUInteger kRewardInstallReportPageSize = 10;
 
-// Applilink error codes reported by the reward web API.
 enum {
-    kRewardErrorUserIdMissing = 0x3e9,   // No user identifier was supplied, or a login parameter
-                                         // error was returned.
-    kRewardErrorAuthorization = 0x3ea,   // The reward server rejected the request's authorization.
-    kRewardErrorUdidSetupFailed = 0x402, // The UDID parameters could not be assembled.
-    kRewardErrorAppIdMissing = 0x405,    // No Applilink application identifier is set.
-    kRewardErrorInstallRejected = 0x3ef, // The install-report request was rejected.
-    kRewardErrorInstallConflict = 0x3f1, // The install-report request conflicted with server state.
-    kRewardErrorGeneric = 1000,          // A generic or unexpected server response.
+    kRewardErrorUserIdMissing = 0x3e9,
+    kRewardErrorAuthorization = 0x3ea,
+    kRewardErrorUdidSetupFailed = 0x402,
+    kRewardErrorAppIdMissing = 0x405,
+    kRewardErrorInstallRejected = 0x3ef,
+    kRewardErrorInstallConflict = 0x3f1,
+    kRewardErrorGeneric = 1000,
 };
 
-// The reward server's success sentinel returned in the response's error_code field.
 static const int kRewardResponseSuccess = 100000000;
 
-// Login-server error codes mapped to the authorization error.
 enum {
     kRewardLoginErrorAuthA = 0xc106cbb,
     kRewardLoginErrorAuthB = 0xc106cba,
     kRewardLoginErrorAuthC = 0xc106cb9,
 };
 
-// Install-server error codes.
 enum {
     kRewardInstallErrorRejected = 999999999,
     kRewardInstallErrorConflict = 0xc106101,
 };
 
-// Reward request priorities.
 enum {
-    kRewardPriorityNormal = 0,     // Normal install / initial login.
-    kRewardPriorityThreeKind = 1,  // Retry once three-kind UDIDs are present.
-    kRewardPriorityPasteBoard = 2, // Pasteboard-sourced path.
+    kRewardPriorityNormal = 0,
+    kRewardPriorityThreeKind = 1,
+    kRewardPriorityPasteBoard = 2,
 };
 
-// Reward SSL request paths appended to ApplilinkConsts.baseUrlSsl.
 static NSString *const kPathAppInstallRegist = @"/reward/app/install/regist.php";
 static NSString *const kPathCheckLoginStatus = @"/reward/auth/checkLoginStatus.php";
 static NSString *const kPathAuthLogin = @"/reward/auth/login.php";
@@ -70,11 +52,9 @@ static NSString *const kPathPreInfoForDisplay = @"/reward/app/preInfoForDisplay.
 static NSString *const kPathInstallReportRegist = @"/reward/app/install/report/regist.php";
 static NSString *const kPathBannerDetail = @"/reward/banner/detail.php";
 
-// HTTP methods.
 static NSString *const kHTTPMethodGet = @"GET";
 static NSString *const kHTTPMethodPost = @"POST";
 
-// Request parameter keys.
 static NSString *const kParamUserId = @"user_id";
 static NSString *const kParamAppliId = @"appli_id";
 static NSString *const kParamAppliIdList = @"appli_id_list";
@@ -85,7 +65,6 @@ static NSString *const kParamCfr = @"cfr";
 static NSString *const kParamCfrValue = @"1";
 static NSString *const kParamSignature = @"signature";
 
-// Response dictionary keys.
 static NSString *const kResponseStatus = @"status";
 static NSString *const kResponseErrorCode = @"error_code";
 static NSString *const kResponseLoginStatus = @"login_status";
@@ -93,20 +72,15 @@ static NSString *const kResponseAllInstallFlg = @"all_install_flg";
 static NSString *const kResponseKind = @"kind";
 static NSString *const kResponseCampaignFlg = @"campaign_flg";
 
-// Response "kind" discriminators for login and install errors.
 static NSString *const kResponseKindAuthorization = @"authorization";
 static NSString *const kResponseKindParameterError = @"parameter_error";
 
-// The temporary-cache key and NSUserDefaults key for the persisted install flag / campaign flag.
 static NSString *const kCacheKeyAppInstallFlg = @"appInstallFlg";
 static NSString *const kDefaultsCampaignFlg = @"ApplilinkReward.campaignFlg";
 
-// The keys of the archived temporary-cache entry dictionary.
 static NSString *const kCacheKeyValue = @"Value";
 static NSString *const kCacheKeyExpire = @"Expire";
 
-// Whether a JSON response is a well-formed reward success: an NSDictionary whose status is true and
-// whose error_code is the success sentinel.
 static BOOL RewardResponseIsSuccess(id response) {
     if (![response isKindOfClass:[NSDictionary class]]) {
         return NO;
@@ -267,8 +241,7 @@ static BOOL RewardResponseIsSuccess(id response) {
             [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorUdidSetupFailed]);
         return;
     }
-    // The merge helper declares NSDictionary * but always returns the NSMutableDictionary it
-    // built, and the signature and cfr entries are added to it below.
+    // The merge helper declares NSDictionary * but always returns the NSMutableDictionary it built.
     NSMutableDictionary *signedParameters =
         (NSMutableDictionary *)[ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
     [parameters removeAllObjects];

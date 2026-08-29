@@ -44,8 +44,7 @@ static const CGFloat kCenterFactor = 0.5f;
     return [super init];
 }
 
-// The binary's -dealloc (0x67498) only chains to super and .cxx_destruct (0x67e70) releases
-// plyName, both of which ARC does, so neither is reconstructed.
+// ARC covers the binary's -dealloc (0x67498) and its .cxx_destruct (0x67e70).
 
 #pragma mark - Path resolution
 

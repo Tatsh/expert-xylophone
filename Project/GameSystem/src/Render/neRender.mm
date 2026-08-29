@@ -6,22 +6,17 @@
 
 namespace ne {
 
-// The process-wide scene-graph root. Its static constructor and atexit destructor registration are
-// the binary's InitializeGlobalSceneRoot, emitted by the compiler for this global definition.
 /** @ghidraAddress 0x29ee0 */
 C_RENDER g_globalSceneRoot;
 
 /** @ghidraAddress 0x29b3c */
 C_RENDER::C_RENDER() {
-    // The two transforms start at identity. In the binary the matrix members are also pre-filled
-    // inline by their default construction before these calls; the explicit calls set the final
-    // identity value, and every other field is zero or nullptr from the member initialisers.
     SetMatrixIdentity(m_mLocalMatrix);
     SetMatrixIdentity(m_mWorldMatrix);
     m_bVisible = true;
 
-    // Both intrusive rings begin empty (self-linked): the link ring at +0x08/+0x10 and the sibling
-    // ring at +0x30/+0x38.
+    // Both intrusive rings begin empty, self-linked: the link ring at +0x08/+0x10 and the
+    // sibling ring at +0x30/+0x38.
     m_pLinkPrev = this;
     m_pLinkNext = this;
     m_pSiblingPrev = this;
@@ -30,7 +25,7 @@ C_RENDER::C_RENDER() {
 
 /** @ghidraAddress 0x29edc */
 void C_RENDER::Render() {
-    // The base render node is not drawable; drawable subclasses override this.
+    // The base node is not drawable; drawable subclasses override this.
 }
 
 /**
@@ -38,17 +33,14 @@ void C_RENDER::Render() {
  * @ghidraAddress 0x29ce0 (the deleting-destructor thunk)
  */
 C_RENDER::~C_RENDER() {
-    // Unlink from the render-list ring.
     m_pLinkNext->m_pLinkPrev = m_pLinkPrev;
     m_pLinkPrev->m_pLinkNext = m_pLinkNext;
 
-    // Detach from the parent's child list, if attached.
     if (m_pParent != nullptr) {
         Detach();
     }
 
-    // Detach every child. Each Detach advances m_pChildHead, so re-reading it walks the whole list;
-    // the sibling link is saved first because Detach resets it.
+    // Detach advances m_pChildHead and resets the sibling link, so save the link first.
     C_RENDER *pChild = m_pChildHead;
     while (m_pChildHead != nullptr) {
         C_RENDER *pNext = pChild->m_pSiblingNext;
@@ -56,7 +48,6 @@ C_RENDER::~C_RENDER() {
         pChild = pNext;
     }
 
-    // Free the lazily-allocated buffer.
     delete[] m_pBuffer;
     m_pBuffer = nullptr;
 }
@@ -71,11 +62,9 @@ void C_RENDER::Detach() {
     C_RENDER *pRelinkFrom = pNext;
     if (m_pParent->m_pChildHead == this) {
         if (pNext == this) {
-            // This was the parent's only child, so the child list becomes empty.
             m_pParent->m_pChildHead = nullptr;
             pRelinkFrom = this;
         } else {
-            // Advance the child-list head past this node.
             m_pParent->m_pChildHead = pNext;
         }
     }
@@ -96,7 +85,6 @@ void C_RENDER::AttachChild(C_RENDER *pChild) {
     if (pChildHead == nullptr) {
         m_pChildHead = pChild;
     } else {
-        // Splice the child in just before the head, at the tail of the sibling ring.
         C_RENDER *pTail = pChildHead->m_pSiblingPrev;
         pChild->m_pSiblingPrev = pTail;
         pChild->m_pSiblingNext = pChildHead;
@@ -117,8 +105,6 @@ void C_RENDER::TraverseChildren() {
         return;
     }
 
-    // First pass: destroy any delete-requested children at the head, each of which advances the
-    // circular list's head, then draw the first live child (recursing into its subtree) and stop.
     C_RENDER *pNext;
     do {
         pNext = pChild->m_pSiblingNext;
@@ -135,8 +121,6 @@ void C_RENDER::TraverseChildren() {
         pChild = pNext;
     } while (pNext == m_pChildHead);
 
-    // Second pass: walk the remaining siblings, drawing the visible ones (and recursing) and
-    // destroying the delete-requested ones, until the ring returns to the head.
     if (m_pChildHead != nullptr && pNext != m_pChildHead) {
         do {
             C_RENDER *pAfter = pNext->m_pSiblingNext;
@@ -158,22 +142,15 @@ void C_RENDER::TraverseChildren() {
 } // namespace ne
 
 #if RBPDBG
-// One complete frame of sprite placements is worth more than a bounded burst spread across many:
-// it shows every item drawn together, so a misplaced one can be compared against its neighbours
-// rather than against memory. The counter advances once per frame and the instancer dumps itself
-// on the chosen one, by which time the play field has settled.
 int g_nDebugFrameCounter = 0;
-// The frame to dump, or zero for none. A fixed offset from the play field's setup was not enough:
-// the layers exist well before they place anything, so the count expired while only the persistent
-// full-screen overlays had sprites. The layer that owns the targets arms this instead, on the first
-// frame it emits a real position, and the dump happens on the frame after.
+// The frame to dump, or zero for none. The layer that owns the targets arms it on the first frame
+// it emits a real position, so the dump lands once the play field has settled.
 int g_nDebugSnapshotFrame = 0;
 #endif
 
 /** @ghidraAddress 0x29d58 */
 void RenderGlobalSceneTree() {
     NE_DBG(++g_nDebugFrameCounter);
-    // The binary guards this with a child-head check, but TraverseChildren already returns early
-    // when the root has no children, so the guard is redundant.
+    // The binary's child-head guard is dropped here: TraverseChildren already returns early.
     ne::g_globalSceneRoot.TraverseChildren();
 }

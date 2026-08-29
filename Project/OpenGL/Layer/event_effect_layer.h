@@ -113,18 +113,17 @@ public:
 
 private:
     ne::C_TEXTURE *m_pTexture = {};                 // +0x08: the gm_event atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x10: the six-sprite main instancer.
-    ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {}; // +0x18: the single-sprite root instancer.
-    int m_nSpriteCount = {}; // +0x20: the main instancer's initial sprite count.
-    bool m_bBuilt = {};      // +0x24: set once the sprites are built.
-    // unsigned char m_aReserved25[3] = {}; // +0x25: alignment padding before the cached viewport
-    // size.
-    float m_flViewportWidth = {};  // +0x28: the viewport width cached each frame.
-    float m_flViewportHeight = {}; // +0x2c: the viewport height cached each frame.
-    bool m_bActive = {};           // +0x30: whether the effect is currently playing.
+    ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x10
+    ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {}; // +0x18
+    int m_nSpriteCount = {};                        // +0x20: for the main instancer.
+    bool m_bBuilt = {};                             // +0x24
+    // unsigned char m_aReserved25[3] = {}; // +0x25
+    float m_flViewportWidth = {};  // +0x28
+    float m_flViewportHeight = {}; // +0x2c
+    bool m_bActive = {};           // +0x30
     // unsigned char m_aReserved31[3] = {}; // +0x31
-    float m_flTimer = {};   // +0x34: the effect animation timer, in frames.
-    int m_nMode = {};       // +0x38: a mode field the getter zero-clears.
-    bool m_bSoundFlag = {}; // +0x3c: a sound flag the getter zero-clears.
-    // unsigned char m_aReserved3d[3] = {}; // +0x3d: padding to the 0x40-byte allocation size.
+    float m_flTimer = {};   // +0x34: in frames.
+    int m_nMode = {};       // +0x38: the getter zero-clears it.
+    bool m_bSoundFlag = {}; // +0x3c: the getter zero-clears it.
+    // unsigned char m_aReserved3d[3] = {}; // +0x3d: pads to the 0x40-byte allocation.
 };

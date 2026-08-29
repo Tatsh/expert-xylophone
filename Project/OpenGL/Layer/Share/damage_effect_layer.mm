@@ -1,11 +1,3 @@
-//
-//  damage_effect_layer.mm
-//  REFLEC BEAT plus
-//
-//  The bounds-damage effect layer (DamageEffectLayer). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "damage_effect_layer.h"
 
 #include <cassert>
@@ -18,56 +10,48 @@
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
 
-// The score-gauge burst atlas UV table (a distinct atlas from the shared sprite UV table); the
-// damage sprites take their UV size from it.
 extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
 
 namespace {
-// The effect atlas for each bounds-effect style (default, limelight, colette).
 constexpr const char *kEffectTextureNames[] = {
     "00_texture/gm_eff", "00_texture/gm_eff_limelight", "00_texture/gm_eff_colette"};
 constexpr int kEffectStyleCount = 3;
 
-// The lane display value and effect size the constructor seeds.
 constexpr float kInitialLaneValue = 1.0f;
 constexpr float kInitialEffectSize = 1.0f;
 
-// The additive blend mode the effect batch draws with.
 constexpr int kAdditiveBlendMode = 1;
 
-// The number of sprite colours/types a damage sprite may take.
 constexpr int kSpriteTypeMax = 2;
 
-// The fixed anchor and quad size, in points, every damage sprite draws with (@ghidraAddress
-// 0x30bf28 anchor, 0x30bf2c size), the atlas cell UV size (0x30bf30 U; V is an inline constant),
-// and the Colette-theme vertical nudge (0x307a3c above, 0x30bf24 below).
+// @ghidraAddress 0x30bf28
 constexpr float kSpriteAnchor = 84.0f;
+// @ghidraAddress 0x30bf2c
 constexpr float kSpriteSize = 168.0f;
+// @ghidraAddress 0x30bf30
 constexpr float kSpriteUvSizeU = 0.08203125f;
 constexpr float kSpriteUvSizeV = 0.1640625f;
+// @ghidraAddress 0x307a3c
 constexpr float kColetteOffsetAbove = 42.0f;
+// @ghidraAddress 0x30bf24
 constexpr float kColetteOffsetBelow = -42.0f;
 
-// The half-turn rotation a mirrored (negative-y) sprite takes, in radians (@ghidraAddress
-// 0x2fe894).
+// @ghidraAddress 0x2fe894
 constexpr float kMirrorRotation = 3.1415927f;
 
-// Scales a lane's unit-interval alpha to the byte range (@ghidraAddress 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kAlphaByteScale = 255.0f;
 
-// The Colette theme id.
 constexpr int kThemaColette = 2;
 
-// The damage effect's lifetime (frames) and the per-frame divisor mapping the timer to an animation
-// frame; the frame is clamped to the last of the kAnimFrameCount frames (@ghidraAddress 0x2feff4 =
-// 500, 0x30bf20 = ~20.83).
+// @ghidraAddress 0x2feff4
 constexpr float kEffectLifetime = 500.0f;
+// @ghidraAddress 0x30bf20
 constexpr float kFrameDivisor = 20.8333f;
 constexpr int kAnimFrameCount = 24;
 constexpr int kLastAnimFrame = kAnimFrameCount - 1;
 
-// The damage animation UV table (@ghidraAddress 0x30bf40): kSpriteTypeMax colours of
-// kAnimFrameCount frame UV origins, indexed nColor * kAnimFrameCount + frame.
+// @ghidraAddress 0x30bf40
 constexpr S_VECTOR2 kBoundsDamageUv[] = {
     {0.0f, 0.0f},           {0.0830078f, 0.0f},      {0.166016f, 0.0f},      {0.249023f, 0.0f},
     {0.332031f, 0.0f},      {0.415039f, 0.0f},       {0.498047f, 0.0f},      {0.581055f, 0.0f},
@@ -84,7 +68,6 @@ constexpr S_VECTOR2 kBoundsDamageUv[] = {
 };
 } // namespace
 
-// The process-wide damage-effect layer, created lazily by shared().
 static DamageEffectLayer *g_pDamageEffectLayer = nullptr; // @ghidraAddress 0x3de810
 
 /** @ghidraAddress 0x173f7c */
@@ -95,21 +78,16 @@ DamageEffectLayer *DamageEffectLayer::shared() {
     return g_pDamageEffectLayer;
 }
 
-// The sprite-batch capacity the constructor seeds, which the batch creation hands to the
-// instancer. The binary reaches it by adding 0x80 to the freshly zeroed field rather than by a
-// plain store, so it reads as an increment; the value is 128.
 constexpr int kSpriteBatchCapacity = 128;
 
 /** @ghidraAddress 0x173f10 */
 DamageEffectLayer::DamageEffectLayer() {
-    // The base constructor and the member initialisers clear the header and pooled records; the
-    // lane values and effect size seed to one.
     for (float &flValue : m_aLaneValue) {
         flValue = kInitialLaneValue;
     }
     m_flEffectSize = kInitialEffectSize;
-    // Without this the batch is created with capacity zero and the first damage effect trips the
-    // sprite-index assertion. The binary adds 0x80 to the freshly zeroed field at 0x173f6c.
+    // Without this the batch has capacity zero and the first effect trips the sprite-index
+    // assertion (the binary adds 0x80 to the freshly zeroed field at 0x173f6c).
     m_nCapacity = kSpriteBatchCapacity;
 }
 
@@ -121,7 +99,6 @@ void DamageEffectLayer::InitializeSprites() {
 
     m_nStyle = [RBUserSettingData sharedInstance].boundsEffectStyle;
     ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
-    // Styles 0..2 pick a themed atlas; any other style keeps the current texture.
     if (m_nStyle >= 0 && m_nStyle < kEffectStyleCount) {
         m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kEffectTextureNames[m_nStyle]);
     }
@@ -139,7 +116,6 @@ void DamageEffectLayer::InitializeSprites() {
 void DamageEffectLayer::SetBoundsDamageStyle() {
     RefreshThema();
     m_nStyle = [RBUserSettingData sharedInstance].boundsEffectStyle;
-    // Styles 0..2 pick a themed atlas; any other style keeps the current texture.
     if (m_nStyle >= 0 &&
         m_nStyle < static_cast<int>(sizeof(kEffectTextureNames) / sizeof(kEffectTextureNames[0]))) {
         m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kEffectTextureNames[m_nStyle]);
@@ -150,7 +126,7 @@ void DamageEffectLayer::SetBoundsDamageStyle() {
 /** @ghidraAddress 0x174190 */
 void DamageEffectLayer::CreateBoundsDamage(int nColor, float flPosX, float flPosY) {
     assert(nColor >= 0 && nColor < kLaneCount);
-    // Claim the first inactive pooled record; a full pool drops the effect.
+    // A full pool silently drops the effect.
     for (EffectRecord &effect : m_aEffects) {
         if (!effect.bActive) {
             effect.nColor = nColor;
@@ -181,8 +157,6 @@ void DamageEffectLayer::EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VEC
     ne::C_SPRITE_INSTANCING_2D *pBatch = m_pSprite;
     const int nIndex = m_nSpriteCount;
 
-    // The Colette theme nudges the sprite vertically (down normally, up when already below); every
-    // other theme uses the plain position.
     if ([RBUserSettingData sharedInstance].thema == kThemaColette) {
         const float flOffsetY = pPosition->y < 0.0f ? kColetteOffsetBelow : kColetteOffsetAbove;
         pBatch->SetSpritePositionXY(nIndex, pPosition->x, pPosition->y + flOffsetY);
@@ -196,8 +170,6 @@ void DamageEffectLayer::EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VEC
     pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{kSpriteUvSizeU, kSpriteUvSizeV});
     pBatch->SetSpriteScale(nIndex, flScale, flScale);
 
-    // A sprite below the field (negative y) is mirrored a half-turn and uses the second lane's
-    // alpha.
     float flAlphaScale;
     if (pPosition->y < 0.0f) {
         pBatch->SetSpriteRotation(nIndex, kMirrorRotation);
@@ -223,8 +195,6 @@ void DamageEffectLayer::Process(float flDelta) {
             effect.bActive = false;
             continue;
         }
-        // Map the timer to an animation frame (clamped to the last), select that colour and frame's
-        // UV, and emit the sprite at the record's position.
         int nFrame = static_cast<int>(effect.flTimer / kFrameDivisor);
         if (nFrame > kLastAnimFrame) {
             nFrame = kLastAnimFrame;

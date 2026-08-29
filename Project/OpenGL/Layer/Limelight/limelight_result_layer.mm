@@ -921,8 +921,7 @@ void LimelightResultLayer::RenderPhoneSpriteFieldAligned(unsigned int nSlot,
 void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
     if (IsPad()) {
         *pOutRect = g_LimelightCenterPositionPhoneState;
-        (void)GameSystem::GetGameSystem(); // The binary tail-calls the singleton getter and
-                                           // discards it.
+        (void)GameSystem::GetGameSystem(); // Yes, the binary discards this call's result.
         return;
     }
 
@@ -1604,7 +1603,6 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
         }
         nValue /= 10;
     }
-    // An all-zero value still shows one digit when the show-zero flag is set.
     if (nMostSignificant == 0 && bPaired) {
         nMostSignificant = 1;
     }
@@ -2660,7 +2658,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
         flSideOneBar = static_cast<float>(nSideOneScore) / static_cast<float>(nSideZeroScore);
     }
 
-    // Side one carries the current play colour; side zero carries the other.
     const unsigned int nSideZeroColor = nPlayColor == 0 ? 1 : 0;
     const unsigned int nSideOneLabel = kPartSideOneGaugeLabelBase + nPlayColor;
     const unsigned int nSideZeroLabel = kPartSideZeroGaugeLabelBase + nSideZeroColor;
@@ -2760,7 +2757,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                        0);
     }
 
-    // Which page leads depends on the panel's active flag.
     const float flSlide = m_flSlideTimer;
     const float flTransition = std::fabs(flSlide);
     const float flSlideSign = flSlide <= 0.0f ? -kPageSlideDistance : kPageSlideDistance;
@@ -3374,7 +3370,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                                       nPanelAlpha);
     }
 
-    // In portrait the previews come from the captured half-scale image.
     getPosition_Phone(kPhoneAnchorJacket, &position);
     EmitTexturedPart(
         kJacketSlot, position, S_VECTOR2{kPhoneJacketSize, kPhoneJacketSize}, nPanelAlpha);
@@ -3575,7 +3570,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     RenderPhoneResultSpriteById(
         kPartsSlot, kPhonePartBarCap, barRight, nPanelAlpha, 0, 0.0f, -1.0f, 1.0f);
 
-    // Which page leads depends on the panel's active flag.
     const float flSlide = m_flSlideTimer;
     const float flTransition = std::fabs(flSlide);
     const float flRemaining = 1.0f - flTransition;
@@ -3666,7 +3660,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
         const int nReflecQuota = nQuotaColor == 0 ? m_nResultScore : m_nResultScoreHi;
         const int nRowBase = nSide == 0 ? kPhoneStatsSideAnchorStride : 0;
 
-        // Off an iPhone the side labels stand on end, mirrored between the two rows.
         const float flLabelRotation =
             m_bPortrait ? 0.0f :
                           (nSide == 1 ? kPhoneSideLabelRotationOne : kPhoneSideLabelRotationZero);
@@ -3788,7 +3781,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     bonusCursor = AnchorPlus(kPhoneAnchorBonusTotalScore, bonusOffset);
     RenderPhoneTotalScoreDigits(&bonusCursor, nBonusAlpha);
 
-    // Each dot draws through the dimmed pass for the page it selects.
     getPosition_Phone(kPhoneAnchorPageDotStats, &position);
     RenderPhoneResultSpriteById(kPartsSlot,
                                 kPhonePartPageDot,

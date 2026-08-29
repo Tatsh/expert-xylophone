@@ -351,7 +351,6 @@ void NoteEffectMgr::CompactActiveNotes() {
 
 /** @ghidraAddress 0x136ccc */
 void NoteEffectMgr::ProcessActiveNotes() {
-    // Touch-hit pass: skipped while input is locked (paused).
     if (!GameSystem::GetGameSystem()->GetPaused()) {
         const float flTouchRadiusSq = GameSystem::GetGameSystem()->GetSheetDiameterSq();
         TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
@@ -365,7 +364,6 @@ void NoteEffectMgr::ProcessActiveNotes() {
                 continue;
             }
 
-            // Find the nearest active note this touch hits, within the sheet's touch radius.
             int nNearest = -1;
             float flNearestDistSq = flTouchRadiusSq;
             for (int i = 0; i < m_nActiveCount; ++i) {
@@ -382,7 +380,6 @@ void NoteEffectMgr::ProcessActiveNotes() {
         }
     }
 
-    // Advance every active note's state machine, then render them in reverse order.
     if (m_nActiveCount > 0) {
         for (int i = 0; i < m_nActiveCount; ++i) {
             m_ppActiveList[i]->UpdateStep();
@@ -398,7 +395,6 @@ void NoteEffectMgr::ProcessActiveNotes() {
 
 /** @ghidraAddress 0x137080 */
 void NoteEffectMgr::InsertActiveNoteSorted(NoteModel *pNote) {
-    // Append at the tail, then bubble it earlier while its hit time precedes its predecessor's.
     const int nInserted = m_nActiveCount;
     m_ppActiveList[nInserted] = pNote;
     m_nActiveCount = nInserted + 1;
@@ -419,7 +415,6 @@ void NoteEffectMgr::SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet) {
         ResetAllNoteSubEntries();
         return;
     }
-    // Pick the density tier from the chart's note count.
     const int nChartNotes = pMusicSheet->GetChartNoteCount(0);
     if (nChartNotes < kDensityTierThreshold1) {
         m_nDensityTier = 0;
@@ -433,7 +428,7 @@ void NoteEffectMgr::SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet) {
 
 /** @ghidraAddress 0x137664 */
 float NoteEffectMgr::EvaluateNotePathAtTime(int nTargetTime) const {
-    // The per-millisecond scroll-rate scale (@ghidraAddress 0x308c48 = 1/60000).
+    // @ghidraAddress 0x308c48
     constexpr float kScrollRatePerMs = 1.0f / 60000.0f;
 
     if (m_pMusicSheet == nullptr) {
@@ -444,8 +439,7 @@ float NoteEffectMgr::EvaluateNotePathAtTime(int nTargetTime) const {
         return 0.0f;
     }
 
-    // Each path node stores its speed as a float in the value slot (read raw, not converted) and
-    // its time in the following int slot.
+    // A path node holds its speed as a float bit pattern in the int x slot, not as a converted int.
     const auto nodeSpeed = [this](int nIndex) {
         float flSpeed;
         const int nRaw = m_pMusicSheet->GetSheetPathNode(nIndex)->x;
@@ -461,20 +455,17 @@ float NoteEffectMgr::EvaluateNotePathAtTime(int nTargetTime) const {
         if (nNodeTime >= nTargetTime) {
             break;
         }
-        // Integrate the segment from the previous node to this one at the current speed.
         const float flSegment =
             static_cast<float>(nNodeTime - m_pMusicSheet->GetSheetPathNode(nIndex - 1)->y);
         flPosition += flSpeed * flSegment * kScrollRatePerMs;
         nRemaining = static_cast<int>(static_cast<float>(nRemaining) - flSegment);
         flSpeed = nodeSpeed(nIndex);
     }
-    // Add the partial final segment up to the target time.
     return flPosition + static_cast<float>(nRemaining) * flSpeed * kScrollRatePerMs;
 }
 
 /** @ghidraAddress 0x1379cc */
 void NoteEffectMgr::ResetAllNoteSubEntries() {
-    // Detach every pooled note from its chart binding.
     for (int i = 0; i < m_nPoolCapacity; ++i) {
         NoteModel *pNote = m_ppNotePool[i];
         if (pNote != nullptr) {
@@ -482,7 +473,6 @@ void NoteEffectMgr::ResetAllNoteSubEntries() {
         }
     }
     m_nNoteCount = 0;
-    // Clear the active list and reset the active count.
     for (int i = 0; i < m_nPoolCapacity; ++i) {
         m_ppActiveList[i] = nullptr;
     }
@@ -497,14 +487,12 @@ void NoteEffectMgr::InitNoteObjects() {
     const int nCount = m_pMusicSheet->GetNoteCount();
     EnsureNoteObjectCapacity(nCount);
     m_nNoteCount = nCount;
-    // Bind each chart note to its pooled object.
     for (int i = 0; i < nCount; ++i) {
         NoteModel *pNote = FindNoteByIndex(i);
         if (pNote != nullptr) {
             pNote->SetNoteIndex(i);
         }
     }
-    // Clear the active list and reset the active count.
     for (int i = 0; i < m_nPoolCapacity; ++i) {
         m_ppActiveList[i] = nullptr;
     }
@@ -516,10 +504,9 @@ void NoteEffectMgr::EnsureNoteObjectCapacity(int nCount) {
     if (m_nPoolCapacity >= nCount) {
         return;
     }
-    // Grow both arrays; the active list is reallocated but left for InitNoteObjects to populate.
+    // The active list is reallocated empty; InitNoteObjects repopulates it.
     auto **ppNewPool = new NoteModel *[nCount];
     auto **ppNewActive = new NoteModel *[nCount];
-    // Carry the existing pooled objects across, then construct a fresh note for each added slot.
     int i = 0;
     for (; i < m_nPoolCapacity; ++i) {
         ppNewPool[i] = m_ppNotePool[i];
@@ -537,7 +524,6 @@ void NoteEffectMgr::EnsureNoteObjectCapacity(int nCount) {
 /** @ghidraAddress 0x136b9c */
 NoteEffectMgr *NoteEffectMgr::shared() {
     if (g_pNoteEffectMgr == nullptr) {
-        // The binary allocates the raw 0x168-byte object and runs the constructor.
         g_pNoteEffectMgr = new NoteEffectMgr();
     }
     return g_pNoteEffectMgr;

@@ -165,12 +165,12 @@ private:
         float flScaleY = {};   /*!< The particle Y scale. +0x18 */
     };
 
-    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the particle atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the three sprite batches.
-    int m_anBatchCount[kBatchCount] = {};                      // +0x28: each batch's live count.
-    int m_anBatchCapacity[kBatchCount] = {};                   // +0x34: each batch's capacity.
-    bool m_bBuilt = {}; // +0x40: set once the batches are built.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10
+    int m_anBatchCount[kBatchCount] = {};                      // +0x28
+    int m_anBatchCapacity[kBatchCount] = {};                   // +0x34
+    bool m_bBuilt = {};                                        // +0x40
     // unsigned char m_aReserved41[3] = {};          // +0x41
-    float m_aScrollPhase[kScrollPhaseCount] = {}; // +0x44: the three scroll phases.
-    Particle m_aParticles[kParticleCount] = {};   // +0x50: the pooled particles.
+    float m_aScrollPhase[kScrollPhaseCount] = {}; // +0x44
+    Particle m_aParticles[kParticleCount] = {};   // +0x50
 };

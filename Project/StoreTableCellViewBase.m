@@ -2,7 +2,6 @@
 
 #import "UIImage+RB.h"
 
-// The "new" corner badge artwork.
 static NSString *const kIconNewImageName = @"09_store/store_new";
 
 @implementation StoreTableCellViewBase

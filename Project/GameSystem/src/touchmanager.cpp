@@ -1,29 +1,12 @@
-//
-//  touchmanager.cpp
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458. The touch-input tracking manager the
-//  engine reads each frame; the Objective-C GL view (neGLView) feeds it raw UIKit touch phases and
-//  the render loop commits a frame through CompactTouchList. The class has no embedded __FILE__
-//  path (its methods are tiny leaves), so this pure-C++ engine file sits at the GameSystem source
-//  root. The initialiser's slot layout was recovered from the arm64 disassembly (the decompiler
-//  renders its NEON stores as folded vector temporaries).
-//
-
 #include "touchmanager.h"
 
 #include "engineruntime.h"
 #include "gamesystem.h"
 
-// The sentinel each fresh slot's position fields hold until a touch is registered: the bit pattern
-// 0x80000000, i.e. INT_MIN, which is also the representation of -0.0f the binary stores through its
-// NEON immediates.
+// INT_MIN, which is also the -0.0f the binary stores through its NEON immediates.
 static constexpr int kUninitialisedCoord = static_cast<int>(0x80000000);
-// The sentinel each fresh slot's key pair holds: INT_MAX (0x7fffffff).
 static constexpr int kUninitialisedKey = 0x7fffffff;
-// The id stamped into a free (never-used) slot.
 static constexpr int kFreeSlotId = -1;
-// The largest rolling id before it wraps back to zero.
 static constexpr int kMaxTouchId = 0x7fffffff;
 
 /** The global touch-manager singleton, constructed by @c TouchManager::EnsureSingleton. */
@@ -33,8 +16,7 @@ TouchManager *g_pTouchManager = nullptr;
 TouchManager::TouchManager() {
     m_nActiveCount = 0;
     m_nNextId = 0;
-    // Pre-allocate every slot once; the active list is a prefix of this pointer array and slots are
-    // recycled by CompactTouchList's swap-remove rather than freed.
+    // Slots are recycled by CompactTouchList's swap-remove rather than freed.
     for (int i = 0; i < kSlotCount; ++i) {
         auto *pSlot = new TouchPoint;
         pSlot->nId = kFreeSlotId;
@@ -62,7 +44,6 @@ TouchManager *TouchManager::FetchSharedSingleton() {
 
 /** @ghidraAddress 0x17dbc */
 void TouchManager::AddTouchPoint(int nX, int nY, int nKey1, int nKey2) {
-    // Claim the slot just past the active prefix and give it the next rolling id.
     TouchPoint *pSlot = m_apSlots[m_nActiveCount];
     pSlot->nId = m_nNextId;
     pSlot->nBeginX = nX;
@@ -84,8 +65,6 @@ void TouchManager::AddTouchPoint(int nX, int nY, int nKey1, int nKey2) {
 
 /** @ghidraAddress 0x17e10 */
 void TouchManager::UpdateTouchPoint(int nX, int nY, int nKey1, int nKey2) {
-    // Locate the active slot whose live position equals the given key (the touch's previous point)
-    // and advance it, saving the old position as the previous one.
     for (int i = 0; i < m_nActiveCount; ++i) {
         TouchPoint *pSlot = m_apSlots[i];
         if (pSlot->nCurrentX == nKey1 && pSlot->nCurrentY == nKey2) {
@@ -100,9 +79,6 @@ void TouchManager::UpdateTouchPoint(int nX, int nY, int nKey1, int nKey2) {
 
 /** @ghidraAddress 0x17e5c */
 void TouchManager::HandleTouchMoved(int nNewX, int nNewY, int nOldX, int nOldY) {
-    // Prefer a not-yet-ended slot whose live position matches the old point; fall back to one that
-    // already sits at the new point. On a match, save the previous position, move to the new point,
-    // and raise the moved flag (fresh slots use bEnded, older ones bEndedPending).
     TouchPoint *pMatch = nullptr;
     for (int i = 0; i < m_nActiveCount; ++i) {
         TouchPoint *pSlot = m_apSlots[i];
@@ -136,7 +112,6 @@ void TouchManager::HandleTouchMoved(int nNewX, int nNewY, int nOldX, int nOldY) 
 
 /** @ghidraAddress 0x17f14 */
 void TouchManager::MarkAllTouchesEnded() {
-    // Flag every active slot as moved/ended for this frame, unconditionally.
     for (int i = 0; i < m_nActiveCount; ++i) {
         TouchPoint *pSlot = m_apSlots[i];
         if (!pSlot->bIsNew) {
@@ -154,7 +129,6 @@ void TouchManager::CompactTouchList() {
     while (i < count) {
         TouchPoint *pSlot = m_apSlots[i];
         if (!pSlot->bEnded) {
-            // Still live: commit the current position and promote a pending end to a real one.
             pSlot->bIsNew = false;
             pSlot->nCommittedX = pSlot->nCurrentX;
             pSlot->nCommittedY = pSlot->nCurrentY;
@@ -163,8 +137,7 @@ void TouchManager::CompactTouchList() {
             }
             ++i;
         } else {
-            // Ended: swap the last active slot into this index and park the freed slot at the tail
-            // for reuse, without advancing i so the swapped-in slot is re-examined.
+            // i is not advanced, so the swapped-in slot is re-examined.
             --count;
             if (i != count) {
                 m_apSlots[i] = m_apSlots[count];

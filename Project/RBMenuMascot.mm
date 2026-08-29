@@ -1,14 +1,3 @@
-//
-//  RBMenuMascot.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuMascot). Verified against
-//  the arm64 disassembly: the wander physics and the message-bubble layout use soft-float register
-//  moves that the decompiler folds into pseudo-variables, so the CGRect/CGSize maths were recovered
-//  from the disassembly. This is an Objective-C++ file because -startAnimation:, -getMovePoint, and
-//  -update reach the C++ GameSystem engine singleton and the S_VECTOR2 engine vector type.
-//
-
 #import "RBMenuMascot.h"
 
 #import "RBCampaignData.h"
@@ -19,109 +8,79 @@
 #import "gamesystem.h"
 #import "s_vector2.h"
 
-// The base asset names for the mascot sprite frames and the campaign message bubble background.
 static NSString *const kNormalMascotAssetBase = @"01_music_select/as_mascot_";
 static NSString *const kRareMascotAssetBase = @"01_music_select/as_mascot_r_";
 static NSString *const kMessageBubbleAssetName = @"01_music_select/sel_popover_down";
 
-// The format that joins the campaign name to a base asset name, and the format that appends a
-// two-digit frame index to a base asset name.
 static NSString *const kCampaignAssetNameFormat = @"%@/%@";
 static NSString *const kFrameAssetNameFormat = @"%@%02d";
 
-// Sprite-frame loading: frame indices run 1..100 and are grouped into clips of ten frames.
 constexpr int kMascotFirstFrameIndex = 1;
 constexpr int kMascotFrameIndexLimit = 101;
 constexpr int kMascotFramesPerClip = 10;
 constexpr int kMascotFrameCountPerClip = 9;
 
-// The tap rarity gate: a random value below this threshold (out of 100) plays a normal clip, at or
-// above it plays a rare clip.
 constexpr int kMascotRareThreshold = 80;
 constexpr int kMascotRareModulus = 101;
 
-// The message-label origin inside the bubble, and the padding added around the label to size the
-// bubble background.
 constexpr CGFloat kMessageLabelOrigin = 2.0;
 constexpr CGFloat kMessageBubblePaddingX = 18.0;
 constexpr CGFloat kMessageBubblePaddingTop = 10.0;
 constexpr CGFloat kMessageBubblePaddingBottom = 25.0;
 
-// The horizontal nudge applied to the message view, as a fraction of the bubble width, chosen by
-// iPad idiom.
 constexpr CGFloat kMessageViewNudgeFraction = 0.125;
 
-// The horizontal spawn positions: the normal mascot spawns just off the right screen edge (frame
-// width plus this offset) and the rare mascot spawns off the left edge.
 constexpr CGFloat kMascotNormalSpawnXOffset = 100.0;
 constexpr CGFloat kMascotRareSpawnX = -100.0;
 
-// The resting-height random-range base offset subtracted from the screen height, chosen by font
-// variant.
 constexpr float kMascotBaseYOffsetPad = 300.0f;
 constexpr float kMascotBaseYOffsetPhone = 150.0f;
 
-// The upward launch speed multiplier applied to speedY on a tap (scaled by the mascot scale).
 constexpr float kMascotTapUpwardSpeed = 50.0f;
 
-// The message-label constrained max width, chosen by device idiom.
 constexpr CGFloat kMascotMessageMaxWidthPad = 300.0;
 constexpr CGFloat kMascotMessageMaxWidthPhone = 200.0;
 
-// The height the campaign message text is constrained to when measured in -generateCGSize:.
 constexpr CGFloat kMascotMessageLabelConstraintHeight = 40.0;
 
-// The per-frame move animation duration on the Colette theme. The pool slot holds the float
-// literal widened to double, not an exact double 0.1. @ghidraAddress 0x2ec6a8
+// The pool slot holds the float literal widened to double, not an exact 0.1.
+// @ghidraAddress 0x2ec6a8
 constexpr NSTimeInterval kMascotMoveAnimDuration = 0.1f;
 
-// The message-ticker fade/slide animation duration.
 constexpr NSTimeInterval kMessageAnimDuration = 0.2;
 
-// The resizable message-bubble background cap insets.
 constexpr CGFloat kMessageBubbleCapInsetTop = 10.0;
 constexpr CGFloat kMessageBubbleCapInsetLeft = 47.0;
 constexpr CGFloat kMessageBubbleCapInsetBottom = 25.0;
 constexpr CGFloat kMessageBubbleCapInsetRight = 9.0;
 
-// The sprite-animation frame rate, expressed as the seconds-per-cycle duration UIImageView uses.
 constexpr NSTimeInterval kMascotAnimationDuration = 0.25;
 
-// The message-ticker fade-out hold before the label is cleared.
 constexpr NSTimeInterval kMessageFadeOutDelay = 5.0;
 
-// The mascot base font point sizes, chosen by device idiom (iPad vs phone).
 constexpr CGFloat kMascotFontSizePad = 14.0;
 constexpr CGFloat kMascotFontSizePhone = 11.0;
 
-// The vertical resting-height random spread, and the base spawn horizontal speed, chosen by font
-// variant.
 constexpr int kMascotBaseYSpreadPad = 40;
 constexpr int kMascotBaseYSpreadPhone = 5;
 constexpr float kMascotSpawnSpeedPad = -10.0f;
 constexpr float kMascotSpawnSpeedPhone = -5.0f;
 
-// The downward acceleration applied to the mascot after a tap.
 constexpr float kMascotTapDownwardAcceleration = -10.0f;
 
 // The empty-string sentinel that means the campaign ticker is idle; tapping it advances the ticker.
 static NSString *const kEmptyMessageText = @"";
 
-// The Colette theme value that runs the per-frame move animation.
 constexpr RBUserSettingDataTheme kMascotMoveAnimTheme = RBUserSettingDataThemeColette;
 
-// The message-bubble URL key looked up in a campaign message dictionary.
 static NSString *const kMessageURLKey = @"url";
 static NSString *const kMessageTextKey = @"text";
 
 @interface RBMenuMascot ()
 
-// The cached GL viewport size the wander physics measures against. It is a private engine vector,
-// so it lives in the class continuation rather than the public header.
 @property(nonatomic, assign) S_VECTOR2 m_screenSize;
 
-// The sprite-frame loading loop that -setup: runs once for the normal frames and once for the rare
-// frames; the binary inlines it twice.
+// The binary inlines this loop twice in -setup:, once per frame set.
 - (void)loadFramesFromBase:(NSString *)base
                 imageArray:(NSMutableArray *)imageArray
            frameCountArray:(NSMutableArray *)frameCountArray;
@@ -232,9 +191,6 @@ static NSString *const kMessageTextKey = @"text";
     self.messageViewAnimating = NO;
 }
 
-// Loads the mascot sprite frames from a base asset name into clip sub-arrays: frame indices run
-// 1..100 (stopping at the first missing frame) and are grouped into clips of ten, with a nine-frame
-// count pushed for each completed clip.
 - (void)loadFramesFromBase:(NSString *)base
                 imageArray:(NSMutableArray *)imageArray
            frameCountArray:(NSMutableArray *)frameCountArray {
@@ -381,13 +337,10 @@ static NSString *const kMessageTextKey = @"text";
     if ([RBUserSettingData sharedInstance].thema != kMascotMoveAnimTheme) {
         return;
     }
-    // The binary captures self strongly in both blocks (no weak reference), so the ticking move
-    // animation re-schedules itself each frame while the wander animation is running.
+    // Both blocks capture self strongly, as the binary does, so the animation re-schedules itself.
     [UIView animateWithDuration:kMascotMoveAnimDuration
         delay:0
         // AllowUserInteraction, not BeginFromCurrentState: w2 is 0x00030002 at 0x2e7a8/0x2e7ac.
-        // Without it the mascot takes no touches for the whole of its perpetual move animation,
-        // which is why tapping him never made him bounce.
         options:(UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveLinear)
         animations:^{
           /** @ghidraAddress 0x2e80c */
@@ -446,7 +399,6 @@ static NSString *const kMessageTextKey = @"text";
           weakSelf.messageView.alpha = 0;
         }
         completion:^(BOOL finished) {
-          // Advances the ticker to the next message and animates it in.
           /** @ghidraAddress 0x2d7ec */
           RBMenuMascot *strongSelf = weakSelf;
           CGSize textSize = [strongSelf
@@ -492,8 +444,6 @@ static NSString *const kMessageTextKey = @"text";
                 weakSelf.messageView.alpha = 1.0;
               }
               completion:^(BOOL innerFinished) {
-                // Fades the message view out after a hold, then clears the label and idles the
-                // ticker.
                 /** @ghidraAddress 0x2e348 */
                 [UIView animateWithDuration:kMessageAnimDuration
                     delay:kMessageFadeOutDelay

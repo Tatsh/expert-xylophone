@@ -155,16 +155,16 @@ private:
     };
 
     ne::C_TEXTURE *m_pTexture = {};              // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprites = {}; // +0x10: the result sprite instancer.
-    int m_nSpriteCount = {}; // +0x18: the instancer's live sprite count this frame.
-    S_VECTOR2 m_aQuadPos[kPositionCount] = {}; // +0x1c: each quad's screen position.
-    int m_nState = {};                         // +0x7c: the layer's animation state.
-    bool m_bCreated = {};                      // +0x80: set once the effect is created.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprites = {}; // +0x10
+    int m_nSpriteCount = {};                     // +0x18
+    S_VECTOR2 m_aQuadPos[kPositionCount] = {};   // +0x1c
+    int m_nState = {};                           // +0x7c
+    bool m_bCreated = {};                        // +0x80
     // unsigned char m_aPad81[3] = {};            // +0x81
-    float m_flBaseSize = {};                  // +0x84: the base sprite size the quads scale by.
-    ResultQuad m_aQuads[kPositionCount] = {}; // +0x88: the twelve quad records (end at +0x148).
-    float m_flScaleA = {};                    // +0x148: the scale for the first six quads.
-    float m_flScaleB = {};                    // +0x14c: the scale for the last six quads.
+    float m_flBaseSize = {};                  // +0x84
+    ResultQuad m_aQuads[kPositionCount] = {}; // +0x88
+    float m_flScaleA = {};                    // +0x148: the first six quads.
+    float m_flScaleB = {};                    // +0x14c: the last six quads.
 };
 
 // code: language=Objective-C++

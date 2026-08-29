@@ -3,10 +3,9 @@
 #import "AVBus.h"
 
 namespace {
-// Play handles pack the voice index into bits 16 and up and the voice's current id into the low 16.
 constexpr unsigned int kBusHandleIdMask = 0xffff;
 constexpr int kBusHandleIndexShift = 16;
-// The mixer normalises an integer 0..127 volume to the 0..1 gain the voices take.
+// Volumes arrive as an integer 0..127 and the voices take a 0..1 gain.
 constexpr float kVolumeScale = 127.0f;
 constexpr int kBusStatusPlaying = AVBusStatusPlaying;
 } // namespace

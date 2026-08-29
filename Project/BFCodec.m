@@ -16,8 +16,8 @@ static const int kBlowfishTrailerLength = 8;
 
 // The 64-bit build stores each Blowfish word as a 64-bit entry, so the context is 0x2090 bytes.
 typedef struct {
-    uint64_t P[kBlowfishPArrayCount];                  // +0x0000
-    uint64_t S[kBlowfishSBoxCount][kBlowfishSBoxSize]; // +0x0090
+    uint64_t P[kBlowfishPArrayCount];
+    uint64_t S[kBlowfishSBoxCount][kBlowfishSBoxSize];
 } BlowfishContext;
 
 // @ghidraAddress 0x2ee7e8 (g_abBFInitPArray)
@@ -140,8 +140,8 @@ static void SetBlowfishKey(BlowfishContext *ctx, const char *key, NSUInteger len
 #pragma mark - BFCodec
 
 @implementation BFCodec {
-    uint8_t _iv[kBlowfishIVLength]; // +0x08
-    BlowfishContext *_blf;          // +0x10
+    uint8_t _iv[kBlowfishIVLength];
+    BlowfishContext *_blf;
 }
 
 // @ghidraAddress 0x1529c

@@ -1,18 +1,5 @@
-//
-//  RBAnimationFactory.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBAnimationFactory). Verified
-//  against the arm64 disassembly: every entry point is a class method, the decompiler drops the
-//  variadic arrayWithObjects: element lists (recovered from the stacked register stores), the fade
-//  and scale builders use linear timing while the key-path and bound builders use ease-in and the
-//  bob builder uses ease-out, and createPositionYAnimWithFromValue: animates the position.x key
-//  path exactly as the shipped binary does.
-//
-
 #import "RBAnimationFactory.h"
 
-// The layer key paths the factory animates.
 static NSString *const kPositionXKeyPath = @"position.x";
 static NSString *const kPositionYKeyPath = @"position.y";
 static NSString *const kOpacityKeyPath = @"opacity";
@@ -20,25 +7,19 @@ static NSString *const kTransformScaleKeyPath = @"transform.scale";
 static NSString *const kTransformScaleXKeyPath = @"transform.scale.x";
 static NSString *const kTransformScaleYKeyPath = @"transform.scale.y";
 
-// The endpoints of a normalised two-keyframe timeline.
 static const double kKeyTimeStart = 0.0;
 static const double kKeyTimeEnd = 1.0;
 
-// The repeat count applied to the one-shot builders.
 static const float kNoRepeat = 0.0f;
 
-// The vertical overshoot, in points, of the stay-in-place bob.
 static const double kBobOvershoot = 10.0;
-// The fraction of the bob's duration at which it reaches its peak.
 static const double kBobPeakTimeFraction = 0.3;
 
-// The scale keyframes of the bounce: overshoot high, dip low, overshoot again, then settle.
 static const float kBounceRestScale = 1.0f;
 static const float kBounceOvershootScale = 1.1f;
 static const float kBounceUndershootScale = 0.9f;
 static const float kBounceSettleScale = 1.05f;
 
-// The normalised key times of the bounce keyframes.
 static const float kBounceKeyTimeStart = 0.0f;
 static const float kBounceKeyTimeOvershoot = 0.3f;
 static const float kBounceKeyTimeUndershoot = 0.6f;
@@ -99,6 +80,7 @@ static const float kBounceKeyTimeEnd = 1.0f;
                                                   toValue:(double)toValue
                                                     delay:(double)delay
                                                  duration:(double)duration {
+    // The binary really does animate position.x from this Y builder.
     return [self createAnimWithKeyPath:kPositionXKeyPath
                              fromValue:fromValue
                                toValue:toValue

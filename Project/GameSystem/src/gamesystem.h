@@ -856,7 +856,7 @@ private:
      */
     GameSystem();
 
-    rb::GameScene *m_pCurrentScene = {}; // +0x00: the active game scene, or null when none runs.
+    rb::GameScene *m_pCurrentScene = {}; // +0x00
     double m_dScreenX = {};              // +0x08
     double m_dScreenY = {};              // +0x10
     double m_dScreenWidth = {};          // +0x18
@@ -868,11 +868,10 @@ private:
     bool m_fUse3dTiltProjection = {};    // +0x35
 
 public:
-    // The three cached song textures are torn down (released and nulled) directly by the game
-    // scene, matching the binary's cross-class field access, so they are public.
+    // Public because the game scene releases and nulls these directly, as the binary does.
 
     /** The song jacket/artwork texture, loaded by @c LoadArtworkTexture. */
-    ne::C_TEXTURE *m_pArtworkTexture = {}; // +0x40: released at teardown by the game scene.
+    ne::C_TEXTURE *m_pArtworkTexture = {}; // +0x40
     /** The rendered music-name text texture, loaded by @c LoadMusicNameTexture. */
     ne::C_TEXTURE *m_pMusicNameTexture = {}; // +0x48
     /** The rendered artist-name text texture, loaded by @c LoadArtistNameTexture. */
@@ -901,7 +900,7 @@ private:
     float m_flSheetHeight = {};       // +0xa4
     float m_flCameraPitchHeight = {}; // +0xa8
     bool m_fBgmPlaying = {};          // +0xac
-    bool m_fPaused = {};              // +0xad: set while the game is paused or interrupted.
+    bool m_fPaused = {};              // +0xad
     // +0xae..+0xaf is alignment padding before the game type.
     int m_nGameType = {};                // +0xb0
     int m_nPlayerColor = {};             // +0xb4
@@ -926,12 +925,9 @@ private:
     int m_nPlayerLevel = {};             // +0x108
     int m_nPlayerExp = {};               // +0x10c
     int m_nGainedExp = {};               // +0x110
-    int m_nNewRecordFlag = {};           // +0x114: set when the finished play beat the stored best
-                                         //         score or rate (read at result-screen init to arm
-                                         //         the celebration cue).
-    bool m_fMenuTutorialActive = {};     // +0x12c: a byte; the binary loads and stores it with
-                                         //         ldrb/strb.
-    int m_nTutorialPhase = {};           // +0x130: the in-play tutorial-guide phase.
+    int m_nNewRecordFlag = {};           // +0x114
+    bool m_fMenuTutorialActive = {};     // +0x12c
+    int m_nTutorialPhase = {};           // +0x130
     float m_flPlayfieldScale = {};       // +0x134
     bool m_fCpuFullCombo = {};           // +0x138
     bool m_fUserFullCombo = {};          // +0x139

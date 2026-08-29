@@ -21,8 +21,7 @@ class C_SPRITE_INSTANCING_2D;
  * trails, plus a table of per-trail records. The class carries no RTTI (it is non-polymorphic), so
  * the name is inferred from its singleton getter rather than confirmed from the runtime metadata.
  * Only the sprite-batch fields are modelled so far; the per-trail record table is kept as a
- * reserved span. The trailing @c // +0xNN comments document the original 32-bit offsets for
- * reference only.
+ * reserved span.
  */
 class NoteTrailLayer : public PlayFieldLayerBase {
 public:
@@ -107,18 +106,17 @@ private:
      */
     NoteTrailLayer();
 
-    // One queued result mark (16 bytes): whether the slot is in use, its judge, and its position.
     struct ResultMark {
         bool bActive = {};       /*!< Whether the slot holds a queued mark. +0x00 */
         int nJudge = {};         /*!< The mark's judge grade. +0x04 */
         S_VECTOR2 position = {}; /*!< The mark position. +0x08 */
     };
 
-    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the note-trail sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the instancer's live sprite count.
-    bool m_bBuilt = {};                         // +0x1c: set once the sprite is built.
-    float m_flSpinPhaseA = {};                  // +0x20: the rotation spin phase, wrapped to 3000.
-    float m_flSpinPhaseB = {}; // +0x24: the frame-select spin phase, wrapped to 400/3.
-    ResultMark m_aResults[kMaxResults] = {}; // +0x28: the per-frame result-mark queue (to 0x2a8).
+    ne::C_TEXTURE *m_pTexture = {};
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {};
+    int m_nSpriteCount = {};
+    bool m_bBuilt = {};
+    float m_flSpinPhaseA = {}; // The rotation phase, wrapped to 3000.
+    float m_flSpinPhaseB = {}; // The frame-select phase, wrapped to 400/3.
+    ResultMark m_aResults[kMaxResults] = {};
 };

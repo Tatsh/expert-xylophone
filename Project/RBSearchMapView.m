@@ -8,24 +8,19 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// Shared engine layout metrics and cached localised strings, referenced by their Ghidra names.
 extern const double g_dLayoutMetricThirtyTwo;        // @ghidraAddress 0x2ee9b0 (32.0)
 extern const double g_dSliderRowHeightWide;          // @ghidraAddress 0x2ee950
 extern const double g_dAudioManagerResumeFadeInTime; // @ghidraAddress 0x2ec718 (0.3)
 extern const double g_dMascotMessageMaxWidthPad;     // @ghidraAddress 0x2ee930 (300.0)
 
-// Asset names in the search image directory.
 static NSString *const kSearchCancelImageName = @"06_search/sear_cancel";
 static NSString *const kSearchDefaultPinImageName = @"06_search/sear_icon_d";
 
-// Map annotation reuse and spot-detail Maps-app URL formats.
 static NSString *const kSpotSubtitleFormat = @"営業時間: %@";
 static NSString *const kMapsAppURLFormat = @"http://map.google.com/maps?q=%0.6f,%0.6f+(%@)";
 
-// Spot-list request body format: the map centre and search range, all to six decimals.
 static NSString *const kSpotListRequestFormat = @"lat=%.6f&long=%.6f&range=%.6f";
 
-// JSON keys in the spot-list and campaign-master responses.
 static NSString *const kJSONKeyGameCenterList = @"GameCenterList";
 static NSString *const kJSONKeyID = @"ID";
 static NSString *const kJSONKeyLat = @"Lat";
@@ -40,51 +35,39 @@ static NSString *const kJSONKeyOrder = @"Order";
 static NSString *const kJSONKeyImage = @"Image";
 static NSString *const kJSONKeyImageObject = @"IMAGE_OBJECT";
 
-// The bundle-version key checked against the campaign master's required version.
 static NSString *const kBundleVersionKey = @"CFBundleVersion";
 
-// Key path observed on the map's user location to learn when the first fix arrives.
 static NSString *const kUserLocationKeyPath = @"location";
 
-// Initial map region: Tokyo Station, framing roughly a one-kilometre box.
+// Tokyo Station, framing roughly a one-kilometre box.
 static const CLLocationDegrees kInitialCenterLatitude = 35.681382;   // @ghidraAddress 0x301610
 static const CLLocationDegrees kInitialCenterLongitude = 139.766084; // @ghidraAddress 0x301618
 static const CLLocationDegrees kInitialSpanLatitudeDelta = 0.01004;  // @ghidraAddress 0x301620
 static const CLLocationDegrees kInitialSpanLongitudeDelta = 0.01159; // @ghidraAddress 0x301628
 
-// The map rectangle for a region is widened by 60% of its span on each axis.
 static const double kMapRectSpanScale = 0.6; // @ghidraAddress 0x3015c8
 
-// A longitude span wider than this means the map is zoomed too far out to plot spots on: every
-// annotation is dropped and the message label is shown instead.
 static const CLLocationDegrees kSpotPlottingMaxLongitudeDelta = 0.26; // @ghidraAddress 0x3015d8
 
-// The box the spot list is served for. The map's centre has to fall inside it before a new list
-// is requested at all.
+// The map's centre must fall inside this box before a new spot list is requested.
 static const CLLocationDegrees kSearchAreaMaxLongitude = 154.0; // @ghidraAddress 0x3015e0
 static const CLLocationDegrees kSearchAreaMinLongitude = 24.45; // @ghidraAddress 0x3015e8
 static const CLLocationDegrees kSearchAreaMinLatitude = 20.5;   // @ghidraAddress 0x3015f0
 static const CLLocationDegrees kSearchAreaMaxLatitude = 45.6;   // @ghidraAddress 0x3015f8
 
-// Metres in one degree, used to turn the distance since the last request back into degrees, and
-// the distance the centre has to travel before the list is requested again.
 static const double kMetersPerDegree = 111133.3;             // @ghidraAddress 0x301600
 static const CLLocationDegrees kRequestMoveThreshold = 0.15; // @ghidraAddress 0x301608
 static const NSUInteger kPlottedSpotArrayCapacity = 0;
 
-// The range the spot list is always requested for. It reaches the format call as an immediate
-// (the mov/movk run at 0xe0d2c), not as a measurement of the region, so +rangeOfRegion: has no
-// part in the request.
+// The range reaches the format call as an immediate at 0xe0d2c, so +rangeOfRegion: has no part in
+// the request.
 static const double kSpotListRequestRange = 0.27;
 
-// The activity indicator, 32 points square, sits centred on the map with a rounded, dimmed
-// backdrop. Its edge length reuses the shared 32-point layout metric.
 static const CGFloat kIndicatorHalfInset = 16.0;
 static const CGFloat kIndicatorBackdropWhite = 0.0;
 static const CGFloat kIndicatorBackdropAlpha = 0.5;
 static const CGFloat kIndicatorCornerRadius = 4.0;
 
-// The loading-status message label geometry and font.
 static const CGFloat kMessageLabelCenterY = 70.0;
 static const CGFloat kMessageLabelFontSize = 18.0;
 static const CGFloat kMessageLabelCornerRadius = 8.0;
@@ -92,25 +75,19 @@ static const CGFloat kMessageLabelHiddenAlpha = 0.0;
 static const CGFloat kMessageLabelVisibleAlpha = 1.0;
 static const NSInteger kMessageLabelLineCount = 2;
 
-// The spot-information overlay panel and its drop shadow. The dimmed backdrop reuses the shared
-// fade-in alpha (@c g_dAudioManagerResumeFadeInTime).
+// The overlay's dimmed backdrop reuses the shared fade-in alpha, g_dAudioManagerResumeFadeInTime.
 static const CGFloat kInfoOverlaySize = 10.0;
 static const CGFloat kInfoOverlayShadowRadius = 5.0;
 static const CGFloat kInfoOverlayShadowOpacity = 1.0;
 
-// The overlay's close button: 54-point vertical anchor, inset ten points from the top-right corner.
 static const CGFloat kInfoCloseButtonAnchorY = 54.0;
 static const CGFloat kInfoCloseButtonInset = 10.0;
 
-// The error label geometry: the shared pad width (@c g_dMascotMessageMaxWidthPad) on pad, a fixed
-// 350-point width on phone.
 static const CGFloat kErrorLabelWidthPhone = 350.0;
 static const CGFloat kErrorLabelCornerRadius = 8.0;
 static const CGFloat kErrorLabelVisibleAlpha = 1.0;
-// The error label's fade-in duration.
 static const CGFloat kErrorLabelFadeInDuration = 0.3; // @ghidraAddress 0x3010a0
 
-// A first-page dictionary capacity hint for the accumulating spot and model collections.
 static const NSUInteger kSpotDictionaryCapacity = 64;
 
 // A large sentinel so the first candidate model always wins the minimum-order comparison.
@@ -119,14 +96,11 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 @implementation RBSearchMapView {
     // The number of in-flight requests; the activity indicator spins while it is positive.
     int m_IndicatorCount;
-    // Whether the campaign master and its images have finished loading.
     BOOL m_LoadedMaster;
     BOOL m_LoadedImages;
     // The last map region the spot list was requested for.
     MKCoordinateRegion m_LastRegion;
-    // Whether the view is currently a key-value observer of the map's user location.
     BOOL m_IsObservingLocation;
-    // Whether the first user-location fix has already been observed.
     BOOL m_FirstLocationObserved;
 }
 
@@ -158,8 +132,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 }
 
 + (MKMapRect)mapRectForCoordinateRegion:(MKCoordinateRegion)region {
-    // The two corners are the region's centre pushed out by six tenths of each span: north-west
-    // takes the latitude up and the longitude down, south-east the reverse.
     double latitudeInset = region.span.latitudeDelta * kMapRectSpanScale;
     double longitudeInset = region.span.longitudeDelta * kMapRectSpanScale;
     MKMapPoint topLeft = MKMapPointForCoordinate(CLLocationCoordinate2DMake(
@@ -456,8 +428,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     if ([self.errorLabel isHidden]) {
         [self.errorLabel setAlpha:kMessageLabelHiddenAlpha];
         [self.errorLabel setHidden:NO];
-        // The block captures self strongly: the capture is an objc_retain at 0xe0bd0 and a plain
-        // load at 0xe0c74, not the weak pair.
+        // The block captures self strongly: objc_retain at 0xe0bd0, plain load at 0xe0c74.
         [UIView animateWithDuration:kErrorLabelFadeInDuration
                          animations:^{
                            /** @ghidraAddress 0xe0c68 */
@@ -522,7 +493,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 }
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
-    // Nothing is plotted until the master and its images have arrived.
     if (!m_LoadedImages) {
         return;
     }
@@ -531,7 +501,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     MKMapRect visibleRect = [RBSearchMapView mapRectForCoordinateRegion:region];
 
     if (region.span.longitudeDelta > kSpotPlottingMaxLongitudeDelta) {
-        // Zoomed out past the plotting limit: drop every spot and show the message instead.
         for (id<MKAnnotation> annotation in self.mapView.annotations) {
             if (self.mapView.userLocation != annotation) {
                 [self.mapView removeAnnotation:annotation];
@@ -562,8 +531,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
         [self.mapView addAnnotations:plotted];
     }
 
-    // Outside the served box, or too little movement since the last request, and no list is asked
-    // for. The distance is taken in metres and converted back to degrees to compare.
     if (region.center.longitude >= kSearchAreaMaxLongitude ||
         region.center.longitude <= kSearchAreaMinLongitude ||
         region.center.latitude <= kSearchAreaMinLatitude ||
@@ -663,7 +630,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 
 #pragma mark - DownloaderDelegate
 
-// Parse the spot-list response into annotations and drop those inside the current map rectangle.
 - (void)handleListDownloadFinished:(Downloader *)downloader {
     id json = [downloader getDataInJSON];
     if (json) {
@@ -694,7 +660,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
                     continue;
                 }
 
-                // Pick the model whose master-list order is lowest, defaulting to the first.
                 NSString *pinModelName = nil;
                 NSInteger bestOrder = kModelOrderSentinel;
                 for (id modelName in modelNames) {
@@ -731,7 +696,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     [self setListDownloader:nil];
 }
 
-// Parse the campaign-master response: version-gate, build the model list, and kick off image loads.
 - (void)handleMasterDownloadFinished:(Downloader *)downloader {
     id json = [downloader getDataInJSON];
     if (!json) {
@@ -828,7 +792,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 
 #pragma mark - ImageDownloaderDelegate
 
-// Start downloading the info image (when @p imageURL is a model image URL) or the given URL.
 - (void)startNextImageDownloadForURL:(NSString *)imageURL {
     if (self.imageDownloader) {
         [self.imageDownloader cancelDownload];
@@ -841,7 +804,6 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     [self addIndicator];
 }
 
-// Reveal the info overlay sized to the downloaded info image.
 - (void)presentInfomationImage:(UIImage *)image {
     [self.infomationImage setImage:image];
     [self.infomationImage setBounds:CGRectMake(0, 0, image.size.width, image.size.height)];

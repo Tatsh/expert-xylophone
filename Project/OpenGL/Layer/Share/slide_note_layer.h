@@ -25,9 +25,8 @@ struct SlideNoteTrail {
     bool bActive = {};         /*!< Whether the trail slot is in use. +0x00 */
     unsigned char nFlagA = {}; /*!< The first per-trail flag byte. +0x01 */
     // unsigned char aPad02[2] = {}; /*!< Alignment padding. +0x02..+0x03 */
-    int nKind = {};  /*!< The trail kind/type. +0x04 */
-    int nColor = {}; /*!< The note colour (0 or 1). +0x08 */
-    // +0x0c..+0x18: the trail's two endpoints (the animated end at +0x0c, the target at +0x14).
+    int nKind = {};            /*!< The trail kind/type. +0x04 */
+    int nColor = {};           /*!< The note colour (0 or 1). +0x08 */
     float flEndX = {};         /*!< The animated endpoint X. +0x0c */
     float flEndY = {};         /*!< The animated endpoint Y. +0x10 */
     float flTargetX = {};      /*!< The target endpoint X. +0x14 */
@@ -164,15 +163,15 @@ public:
                       float flScale);
 
 private:
-    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the slide-trail atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apBatches[kBatchCount] = {}; // +0x10: the trail sprite batches.
-    int m_anBatchCount[kBatchCount] = {};                      // +0x28: each batch's sprite count.
-    bool m_bBuilt = {}; // +0x34: whether the sprites are built.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_apBatches[kBatchCount] = {}; // +0x10
+    int m_anBatchCount[kBatchCount] = {};                      // +0x28
+    bool m_bBuilt = {};                                        // +0x34
     // unsigned char m_aReserved35[3] = {};        // +0x35
-    float m_flLastClock = {};                   // +0x38: the pulse clock, wrapped to its period.
-    int m_nFrameCounter = {};                   // +0x3c: the 0-to-29 per-frame animation counter.
-    SlideNoteTrail m_aTrails[kTrailCount] = {}; // +0x40: the slide-trail record pool.
-    unsigned char m_aReservedTail[8] = {};      // +0xe00: trailing layer state to the 0xe08 size.
+    float m_flLastClock = {};                   // +0x38: wrapped to its period.
+    int m_nFrameCounter = {};                   // +0x3c: 0 to 29.
+    SlideNoteTrail m_aTrails[kTrailCount] = {}; // +0x40
+    unsigned char m_aReservedTail[8] = {};      // +0xe00: pads to the 0xe08 object size.
 };
 
 /**

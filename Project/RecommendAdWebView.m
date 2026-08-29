@@ -33,7 +33,7 @@ enum {
 enum {
     RecommendAdWebViewWebKitFrameLoadInterrupted = 102,
     RecommendAdWebViewWebKitPlugInWillHandleLoad = 204,
-    RecommendAdWebViewURLErrorCancelled = -999,             // NSURLErrorCancelled
+    RecommendAdWebViewURLErrorCancelled = -999,
     RecommendAdWebViewURLErrorFrameLoadInterrupted = -1009, // NSURLErrorNotConnectedToInternet
 };
 

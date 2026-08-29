@@ -112,8 +112,7 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
     } mutableCopy];
 }
 
-// A plain function rather than a method: the binary inlines this into each reset method and the
-// class metadata defines no such selector.
+// The binary inlines this into each reset method; the class metadata defines no such selector.
 static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *key) {
     NSMutableDictionary *item = settings.customizeItems[settings.thema];
     [item setValue:value forKey:key];
@@ -405,7 +404,6 @@ static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, 
     self.shotVolume = [item[kShotVolumeCoderKey] floatValue];
     self.backgroundBrighness = [item[kBackgroundBrighnessCoderKey] floatValue];
 
-    // The bounds-effect style tracks the theme index; an unrecognised theme leaves it untouched.
     switch (thema) {
     case RBUserSettingDataThemeClassic:
         self.boundsEffectStyle = RBUserSettingDataThemeClassic;

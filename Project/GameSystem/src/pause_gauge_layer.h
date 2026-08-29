@@ -26,7 +26,7 @@ struct PauseGaugeRectSize {
  *
  * A 28-byte read-only record; the emitter reads the anchor, size, and UV index from it. The
  * trailing
- * @c // +0xNN comments document the byte offsets.
+ * @c +0xNN comments document the byte offsets.
  */
 struct PauseGaugeSpriteLayout {
     float flOffsetX = {}; /*!< The menu-item x offset from the viewport centre. +0x00 */
@@ -41,7 +41,7 @@ struct PauseGaugeSpriteLayout {
 /**
  * One lane's pause-gauge geometry: the gauge-rectangle centre and its dimmed-lane flag.
  *
- * The trailing @c // +0xNN comments document the byte offsets within the 16-byte per-lane entry.
+ * The trailing @c +0xNN comments document the byte offsets within the 16-byte per-lane entry.
  */
 struct PauseGaugeLaneGeometry {
     float flCenterX = {}; /*!< The gauge rectangle's centre x. +0x00 */
@@ -55,8 +55,7 @@ struct PauseGaugeLaneGeometry {
  * The pause-gauge layer: the per-lane gauge shown while the game is paused.
  *
  * A @c rb::BaseScene subclass registered as a per-frame task. It owns two sprite instancers and a
- * parts texture, and charges a per-lane gauge while the game is held paused. The trailing
- * @c // +0xNN comments document the original member offsets for reference only.
+ * parts texture, and charges a per-lane gauge while the game is held paused.
  */
 class PauseGaugeLayer : public rb::BaseScene {
 public:
@@ -212,17 +211,16 @@ private:
                     unsigned int nColorRgb,
                     unsigned int nAlpha);
 
-    int m_nState = {};              // +0x4c: the layer's build/render state.
-    ne::C_TEXTURE *m_pTexture = {}; // +0x50: the pause-gauge parts atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSlotCount] =
-        {};                                 // +0x58: the gauge and parts instancers.
-    int m_aSlotCapacity[kSlotCount] = {};   // +0x68: each slot's sprite capacity.
-    int m_aLaneSlotId[kLaneSlotCount] = {}; // +0x70: the per-lane sprite-slot index.
-    bool m_bCharging = {};                  // +0xa4: whether the gauge is charging.
-    int m_nSelectedTouchId = {}; // +0xa8: the id of the touch dragging a menu item (-1 when none).
-    int m_nSelectedLane = {};    // +0xac: the selected menu lane (4 when none is selected).
-    LaneGeometry m_aLaneGeometry[kLaneCount] = {}; // +0xb0: the per-lane gauge centre and flag.
-    int m_nThema = {};                             // +0xe0: the cached UI theme.
+    int m_nState = {};
+    ne::C_TEXTURE *m_pTexture = {};
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSlotCount] = {};
+    int m_aSlotCapacity[kSlotCount] = {};
+    int m_aLaneSlotId[kLaneSlotCount] = {};
+    bool m_bCharging = {};
+    int m_nSelectedTouchId = {}; // -1 when none.
+    int m_nSelectedLane = {};    // 4 when none is selected.
+    LaneGeometry m_aLaneGeometry[kLaneCount] = {};
+    int m_nThema = {};
 };
 
 /**

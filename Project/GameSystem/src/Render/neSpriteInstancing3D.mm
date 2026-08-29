@@ -21,8 +21,6 @@ constexpr int kBlendOneMinusSrcAlpha = 5;
 /** @ghidraAddress 0x3097c */
 C_SPRITE_INSTANCING_3D::C_SPRITE_INSTANCING_3D(unsigned int nCapacity)
     : C_SPRITE_INSTANCING_2D(nCapacity) {
-    // The only state difference from the screen-space constructor is the strb wzr at +0x154 and the
-    // linear-filter min/mag pair.
     m_bBatchFlag = false;
     SetTexParam(0, kWorldTexMinFilter);
     SetTexParam(1, kWorldTexMagFilter);
@@ -45,8 +43,8 @@ void C_SPRITE_INSTANCING_3D::Render() {
         return;
     }
 
-    // The ldr at 0x30e4c reads the perspective camera at 0x3cff10, not the orthographic projection
-    // at 0x3cff08, which would draw world-space geometry at half scale against a top-left origin.
+    // The perspective camera, not the orthographic projection, which would draw world-space
+    // geometry at half scale against a top-left origin. @ghidraAddress 0x30e4c
     SetCurrentCamera(pRenderer, g_pActiveViewCamera);
     std::memcpy(GetWorldMatrix(), GetParent()->GetWorldMatrix(), sizeof(float) * 16);
     ResetRenderState(pRenderer);

@@ -111,18 +111,14 @@ private:
 
     ne::C_TEXTURE *m_pPartsTexture = {};  // +0x08: the gm_parts2 atlas.
     ne::C_TEXTURE *m_pEffectTexture = {}; // +0x10: the ti_parts_eff atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                                     // +0x18: the per-slot sprite batches.
-    int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x28: each slot's initial count.
-    bool m_bBuilt = {};                         // +0x30: set once the sprites are built.
-    // +0x31..+0x33 is alignment padding before the trailing state.
-    // unsigned char m_aPad31[3]; // +0x31 (alignment padding, compiler-inserted)
-    // +0x34/+0x38: the viewport size cached each frame by the process step, added into the marker
-    // positions.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x18
+    int m_aSpriteCounts[kSpriteSlotCount] = {};                     // +0x28
+    bool m_bBuilt = {};                                             // +0x30
+    // unsigned char m_aPad31[3]; // +0x31..+0x33 (alignment padding, compiler-inserted)
     float m_flViewportWidth = {};  // +0x34
     float m_flViewportHeight = {}; // +0x38
-    bool m_bReady = {};            // +0x3c: whether the number display is ready to show.
+    bool m_bReady = {};            // +0x3c
     // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
-    float m_flAnimTime = {}; // +0x40: the display animation timer, reset when made ready.
+    float m_flAnimTime = {}; // +0x40
     // unsigned char m_aReserved44[4] = {}; // +0x44
 };

@@ -23,7 +23,7 @@ namespace rb {
  * listener) and appends the shared presentation flags: the is-pad flag and whether
  * the device is the older type-9 hardware. Every concrete scene/layer derives from this base and
  * runs its constructor first, then overrides the per-frame callback and initialises its own fields.
- * The trailing @c // +0xNN comments document the original member offsets for reference only.
+ * The trailing @c +0xNN comments document the original member offsets for reference only.
  */
 class BaseScene : public ne::C_TASK {
 public:

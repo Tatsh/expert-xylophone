@@ -6,41 +6,31 @@
 #import "ApplilinkNetworkError.h"
 #import "Crypto.h"
 
-// The pasteboard type under which every record archive is stored.
 static NSString *const kApplilinkUdidPasteboardType = @"applilink.udid";
 
-// The base service name appended to the server environment to form a service name, and the format
-// that combines them.
 static NSString *const kApplilinkUdidServiceName = @"ApplilinkUdid";
 static NSString *const kApplilinkUdidServiceNameFormat = @"%@_%@";
 
-// The format that turns a service name and a slot index into a named pasteboard.
 static NSString *const kApplilinkUdidPasteboardNameFormat = @"%@-%d";
 
-// The value used to disable pasteboard creation (a read) or enable it (a write).
 static NSString *const kApplilinkUdidEnvDisabled = @"0";
 
-// Record dictionary keys.
 static NSString *const kApplilinkUdidValueKey = @"Value";
 static NSString *const kApplilinkUdidEntryDateKey = @"EntryDate";
 static NSString *const kApplilinkUdidLastAccessKey = @"LastAccess";
 static NSString *const kApplilinkUdidVersionKey = @"Version";
 static NSString *const kApplilinkUdidStorageIndexKey = @"StorageIndex";
 
-// The number of pasteboard slots probed for each service name.
 static const int kApplilinkUdidStorageSlotCount = 0x100;
 
-// The schema version written into every record.
 static const NSInteger kApplilinkUdidRecordVersion = 1;
 
-// The cipher mode passed to Crypto: 0 enciphers, 1 deciphers.
 enum {
     kApplilinkUdidCipherEncrypt = 0,
     kApplilinkUdidCipherDecrypt = 1,
 };
 
-// Localised error codes raised through ApplilinkNetworkError. These mirror the file-private codes
-// in ApplilinkNetworkError.m; only the codes this class raises are named here.
+// These mirror the file-private codes in ApplilinkNetworkError.m.
 enum {
     kApplilinkPasteBoardErrorInvalidField = 1013,      // A pasteboard slot could not be opened.
     kApplilinkPasteBoardErrorWriteFailed = 1015,       // Every slot write failed.
@@ -187,7 +177,6 @@ enum {
     NSDictionary *record = [NSKeyedUnarchiver unarchiveObjectWithData:archive];
     NSError *validateError = nil;
     if (![ApplilinkPasteBoard validate:record error:&validateError]) {
-        // The stored record is invalid: clear the slot and report the failure.
         [pasteboard setData:nil forPasteboardType:kApplilinkUdidPasteboardType];
         if (error != NULL) {
             *error = [ApplilinkNetworkError

@@ -61,8 +61,8 @@ static const int kNoPendingPackID = -1;
 
 static const NSUInteger kArtworkDownloaderCapacity = 0x20;
 
-// Indexed by RBUserSettingData.purchaseLimitType; both leading entries really are 5000 in the
-// shipped table at 0x30bef0.
+// Both leading entries really are 5000 in the shipped table.
+// @ghidraAddress 0x30bef0
 static const int kPurchaseLimitYen[] = {5000, 5000, 20000};
 static const int kPurchaseLimitNone = -1;
 
@@ -85,17 +85,17 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-static const UIViewAutoresizing kMaskFlexibleWidthHeight = 0x12;          // W|H centred.
-static const UIViewAutoresizing kMaskFlexibleTopWidthHeight = 0x25;       // W|H|TopMargin.
-static const UIViewAutoresizing kMaskFlexibleBottomWidth = 0xd;           // W|LMargin|RMargin.
-static const UIViewAutoresizing kMaskFlexibleTopBottomWidth = 0x29;       // W|Top|Bottom.
-static const UIViewAutoresizing kMaskFlexibleWidthBottomMargins = 0x15;   // W|H|BottomMargin.
-static const UIViewAutoresizing kMaskFlexibleTopBottomWidthHeight = 0x2d; // W|H|Top|Bottom.
+static const UIViewAutoresizing kMaskFlexibleWidthHeight = 0x12;
+static const UIViewAutoresizing kMaskFlexibleTopWidthHeight = 0x25;
+static const UIViewAutoresizing kMaskFlexibleBottomWidth = 0xd;
+static const UIViewAutoresizing kMaskFlexibleTopBottomWidth = 0x29;
+static const UIViewAutoresizing kMaskFlexibleWidthBottomMargins = 0x15;
+static const UIViewAutoresizing kMaskFlexibleTopBottomWidthHeight = 0x2d;
 
 static const CGFloat kPadHeaderBaseY = 171.0;
 static const CGFloat kPadPackLabelOriginX = 27.0;
 static const CGFloat kPadPackLabelBoundsWidth = 720.0;
-static const CGFloat kSliderRowHeightWide = 40.0; // Reused engine row-height constant.
+static const CGFloat kSliderRowHeightWide = 40.0;
 static const CGFloat kShowMoreButtonBottomInset = 15.0;
 static const CGFloat kShowMoreIndicatorSize = 24.0;
 static const CGFloat kPadTableTopSpacing = 16.0;
@@ -105,7 +105,7 @@ static const CGFloat kPadTableCenterYOffset = 76.0;
 static const CGFloat kPadTableCornerRadius = 8.0;
 static const CGFloat kPadTableBorderWidth = 1.5;
 static const CGFloat kScrollIndicatorInset = 4.0;
-// The height duplicates the engine's g_dPopupBaseHeightWide (0x2eec30), not yet a shared extern.
+// @ghidraAddress 0x2eec30
 static const CGFloat kPadDetailBaseHeight = 680.0;
 static const CGFloat kPadDetailWidth = 650.0;
 static const CGFloat kPadDetailCenterYOffset = -44.0;
@@ -120,7 +120,8 @@ static const CGFloat kTableBackgroundWhite = 47.0 / 255.0;
 static const CGFloat kTableBorderWhite = 143.0 / 255.0;
 static const CGFloat kLabelTextWhite = 158.0 / 255.0;
 static const CGFloat kCoverDimAlpha = 0.5;
-// The pool slot at 0x2ec718 holds (double)0.3f, not the double 0.3, hence the float literal.
+// The pool slot holds (double)0.3f, not the double 0.3, hence the float literal.
+// @ghidraAddress 0x2ec718
 static const CGFloat kLabelShadowAlpha = 0.3f;
 
 static const CGFloat kShowMoreSideMargin = 50.0;
@@ -283,8 +284,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [moreIndicator
             setBounds:CGRectMake(0.0, 0.0, kShowMoreIndicatorSize, kShowMoreIndicatorSize)];
-        // Sit the spinner one full spinner width to the right of the button's centre, vertically
-        // centred on the button.
         [moreIndicator setCenter:CGPointMake(self.showMoreButton.bounds.size.width * 0.5 +
                                                  moreIndicator.bounds.size.width,
                                              self.showMoreButton.bounds.size.height * 0.5)];
@@ -295,7 +294,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         self.showMoreIndicator = moreIndicator;
 
         if ([self.view viewWithTag:kPackTableViewTag] == nil) {
-            // Reserve room at the bottom for the show-more button plus its padding.
             CGFloat spinnerAndPadding =
                 self.showMoreButton.bounds.size.height + kPadTableTopSpacing + kPadTableTopSpacing;
             CGFloat tableHeight = (viewBounds.size.height + kPadTableHeightInset) -
@@ -340,7 +338,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
         self.extendNoteDetailViewPad = [[StoreExtendNoteDetailViewPad alloc]
             initWithFrame:CGRectMake(0.0, 0.0, kPadDetailWidth, kPadDetailBaseHeight)];
-        // Centre the detail view on the cover, nudged upward, snapped to whole pixels.
         CGFloat detailCenterX = static_cast<CGFloat>(static_cast<int>(self.coverViewPad.center.x));
         CGFloat detailCenterY = static_cast<CGFloat>(
             static_cast<int>(self.coverViewPad.center.y + kPadDetailCenterYOffset));
@@ -352,7 +349,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.view addSubview:self.extendNoteDetailViewPad];
     }
 
-    // Banner overlay hosted on the pack table view (shared by both layouts).
     UIView *packTableView = [self.view viewWithTag:kPackTableViewTag];
     if (packTableView != nil) {
         if ([packTableView viewWithTag:kBannerLabelTag] == nil) {
@@ -376,11 +372,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             [packTableView addSubview:bannerImage];
         }
 
-        // The campaign banner only appears during the Hinabita 2017-03 campaign, and only when the
-        // campaign-specific artwork actually exists.
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703] &&
             [packTableView viewWithTag:kCampaignImageViewTag] == nil) {
-            // The campaign name is the leading path component, not the trailing one.
             NSString *campaignImageName =
                 [[NSString alloc] initWithFormat:@"%@/%@",
                                                  [[RBCampaignData sharedInstance] campaignName],
@@ -395,7 +388,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         }
     }
 
-    // Error/loading title label (tag 0x2711), created lazily on the page view.
     if ([self.view viewWithTag:kLoadingTitleLabelTag] == nil) {
         UILabel *errorTitle = [[UILabel alloc] initWithFrame:self.view.bounds];
         [errorTitle setTag:kLoadingTitleLabelTag];
@@ -417,7 +409,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.view addSubview:errorTitle];
     }
 
-    // A transparent container holding a spinner, centred on the loading title label.
     UILabel *errorTitleLabel =
         static_cast<UILabel *>([self.view viewWithTag:kLoadingTitleLabelTag]);
     UIView *spinnerHost = [[UIView alloc]
@@ -437,7 +428,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [spinner startAnimating];
     [spinnerHost addSubview:spinner];
 
-    // Error message label (tag 0x2712), created lazily on the page view.
     if ([self.view viewWithTag:kErrorMessageLabelTag] == nil) {
         UILabel *errorMessage = [[UILabel alloc] initWithFrame:self.view.bounds];
         [errorMessage setTag:kErrorMessageLabelTag];
@@ -456,7 +446,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.view addSubview:errorMessage];
     }
 
-    // Cache the stretchable pack background images once.
     if (self.packBgImage0 == nil) {
         self.packBgImage0 = [[UIImage imageWithName:@"09_store/store_pack_bg_0"]
             stretchableImageWithLeftCapWidth:4
@@ -472,7 +461,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 #pragma mark - Error display
 
 - (void)showError:(NSString *)message {
-    // Hide the pack table and loading title, then reveal the error message.
     [[self.view viewWithTag:kPackTableViewTag] setHidden:YES];
     [[self.view viewWithTag:kLoadingTitleLabelTag] setHidden:YES];
     UILabel *errorMessage = static_cast<UILabel *>([self.view viewWithTag:kErrorMessageLabelTag]);
@@ -497,8 +485,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 #pragma mark - Age check
 
 - (void)sendUserAge {
-    // Build the age-check request payload from the current region, build version, user id, and the
-    // configured purchase-limit type, then POST it to the server.
     NSArray *serverData = [AppDelegate getServerData];
     NSDictionary *params = @{
         @"target" : GetRegionCode(),
@@ -517,7 +503,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [self.userAgeSender
         startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x15ce0c */
-          // No-op proceed handler.
         }
         success:^(Downloader *response) {
           /** @ghidraAddress 0x15ce10 */
@@ -549,20 +534,17 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 #pragma mark - Deep-link open
 
 - (void)forceOpenExtendNoteDetailView {
-    // Only act when the application has a queued extend-note PID to open from an external launch.
     if ([[AppDelegate appDelegate] getExtendNotePIDForOpenStore] == nil) {
         return;
     }
     int productID = [[[AppDelegate appDelegate] getExtendNotePIDForOpenStore] intValue];
     StoreExtendNoteInfo *info = [self.extendNoteListCtrl getExtendNoteInfoWithProductID:productID];
     if (info == nil) {
-        // Not loaded yet; kick off the optional-products request instead.
         [self.extendNoteListCtrl optionalProductsRequest];
         return;
     }
 
     if (m_IsPad) {
-        // Tear down any in-flight pad detail view before reopening for the requested pack.
         [self.extendNoteDetailViewPad cancelLoading];
         [self.extendNoteDetailViewPad stopSample];
         [self.coverViewPad setAlpha:0.0];
@@ -593,18 +575,13 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     (void)self.restoreButton; // Yes, the binary reads and discards the button here.
 
-    // Reinstate the restore button as the sole right-hand navigation-bar item. The binary uses a
-    // nil-terminated array, so a nil button yields an empty array rather than throwing.
+    // The binary uses a nil-terminated array, so a nil button yields an empty array.
     self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.restoreButton, nil];
 
-    // Allow simultaneous exclusive touch on every navigation-bar subview.
     for (UIView *barSubview in self.navigationController.navigationBar.subviews) {
         [barSubview setExclusiveTouch:YES];
     }
 
-    // Reposition and reveal the first "show more" backing view. Its vertical origin trails the
-    // greater of the table's content height and its bounds height, dropped by the device-dependent
-    // gap; its x origin is a fixed left margin.
     const int contentGap = m_IsPad ? kShowMoreContentGapPad : kShowMoreContentGapPhone;
     UIView *showMoreBg1 = [packTable viewWithTag:kBannerImageViewTag];
     CGRect frame1 = showMoreBg1.frame;
@@ -618,8 +595,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         setFrame:CGRectMake(kShowMoreSideMargin, originY1, frame1.size.width, frame1.size.height)];
     [showMoreBg1 setHidden:NO];
 
-    // Reposition and reveal the second "show more" backing view, right-aligned within the table
-    // with the same margin.
     UIView *showMoreBg2 = [packTable viewWithTag:kCampaignImageViewTag];
     if (showMoreBg2 != nil) {
         const int contentGap2 = m_IsPad ? kShowMoreContentGapPad : kShowMoreContentGapPhone;
@@ -641,8 +616,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     }
 
     if ([self.extendNoteListCtrl extendNoteListContinued]) {
-        // There are further packs to load: show the "show more" button, re-centre it, and hide the
-        // first backing view.
         if (self.showMoreButton != nil) {
             [self.showMoreButton setHidden:NO];
             [self.showMoreButton setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
@@ -656,7 +629,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             setCenter:CGPointMake(packTable.width * 0.5,
                                   packTable.contentSize.height + kShowMoreButtonCenterYOffset)];
     } else {
-        // No more packs: hide the "show more" button and its first backing view.
         if (self.showMoreButton != nil) {
             [self.showMoreButton setHidden:YES];
         }
@@ -673,8 +645,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     }
     UITableView *packTable = static_cast<UITableView *>([self.view viewWithTag:kPackTableViewTag]);
     if (![packTable isHidden]) {
-        // The pack table is already populated; surface the error inline and restore the
-        // "show more" affordance rather than replacing the whole page.
         [UIAlertView showWithErrorMessage:errorMessage delegate:nil];
         if (self.showMoreButton != nil) {
             [self.showMoreButton setHidden:NO];
@@ -690,7 +660,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [packTable setAllowsSelection:YES];
         [packTable reloadData];
     } else {
-        // Nothing has loaded yet; show the error as the page's own state.
         [self showError:errorMessage];
     }
 }
@@ -745,8 +714,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         break;
     case StoreExtendNoteButtonStateError:
     case StoreExtendNoteButtonStateInstalled:
-        // The binary's switch covers only states 0 through 3, so an inconsistent or fully
-        // installed item does nothing when its button is tapped.
+        // The binary's switch covers only states 0 through 3, so these do nothing.
         break;
     }
 }
@@ -759,8 +727,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [self.extendNoteDetailViewPad setAlpha:0.0];
     [self.coverViewPad setHidden:NO];
     [self.extendNoteDetailViewPad setHidden:NO];
-    // Both blocks capture self strongly; the binary retains it into the block rather than
-    // taking a weak reference.
+    // The binary retains self into these blocks rather than taking a weak reference.
     [UIView animateWithDuration:kDetailOverlayOpenDuration
         delay:0
         options:kDetailOpenAnimationOptions
@@ -788,11 +755,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)pushSampleButton:(id)sender {
     if ([[RBUserSettingData sharedInstance] refuseStoreSampleBGM]) {
-        // Sample BGM was suppressed; re-enable it and restore the "play" glyph.
         [[RBUserSettingData sharedInstance] setRefuseStoreSampleBGM:NO];
         [self.samplePlayButton setImage:self.playImage forState:UIControlStateNormal];
     } else {
-        // Suppress sample BGM, show the "stop" glyph, and blank the sample-music label.
         [[RBUserSettingData sharedInstance] setRefuseStoreSampleBGM:YES];
         [self.samplePlayButton setImage:self.stopImage forState:UIControlStateNormal];
         [self.sampleMusicLabel setText:@""];
@@ -829,7 +794,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         return;
     }
     if (info.extendURL == nil) {
-        // No detail URL yet: fetch the extend-note detail before downloading.
         [self.parent showModalDialog:self];
         StoreExtendNoteInfoDownloader *downloader =
             [[StoreExtendNoteInfoDownloader alloc] initWithStoreExtendNoteInfo:info];
@@ -843,11 +807,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         return; // Yes, the binary re-reads and re-tests the URL it has just proved non-nil.
     }
 
-    // Build the list of files that still need downloading.
     [self.parent showModalDialog:self];
     NSMutableArray *tasks = [[NSMutableArray alloc] init];
 
-    // Reflect the "installing" state in whichever detail UI is on screen.
     if (m_IsPad) {
         [self.extendNoteDetailViewPad setButtonTextInstalling];
     } else {
@@ -857,7 +819,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         }
     }
 
-    // Queue the music file if it is not already present on disk.
     NSString *musicPath = [RBMusicManager getPathFromPurchesed:info.musicID];
     if (![NSFileManager isFileExist:musicPath]) {
         StoreDownloadTask *task = [[StoreDownloadTask alloc] initWithURL:info.itemURL
@@ -866,7 +827,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [tasks addObject:task];
     }
 
-    // Queue the extend-note file if it is not already present on disk.
     NSString *extendPath = [RBExtendNoteManager getPathFromPurchased:info.extMusicID];
     if (![NSFileManager isFileExist:extendPath]) {
         StoreDownloadTask *task = [[StoreDownloadTask alloc] initWithURL:info.extendURL
@@ -876,7 +836,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     }
 
     if (tasks.count == 0) {
-        // Everything is already installed; reflect that state and dismiss the dialog.
         if (m_IsPad) {
             [self.extendNoteDetailViewPad setButtonTextInstalled];
         } else {
@@ -903,7 +862,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     int limitYen =
         (limitType < kPurchaseLimitTypeCount) ? kPurchaseLimitYen[limitType] : kPurchaseLimitNone;
 
-    // Only yen-priced products contribute to the running purchase total.
     NSString *currencyCode = [product.priceLocale objectForKey:NSLocaleCurrencyCode];
     if ([currencyCode isEqualToString:kCurrencyCodeJPY]) {
         total = product.price.integerValue + total;
@@ -912,7 +870,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     BOOL attained = NO;
     if (limitYen >= 0 && limitYen < total) {
         if (limitType == 0) {
-            // No limit type has been chosen yet: prompt the player to pick one.
             self.purchaseLimitTypeSelectView =
                 [UIAlertView showSelectPurchaseLimitTypeWithDelegate:self];
             [self.purchaseLimitTypeSelectView setTag:kAlertTagPurchaseLimitType];
@@ -926,8 +883,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)startPurchase:(StoreExtendNoteInfo *)info {
 #ifdef ENABLE_PATCHES
-    // A note the catalogue prices at nothing is granted without StoreKit, ahead of the guard below
-    // because a free note need not have a StoreKit product at all.
+    // Checked ahead of the guard below because a free note need not have a StoreKit product.
     if (RBStoreExtendNoteIsFreeFromCatalog(info.extMusicID)) {
         self.purchasingExtendNoteInfo = info;
         [self purchaseSucceeded:[StoreUtil pidToProductID:info.pid]];
@@ -941,7 +897,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     self.purchasingExtendNoteInfo = info;
     if ([self checkAttainLimitPurchase:info.product]) {
-        // A spending-limit alert was raised; the purchase does not proceed.
         return;
     }
 
@@ -955,8 +910,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)detailViewClose {
     if (m_IsPad) {
-        // On the pad the detail view is an overlay dismissed via the cover view's tap handler
-        // rather than a navigation pop.
         [self handleTapCoverView:nil];
         return;
     }
@@ -973,8 +926,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     if (m_IsPad) {
         [self.extendNoteDetailViewPad selfCheckButtonText];
     } else {
-        // Only refresh the detail controller's button text when the top view controller actually
-        // is the note-detail screen.
         UIViewController *top = self.navigationController.topViewController;
         if ([top isKindOfClass:[RBStoreExtendNoteDetailViewController class]]) {
             [static_cast<RBStoreExtendNoteDetailViewController *>(top) selfCheckButtonText];
@@ -1010,17 +961,13 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)updatePurchasedTableCell:(StoreExtendNoteInfo *)info {
     if (m_IsPad) {
-        // Pad: locate the product's position in the flat product-ID list and reload the matching
-        // row of section 0.
         NSArray *productIDList = [self.extendNoteListCtrl extendNoteProductIDList];
         for (NSUInteger i = 0; i < productIDList.count; ++i) {
             int listPid = [productIDList[i] intValue];
             if (listPid == [info pid]) {
                 UITableView *table =
                     static_cast<UITableView *>([self.view viewWithTag:kPackTableViewTag]);
-                // Two products share a row on the pad, so halve the index. The (index < 0) bump
-                // mirrors the compiler's arithmetic-shift rounding fix-up for a signed halving;
-                // the index is always non-negative in practice.
+                // The bump is the compiler's rounding fix-up for a signed halving.
                 int index = static_cast<int>(i);
                 if (index < 0) {
                     index += 1;
@@ -1034,8 +981,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         return;
     }
 
-    // Phone: if the note-detail controller is on top, just flip its purchase state. Otherwise, if
-    // this page controller is on top, find the product's row and reload it in section 1.
     UIViewController *top = self.navigationController.topViewController;
     if ([top isKindOfClass:[RBStoreExtendNoteDetailViewController class]]) {
         [static_cast<RBStoreExtendNoteDetailViewController *>(top)
@@ -1051,8 +996,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     NSArray *productIDList = [self.extendNoteListCtrl extendNoteProductIDList];
     NSInteger row = -1;
     while (true) {
-        // Faithful to the binary: the count is re-read each iteration and the row index is
-        // pre-incremented before the bounds check.
+        // Faithful: the count is re-read each iteration and the row pre-incremented.
         if (static_cast<NSInteger>(productIDList.count) <= row + 1) {
             return;
         }
@@ -1086,7 +1030,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [[RBPurchaseManager sharedManager] setDelegate:nil];
     [self updatePurchasedTableCell:self.purchasingExtendNoteInfo];
 
-    // Accumulate the JPY spend total only when the product is priced in yen.
     NSString *currencyCode =
         [self.purchasingExtendNoteInfo.product.priceLocale objectForKey:NSLocaleCurrencyCode];
     if ([currencyCode isEqualToString:kCurrencyCodeJPY]) {
@@ -1115,8 +1058,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)addRestoreExtendNoteInfo:(StoreExtendNoteInfo *)info {
     [self.restoreExtendNoteInfo addObject:info];
-    // The corresponding product ID has now been resolved, so drop it from the pending
-    // restore-product set.
     NSString *productID = [StoreUtil pidToProductID:[info pid]];
     if ([self.restoreProductID containsObject:productID]) {
         [self.restoreProductID removeObject:productID];
@@ -1124,16 +1065,11 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (BOOL)nextRestoreExtendNoteInfo {
-    // Snapshot the pending restore-product IDs. If there are none, report that there was nothing
-    // to process.
     NSArray *pending = [self.restoreProductID copy];
     if (pending.count == 0) {
         return NO;
     }
 
-    // Resolve every pending product ID synchronously: reuse the cached info if the list already
-    // has it, otherwise fetch it from the product ID. Each resolved info is appended via
-    // -addRestoreExtendNoteInfo: (which also removes the ID from the pending set).
     for (NSString *productID in pending) {
         int pid = [StoreUtil productIDToPid:productID];
         StoreExtendNoteInfo *info = [self.extendNoteListCtrl getExtendNoteInfoWithProductID:pid];
@@ -1147,7 +1083,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (void)askDownloadAllNotes {
-    // Register every restored note as purchased (without saving each), then persist once.
     for (StoreExtendNoteInfo *info in self.restoreExtendNoteInfo) {
         [self updateExtendNoteInfo:info Save:NO];
     }
@@ -1157,12 +1092,10 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [[RBPurchaseManager sharedManager] clearPurchaseCheckedProducts];
     [self.restoreProductID removeAllObjects];
 
-    // Refresh the purchased-cell UI for each restored note.
     for (StoreExtendNoteInfo *info in self.restoreExtendNoteInfo) {
         [self updatePurchasedTableCell:info];
     }
 
-    // Count how many restored notes are not yet present on disk.
     int missingCount = 0;
     for (StoreExtendNoteInfo *info in self.restoreExtendNoteInfo) {
         NSString *path = [RBExtendNoteManager getPathFromPurchased:[info extMusicID]];
@@ -1172,13 +1105,11 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     }
 
     if (missingCount > 0) {
-        // Some assets are missing: prompt the user to download them.
         UIAlertView *alert = [UIAlertView showRestoreDownloadWithDelegate:self];
         [alert setTag:kAlertTagRestoreDownload];
         return;
     }
 
-    // Everything is already downloaded: clear the working set and dismiss.
     [self.restoreExtendNoteInfo removeAllObjects];
     [self.parent hideModalDialog];
 }
@@ -1186,7 +1117,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 - (void)restoreDownloadAllNotes {
     NSMutableArray *tasks = [NSMutableArray arrayWithCapacity:0];
 
-    // Build a download task for each restored note whose file is missing.
     for (StoreExtendNoteInfo *info in self.restoreExtendNoteInfo) {
         NSString *path = [RBExtendNoteManager getPathFromPurchased:[info extMusicID]];
         if (![NSFileManager isFileExist:path]) {
@@ -1202,8 +1132,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     self.restoreExtendNoteInfo = nil;
 
     if (tasks == nil) {
-        // Faithful to the binary: tasks is never nil here (it was just allocated), so this branch
-        // is effectively dead; the download branch always runs.
+        // Faithful to the binary: tasks was just allocated, so this branch is dead.
         [self.parent hideModalDialog];
     } else {
         StoreDownloadManager *mgr = [[StoreDownloadManager alloc] initWithTasks:tasks
@@ -1283,8 +1212,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (void)didPresentAlertView:(UIAlertView *)alertView {
-    // Route touches exclusively to the alert while a modal view controller is being presented
-    // above the root.
     UIView *view =
         [UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController.view;
     [UIAlertView setExclusiveTouchForView:view];
@@ -1302,9 +1229,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     self.restoreProductID = [[NSMutableArray alloc]
         initWithArray:[[RBPurchaseManager sharedManager] purchaseCheckedProducts]];
 
-    // If there were no pending products to resolve, proceed straight to the download prompt.
-    // (-nextRestoreExtendNoteInfo resolves all pending products synchronously and returns whether
-    // any existed.)
     if (![self nextRestoreExtendNoteInfo]) {
         [self askDownloadAllNotes];
     }
@@ -1314,7 +1238,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)restoreFailed:(NSError *)error {
     [self.parent hideModalDialog];
-    // The same localised cancellation format the purchase failure uses.
     NSString *message = [[NSString alloc]
         initWithFormat:g_pLocalizedPurchaseCancelled, [error localizedDescription]];
     [UIAlertView showWithErrorMessage:message delegate:nil];
@@ -1334,9 +1257,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         self.storeExtendNoteInfoDownloader = nil;
     }
 
-    // If more pending products remain to be resolved, advance to the download prompt. (Faithful
-    // polarity: here YES triggers -askDownloadAllNotes, whereas -restoreSucceeded triggers it on
-    // NO.)
+    // Faithful polarity: YES triggers -askDownloadAllNotes; -restoreSucceeded uses NO.
     if ([self nextRestoreExtendNoteInfo]) {
         [self askDownloadAllNotes];
     }
@@ -1353,9 +1274,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 #pragma mark - Download manager delegate
 
 - (void)downloadManagerStartTask:(StoreDownloadManager *)manager {
-    // Fetch the display name of the task about to start (the -addObject accessor returns the name
-    // passed to the task's initWithURL:path:AddObject: initialiser), then show it in the parent's
-    // modal-dialog message label through the download-progress format string.
     StoreDownloadTask *currentTask = manager.tasks[manager.currentIndex];
     NSString *taskName = [currentTask addObject];
     NSString *message = [NSString stringWithFormat:g_pDownloadingMessageFormat, taskName];
@@ -1367,8 +1285,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     self.purchasingExtendNoteInfo = nil;
 
     if (!m_IsPad) {
-        // On the phone the detail controller, if it is on top, refreshes its buy button to the
-        // "installed" state.
         UIViewController *top = self.navigationController.topViewController;
         if ([top isKindOfClass:[RBStoreExtendNoteDetailViewController class]]) {
             [static_cast<RBStoreExtendNoteDetailViewController *>(top) setButtonTextInstalled];
@@ -1403,8 +1319,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (void)downloadManagerProceed:(StoreDownloadManager *)manager {
-    // Mirror the aggregate download progress into the parent's modal progress bar. The manager
-    // argument is ignored in favour of the retained ivar.
+    // The manager argument is ignored in favour of the retained ivar.
     self.parent.modalDialog.progressView.progress = self.downloadManager.overallProgress;
 }
 
@@ -1415,7 +1330,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     if (!m_IsPad) {
         return count;
     }
-    // Two products per pad row, rounded up.
     return (count + 1) >> 1;
 }
 
@@ -1425,7 +1339,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     if (!m_IsPad) {
         if (indexPath.row < [self numPackRows]) {
-            // Phone pack cell: one product per row.
             UIImage *placeholder = [UIImage imageWithName:@"09_store/store_jacket_64"];
             StoreExtendNoteCellPhone *cell =
                 [tableView dequeueReusableCellWithIdentifier:@"StoreExtendNotelistCell"];
@@ -1443,12 +1356,10 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                 (artwork != nil) ? (__bridge id)artwork.CGImage : (__bridge id)placeholder.CGImage;
             return cell;
         }
-        // Phone "show more"/loading footer cell.
         return StoreExtendPageMoreCell(
             tableView, @"StorePacklistMoreCell", m_IsPad, m_IsLoadingMoreList);
     }
 
-    // iPad: two products per table row, split across the cell's left/right views.
     if (indexPath.row < [self numPackRows]) {
         NSString *reuseIdentifier =
             (indexPath.row & 1) ? @"StoreExtendNotelistCellOdd" : @"StoreExtendNotelistCellEven";
@@ -1463,7 +1374,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             [cell.rightView setBgImage:bg];
         }
 
-        // Left half: product at (row * 2).
         NSInteger leftIndex = indexPath.row * kPadProductsPerRow;
         int leftPID = [productIDList[leftIndex] intValue];
         StoreExtendNoteInfo *leftInfo =
@@ -1474,7 +1384,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         UIImage *leftArtwork = StoreExtendPageArtworkForPadInfo(self, leftInfo, leftPID, leftPath);
         [leftTile setArtwork:leftArtwork];
 
-        // Right half: product at (row * 2 + 1), present only if it exists.
         NSInteger rightIndex = indexPath.row * kPadProductsPerRow + 1;
         if (rightIndex < static_cast<NSInteger>(productIDList.count)) {
             cell.rightView.hidden = NO;
@@ -1493,7 +1402,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         }
         return cell;
     }
-    // iPad "show more"/loading footer cell.
     return StoreExtendPageMoreCell(
         tableView, @"StoreExtendNotelistMoreCell", m_IsPad, m_IsLoadingMoreList);
 }
@@ -1503,8 +1411,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // Pack rows plus one trailing "show more" row when the list can continue. The pad and phone
-    // arms are identical in the binary.
+    // The pad and phone arms are identical in the binary.
     return [self numPackRows] + (self.extendNoteListCtrl.extendNoteListContinued ? 1 : 0);
 }
 
@@ -1523,10 +1430,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     if (!m_IsPad) {
         if (isPackRow) {
-            // The phone layout's rows are StoreExtendNoteCellPhone, which is where the background
-            // setters live; the binary messages them dynamically off the untyped delegate argument.
+            // The binary messages these dynamically off the untyped delegate argument.
             auto *phoneCell = static_cast<StoreExtendNoteCellPhone *>(cell);
-            // Alternate the pack background image and its tint per row parity.
             UIImage *bg = (indexPath.row & 1) ? self.packBgImage1 : self.packBgImage0;
             [phoneCell setBgImage:bg];
             UIColor *tint = (indexPath.row & 1) ? [UIColor colorWithRed:kPhoneOddRowWhite
@@ -1556,8 +1461,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Only phone pack rows are tappable; the trailing "more" row and every pad row are inert (pad
-    // selection is driven through the embedded cell views).
     if (indexPath.row != [self numPackRows] && !m_IsPad) {
         int pid = [self.extendNoteListCtrl.extendNoteProductIDList[indexPath.row] intValue];
         [self showDetailViewForPhone:pid];
@@ -1579,8 +1482,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         return;
     }
     m_IsLoadingMoreList = YES;
-    // Blank the button title, recentre it after a sizeToFit, reveal the spinner, hide the footer
-    // spinner view, then fetch the next page.
     [self.showMoreButton setTitle:g_pLocalizedLoadingMixed forState:UIControlStateNormal];
     CGPoint center = self.showMoreButton.center;
     [self.showMoreButton sizeToFit];
@@ -1603,9 +1504,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             cell.artworkLayer.contents = (__bridge id)image.CGImage;
         }
     } else {
-        // The pad packs two products per row, so map the product-list row back to the table row
-        // (row / 2) and pick the left or right embedded view by parity. The division rounds
-        // towards zero for negatives.
+        // The pad packs two products per row, so the product-list row maps to table row / 2.
         NSInteger row = indexPath.row;
         if (row < 0) {
             row += 1;
@@ -1630,7 +1529,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 #pragma mark - Scroll view delegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    // Auto-load the next page once the user scrolls past the content bottom.
     if (!m_IsLoadingMoreList && self.extendNoteListCtrl.extendNoteListContinued) {
         if (scrollView.contentOffset.y + scrollView.bounds.size.height >
             scrollView.contentSize.height) {
@@ -1640,8 +1538,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     UIScrollView *listView = static_cast<UIScrollView *>([self.view viewWithTag:kPackTableViewTag]);
 
-    // Pin the floating banner to the bottom of the visible content, clamped so it never floats
-    // past the true content bottom by more than its own height plus the platform margin.
     UIView *banner = [listView viewWithTag:kBannerImageViewTag];
     CGFloat margin = m_IsPad ? kBannerBottomMarginPad : kBannerBottomMarginPhone;
     CGRect bannerFrame = banner.frame;
@@ -1649,8 +1545,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         StoreExtendPagePinnedBannerY(scrollView, listView, bannerFrame.size.height, margin, 1.0);
     [banner setFrame:bannerFrame];
 
-    // A campaign-period banner (tag 0x186a2) is pinned the same way but anchored against half of
-    // its own height.
     if ([[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
         UIView *campaignBanner = [listView viewWithTag:kCampaignImageViewTag];
         CGFloat campaignMargin = m_IsPad ? kBannerBottomMarginPad : kBannerBottomMarginPhone;
@@ -1680,8 +1574,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    // On the phone, re-highlight and then clear the row that was selected before the push, so the
-    // list returns to an unselected state when the user comes back.
     UITableView *listTable = static_cast<UITableView *>([self.view viewWithTag:kPackTableViewTag]);
     if (!m_IsPad && !listTable.isHidden) {
         NSIndexPath *selected = listTable.indexPathForSelectedRow;
@@ -1692,20 +1584,17 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         }
     }
 
-    // Keep the error-message label sized to the view when it is showing.
     UILabel *errorLabel = static_cast<UILabel *>([self.view viewWithTag:kErrorMessageLabelTag]);
     if (errorLabel != nil && !errorLabel.isHidden) {
         errorLabel.frame = self.view.bounds;
     }
 
-    // On the pad, refresh the detail overlay's action button while it is visible.
     if (IsPad()) {
         if (!self.extendNoteDetailViewPad.isHidden) {
             [self.extendNoteDetailViewPad selfCheckButtonText];
         }
     }
 
-    // On the phone, reset the navigation bar to a plain white bar.
     if (!IsPad()) {
         self.navigationController.navigationBar.tintColor = nil;
         self.navigationController.navigationBar.barTintColor = UIColor.whiteColor;
@@ -1720,8 +1609,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
-    // If the list has never been fetched and no fetch is in flight, show the loading state and
-    // kick off the first fetch; otherwise treat the already-loaded list as a completed download.
     if (self.extendNoteListCtrl.extendNoteProductIDList.count == 0 &&
         !self.extendNoteListCtrl.isFetching) {
         [self.view viewWithTag:kErrorMessageLabelTag].hidden = YES;
@@ -1735,13 +1622,11 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
-    // Tear down the pad detail overlay's in-flight work as the page leaves the screen.
     if (m_IsPad) {
         [self.extendNoteDetailViewPad cancelLoading];
         [self.extendNoteDetailViewPad stopSample];
     }
 
-    // If a "show more" page fetch is running, cancel the loading state and re-enable the list.
     if (self.extendNoteListCtrl.isFetching) {
         m_IsLoadingMoreList = NO;
         UITableView *listTable =
@@ -1750,7 +1635,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [listTable reloadData];
     }
 
-    // Drop the info downloader and stop any list fetch.
     if (self.storeExtendNoteInfoDownloader != nil) {
         self.storeExtendNoteInfoDownloader.delegate = nil;
         [self.storeExtendNoteInfoDownloader cancel];
@@ -1781,8 +1665,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (void)dealloc {
-    // The info downloader retains a delegate back to this controller, so detach and cancel it
-    // before the controller is torn down.
+    // The info downloader retains a delegate back to this controller.
     if (self.storeExtendNoteInfoDownloader != nil) {
         self.storeExtendNoteInfoDownloader.delegate = nil;
         [self.storeExtendNoteInfoDownloader cancel];
@@ -1792,9 +1675,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 #pragma mark - Loading state
 
 - (void)showLoadingView {
-    // Put the list into its loading state: hide and lock the list, scroll it back to the top, show
-    // the banner container, and hide the error label, the pack-section label, the "show more"
-    // button, and its spinner.
     UITableView *listTable = static_cast<UITableView *>([self.view viewWithTag:kPackTableViewTag]);
     UIView *bannerContainer = [self.view viewWithTag:kLoadingTitleLabelTag];
     UIView *loadingHost = [listTable viewWithTag:kBannerLabelTag];
@@ -1802,7 +1682,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     if (listTable != nil) {
         listTable.hidden = YES;
         listTable.allowsSelection = NO;
-        // Scroll the list's own size rectangle, anchored at the origin, back into view.
         CGRect visibleRect =
             CGRectMake(0, 0, listTable.frame.size.width, listTable.frame.size.height);
         [listTable scrollRectToVisible:visibleRect animated:NO];
@@ -1831,7 +1710,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 #pragma mark - Popover delegate
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    // Re-enable the navigation bar's back button and the restore button once the popover closes.
     self.navigationItem.leftBarButtonItem.enabled = YES;
     self.restoreButton.enabled = YES;
 }
@@ -1849,8 +1727,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         return;
     }
 
-    // When the URL carries affiliate parameters, present the in-app StoreKit product page seeded
-    // with them; otherwise fall back to opening the URL in Safari.
     NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url];
     if (affiliateParameters == nil) {
         [[UIApplication sharedApplication] openURL:url];
@@ -1864,7 +1740,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                             animated:YES
                           completion:^{
                             /** @ghidraAddress 0x1676c8 */
-                            // Once the product page is on screen, load the affiliate product.
                             [self.itunesViewCtrl loadProductWithParameters:affiliateParameters
                                                            completionBlock:nil];
                           }];
@@ -1888,11 +1763,6 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 #pragma mark - De-inlined helpers
 
-// The following helpers fold the repeated cell-configuration and banner-pin arithmetic that the
-// compiler inlined four times across the two device arms.
-
-// Resolve or kick off the artwork download for a phone pack cell. Returns the cached image, or nil
-// while a fresh download is in flight (indexed by product ID via a boxed NSNumber).
 static inline UIImage *StoreExtendPageArtworkForInfo(RBStoreExtendPageViewController *self,
                                                      StoreExtendNoteInfo *info,
                                                      NSIndexPath *indexPath) {
@@ -1913,9 +1783,9 @@ static inline UIImage *StoreExtendPageArtworkForInfo(RBStoreExtendPageViewContro
     return nil;
 }
 
-// Pad variant, with no unUseRetina override. The left tile's lookup boxes the product ID with
-// numberWithInteger: (0x1642e4) while every other boxing here is numberWithInt:, including the
-// right tile's lookup at 0x1646a8; the two produce equal keys, so one helper covers both.
+// The two call sites box the key differently but equally, so one helper covers both.
+// @ghidraAddress 0x1642e4
+// @ghidraAddress 0x1646a8
 static inline UIImage *StoreExtendPageArtworkForPadInfo(RBStoreExtendPageViewController *self,
                                                         StoreExtendNoteInfo *info,
                                                         int pid,
@@ -1936,8 +1806,6 @@ static inline UIImage *StoreExtendPageArtworkForPadInfo(RBStoreExtendPageViewCon
     return nil;
 }
 
-// Build the trailing "show more"/loading footer cell, identical apart from the reuse identifier
-// per device arm.
 static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
                                                        NSString *reuseIdentifier,
                                                        BOOL isPad,
@@ -1969,12 +1837,6 @@ static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
     return cell;
 }
 
-// Compute the pinned Y for a floating banner. The banner sits at margin + the scroll view's own
-// content or bounds height (whichever the list's own overflow selects) but, once the user scrolls
-// far enough that the banner would fall short of contentOffset.y + bounds.height, it snaps to
-// (contentOffset.y + bounds.height) - bannerHeight * anchorFraction. The full-height floating
-// banner uses anchorFraction 1.0; the campaign banner uses 0.5. margin is the platform slack (100
-// phone / 300 pad).
 static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                                                    UIScrollView *listView,
                                                    CGFloat bannerHeight,

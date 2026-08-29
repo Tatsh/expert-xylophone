@@ -211,31 +211,28 @@ private:
      */
     LimelightThemeLayer();
 
-    // +0x08 and +0x0c are the layer's layout size (384 x 680); the grade strip also reads them as
-    // the layout origin it positions the animated glyphs relative to.
-    float m_flWidth = {};                 // +0x08: the layer's layout width (384).
-    float m_flHeight = {};                // +0x0c: the layer's layout height (680).
+    // The grade strip also reads the layout size as the origin its glyphs are placed relative to.
+    float m_flWidth = {};                 // +0x08: 384.
+    float m_flHeight = {};                // +0x0c: 680.
     ne::C_TEXTURE *m_pPartsTexture = {};  // +0x10: the gm_parts2 atlas.
     ne::C_TEXTURE *m_pEffectTexture = {}; // +0x18: the ti_parts_eff atlas.
     ne::C_TEXTURE *m_pWinTexture = {};    // +0x20: the gm_win atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                                     // +0x28: the per-slot sprite batches.
-    int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x48: each slot's initial count.
-    bool m_bBuilt = {};                         // +0x58: set once the sprites are built.
-    // +0x59..+0x5b is alignment padding before the trailing state.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x28
+    int m_aSpriteCounts[kSpriteSlotCount] = {};                     // +0x48
+    bool m_bBuilt = {};                                             // +0x58
     // unsigned char m_aPad59[3]; // +0x59 (alignment padding, compiler-inserted)
-    int m_nSideCount = {}; // +0x5c: seeded to 1; the grade display runs single-side when this is 1.
-    bool m_bGradeVisible = {};     // +0x60: whether the result grade display draws.
-    bool m_bGradeClockActive = {}; // +0x61: whether the reveal clock is advancing.
+    int m_nSideCount = {};         // +0x5c: 1 runs the grade display single-side.
+    bool m_bGradeVisible = {};     // +0x60
+    bool m_bGradeClockActive = {}; // +0x61
     // +0x62..+0x63 is alignment padding before the reveal clock.
-    float m_flGradeRevealClock = {}; // +0x64: the reveal clock, counting up to the threshold.
-    bool m_bGradeArmed = {};         // +0x68: raised once the grade display is initialised.
+    float m_flGradeRevealClock = {}; // +0x64: counts up to the threshold.
+    bool m_bGradeArmed = {};         // +0x68
     // +0x69..+0x6b is alignment padding before the reveal channel.
-    LinearTween m_gradeChannel;          // +0x6c: the result grade-gauge reveal channel.
-    float m_flCachedViewportWidth = {};  // +0x80: the last-seen viewport width.
-    float m_flCachedViewportHeight = {}; // +0x84: the last-seen viewport height.
-    int m_aGradeValues[kSideCount] = {}; // +0x88: the per-side grade value from the play record.
-    float m_flGradeRevealDuration = {};  // +0x90: the reveal clock's threshold (3000 or 5000).
+    LinearTween m_gradeChannel;          // +0x6c
+    float m_flCachedViewportWidth = {};  // +0x80
+    float m_flCachedViewportHeight = {}; // +0x84
+    int m_aGradeValues[kSideCount] = {}; // +0x88: from the play record.
+    float m_flGradeRevealDuration = {};  // +0x90: 3000 or 5000.
     // +0x94..+0x97: the remaining layer state, still being worked out.
     // unsigned char m_aReserved94[4] = {}; // +0x94
 };

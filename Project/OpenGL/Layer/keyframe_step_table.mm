@@ -13,12 +13,10 @@ constexpr int kGroupStride = 3;
 unsigned int
 TutorialGuideLayer::KeyframeStepTableLookup(float flTime, const float *pTable, int nEntries) {
 
-    // Out of range below the first group's start, or above the last group's end, or empty.
     if (pTable[0] > flTime || nEntries < 1 || pTable[nEntries * kGroupStride - 2] < flTime) {
         return kKeyframeStepNoMatch;
     }
 
-    // Walk the groups; return the value of the first whose [start, end] range contains the time.
     const float *pGroup = pTable;
     for (int nGroup = 0; nGroup < nEntries; ++nGroup) {
         const float flStart = pGroup[0];

@@ -9,17 +9,6 @@
 
 #pragma once
 
-//
-//  note_path_point_array.h
-//  REFLEC BEAT plus
-//
-//  A small growable array of note-chart path points used by the CMusicSheet2 chart parsers. Each
-//  entry is an 8-byte pair of ints (a path point). The array grows by a fixed step when full.
-//
-//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
-//  the program image base.
-//
-
 /**
  * One note-chart path point: a pair of ints stored in the growable array.
  * Reconstructed type @c NotePathPoint: engine chart-parse struct.
@@ -100,7 +89,7 @@ public:
     }
 
 private:
-    NotePathPoint *m_pEntries = {}; // +0x00 the entry buffer
-    int m_nCount = {};              // +0x08 live entry count
-    int m_nCapacity = {};           // +0x0c allocated entry count
+    NotePathPoint *m_pEntries = {};
+    int m_nCount = {};
+    int m_nCapacity = {};
 };

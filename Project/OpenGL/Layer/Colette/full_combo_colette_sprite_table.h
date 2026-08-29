@@ -9,7 +9,7 @@
  * One Colette full-combo sprite-type descriptor: the batch group it draws into, its anchor
  * and size, and the UV-table index it samples.
  *
- * A 24-byte read-only record indexed by the sprite type (0 through 102). The trailing @c // +0xNN
+ * A 24-byte read-only record indexed by the sprite type (0 through 102). The trailing @c +0xNN
  * comments document the byte offsets within the record.
  */
 struct ColetteFullComboSpriteType {

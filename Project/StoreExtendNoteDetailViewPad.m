@@ -47,8 +47,7 @@ static const double kLevelColorRed = 85.0 / 255.0;        // @ghidraAddress 0x2e
 static const double kLevelColorGreen = 9.0f / 255.0f;     // @ghidraAddress 0x2eec80
 static const double kLevelColorBlue = 120.0 / 255.0;      // @ghidraAddress 0x2eec88
 static const double kBackgroundDimWhite = 0.863f;         // @ghidraAddress 0x2eecd0
-// Single-precision in the binary, and unannotated because the neighbouring pool slots hold other
-// constants.
+// Single-precision in the binary.
 static const double kTermBarWhite = 0.90000003576278687;
 static const double kLoadingTextWhite = 0.19999998807907104;
 
@@ -59,7 +58,7 @@ typedef enum {
 } StoreSampleStatus;
 
 @implementation StoreExtendNoteDetailViewPad {
-    // No leading underscore in the binary; buttonType, bUnlock, and hideType are unused.
+    // buttonType, bUnlock, and hideType are unused.
     StoreSampleStatus sampleStatus;
     int buttonType;
     BOOL bUnlock;
@@ -97,7 +96,7 @@ typedef enum {
     [noteBg setImage:[packBg stretchableImageWithLeftCapWidth:4 topCapHeight:4]];
     [self.noteView addSubview:noteBg];
 
-    // The strip spans the card, not the panel: 0x2248c takes only the width from the bounds.
+    // The strip spans the card, not the panel. @ghidraAddress 0x2248c
     UIView *card = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, self.bounds.size.width, kTitleBarHeight)];
     [card setBackgroundColor:UIColor.whiteColor];
@@ -284,7 +283,6 @@ typedef enum {
 
 /** @ghidraAddress 0x271bc */
 - (void)dealloc {
-    // ARC synthesises the equivalent of the binary's .cxx_destruct.
 }
 
 #pragma mark - Note loading

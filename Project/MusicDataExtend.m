@@ -1,17 +1,7 @@
-//
-//  MusicDataExtend.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class MusicDataExtend). Verified against
-//  the arm64 disassembly: the object setters call the runtime's storeStrong helper (a retaining
-//  store), and the extend dictionary keys were read straight from the __cfstring references.
-//
-
 #import "MusicDataExtend.h"
 
 #import "MusicData.h"
 
-// Purchased-extend-note dictionary keys read by the factory.
 static NSString *const kExtendKeyExtMusicID = @"ExtID";
 static NSString *const kExtendKeyMusicID = @"ID";
 static NSString *const kExtendKeyDifficulty = @"ExtLevel";

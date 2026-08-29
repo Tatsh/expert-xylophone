@@ -90,8 +90,8 @@ static const NSTimeInterval kPopAnimationDuration = 2.0;
 static const int64_t kAnimationRetryDelayNanos = 2000000000;
 
 @interface RBResourceDownloadViewController () {
-    BOOL m_Animating; // +0x8
-    int m_PageNum;    // +0xc
+    BOOL m_Animating;
+    int m_PageNum;
 }
 @end
 
@@ -365,8 +365,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
                                             error:nil
                                          delegate:self];
     if (!unzipped) {
-        // This runs on the detached unzip thread, so the view update joins the alert on the main
-        // thread rather than being set here as the binary does.
+        // This runs on the detached unzip thread, so the view update is marshalled to the main one.
         dispatch_async(dispatch_get_main_queue(), ^{
           self.popImageView.hidden = NO;
           /** @ghidraAddress 0x1c094 */
@@ -497,8 +496,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
                            unzippedPath:(NSString *)unzippedPath {
     /** @ghidraAddress 0x1ca44 */
 #ifdef ENABLE_PATCHES
-    // Current iOS traps the direct call with an EXC_BREAKPOINT out of FBSMainRunLoopSerialQueue,
-    // so the call is marshalled to the main thread. See PATCHES.md.
+    // Current iOS traps the direct call with an EXC_BREAKPOINT out of FBSMainRunLoopSerialQueue.
     dispatch_async(dispatch_get_main_queue(), ^{
       [self success];
     });
@@ -709,7 +707,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     self.scrollView.pagingEnabled = YES;
     self.scrollView.showsHorizontalScrollIndicator = NO;
     self.scrollView.showsVerticalScrollIndicator = NO;
-    // 0x1de78 sends the 0x3f loaded at 0x1de6c, all six flags, not the width-and-height pair.
+    // All six flags, not the width-and-height pair. @ghidraAddress 0x1de6c, 0x1de78
     self.scrollView.autoresizingMask =
         UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
         UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -737,7 +735,8 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     [self.pageControl addTarget:self
                          action:@selector(pageDidChangeValue:)
                forControlEvents:UIControlEventValueChanged];
-    // 0x1e194 sends the same 0x3f, not None; only the help and pastel containers get None.
+    // The same six flags, not None; only the help and pastel containers get None.
+    // @ghidraAddress 0x1e194
     self.pageControl.autoresizingMask =
         UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
         UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -756,7 +755,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     self.fadeImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
     self.fadeImageView.backgroundColor = UIColor.blackColor;
     self.fadeImageView.alpha = 1.0;
-    // 0x1e41c sends the same 0x3f, not the width-and-height pair.
+    // The same six flags, not the width-and-height pair. @ghidraAddress 0x1e41c
     self.fadeImageView.autoresizingMask =
         UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
         UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -773,7 +772,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     CGRect scrollFrame = self.scrollView.frame;
     pageView.frame = CGRectMake(
         (CGFloat)index * scrollFrame.size.width, 0, pageImage.size.width, pageImage.size.height);
-    // 0x1e984 sends the same 0x3f, not the width-and-height pair.
+    // The same six flags, not the width-and-height pair. @ghidraAddress 0x1e984
     pageView.autoresizingMask =
         UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
         UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -834,8 +833,6 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     CGRect trackFrame = self.trackImageView.frame;
     float fraction = progress.floatValue;
     CGFloat trackWidth = trackFrame.size.width;
-    // The binary's second -frame send is not redundant: no arm writes d3, so it is what carries the
-    // track's height into the fill's frame.
     CGFloat trackHeight = trackFrame.size.height;
     switch (self.progressMode) {
     case kProgressModeDownload:

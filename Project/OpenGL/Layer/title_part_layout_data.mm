@@ -1,12 +1,6 @@
 #include "sprite_uv_table.h"
 #include "title_part_layout.h"
 
-// The parts-based title screen's binary-resident layout and UV tables (read-only ROM data). The
-// layout tables give each of the 0x53 title parts its render-type/anchor mode, placement rectangle,
-// and atlas-frame index; the two UV tables supply the atlas rectangles the lettered and logo parts
-// index (the background and the mode-0/mode-other parts instead index the shared default title-part
-// atlas g_aTitlePartUvDefault).
-
 /** @ghidraAddress 0x309d48 */
 const TitlePartLayoutRecord g_aTitle2PartLayoutDefault[] = {
     {0, 384.0f, 512.0f, 768.0f, 1024.0f, 0x0}, {1, 44.0f, 44.25f, 88.0f, 88.5f, 0x6},

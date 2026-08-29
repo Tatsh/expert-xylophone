@@ -48,12 +48,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// The adopted protocols are transcribed from the binary's class_ro_t baseProtocols list, in order:
-// UICollectionViewDelegate, UICollectionViewDataSource, RBCollectionViewDelegate,
-// UIGestureRecognizerDelegate, RBTermAgreeViewDelegate, DownloaderDelegate, and
-// UISearchBarDelegate. (UIScrollViewDelegate is reached through UICollectionViewDelegate, and
-// RBMenuPageSliderDelegate is only conformed to informally, so neither appears in the binary's
-// list.)
 /**
  * The music-menu hub view that hosts the music grid, the menu chrome, and every overlay
  * presented over the music-select screen.

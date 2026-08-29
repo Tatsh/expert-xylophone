@@ -8,91 +8,69 @@
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkPasteBoard.h"
 
-// The Applilink error codes this class reports. They index into the localised-message table owned
-// by ApplilinkNetworkError.
+// These index into the localised-message table owned by ApplilinkNetworkError.
 typedef enum {
-    kApplilinkUdidErrorNoData = 0x3f4,             // No stored UDID data.
-    kApplilinkUdidErrorWriteFailed = 0x3f7,        // A pasteboard or keychain write failed.
-    kApplilinkUdidErrorNotDictionary = 0x3f8,      // A keychain record was not a dictionary.
-    kApplilinkUdidErrorIndexOutOfRange = 0x3f9,    // A reward UDID index was out of range.
-    kApplilinkUdidErrorValidateNotDict = 0x3fb,    // Validation: record is not a dictionary.
-    kApplilinkUdidErrorValidateNoAccount = 0x3fc,  // Validation: missing account field.
-    kApplilinkUdidErrorValidateNoCreated = 0x3fd,  // Validation: missing creation-date field.
-    kApplilinkUdidErrorValidateNoModified = 0x3fe, // Validation: missing modification-date field.
-    kApplilinkUdidErrorValidateNoGeneric = 0x3ff,  // Validation: missing generic (count) field.
-    kApplilinkUdidErrorValidateExpired = 0x400, // Validation: the record's use count is exhausted.
-    kApplilinkUdidErrorDeleteFailed = 0x402,    // A keychain delete failed.
+    kApplilinkUdidErrorNoData = 0x3f4,
+    kApplilinkUdidErrorWriteFailed = 0x3f7,
+    kApplilinkUdidErrorNotDictionary = 0x3f8,
+    kApplilinkUdidErrorIndexOutOfRange = 0x3f9,
+    kApplilinkUdidErrorValidateNotDict = 0x3fb,
+    kApplilinkUdidErrorValidateNoAccount = 0x3fc,
+    kApplilinkUdidErrorValidateNoCreated = 0x3fd,
+    kApplilinkUdidErrorValidateNoModified = 0x3fe,
+    kApplilinkUdidErrorValidateNoGeneric = 0x3ff,
+    kApplilinkUdidErrorValidateExpired = 0x400,
+    kApplilinkUdidErrorDeleteFailed = 0x402,
 } ApplilinkUdidErrorCode;
 
-// The number of keychain and pasteboard storage slots swept when deleting every UDID.
 static const int kApplilinkUdidStorageIndexCount = 0x100;
 
-// The oldest operating-system version that exposes the advertising-identifier framework.
 static const float kApplilinkUdidAdSupportMinOSVersion = 6.1f;
 
-// The reward-network UDID type selectors passed to
-// +getUdidWithService:storageIndex:rewardNetworkUDIDType:error:.
 typedef enum {
     kApplilinkUdidRewardNetworkTypeOld = 0,
     kApplilinkUdidRewardNetworkTypeAdvertising = 1,
 } ApplilinkUdidRewardNetworkType;
 
-// The isUDIDPriorityType selector passed to +setUdidParameters:isUDIDPriorityType:, which picks
-// which secondary identifier is sent as old_udid.
 typedef enum {
     kApplilinkUdidPriorityTypeDefault = 0,
     kApplilinkUdidPriorityTypeOld = 1,
     kApplilinkUdidPriorityTypePasteBoard = 2,
 } ApplilinkUdidPriorityType;
 
-// The keychain account key that records the storage index for the advertising service.
 static NSString *const kApplilinkUdidAdStorageIndexKey = @"adStorageIndex";
-// The default storage index used when the keychain holds no account string.
 static NSString *const kApplilinkUdidDefaultStorageIndex = @"0";
 
-// The base service names, combined with the server environment by +getServiceName(Old).
 static NSString *const kApplilinkUdidAdvertisingServiceName = @"ApplilinkAdUdid";
 static NSString *const kApplilinkUdidOldServiceName = @"ApplilinkUdid";
 
-// The NSUserDefaults key holding the server environment name.
 static NSString *const kApplilinkUdidEnvKey = @"ApplilinkNetwork.env";
-// The environment value selecting the production server (no service-name prefix).
+// Production takes no service-name prefix.
 static NSString *const kApplilinkUdidEnvProduction = @"0";
-// The NSUserDefaults key holding the pasteboard reward storage index.
 static NSString *const kApplilinkUdidRewardStorageIndexKey = @"ApplilinkReward.storageIndex";
 
-// Format strings combining a service name with an environment prefix or a storage index.
 static NSString *const kApplilinkUdidEnvServiceFormat = @"%@_%@";
 static NSString *const kApplilinkUdidServiceIndexFormat = @"%@-%@";
 static NSString *const kApplilinkUdidServiceIndexNumberFormat = @"%@-%d";
-// The format used to build one hex byte of an MD5 digest.
 static NSString *const kApplilinkUdidHexByteFormat = @"%02x";
-// The separator splitting a keychain access group into its bundle-seed identifier prefix.
 static NSString *const kApplilinkUdidAccessGroupSeparator = @".";
 
-// Parameter dictionary keys used when attaching UDIDs to a request.
 static NSString *const kApplilinkUdidParamKeyUdid = @"udid";
 static NSString *const kApplilinkUdidParamKeyOldUdid = @"old_udid";
-// The pasteboard record key holding the stored UDID value.
 static NSString *const kApplilinkUdidPasteBoardValueKey = @"Value";
 
-// The name of the serial dispatch queue backing the singleton and pasteboard.
 static NSString *const kApplilinkUdidQueueName = @"ApplilinkUdid";
 
-// The all-zero advertising identifier returned when tracking is disabled; the MD5 hash is skipped
-// for it.
+// The advertising identifier returned when tracking is disabled; it is never hashed.
 static NSString *const kApplilinkUdidNullAdvertisingIdentifier =
     @"00000000-0000-0000-0000-000000000000";
 
-// Only these two names are resolved at runtime, by +getAdUdid: each is shifted forward by one
-// character, and decoding subtracts one from every byte to recover "ASIdentifierManager" and
-// "advertisingIdentifier". The sharedManager, UUIDString, and isAdvertisingTrackingEnabled
-// selectors are all sent directly.
+// Shifted forward by one character; they decode to "ASIdentifierManager" and
+// "advertisingIdentifier".
 static NSString *const kApplilinkUdidEncodedIdentifierManagerClass = @"BTJefoujgjfsNbobhfs";
 static NSString *const kApplilinkUdidEncodedAdvertisingIdentifierSelector =
     @"bewfsujtjohJefoujgjfs";
 
-// Decode a Caesar-shifted name by subtracting one from each byte.
 static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
     const char *bytes = [encoded cStringUsingEncoding:NSASCIIStringEncoding];
     NSMutableData *decoded = [NSMutableData dataWithLength:strlen(bytes)];
@@ -103,10 +81,8 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
     return [NSString stringWithCString:out encoding:NSASCIIStringEncoding];
 }
 
-// The singleton and its serial queue live in one block of globals at 0x3df6a0, which
-// +allocWithZone: and +sharedInstance share: 0x3df6a0 holds the instance, 0x3df6a8 the queue, and
-// 0x3df6b0 and 0x3df6b8 the two methods' separate once tokens. They cannot be method-local statics
-// because a single slot is read and written from both methods and from -init.
+// One slot serves both +allocWithZone: and +sharedInstance, so it cannot be a method-local static;
+// the once tokens sit beside it at 0x3df6b0 and 0x3df6b8.
 // @ghidraAddress 0x3df6a0 (instance)
 static ApplilinkUdid *g_pApplilinkUdidSharedInstance = nil;
 // @ghidraAddress 0x3df6a8 (queue)
@@ -121,7 +97,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       /** @ghidraAddress 0x22b83c */
-      // The shared serial queue is created here, before the singleton, and -init only reads it.
       g_pApplilinkUdidQueue = dispatch_queue_create(kApplilinkUdidQueueName.UTF8String, NULL);
       if (g_pApplilinkUdidSharedInstance == nil) {
           g_pApplilinkUdidSharedInstance = [super allocWithZone:zone];
@@ -143,7 +118,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
 
 /** @ghidraAddress 0x22b5f0 */
 - (instancetype)init {
-    // The binary runs [super init] synchronously on the queue +allocWithZone: already created.
     __block ApplilinkUdid *initialized = nil;
     dispatch_sync(g_pApplilinkUdidQueue, ^{
       /** @ghidraAddress 0x22b700 */
@@ -160,7 +134,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     NSDictionary *storageData = shared.pasteBoard.storageData;
     NSString *udid = storageData[kApplilinkUdidPasteBoardValueKey];
     if (udid == nil) {
-        // No stored value: mint a fresh UUID.
         CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
         udid = (__bridge_transfer NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuid);
         CFRelease(uuid);
@@ -445,7 +418,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         return NO;
     }
     if ([ApplilinkUdid searchWithService:service] != nil) {
-        // Replace any stale record before adding the new one.
         NSError *deleteError = nil;
         [ApplilinkUdid deleteKeyChainService:service error:&deleteError];
     }
@@ -466,7 +438,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
                     storageIndex:(NSString *)storageIndex
            rewardNetworkUDIDType:(int)rewardNetworkUDIDType
                            error:(NSError **)error {
-    // This date is read once here and reused below as the record's new modification date.
     NSDate *now = [NSDate date];
     if (storageIndex == nil || storageIndex.length == 0) {
         storageIndex = kApplilinkUdidDefaultStorageIndex;
@@ -502,7 +473,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     if (status == errSecSuccess) {
         SecItemUpdate((__bridge CFDictionaryRef)matchQuery, (__bridge CFDictionaryRef)update);
     }
-    // The attribute dictionary is only a staging area; the account string is what is returned.
     return account;
 }
 
@@ -513,9 +483,8 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     }
     NSDictionary *query = @{
         (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-        // The binary really does key this pair on kSecMatchLimitOne with kSecMatchLimit as the
-        // value. SecItemCopyMatching ignores the unknown key and defaults the limit to one, so the
-        // transposition is invisible at runtime.
+        // Transposed in the binary; SecItemCopyMatching ignores the unknown key and still
+        // defaults the limit to one.
         (__bridge id)kSecMatchLimitOne : (__bridge id)kSecMatchLimit,
         (__bridge id)kSecReturnAttributes : (__bridge id)kCFBooleanTrue,
         (__bridge id)kSecAttrService : service,
@@ -664,8 +633,7 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     if (![ApplilinkUdid isAdvertisingTrackingOSVersion]) {
         return YES;
     }
-    // Unlike +getAdUdid, this one messages ASIdentifierManager directly through its class
-    // reference; it does not go through the encoded names.
+    // Unlike +getAdUdid, the binary messages ASIdentifierManager directly here.
     return ASIdentifierManager.sharedManager.isAdvertisingTrackingEnabled;
 }
 
@@ -702,7 +670,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         return NO;
     }
     if ([ApplilinkUdid isAdvertisingTrackingOSVersion]) {
-        // Advertising tracking is available: prefer the advertising UDID.
         if (adUdid == nil) {
             [ApplilinkCore clearInitialize];
             return NO;
@@ -724,7 +691,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         }
         return YES;
     }
-    // Advertising tracking is unavailable: fall back to the current UDID.
     if (udid == nil) {
         if (oldUdid != nil) {
             [udidParameters setValue:oldUdid forKey:kApplilinkUdidParamKeyUdid];
@@ -856,8 +822,6 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     if (advertisingIdentifier == nil) {
         return nil;
     }
-    // Only the class and the advertisingIdentifier selector are resolved by name; -UUIDString is
-    // sent directly.
     return advertisingIdentifier.UUIDString;
 }
 
@@ -890,8 +854,7 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     if (env == nil) {
         return;
     }
-    // The binary reads the singleton slot directly rather than going through +sharedInstance, so
-    // this is a no-op when the singleton has not been created yet.
+    // The binary reads the singleton slot directly, so this is a no-op before it is created.
     [g_pApplilinkUdidSharedInstance.pasteBoard debugLog];
     (void)[ApplilinkCore ad_udid]; // Yes, the binary evaluates and discards these accessors.
     (void)[ApplilinkCore udid];

@@ -161,10 +161,10 @@ private:
     // Grows the source array by a fixed step when no slot is free.
     int FindFreeSlotIndex();
 
-    AVSeMixer *m_pMixer = {};            // +0x00: the voice mixer.
-    NSMutableDictionary *m_pKeyMap = {}; // +0x08: the call-name -> slot-index map.
-    SourceRecord **m_pSourceArray = {};  // +0x10: the registered source records, indexed by slot.
-    int m_nSourceCount = {};             // +0x18: the source-array capacity.
+    AVSeMixer *m_pMixer = {};
+    NSMutableDictionary *m_pKeyMap = {}; // Maps a call name to a slot index.
+    SourceRecord **m_pSourceArray = {};
+    int m_nSourceCount = {}; // The array capacity, not the live source count.
 };
 
 // code: language=Objective-C++

@@ -38,20 +38,15 @@ static NSString *const kStoreJSONKeyGenre = @"Genre";
 static NSString *const kStoreJSONKeyID = @"ID";
 static NSString *const kStoreJSONKeyHasNext = @"HasNext";
 
-// The genre payload is a two-element array: the identifiers first, then the parallel names.
 enum {
     kGenrePayloadCount = 2,
     kGenrePayloadIndexIDs = 0,
     kGenrePayloadIndexNames = 1,
 };
 
-// The app version compares as equal or newer only when the shop-master version does not order after
-// it. -compare:options: returns this when the info-dictionary version is older than the
-// requirement.
+// -compare:options: returns this when the app version is older than the requirement.
 static const NSComparisonResult kVersionRequirementUnmet = NSOrderedAscending;
 
-// The country code most recently seen on a StoreKit product's price locale, retained across product
-// requests so the store can detect a currency change.
 static NSString *_lastProductCountryCode = nil;
 
 @implementation RBStorePackList
@@ -83,10 +78,6 @@ static NSString *_lastProductCountryCode = nil;
 
 /** @ghidraAddress 0x1f32a8 */
 - (void)dealloc {
-    // Unlike its siblings, this -dealloc does real work before chaining to [super dealloc] (which
-    // ARC does automatically): it cancels the in-flight pack-list download, detaches itself from
-    // the products request, and cancels that too. The binary sends -cancel to the downloader
-    // before clearing the request's delegate, and reaches the request through its getter twice.
     [self.packlistDownloader cancel];
     self.productsRequest.delegate = nil;
     [self.productsRequest cancel];
@@ -251,8 +242,7 @@ static NSString *_lastProductCountryCode = nil;
         // positional placeholders cannot consume varargs that were never pushed.
         NSString *message = [NSString stringWithFormat:@"%@", g_pLocalizedUpdateRequiredFormat];
 #else
-        // The binary formats the version-mismatch message without substituting its positional
-        // arguments.
+        // The binary formats this message without substituting its positional arguments.
         NSString *message = [NSString stringWithFormat:g_pLocalizedUpdateRequiredFormat];
 #endif
         [self.delegate packListDownloadError:self errorMessage:message];
@@ -307,13 +297,8 @@ static NSString *_lastProductCountryCode = nil;
             }
 
 #ifdef ENABLE_PATCHES
-            // Every pack is free in a patched build, so there is no App Store product behind any of
-            // them and nothing to ask StoreKit for. Asking anyway is what leaves the store on
-            // "Loading..." indefinitely: an SKProductsRequest from a build the App Store has no
-            // record of neither answers nor fails, and only one of those two callbacks clears the
-            // spinner. Dropping the identifiers takes the branch below that merges the catalogue
-            // with no response at all, which the unpatched binary already uses whenever a page
-            // happens to carry no purchasable pack.
+            // Every pack is free in a patched build, and an SKProductsRequest from a build the App
+            // Store has no record of neither answers nor fails, leaving the store spinning.
             [productIDs removeAllObjects];
 #endif
             if (productIDs.count == 0) {
@@ -351,8 +336,7 @@ static NSString *_lastProductCountryCode = nil;
 /** @ghidraAddress 0x1f2a88 */
 - (void)optionalProductsRequest {
 #ifdef ENABLE_PATCHES
-    // The deep-link pack is free too, so this second StoreKit request would hang the same way the
-    // pack-list one does. The pack it would have priced is already in the catalogue merge.
+    // The deep-link pack is free too, so this second StoreKit request would hang the same way.
     return;
 #else
     if ([AppDelegate appDelegate].getPackIDForOpenStore == nil) {
@@ -438,12 +422,8 @@ static NSString *_lastProductCountryCode = nil;
         int packID = [entry[kStoreJSONKeyID] intValue];
         StorePackInfo *packInfo = [self getPackInfo:packID];
 #ifdef ENABLE_PATCHES
-        // A pack only ever enters the list above by being built from an SKProduct, so with no
-        // StoreKit response there is nothing to match and the whole page reports itself empty.
-        // Build it from the catalogue entry instead, which carries everything the list draws. The
-        // pack keeps a nil product, which is what a free pack should have: -priceString formats
-        // nil as no price, and -[RBStorePageViewController] already treats a pack without a
-        // product as not purchasable, so no payment button is offered for it.
+        // With no StoreKit response nothing matches, so build the pack from the catalogue entry;
+        // its nil product is correct for a free pack and suppresses the payment button.
         if (packInfo == nil) {
             packInfo = [[StorePackInfo alloc] initWithDictionary:entry];
             if (packInfo != nil) {

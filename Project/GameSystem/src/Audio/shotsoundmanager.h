@@ -87,17 +87,16 @@ private:
     // @ghidraAddress 0x1ccf30
     ShotSoundManager();
 
-    bool m_aSlotLoaded[kSlotCount] = {}; // +0x00 per-slot loaded flags
-    bool m_bSharedLoaded = {};           // +0x21 whether the whole bank is loaded
+    bool m_aSlotLoaded[kSlotCount] = {}; // +0x00
+    bool m_bSharedLoaded = {};           // +0x21
     // unsigned char m_aPad22[2] = {};                    // +0x22
-    int m_aResourceId[kSlotCount][kVariantCount] = {}; // +0x24 per-slot per-variant resource ids
-    unsigned int m_aChannelHandle[kChannelCount] = {}; // +0x234 per-channel active play handles
-    int m_nPendingSlot = {};                           // +0x23c the pending slot to retrigger
-    // +0x240 the pending judgement variant (0 through 3), which doubles as the retrigger priority
-    // (lower wins); 5 is the idle sentinel meaning no shot is pending.
+    int m_aResourceId[kSlotCount][kVariantCount] = {}; // +0x24
+    unsigned int m_aChannelHandle[kChannelCount] = {}; // +0x234
+    int m_nPendingSlot = {};                           // +0x23c
+    // +0x240 doubles as the retrigger priority (lower wins); 5 is the idle sentinel.
     int m_nPendingVariant = {};
-    float m_flRetriggerTimer = {}; // +0x244 the retrigger cooldown timer, in milliseconds
-    float m_flVolume = {};         // +0x248 shot group volume, zero to one
+    float m_flRetriggerTimer = {}; // +0x244 in milliseconds
+    float m_flVolume = {};         // +0x248 zero to one
 };
 
 // code: language=Objective-C++

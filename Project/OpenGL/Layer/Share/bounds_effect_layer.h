@@ -128,19 +128,16 @@ private:
         float flPosY = {};  /*!< The effect's screen y. +0x0c */
     };
 
-    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the bound effect atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the effect sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
-    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10
+    int m_nSpriteCount = {};                    // +0x18
+    int m_nCapacity = {};                       // +0x1c
+    bool m_bLoaded = {};                        // +0x20
     // unsigned char m_aReserved21[3] = {};        // +0x21
-    // +0x24: the two per-colour effect banks (each kRecordsPerBank records, stride 0x170 per bank).
-    EffectRecord m_aEffects[kBankCount][kRecordsPerBank] = {};
-    unsigned char m_nLaneLightAlpha0 =
-        {}; // +0x304: the first lane's bounds-light alpha (0 hides the
-            //         lane's effects, 0xff shows them fully).
-    unsigned char m_nLaneLightAlpha1 = {}; // +0x305: the second lane's bounds-light alpha.
+    EffectRecord m_aEffects[kBankCount][kRecordsPerBank] = {}; // +0x24: stride 0x170 per bank.
+    unsigned char m_nLaneLightAlpha0 = {}; // +0x304: 0 hides the lane's effects, 0xff shows them.
+    unsigned char m_nLaneLightAlpha1 = {}; // +0x305
     // unsigned char m_aReserved306[2] = {};  // +0x306
-    float m_flEffectSize = {}; // +0x308: the user's effect size.
-    int m_nStyle = {};         // +0x30c: the bounds-effect style (0/1/2).
+    float m_flEffectSize = {}; // +0x308
+    int m_nStyle = {};         // +0x30c: 0/1/2.
 };

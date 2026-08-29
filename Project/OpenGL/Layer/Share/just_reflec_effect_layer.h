@@ -134,16 +134,14 @@ private:
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the note-charge sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the instancer's live sprite count.
-    int m_nSpriteCapacity = {}; // +0x1c: the accumulated instancer capacity (sprite count).
-    bool m_bBuilt = {};         // +0x20: set once the sprite is built.
-    // +0x21..+0x23 is alignment padding before the spin phases.
-    // unsigned char m_aReserved21[3] = {};        // +0x21
-    float m_flSpinPhaseA = {};                  // +0x24: a spin phase, wrapped to 400/3.
-    float m_flSpinPhaseB = {};                  // +0x28: a spin phase, wrapped to 50/3.
-    ChargeRecord m_aCharges[kChargeCount] = {}; // +0x2c: the pooled charge records.
-    BurstParticle m_aParticles[kParticleCount] =
-        {};                                  // +0x32c: the pooled burst particles (to 0x1b2c).
-    unsigned char m_aReservedTail[0xc] = {}; // +0x1b2c: trailing state to the 0x1b38 size.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10
+    int m_nSpriteCount = {};                    // +0x18
+    int m_nSpriteCapacity = {};                 // +0x1c: accumulated from the per-group table.
+    bool m_bBuilt = {};                         // +0x20
+    // +0x21: three reserved padding bytes.
+    float m_flSpinPhaseA = {};                       // +0x24: wrapped to 400/3.
+    float m_flSpinPhaseB = {};                       // +0x28: wrapped to 50/3.
+    ChargeRecord m_aCharges[kChargeCount] = {};      // +0x2c
+    BurstParticle m_aParticles[kParticleCount] = {}; // +0x32c: to +0x1b2c.
+    unsigned char m_aReservedTail[0xc] = {};         // +0x1b2c: trailing state to the 0x1b38 size.
 };

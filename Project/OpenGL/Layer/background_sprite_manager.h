@@ -113,14 +113,12 @@ private:
      */
     BackgroundSpriteManager();
 
-    ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                                     // +0x10: the per-slot sprite batches.
-    int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x28: each slot's initial count.
-    bool m_bBuilt = {};                         // +0x34: set once the nodes are built.
-    bool m_bActive = {};                        // +0x35: whether the manager's animation is active.
-    // +0x36..+0x37 is alignment padding before the frame counter.
-    // unsigned char m_aPad36[2]; // +0x36 (alignment padding, compiler-inserted)
-    float m_flTimer = {}; // +0x38: the zoom effect's accumulated time.
-    // unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
+    ne::C_TEXTURE *m_pTexture = {};                                 // +0x08: the gm_parts2 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x10
+    int m_aSpriteCounts[kSpriteSlotCount] = {};                     // +0x28
+    bool m_bBuilt = {};                                             // +0x34
+    bool m_bActive = {};                                            // +0x35
+    // unsigned char m_aPad36[2]; // +0x36
+    float m_flTimer = {}; // +0x38
+    // unsigned char m_aReserved3c[4] = {}; // +0x3c: pads to the 0x40-byte allocation.
 };

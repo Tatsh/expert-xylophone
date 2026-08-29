@@ -22,7 +22,6 @@ static const float kFlashTimingControlPoint2Y = 0.8f;
 @implementation UIImageView (RB)
 
 - (void)SetFlashEffectFast {
-    // No address recorded: UIView (RB) also defines this selector, indistinguishable in metadata.
     [self SetFlashEffectDuration:kFlashFastDuration Start:kFlashFullOpacity End:kFlashMinOpacity];
 }
 
@@ -34,7 +33,6 @@ static const float kFlashTimingControlPoint2Y = 0.8f;
 }
 
 - (void)SetFlashEffectDuration:(CGFloat)duration Start:(CGFloat)start End:(CGFloat)end {
-    // No address recorded: UIView (RB) also defines this selector, indistinguishable in metadata.
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:kFlashOpacityKeyPath];
     animation.duration = duration;
     animation.repeatCount = HUGE_VALF;
@@ -50,7 +48,6 @@ static const float kFlashTimingControlPoint2Y = 0.8f;
 }
 
 - (void)RemoveFlashEffect {
-    // No address recorded: UIView (RB) also defines this selector, indistinguishable in metadata.
     [self.layer removeAnimationForKey:kFlashAnimationKey];
 }
 

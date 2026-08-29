@@ -52,7 +52,7 @@ static const NSTimeInterval kShowFadeDuration = 0.5;
 static const NSTimeInterval kShowFadeDelay = 0.75;
 
 @interface RBMusicFirstInfoView () {
-    BOOL m_IsAnimation; // +0x8
+    BOOL m_IsAnimation;
 }
 @end
 

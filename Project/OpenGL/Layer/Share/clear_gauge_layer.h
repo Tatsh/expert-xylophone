@@ -185,43 +185,34 @@ public:
     static ClearGaugeLayer *shared();
 
 private:
-    // Appends one label or digit glyph: builds the quad from the descriptor (overriding its anchor
-    // X when @p pAnchorX is given and recentring the iPad default style), resolves the atlas frame,
-    // and emits it into @p nBatch on @p nSide's band.
     void EmitGlyph(const GaugeGlyphDesc &glyph,
                    unsigned int nBatch,
                    unsigned int nSide,
                    int nAlpha,
                    const float *pAnchorX);
 
-    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gauge atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the eight sprite batches.
-    // +0x50..+0x117: the batch-state array. The constructor's cascade seeds it so the first
-    // kBatchCount entries (read by CreateSprites) become each batch's sprite capacity; the
-    // remainder is per-slot bookkeeping the same cascade zero-fills. It is one contiguous 50-int
-    // region because the constructor's copy loop reads and writes it through two windows eight
-    // entries apart.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10
+    // +0x50..+0x117: batch sprite capacities then per-slot bookkeeping, one region because the
+    // constructor copies it through two windows eight entries apart.
     static constexpr int kBatchStateCount = 50;
     int m_aBatchState[kBatchStateCount] = {}; // +0x50
-    bool m_bBuilt = {};                       // +0x118: whether the sprite batches have been built.
-    // +0x119..+0x11f is alignment padding before the fade-tween block.
+    bool m_bBuilt = {};                       // +0x118
     // unsigned char m_aPad119[7] = {}; // +0x119
-    float m_flFadeFrom = {};     // +0x120: the reveal fade's start value.
-    float m_flFadeTo = {};       // +0x124: the reveal fade's target value.
-    float m_flFadeDuration = {}; // +0x128: the reveal fade's duration, in frames.
-    float m_flFadeElapsed = {};  // +0x12c: the reveal fade's elapsed time, in frames.
-    float m_flFadeCurrent = {};  // +0x130: the reveal fade's current value.
+    float m_flFadeFrom = {};     // +0x120
+    float m_flFadeTo = {};       // +0x124
+    float m_flFadeDuration = {}; // +0x128: in frames.
+    float m_flFadeElapsed = {};  // +0x12c: in frames.
+    float m_flFadeCurrent = {};  // +0x130
     bool m_bColorDirty = {};     // +0x134: set when the fade advances.
-    // +0x135..+0x137 is alignment padding before the per-side alpha-scale floats.
     // unsigned char m_aPad135[3] = {};              // +0x135
-    float m_aSideAlphaScale[kSideCount] = {1, 1}; // +0x138: each side's alpha multiplier (from 1).
-    int m_nGaugeStyle = {}; // +0x140: the gauge style / sprite-layout variant.
-    // Each side's clear-gauge value occupies an eight-byte slot (the float followed by four unused
-    // bytes), so the two sides sit at +0x144 and +0x14c.
+    float m_aSideAlphaScale[kSideCount] = {1, 1}; // +0x138
+    int m_nGaugeStyle = {};                       // +0x140
+    // Each side's value occupies an eight-byte slot, so the two sides sit at +0x144 and +0x14c.
     struct ValueSlot {
         float flValue = {}; /*!< The side's clear-gauge value. +0x00 */
         int nUnused = {};   /*!< Unused slot tail. +0x04 */
     };
     ValueSlot m_aValues[kSideCount] = {}; // +0x144
-    int m_nTwoSideEnabled = {};           // +0x154: non-zero when the 2P gauge is drawn.
+    int m_nTwoSideEnabled = {};           // +0x154
 };

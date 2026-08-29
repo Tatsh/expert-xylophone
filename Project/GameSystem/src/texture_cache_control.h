@@ -10,7 +10,7 @@
  *
  * A 32-byte node holding a tag byte, a next-node pointer, an int slot, and a spare slot. It is
  * distinct from the live-texture cache list (@c C_TEXTURE::GetCacheList); it appears to be a
- * cache-control singleton added in this build. The trailing @c // +0xNN comments document the
+ * cache-control singleton added in this build. The trailing @c +0xNN comments document the
  * original member offsets for reference only.
  */
 struct TextureCacheControl {

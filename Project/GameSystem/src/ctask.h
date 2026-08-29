@@ -106,8 +106,7 @@ protected:
      */
     void Unlink();
 
-    // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual
-    // methods).
+    // +0x00: the compiler-emitted vtable pointer.
     C_TASK *m_pPrev = {}; /*!< The previous node. +0x08 */
     C_TASK *m_pNext = {}; /*!< The next node. +0x10 */
     int m_nPriority = {}; /*!< The sort key (the task state field). +0x18 */

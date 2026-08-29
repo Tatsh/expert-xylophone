@@ -9,7 +9,7 @@
  * One note as it is stored in the RBFF chart stream: a 40-byte little-endian record the
  * parser deserialises into the richer in-memory @c RbffNoteRecord.
  *
- * The fields are read in stream order by @c DeserializeNoteRecord. The trailing @c // +0xNN
+ * The fields are read in stream order by @c DeserializeNoteRecord. The trailing @c +0xNN
  * comments document the on-disk byte offsets.
  */
 struct RbffChartNote {
@@ -42,7 +42,7 @@ struct RbffPathPoint {
  * into the pooled @c RbffNoteRecord.
  *
  * A tightly packed ~64-byte layout distinct from the 184-byte in-memory record. The trailing
- * @c // +0xNN comments document the byte offsets.
+ * @c +0xNN comments document the byte offsets.
  */
 struct RbffNoteReadRecord {
     int nTimeA = {};            /*!< The note's primary time. +0x00 */

@@ -6,13 +6,9 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 
-// Asset names for the current-position button, in the search image directory.
 static NSString *const kSearchCurrentPositionImageName = @"06_search/sear_me";
 static NSString *const kSearchCurrentPositionSelectedImageName = @"06_search/sear_me_eff";
 
-// The current-position button, sized 32 points wide and 28 points tall, is anchored from the base
-// panel's right and top edges. The height is the only one of these the binary supplies as an
-// immediate rather than a constant-pool load.
 static const CGFloat kCurrentPositionButtonWidth = 32.0; // @ghidraAddress 0x2ee9b0
 static const CGFloat kCurrentPositionButtonHeight = 28.0;
 static const CGFloat kCurrentPositionButtonRightInset = 606.0;           // @ghidraAddress 0x301630
@@ -20,13 +16,10 @@ static const CGFloat kCurrentPositionButtonBottomInsetLimelight = 182.0; // @ghi
 static const CGFloat kCurrentPositionButtonBottomInsetColette = 180.0;   // @ghidraAddress 0x2ee970
 static const CGFloat kCurrentPositionButtonBottomInsetDefault = 193.0;   // @ghidraAddress 0x301638
 
-// The map fills the content view below a themed top inset, its height reduced by the same inset.
-// The binary spells the height reduction as an addition of the negated inset.
 static const CGFloat kMapTopInsetThemed = 50.0;  // @ghidraAddress 0x2ec6e0
 static const CGFloat kMapTopInsetDefault = 35.0; // @ghidraAddress 0x2eeca8
 
 @implementation RBSearchView {
-    // The theme captured at build time, selecting the current-position button and map geometry.
     RBUserSettingDataTheme _thema;
 }
 

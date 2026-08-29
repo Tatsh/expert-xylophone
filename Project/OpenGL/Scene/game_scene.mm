@@ -357,7 +357,7 @@ void GameScene::Init() {
     LimelightThemeLayer::shared()->RefreshThema();
     LimelightResultLayer::shared()->ResetThemeSelectState();
     FadeOverlayLayer::shared()->RefreshThema();
-    // The background, frame, explosion, and bounds layers are refreshed a second time.
+    // The binary refreshes these layers a second time.
     BgLayer::GetBackgroundLayer()->RefreshThema();
     AltFrameLayer::shared()->RefreshThema();
     MainFrameLayer::shared()->RefreshThema();
@@ -435,8 +435,7 @@ void GameScene::Init() {
             m_nResultScore = m_pMusicSheet->GetSideObjectCount(kSideLeft);
             m_nResultScoreHi = m_pMusicSheet->GetSideObjectCount(kSideRight);
         } else {
-            // Both slots take the same field; the binary reads it twice rather than pairing it
-            // with a neighbour.
+            // The binary reads the same field into both slots.
             m_nResultScore = m_pMusicSheet->GetJustReflecQuotaRemain();
             m_nResultScoreHi = m_pMusicSheet->GetJustReflecQuotaRemain();
         }
@@ -527,8 +526,7 @@ void GameScene::PausePlayTimerAndBgm() {
 
 /** @ghidraAddress 0x14b5b8 */
 void GameScene::CheckAutoPauseByNotePosition() {
-    // The vertical hit-band the note must fall in (in the 1024x-scaled screen space), and the x
-    // convergence threshold (in the 768-wide note space; the field midpoint is 384).
+    // Bands are in 1024x-scaled screen space; x thresholds are in the 768-wide note space.
     constexpr int kScrollFixedShift = 10;
     constexpr float kNoteFieldWidth = 768.0f; // @ghidraAddress 0x2fd04c
     constexpr int kBandCurrentBase = 0x19c;
@@ -721,7 +719,7 @@ constexpr unsigned int kSubmitJustReflecCell = 7;
 
 /** @ghidraAddress 0x14c27c */
 void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
-    // Fire the result voice cue once, on the frame the play time crosses the one-second mark.
+    // Fires once, on the frame the play time crosses the mark.
     if (m_nPlayTime > kResultVoiceMark && m_nPlayTime - nDeltaFrames <= kResultVoiceMark) {
         SoundEffectManager::GetInstance()->PlayThemedVoice(kResultReadyVoiceCue);
     }
@@ -739,7 +737,7 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
     }
 
     // An early tutorial play holds the result screen open until the walkthrough passes its result
-    // step; nothing is submitted until then.
+    // step.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive() &&
         RBTutorialManager.getCurrentStatus <= kTutorialInPlayStatusMax) {
         return;
@@ -755,7 +753,6 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
         ResultWindowClassicLayer::shared()->ClearCustomizeReloadFlag();
     }
 
-    // Submit the play to the server unless it was a full-combo or full-just-reflec run.
     ScoreTracker *pTracker = ScoreTracker::shared();
     const unsigned int nScore = pTracker->GetPlayRecordCell(kResultSide, kSubmitScoreCell);
     const unsigned int nJustReflec =
@@ -780,8 +777,8 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
         if (pGameSystem->GetMenuTutorialActive()) {
             [RBTutorialManager
                 updateStatus:static_cast<RBTutorialStatus>(kTutorialResultSeenStatus)];
-            // The binary materialises the guide singleton only to destroy it, discarding the
-            // result. @ghidraAddress 0x14c53c
+            // The binary materialises the guide singleton only to destroy it.
+            // @ghidraAddress 0x14c53c
             (void)TutorialGuideLayer::shared();
             TutorialGuideLayer::destroyShared();
             pGameSystem->SetMenuTutorialActive(false);
@@ -803,8 +800,7 @@ constexpr int kStateResultSubmit = 0xc;
 constexpr int kResultVoiceBank = 6;
 constexpr unsigned int kTutorialResultStartStatus = 0x13;
 
-// The sentinel music id of the no-song auto-play demo, which loops its background music rather than
-// leaving it stopped.
+// Sentinel music id of the no-song auto-play demo, which loops its background music.
 constexpr int kPreviewMusicID = 999999999;
 } // namespace
 
@@ -953,8 +949,7 @@ void GameScene::ActivateDueNotes() {
     NoteEffectMgr *pMgr = NoteEffectMgr::shared();
     PlayTimer *pTimer = PlayTimer::shared();
 
-    // The scroll line the notes are measured against: the play time scaled up, offset by the
-    // lookahead so notes spawn shortly before they reach the line.
+    // The lookahead offset makes notes spawn shortly before they reach the line.
     const float flLine = pTimer->GetPlayTime() * kNoteLineScale + kNoteSpawnLookahead;
 
     int nLastSpawned = m_nPlayCursor;
@@ -974,8 +969,7 @@ void GameScene::ActivateDueNotes() {
             continue;
         }
 
-        // Only head notes spawn here. A head paired with a tail (flag bit set and a chain-link
-        // timing selector) waits until its tail is also due.
+        // Only head notes spawn here, and a head paired with a tail waits until its tail is due.
         if (pRecord->GetStartTime() != kHeadNoteStartTime) {
             continue;
         }
@@ -1129,8 +1123,7 @@ void GameScene::ReloadMusicForRestart() {
     ResetAllPlayFieldLayers();
     ShutdownNoteEffectSystem();
 
-    // Reseed the RNG for the new play; when the ghost is enabled and a replay is loaded, reuse the
-    // replay's recorded seed so the ghost re-plays identically.
+    // A loaded replay reuses its recorded seed so the ghost re-plays identically.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     pGameSystem->SetRandSeed(static_cast<unsigned int>(rand()));
     if (RBUserSettingData.sharedInstance.ghostStyle == kGhostStyleReplay) {
@@ -1702,8 +1695,7 @@ void GameScene::ExecMain() {
 
 /** @ghidraAddress 0x14cf5c */
 void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
-    // Until the chart's first path speed is known the play field is fully lit; after that the fade
-    // level tracks the fractional part of the note path at the current scroll line.
+    // The fade level tracks the fractional part of the note path at the current scroll line.
     float flFadeLevel = 1.0f;
     if (m_flFirstPathSpeed > 0.0f) {
         const float flScrollLine =
@@ -1742,8 +1734,7 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
     SlideNoteResultLayer::shared()->Update(flDelta);
     JustReflecEffectLayer::shared()->Update(flDelta);
     NoteLayer::shared()->Update(flDelta);
-    // The frame delta is set up for this call too, but the chain layer takes no argument: it
-    // overwrites the register from the game system before ever reading it.
+    // The binary sets up a frame delta here too, but the chain layer takes no argument.
     ChainConnectorLayer::shared()->Update();
     DamageEffectLayer::shared()->Process(flDelta);
     NoteGlowLayer::shared()->Process(flDelta);
@@ -1786,8 +1777,6 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
 
 /** @ghidraAddress 0x14a298 */
 void GameScene::InitializePlayFieldLayersForTheme() {
-    // The diagnostic frame count restarts here so the sprite snapshot lands inside the play screen
-    // rather than on the title screen.
     NE_DBG(g_nDebugFrameCounter = 0);
 
     if (m_nThema != static_cast<int>(RBUserSettingData.sharedInstance.thema)) {
@@ -1849,7 +1838,6 @@ void GameScene::InitializePlayFieldLayersForTheme() {
     FadeOverlayLayer::shared()->EnsureInstancer();
     (void)ScoreTracker::shared(); // Yes, the binary discards this call's result.
 
-    // The pause gauge is built once and left registered for the scene's lifetime.
     if (m_pPauseGauge == nullptr) {
         m_pPauseGauge = new PauseGaugeLayer();
         m_pPauseGauge->InsertSorted(kPauseGaugeListenerPriority);
@@ -1946,8 +1934,7 @@ void GameScene::PersistScoreAndSaveReplay() {
         nFinalScore = nMaxScore;
     }
 
-    // Store it when the play beat the stored best, or when the stored best exceeds what the chart
-    // can award (a tampered record).
+    // A stored best above what the chart can award is a tampered record and is overwritten.
     bool bDirty = false;
     if (nStoredScore > nMaxScore || nFinalScore > nStoredScore) {
         pGameSystem->SetNewRecord(true);
@@ -1987,7 +1974,7 @@ void GameScene::PersistScoreAndSaveReplay() {
         bDirty = true;
     }
 
-    // A side whose every note was judged is a full combo. This never dirties the record on its own.
+    // The full-combo flag never dirties the record on its own.
     if (pTracker->IsSideAllNotesJudged(kResultSide)) {
         switch (pGameSystem->GetDifficulty()) {
         case kDifficultyMedium:
@@ -2100,7 +2087,6 @@ void ReportTotalScoreToGameCenter(void) {
     [GKScore reportScores:@[ score ]
         withCompletionHandler:^(NSError *_Nullable error){
             /** @ghidraAddress 0x35da80 */
-            // A global no-op completion block; the report result is ignored.
         }];
 }
 

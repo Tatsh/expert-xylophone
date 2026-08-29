@@ -1,28 +1,14 @@
-//
-//  RBVolumeSlider.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBVolumeSlider). The
-//  initialiser's soft-float bar-rectangle geometry, and the setValue: gauge-fill frame maths, were
-//  recovered from the arm64 disassembly (the decompiler folds the CGRect components into
-//  pseudo-variables). This is the shot-volume slider created by RBCustomSelectCollectionView.
-//
-
 #import "RBVolumeSlider.h"
 
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The track sprite (base view) and gauge (fill) sprite texture names.
 static NSString *const kVolumeSliderTrackImageName = @"04_customize/cus_vol_1";
 static NSString *const kVolumeSliderGaugeImageName = @"04_customize/cus_vol_2";
 
-// The lowest and highest selectable normalised volume.
 static const float kVolumeSliderMinValue = 0.0f;
 static const float kVolumeSliderMaxValue = 1.0f;
 
-// The bar rectangle (the gauge's full-value extent) by device idiom: origin x/y, then width and
-// height. Narrow mirrors the default font, wide the large font.
 static const CGFloat kVolumeSliderBarOriginXNarrow = 16.0;
 static const CGFloat kVolumeSliderBarOriginYNarrow = 9.0;
 static const CGFloat kVolumeSliderBarWidthNarrow = 90.0;

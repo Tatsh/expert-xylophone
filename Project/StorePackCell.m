@@ -6,19 +6,11 @@
 #import "UIImage+RB.h"
 #import "engineglobals.h"
 
-// A shared layout metric of 60 points, reached by its Ghidra address as the other reconstructed
-// views (for example RBSearchMapView) do. The 100-point metric and the 0.3-second short fade come
-// from the engine bridge header instead.
-
-// Store badge asset names used by the cell.
 static NSString *const kStoreNewBadgeImageName = @"09_store/store_new";
 static NSString *const kStoreSequenceBadgeImageName = @"09_store/store_sp";
 
-// The owned-state label carries an empty title: it is the shared store-layer empty-string global.
 static NSString *const kStoreEmptyTitle = @""; // @ghidraAddress 0x3cfd10
 
-// The jacket layer is a fixed 64-point square inset 10 points from the left and 8 from the top,
-// drawn with a soft rasterised drop shadow.
 static const CGFloat kJacketLayerLeft = 10.0;
 static const CGFloat kJacketLayerTop = 8.0;
 static const CGFloat kJacketLayerSize = 64.0;
@@ -26,9 +18,6 @@ static const CGFloat kJacketShadowOffset = 1.0;
 static const CGFloat kJacketShadowOpacity = 0.6;
 static const CGFloat kJacketShadowRadius = 2.0;
 
-// The text column starts 85 points from the left; the name label runs to 90 points shy of the
-// content width, the price label is a fixed 60-point column, and the owned-state label is a fixed
-// 100-point column pinned 110 points in from the right.
 static const CGFloat kTextColumnLeft = 85.0;
 static const CGFloat kNameLabelTop = 10.0;
 static const CGFloat kNameLabelWidthInset = 90.0;
@@ -45,7 +34,6 @@ static const CGFloat kPurchasedLabelWidthInset = 110.0;
 static const CGFloat kPurchasedLabelFontSize = 13.0;
 static const CGFloat kPurchasedLabelWhite = 0.4;
 
-// The background view and the owned-state label track the cell's right and bottom edges.
 static const UIViewAutoresizing kBackgroundAutoresizing =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 static const UIViewAutoresizing kNameLabelAutoresizing = UIViewAutoresizingFlexibleWidth;
@@ -89,7 +77,7 @@ static const UIViewAutoresizing kIconSpAutoresizing =
         self.labelName.font = [UIFont boldSystemFontOfSize:kNameLabelFontSize];
         self.labelName.autoresizingMask = kNameLabelAutoresizing;
         self.labelName.adjustsFontSizeToFitWidth = YES;
-        // The binary passes 13.0 here, an out-of-range minimum scale factor; reproduced verbatim.
+        // The binary passes an out-of-range minimum scale factor here.
         self.labelName.minimumScaleFactor = kNameLabelMinimumScaleFactor;
 
         self.labelPrice = [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,

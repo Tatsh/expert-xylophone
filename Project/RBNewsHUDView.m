@@ -4,7 +4,7 @@
 
 #import "RBUserSettingData.h"
 
-// The first entry of the palette InitializeUIColorPalette (0x5517c) builds, rebuilt here.
+// @ghidraAddress 0x5517c (InitializeUIColorPalette)
 static const CGFloat kCoverAlpha = 0.5;
 
 // @ghidraAddress 0x310450 (g_dwAutoresizingMaskFlexibleAll)
@@ -74,7 +74,6 @@ static NSString *const kImageAnimationKeyPath = @"transform";
 
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    // Both bounds components are re-read from a fresh call, as the binary does.
     indicator.center =
         CGPointMake(self.bounds.size.width * kCenterScale, self.bounds.size.height * kCenterScale);
     indicator.autoresizingMask = kIndicatorAutoresizingMask;
@@ -143,7 +142,6 @@ static NSString *const kImageAnimationKeyPath = @"transform";
 - (void)imageDownloader:(ImageDownloader *)imageDownloader didLoad:(NSIndexPath *)didLoad {
     /** @ghidraAddress 0xbe99c */
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[imageDownloader getImage]];
-    // Both bounds components are re-read from a fresh call, as the binary does.
     imageView.center =
         CGPointMake(self.bounds.size.width * kCenterScale, self.bounds.size.height * kCenterScale);
     imageView.autoresizingMask = kIndicatorAutoresizingMask;

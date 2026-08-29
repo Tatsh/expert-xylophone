@@ -1,11 +1,3 @@
-//
-//  RewardCore.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458.
-//  See RewardCore.h for the class overview.
-//
-
 #import "RewardCore.h"
 
 #import "ApplilinkConsts.h"
@@ -18,56 +10,47 @@
 #import "RewardWebAPI.h"
 #import "RewardWebViewController.h"
 
-// Applilink error codes used by the reward core.
 enum {
-    kRewardErrorApplicationIdMissing = 0x3e9,   // No Applilink application identifier is set.
-    kRewardErrorNotInitialized = 0x3f2,         // The reward session has not initialised.
-    kRewardErrorBannerCacheUnavailable = 0x402, // No cached banner status is available.
-    kRewardErrorTrackingDisabled = 0x404,       // Advertising tracking is disabled.
-    kRewardErrorNotAuthenticated = 0x406,       // The reward session is not authenticated.
-    kRewardErrorAlreadyOpen = 0x40f,            // An advert screen is already open.
-};
-
-// Reward app-list request/list priorities passed to RewardWebAPI.
-enum {
-    kRewardListTypeAllAppIds = 1,     // Request every advertisable application identifier.
-    kRewardListTypeInstalledPost = 2, // Request the install-post application list.
+    kRewardErrorApplicationIdMissing = 0x3e9,
+    kRewardErrorNotInitialized = 0x3f2,
+    kRewardErrorBannerCacheUnavailable = 0x402,
+    kRewardErrorTrackingDisabled = 0x404,
+    kRewardErrorNotAuthenticated = 0x406,
+    kRewardErrorAlreadyOpen = 0x40f,
 };
 
 enum {
-    kRewardInstallPriorityNormal = 0,     // Normal application-install post.
-    kRewardLoginPriorityInteractive = 1,  // Interactive reward login.
-    kRewardInstallPriorityPasteBoard = 2, // Pasteboard-sourced UDID install post.
+    kRewardListTypeAllAppIds = 1,
+    kRewardListTypeInstalledPost = 2,
 };
 
-// The campaignFlg sentinel returned when no valid flag is available.
+enum {
+    kRewardInstallPriorityNormal = 0,
+    kRewardLoginPriorityInteractive = 1,
+    kRewardInstallPriorityPasteBoard = 2,
+};
+
 static const int kRewardCampaignFlgNone = -2;
 
-// The reward authentication session lifetime, in seconds.
 static const NSTimeInterval kRewardAuthSessionLifetime = 60.0;
 
-// The reward advert index page appended to the SSL base URL.
 static NSString *const kRewardIndexPath = @"/reward/app/index.php";
 
-// The Applilink external-app redirect scheme prefix, host, and port.
 static NSString *const kApplilinkSchemePrefix = @"applilink";
 static NSString *const kApplilinkExtAppHost = @"ext-app";
 static NSString *const kApplilinkExtAppPrefix = @"applilink://ext-app:80";
 static const int kApplilinkExtAppPort = 80;
 
-// Query-parameter keys parsed out of the redirect URL.
 static NSString *const kRedirectQueryDefaultScheme = @"default_scheme";
 static NSString *const kRedirectQueryStoreId = @"store_id";
 static NSString *const kRedirectQueryClose = @"close";
 
-// NSUserDefaults keys owned by the reward session.
 static NSString *const kDefaultsCampaignFlg = @"ApplilinkReward.campaignFlg";
 static NSString *const kDefaultsStorageIndex = @"ApplilinkReward.storageIndex";
 static NSString *const kDefaultsAppliURL = @"ApplilinkReward.appliURL";
 static NSString *const kDefaultsParameters = @"ApplilinkReward.parameters";
 static NSString *const kDefaultsMethod = @"ApplilinkReward.method";
 
-// Temporary-cache archive keys and response dictionary keys.
 static NSString *const kCacheKeyValue = @"Value";
 static NSString *const kCacheKeyExpire = @"Expire";
 static NSString *const kResponseKeyStorageIndex = @"StorageIndex";
@@ -84,21 +67,17 @@ static NSString *const kResponseKeyDefaultScheme = @"default_scheme";
 static NSString *const kRequestKeyAdLocation = @"ad_location";
 static NSString *const kRequestKeyAppliIdList = @"appli_id_list";
 
-// URL-building fragments used by the redirect handler.
 static NSString *const kSchemeSeparator = @"://";
 static NSString *const kQuerySuffixFormat = @"?%@";
 
-// Reward-session shared state (Ghidra: DAT_1003df5d0..DAT_1003df608). The singleton owns no
-// per-request state for these; they are file-scope in the binary, so they stay file-scope here.
-static BOOL gRewardAdScreenOpen;        // Ghidra: DAT_1003df5d0 — a request is in flight.
-static BOOL gRewardAdScreenCancelled;   // Ghidra: DAT_1003df5d1 — the user cancelled the open.
-static NSDate *gRewardAuthExpiry;       // Ghidra: DAT_1003df5f8 — reward auth session expiry.
-static NSDictionary *gRewardBannerInfo; // Ghidra: DAT_1003df600 — cached banner info dictionary.
-static NSDate *gRewardBannerExpiry;     // Ghidra: DAT_1003df608 — cached banner info expiry.
+// Ghidra: DAT_1003df5d0, DAT_1003df5d1, DAT_1003df5f8, DAT_1003df600, DAT_1003df608.
+static BOOL gRewardAdScreenOpen;
+static BOOL gRewardAdScreenCancelled;
+static NSDate *gRewardAuthExpiry;
+static NSDictionary *gRewardBannerInfo;
+static NSDate *gRewardBannerExpiry;
 
-// The singleton and its serial queue, allocated once through +allocWithZone: so that every
-// allocation of a RewardCore yields the same object (Ghidra: DAT_1003df5d8 singleton,
-// DAT_1003df5e0 queue).
+// Ghidra: DAT_1003df5d8 singleton, DAT_1003df5e0 queue.
 static RewardCore *gRewardCoreInstance;
 static dispatch_queue_t gRewardCoreQueue;
 
@@ -134,11 +113,8 @@ static dispatch_queue_t gRewardCoreQueue;
     return gRewardCoreInstance;
 }
 
-// @ghidraAddress 0x2076e4 (init body dispatched onto a serial queue; InitRewardCoreBlockInvoke at
-// 0x2077f4 calls [super init]).
+// @ghidraAddress 0x2076e4
 - (instancetype)init {
-    // The super-init runs synchronously on the serial queue, so every initialisation of the
-    // singleton is serialised against its other work.
     __block RewardCore *result = nil;
     dispatch_sync(gRewardCoreQueue, ^{
       /** @ghidraAddress 0x2077f4 */
@@ -149,7 +125,7 @@ static dispatch_queue_t gRewardCoreQueue;
 
 #pragma mark Properties
 
-// @ghidraAddress 0x207a80. Advertising-tracking-gated override of the synthesised getter.
+// @ghidraAddress 0x207a80
 - (int)initializeFlg {
     if (![ApplilinkUdid isAdvertisingTrackingEnabled]) {
         return 0;
@@ -157,7 +133,6 @@ static dispatch_queue_t gRewardCoreQueue;
     return _initializeFlg;
 }
 
-// The @c isNavigationBarHidden property setter shares its ivar with @c setNavigationBarHidden:.
 // @ghidraAddress 0x20b62c.
 - (void)setNavigationBarHidden:(BOOL)navigationBarHidden {
     _isNavigationBarHidden = navigationBarHidden;
@@ -274,7 +249,6 @@ static dispatch_queue_t gRewardCoreQueue;
       [ApplilinkCore appAuthSessionRegenerateWithBlock:^(NSError *regenError) {
         /** @ghidraAddress 0x208404 (StartRewardLoginBlockInvoke) */
         (void)regenError; // The regenerate error is not consumed here; login reports its own.
-        // The user identifier is captured by the enclosing block rather than fetched again.
         [RewardWebAPI startLoginWithUserId:userId
                               withPriority:kRewardLoginPriorityInteractive
                                   callback:^(NSError *loginError) {
@@ -811,7 +785,7 @@ static dispatch_queue_t gRewardCoreQueue;
     [self appListFailLinkWithError:error delegate:self.applilinkDelegate];
 }
 
-// @ghidraAddress 0x20bd3c. The shipped build ignores the cancellation error.
+// @ghidraAddress 0x20bd3c.
 - (void)openCancelWithError:(NSError *)error {
     (void)error; // Yes, the binary discards this argument.
 }

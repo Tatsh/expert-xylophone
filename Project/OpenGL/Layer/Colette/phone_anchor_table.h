@@ -10,7 +10,7 @@
  * offsets it relative to the play-field viewport.
  *
  * The record tables are zero-initialised in the binary's @c __common segment and filled at runtime
- * by the result-layout-table initialisers. The trailing @c // +0xNN comments document the original
+ * by the result-layout-table initialisers. The trailing @c +0xNN comments document the original
  * member offsets for reference only.
  */
 struct PhoneAnchorRecord {

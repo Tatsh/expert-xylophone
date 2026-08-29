@@ -45,9 +45,8 @@ NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantInde
  */
 NSString *_Nullable GetCustomizeFrameImagePath(int kind);
 #endif
-// The texture-cache sweeps at 0x33e5c, 0x33e1c, and 0x33bf0 are static members of ne::C_TEXTURE
-// (ReloadAll, ReleaseAllHandles, and GetCacheList in neTexture.h), not free functions; they are
-// declared there rather than duplicated here.
+// The texture-cache sweeps at 0x33e5c, 0x33e1c, and 0x33bf0 are ne::C_TEXTURE static members
+// (ReloadAll, ReleaseAllHandles, GetCacheList), declared in neTexture.h rather than here.
 /**
  * Renders the whole global scene tree for the current frame.
  * @ghidraAddress 0x29d58

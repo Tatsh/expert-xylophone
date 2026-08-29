@@ -126,8 +126,7 @@ void ScoreTracker::ComputeLaneClearRateAndGrade() {
 void ScoreTracker::ResetLaneGaugeState() {
     for (unsigned int nSide = 0; nSide < kSideCount; ++nSide) {
         PlayRecord &record = m_aRecords[nSide];
-        // The binary clears only the judgement counters, leaving the rate, rank, and trailing
-        // field.
+        // The binary clears only the judgement counters, leaving the rate, rank, and last field.
         for (int &nCell : record.nCells) {
             nCell = 0;
         }
@@ -148,8 +147,7 @@ void ScoreTracker::ApplyLaneGaugeValueAndBackground(float flValue, unsigned int 
 /** @ghidraAddress 0x1492cc */
 ScoreTracker *ScoreTracker::shared() {
     if (g_pScoreTracker == nullptr) {
-        // Value-initialisation zeroes the whole object, so the binary's explicit field clear is
-        // redundant here.
+        // Value-initialisation zeroes the object, so the binary's field clear is redundant.
         g_pScoreTracker = new ScoreTracker();
         g_pScoreTracker->ResetLaneGaugeState();
     }

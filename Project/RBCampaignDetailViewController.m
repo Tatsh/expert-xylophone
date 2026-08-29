@@ -13,101 +13,72 @@
 #import "UIImage+RB.h"
 #import "engineglobals.h"
 
-// The informal close callbacks the detail page sends to its bare-id delegate (the campaign list
-// page). The binary guards detailViewClose with respondsToSelector: and sends alertViewClose
-// directly.
 @interface NSObject (RBCampaignDetailDelegate)
 - (void)alertViewClose;
 - (void)detailViewClose;
 @end
 
-// The sentinel stored in samplePlayedIndex when no sample row is active.
 static const int kNoSampleIndex = -1;
 
-// The sample-download and playback state machine held in the sampleStatus ivar.
 enum {
-    kSampleStatusIdle = 0,        // No sample is loading or playing.
-    kSampleStatusDownloading = 1, // The audio sample is being downloaded.
-    kSampleStatusPlaying = 2,     // The audio sample is playing.
+    kSampleStatusIdle = 0,
+    kSampleStatusDownloading = 1,
+    kSampleStatusPlaying = 2,
 };
 
-// The action-button kinds carried by a campaign item's buttonType.
 enum {
-    kCampaignButtonInfoDownload = 0, // Download the item's acquisition info.
-    kCampaignButtonDownloading = 1,  // The item's install is in progress.
-    kCampaignButtonTerms = 2,        // Show the unlock terms description.
-    kCampaignButtonUpdate = 3,       // Prompt to update the application.
-    kCampaignButtonSerialCode = 4,   // Prompt for a serial code.
+    kCampaignButtonInfoDownload = 0,
+    kCampaignButtonDownloading = 1,
+    kCampaignButtonTerms = 2,
+    kCampaignButtonUpdate = 3,
+    kCampaignButtonSerialCode = 4,
 };
 
-// The single active sample row this page tracks.
 static const int kSampleRowIndex = 1;
 
-// The tag marking the on-screen serial-code input alert.
 static const NSInteger kSerialCodeAlertTag = 1;
 
-// The itemType value identifying a downloadable tune, and the hideType value marking a locked
-// terms item whose name is hidden.
 static const int kCampaignItemTypeTune = 0;
 static const int kCampaignHideTypeLocked = 1;
 
-// The root view and table flex only their width and height. @ghidraAddress 0x310458
-// (kAutoresizingMaskFlexibleSize)
+// @ghidraAddress 0x310458
 static const UIViewAutoresizing kAutoresizingMaskFlexibleSize =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The placeholder jacket shown when the detail page has no bound item.
 static NSString *const kPlaceholderJacketName = @"09_store/store_jacket_80";
-// The header panel background, its stretchable end-cap size, the play glyph, and the pack
-// background artwork names.
 static NSString *const kItemPanelBackgroundName = @"09_store/store_pack_bg_2";
 static NSString *const kPlayGlyphName = @"09_store/store_play";
 static const NSInteger kItemPanelCapInset = 4;
 
-// The level and identifier label format strings.
 static NSString *const kLevelsFormat = @"LEVEL:  %d / %d / %d";
 static NSString *const kIDFormat = @"%d";
-// The navigation title set before the bound item's campaign name replaces it.
 static NSString *const kDefaultNavigationTitle = @"Gift";
-// The item-name placeholder shown for a locked terms item, and the link-button title.
 static NSString *const kLockedNamePlaceholder = @"？？？？？？";
 static NSString *const kLinkButtonTitle = @"詳しくはこちら";
 
-// The sample-playback BGM fade-in time, and the resumed (no-fade) restart time.
 static const float kSampleBGMFadeTime = 0.5f;
 static const float kSampleBGMNoFade = 0.0f;
 
-// The item-name font search range: 18 points down through 10 points, one point per step. The
-// step arithmetic is single precision (the scvtf/fsub pair at 0xaa84 works in s registers).
+// The font-step arithmetic is single precision. @ghidraAddress 0xaa84
 static const float kItemNameMaxFontSize = 18.0f;
 static const int kItemNameFontStepCount = 9;
-// The header panel that holds the artwork, the labels, and the two action buttons.
 static const CGFloat kItemPanelHeight = 140.0; // @ghidraAddress 0x2ec6c0
-// The artwork thumbnail is a fixed 80-point square inset 8 points into the header panel.
 static const CGFloat kArtworkOrigin = 8.0;
 static const CGFloat kArtworkSize = 80.0; // @ghidraAddress 0x2ec6c8
-// The artwork drop shadow and border metrics.
 static const CGFloat kArtworkBorderWidth = 1.0;
 static const CGFloat kArtworkShadowOffset = 2.0;
 static const CGFloat kArtworkShadowRadius = 2.0;
-static const float kArtworkShadowOpacity = 0.6f; // @ghidraAddress 0x2ec6b8
-// The header text block left inset (past the artwork), the width inset that clears the artwork
-// and the right margin, and the wider inset the levels row uses to clear the action buttons too.
+static const float kArtworkShadowOpacity = 0.6f;  // @ghidraAddress 0x2ec6b8
 static const CGFloat kTextColumnLeft = 96.0;      // @ghidraAddress 0x2ec6d8
 static const CGFloat kTextColumnInset = -104.0;   // @ghidraAddress 0x2ec6d0
 static const CGFloat kLevelsColumnInset = -230.0; // @ghidraAddress 0x2ec6e8
 static const CGFloat kItemNameTop = 8.0;
-// The item-name label's fixed frame height, which is also the height the fitting loop accepts.
 // The binary reuses this pool slot for the artist row's top and the copyright block's height.
 static const CGFloat kItemNameMaxHeight = 50.0; // @ghidraAddress 0x2ec6e0
 static const CGFloat kLevelsLabelTop = 70.0;    // @ghidraAddress 0x2ec6f0
 static const CGFloat kSecondaryLabelRowHeight = 20.0;
-// The two insets that together make the header text column in the fitting pass. The binary adds
-// both to the view width, once for the fitting measurement and once for the label frame.
 static const CGFloat kTextBlockBottomInset = -80.0; // @ghidraAddress 0x2ec740
 static const CGFloat kNameLabelBottomInset = -24.0;
-// The action button metrics: 104 points wide, 25 points tall, 4-point corners. Both buttons are
-// right-aligned, the download button 8 points in from the edge and the link button 16.
 static const CGFloat kActionButtonWidth = 104.0; // @ghidraAddress 0x2ec700
 static const CGFloat kActionButtonHeight = 25.0;
 static const CGFloat kActionButtonCorner = 4.0;
@@ -115,24 +86,17 @@ static const CGFloat kActionButtonFontSize = 10.0;
 static const CGFloat kDownloadButtonRightInset = -8.0;
 static const CGFloat kLinkButtonRightInset = -16.0;
 static const CGFloat kLinkButtonInset = -208.0; // @ghidraAddress 0x2ec710
-// The link button's own fill colour: the shared translucent value on red and blue, and its own
-// green component.
-static const CGFloat kLinkButtonGreen = 0.3; // @ghidraAddress 0x2ec718
-// The item-name, artist, and levels label font sizes.
+static const CGFloat kLinkButtonGreen = 0.3;    // @ghidraAddress 0x2ec718
 static const CGFloat kItemNameFontSize = 18.0;
 static const CGFloat kSecondaryLabelFontSize = 12.0;
-// The sample overlay dimming alpha and white value, and the hidden and shown alphas.
 static const CGFloat kSampleOverlayAlpha = 0.4; // @ghidraAddress 0x2ec720
 static const CGFloat kSampleOverlayWhite = 0.0;
 static const CGFloat kTransparentAlpha = 0.0;
 static const CGFloat kOpaqueAlpha = 1.0;
-// The scale that places the sample overlay's subviews on its centre.
 static const CGFloat kCenterScale = 0.5;
-// The detail panel's shadow border white value, and the divider's colour and height.
 static const CGFloat kDetailBorderWhite = 143.0f / 255.0f; // @ghidraAddress 0x2ec730
 static const CGFloat kDividerWhite = 0.5;
 static const CGFloat kDividerHeight = 1.0;
-// The banner corner radius and the detail-panel vertical growth increments.
 static const CGFloat kBannerCornerRadius = 8.0;
 static const CGFloat kDetailBlockGrowth = -140.0; // @ghidraAddress 0x2ec728
 static const CGFloat kDescriptionInset = 10.0;
@@ -141,22 +105,14 @@ static const CGFloat kCopyrightGrowth = -50.0; // @ghidraAddress 0x2ec738
 static const CGFloat kElementSpacing = 5.0;
 static const CGFloat kDividerLift = -3.0;
 
-// The disabled action-button grey white value shared with the store web view. @ghidraAddress
-// 0x2ec708
-static const CGFloat kDisabledButtonWhite = 0.6f;
+static const CGFloat kDisabledButtonWhite = 0.6f; // @ghidraAddress 0x2ec708
 
 @interface RBCampaignDetailViewController () {
-    // The sample state machine (idle, downloading, or playing).
     int sampleStatus;
-    // Whether a sample download is in progress; retained from the shared store layout.
     BOOL isDownloadingSample;
-    // Whether the bound item's archive is already present on disk.
     BOOL downloadFlag;
-    // The bound item's action-button kind.
     int buttonType;
-    // Whether the bound item is unlocked.
     BOOL bUnlock;
-    // The bound item's hide mode.
     int hideType;
 }
 @end
@@ -254,7 +210,6 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     [self.itemView addSubview:self.labelItemName];
 
-    // The artist row's top comes from the pool slot the item-name height also uses.
     UILabel *artist =
         [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,
                                                   kItemNameMaxHeight,
@@ -334,8 +289,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.sampleView.backgroundColor = [UIColor colorWithWhite:kSampleOverlayWhite
                                                         alpha:kSampleOverlayAlpha];
 
-    // The overlay's centre is halved once in single precision (the fcvt pair at 0x95e8) and then
-    // reused for the indicator's frame and for both subviews' centres.
+    // The centre is halved once in single precision. @ghidraAddress 0x95e8
     float sampleCenterX = self.sampleView.frame.size.width * kCenterScale;
     float sampleCenterY = self.sampleView.frame.size.height * kCenterScale;
     UIActivityIndicatorView *sampleIndicator = [[UIActivityIndicatorView alloc]
@@ -407,8 +361,6 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.lineView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [self.detailView addSubview:self.lineView];
 
-    // The copyright block takes the strip the description gave up, so the two together fill the
-    // detail panel exactly. Its height comes from the same pool slot as the item-name height.
     UITextView *copyright = [[UITextView alloc] initWithFrame:CGRectMake(kDescriptionInset,
                                                                          descriptionHeight,
                                                                          descriptionWidth,
@@ -521,7 +473,6 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
         self.linkBtn.hidden = NO;
     }
 
-    // A locked tune whose terms are pending shows a placeholder name and blanks the identifier.
     if (info.itemType == kCampaignItemTypeTune && hideType == kCampaignHideTypeLocked) {
         self.labelItemName.text = kLockedNamePlaceholder;
         self.labelID.text = nil;
@@ -586,8 +537,6 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     }
 
     NSString *nameText = self.labelItemName.text;
-    // Shrink the item-name font from 18 points until the name fits the text column. The
-    // measurement is unconstrained vertically; it is the test below that bounds the height.
     CGFloat columnWidth =
         self.view.bounds.size.width + kNameLabelBottomInset + kTextBlockBottomInset;
     UIFont *nameFont = nil;
@@ -602,7 +551,6 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     }
     self.labelItemName.font = nameFont;
 
-    // The label is given the column width and a fixed height before it shrinks to fit.
     self.labelItemName.frame =
         CGRectMake(self.labelItemName.frame.origin.x,
                    self.labelItemName.frame.origin.y,
@@ -625,8 +573,6 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
 
     CGFloat copyrightHeight = CGRectGetHeight(self.copyrightView.frame);
     CGFloat copyrightTop = descriptionTop + descriptionHeight + kElementSpacing;
-    // The detail panel never shrinks below the minimum block height. When the copyright would end
-    // above that line, it is pushed down to sit on it instead, and the panel keeps the minimum.
     CGFloat detailHeight;
     if (copyrightTop + copyrightHeight >= self.view.bounds.size.height + kDetailBlockGrowth) {
         detailHeight = copyrightTop + copyrightHeight;
@@ -642,7 +588,6 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
                                        self.view.bounds.size.width,
                                        detailHeight);
 
-    // The divider is pinned to the left edge and keeps its own width, unlike the blocks above it.
     self.lineView.frame = CGRectMake(0.0,
                                      copyrightTop + kDividerLift,
                                      self.lineView.frame.size.width,

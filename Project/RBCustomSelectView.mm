@@ -1,15 +1,3 @@
-//
-//  RBCustomSelectView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCustomSelectView). Verified
-//  against the arm64 disassembly: -setupView stacks one item grid per customization category inside
-//  a scroll view, and the per-category heights, the start offset, the inter-grid margin, and the
-//  final content size are all idiom- and theme-dependent soft-float values that the
-//  decompiler folds into pseudo-variables. This is an Objective-C++ file because -setupView and
-//  -prevButtonTap: reach the C++ ShotSoundManager and SoundEffectManager engine singletons.
-//
-
 #import "RBCustomSelectView.h"
 
 #import "AppDelegate.h"
@@ -20,34 +8,25 @@
 #import "shotsoundmanager.h"
 #import "soundeffectmanager.h"
 
-// The preview button that starts the game preview from the bottom of the stack.
 static NSString *const kPreviewButtonImageName = @"04_customize/cus_prev";
 
-// The themed sound-effect slot played when the preview button is tapped.
 constexpr int kSoundEffectDecide = 1;
 
-// The button horizontally centres within the scroll view.
 constexpr CGFloat kPreviewButtonCenterFactor = 0.5;
 
-// The preview button flexes on every edge so it stays centred as the scroll view resizes.
 constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// The first grid's top offset, chosen by theme then iPad idiom. The Classic theme (0) starts the
-// stack higher than the others.
 constexpr CGFloat kStartYWideBgm = 40.0;
 constexpr CGFloat kStartYWideOther = 70.0;
 constexpr CGFloat kStartYNarrowBgm = 21.0;
 constexpr CGFloat kStartYNarrowOther = 34.0;
 
-// The gap left between consecutive grids and below the last grid before the preview button.
 constexpr CGFloat kMarginWide = 20.0;
 constexpr CGFloat kMarginNarrow = 12.0;
 
-// The per-category grid heights. The iPad (wide) layout and the narrow (default) font
-// variant use different heights; the grid width always fills the picker.
 constexpr CGFloat kHeightBgmWide = 144.0;
 constexpr CGFloat kHeightBgmNarrow = 120.0;
 constexpr CGFloat kHeightShotWide = 290.0;
@@ -64,8 +43,6 @@ constexpr CGFloat kHeightGaugeWide = 144.0;
 constexpr CGFloat kHeightTimingWide = 144.0;
 constexpr CGFloat kHeightTimingNarrow = 94.0;
 
-// The scroll view's content height leaves a margin of this many multiples below the preview button;
-// a Classic theme uses a shorter tail than the others.
 constexpr CGFloat kContentTailMarginFactorClassic = 2.0;
 constexpr CGFloat kContentTailMarginFactorOther = 4.0;
 
@@ -81,8 +58,7 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
     return self;
 }
 
-// The binary's -.cxx_destruct (0x69b58) only nils the scroll view and the eight grid ivars; under
-// ARC the compiler generates that, so no override is reconstructed.
+// The binary's -.cxx_destruct (0x69b58) only nils the ivars, which ARC already generates.
 
 #pragma mark Layout metrics
 
@@ -111,8 +87,6 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
     CGFloat startY = [self getCollectionViewStartY:thema];
     CGFloat margin = [self getCollectionViewMargin];
 
-    // The background-music grid tops the stack at the theme-dependent start offset. Each subsequent
-    // grid is stacked a margin below the previous grid's bottom.
     CGFloat bgmHeight = wideFont ? kHeightBgmWide : kHeightBgmNarrow;
     self.bgmCollectionView = [[RBCustomSelectCollectionView alloc]
         initWithFrame:CGRectMake(0.0, startY, width, bgmHeight)
@@ -152,8 +126,6 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
         customizeType:RBCustomizeItemTypeNote];
     [self.scrollView addSubview:self.noteCollectionView];
 
-    // The gauge grid exists only on the wide-font layout; on the narrow-font layout the timing grid
-    // follows the note grid directly.
     RBCustomSelectCollectionView *lastGrid;
     if (wideFont) {
         self.gaugeCollectionView = [[RBCustomSelectCollectionView alloc]
@@ -181,7 +153,6 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
         lastGrid = self.timingCollectionView;
     }
 
-    // The preview button centres horizontally a margin below the last grid.
     UIImage *previewImage = [UIImage imageWithName:kPreviewButtonImageName];
     UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [previewButton setImage:previewImage forState:UIControlStateNormal];
@@ -197,14 +168,12 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
             forControlEvents:UIControlEventTouchUpInside];
     [self.scrollView addSubview:previewButton];
 
-    // The content extends below the preview button by a theme-dependent multiple of the margin.
     CGFloat tailFactor = (thema == RBUserSettingDataThemeClassic) ?
                              kContentTailMarginFactorClassic :
                              kContentTailMarginFactorOther;
     self.scrollView.contentSize =
         CGSizeMake(self.scrollView.frame.size.width, margin * tailFactor + previewButton.bottom);
 
-    // Preload the shot-sound bank so the shot category can audition its items immediately.
     ShotSoundManager::GetInstance()->LoadAll();
 }
 

@@ -41,8 +41,6 @@ static const CGFloat kHalf = 0.5;
     return self;
 }
 
-// The binary's -dealloc only chains to super, which ARC does automatically.
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 

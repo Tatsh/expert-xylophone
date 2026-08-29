@@ -13,32 +13,27 @@
 
 @protocol ApplilinkViewDelegate;
 
-// Web-view load status stored in webViewStatus.
 enum {
     RecommendAdAreaViewStatusIdle = 0,
     RecommendAdAreaViewStatusStarted = 1,
     RecommendAdAreaViewStatusFinished = 2,
 };
 
-// Advert models whose advert area scrolls freely rather than being pinned.
 enum {
     RecommendAdAreaViewAdModelScrollableBanner = 1,
     RecommendAdAreaViewAdModelScrollableInterstitial = 4,
     RecommendAdAreaViewAdModelFixedInterstitial = 5,
 };
 
-// UIWebView cancellation and policy-change error codes ignored during the advert load.
 enum {
-    RecommendAdAreaViewWebKitFrameLoadInterrupted = 102, // 0x66
-    RecommendAdAreaViewWebKitPlugInWillHandleLoad = 204, // 0xcc
-    RecommendAdAreaViewURLErrorCancelled = -999,         // NSURLErrorCancelled
+    RecommendAdAreaViewWebKitFrameLoadInterrupted = 102,
+    RecommendAdAreaViewWebKitPlugInWillHandleLoad = 204,
+    RecommendAdAreaViewURLErrorCancelled = -999,
     RecommendAdAreaViewURLErrorNotConnectedToInternet = -1009,
 };
 
-// The port the applilink external-application scheme listens on.
 static const int RecommendAdAreaViewExtAppPort = 80;
 
-// Result of redirectWithRequest: whether the web view should proceed with the request.
 enum {
     RecommendAdAreaViewRedirectConsumed = 0,
     RecommendAdAreaViewRedirectLoad = 1,
@@ -49,7 +44,6 @@ static NSString *const kRecommendAdAreaViewFormatScheme = @"%@://";
 static NSString *const kRecommendAdAreaViewFormatQuerySuffix = @"?%@";
 static NSString *const kRecommendAdAreaViewWebKitErrorDomain = @"WebKitErrorDomain";
 
-// The applilink external-application redirect scheme, host, and path commands.
 static NSString *const kRecommendAdAreaViewApplilinkScheme = @"applilink";
 static NSString *const kRecommendAdAreaViewExtAppHost = @"ext-app";
 static NSString *const kRecommendAdAreaViewExtAppUrl = @"applilink://ext-app:80";
@@ -60,10 +54,8 @@ static NSString *const kRecommendAdAreaViewSendCommandPrefix = @"/send";
 static NSString *const kRecommendAdAreaViewQuerySeparator = @"&";
 static NSString *const kRecommendAdAreaViewPathSeparator = @"/";
 
-// The advert-record key holding the advertising identifier registered on load.
 static NSString *const kRecommendAdAreaViewAdIdKey = @"ad_id";
 
-// The redirect query-parameter keys, each including its trailing equals sign.
 static NSString *const kRecommendAdAreaViewQueryDefaultScheme = @"default_scheme=";
 static NSString *const kRecommendAdAreaViewQueryAdType = @"ad_type=";
 static NSString *const kRecommendAdAreaViewQueryAdModel = @"ad_model=";
@@ -81,7 +73,6 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
 
 @interface RecommendAdAreaView ()
 
-// URL-decode the tail of a query component after stripping its leading key prefix.
 - (NSString *)decodedValueFrom:(NSString *)component afterPrefix:(NSString *)prefix;
 
 @end
@@ -147,7 +138,6 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
     if (adModel == RecommendAdAreaViewAdModelScrollableBanner ||
         adModel == RecommendAdAreaViewAdModelFixedInterstitial ||
         adModel == RecommendAdAreaViewAdModelScrollableInterstitial) {
-        // A fixed interstitial disables scrolling; the scrollable models enable it.
         [self setScrollEnabled:adModel != RecommendAdAreaViewAdModelFixedInterstitial];
     } else {
         self.scrollView.bounces = NO;
@@ -337,8 +327,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
         } else if ([component rangeOfString:(k = kRecommendAdAreaViewQueryAdLocation)].location !=
                    NSNotFound) {
             adLocation = [self decodedValueFrom:component afterPrefix:k];
-            // Yes, the binary parses the ad_location key and then reads the _adLocation ivar at
-            // both call sites below, so the decoded value is discarded.
+            // Yes, the binary parses ad_location but then reads the _adLocation ivar instead.
             (void)adLocation;
         } else if ([component rangeOfString:(k = kRecommendAdAreaViewQueryAdIdFrom)].location !=
                    NSNotFound) {
@@ -375,7 +364,6 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
 
     if (path == nil || (![path isEqualToString:kRecommendAdAreaViewSendCommand] &&
                         ![path hasPrefix:kRecommendAdAreaViewSendCommandPrefix])) {
-        // Non-send taps drive an external App Store or scheme transition.
         NSString *extAppPrefix = [NSString
             stringWithFormat:kRecommendAdAreaViewFormatObject, kRecommendAdAreaViewExtAppUrl];
         NSString *destination = path;
@@ -408,8 +396,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
         NSArray *segments = [[destination substringFromIndex:1]
             componentsSeparatedByString:kRecommendAdAreaViewPathSeparator];
         if (segments.count != 0) {
-            // The first path segment is decoded but the store id parsed from the query drives the
-            // presentation.
+            // Yes, the binary decodes the first path segment and then discards it.
             (void)[NSStringURLEncoding URLDecodedString:segments[0]];
             ApplilinkParameters *appParam = [[ApplilinkParameters alloc] init];
             [appParam setRequestWithAdModel:_adModel
@@ -429,7 +416,6 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
         return RecommendAdAreaViewRedirectConsumed;
     }
 
-    // A send tap registers the click analytics and reloads the target advert.
     if (adIdFrom != nil && countryCode != nil && categoryId != nil) {
         RecommendAdId *adId = [[RecommendAdId alloc] initWithCountryCode:countryCode
                                                               categoryId:categoryId];

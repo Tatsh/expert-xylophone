@@ -9,14 +9,6 @@
 
 #pragma once
 
-//
-//  number_effect_layer.h
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
-//  the program image base.
-//
-
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
 #include "s_vector2.h"
@@ -146,8 +138,7 @@ private:
      */
     void ProcessBrightnessSliderTouch();
 
-    // Constructs the layer through the base constructor; every field is zero-initialised. The
-    // binary inlines this into the singleton getter rather than emitting a separate constructor.
+    // The binary inlines this into the singleton getter rather than emitting a constructor.
     NumberEffectLayer() = default;
 
     /**
@@ -158,21 +149,19 @@ private:
 
     // +0x00..+0x07: the inherited PlayFieldLayerBase fields (is-pad, hardware type, theme).
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the four sprite instancers.
-    LinearTween m_fadeChannel; // +0x30 (five floats, ending at +0x44)
-    bool m_bFadeActive = {};   // +0x44 raised once the channel advances a frame
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10
+    LinearTween m_fadeChannel; // +0x30: five floats, ending at +0x44.
+    bool m_bFadeActive = {};   // +0x44: raised once the channel advances a frame.
     // unsigned char m_aReserved45[3] = {}; // +0x45
-    float m_flCachedViewportWidth = {};  // +0x48: the last-seen viewport width (re-anchor trigger).
-    float m_flCachedViewportHeight = {}; // +0x4c: the last-seen viewport height.
+    float m_flCachedViewportWidth = {};  // +0x48: a change re-anchors the layer.
+    float m_flCachedViewportHeight = {}; // +0x4c
     bool m_bWideScreen = {};             // +0x50: set when the viewport is wider than the split.
-    // +0x54/+0x58: the two slider touch targets' tracked touch ids (the track and the knob), each
-    // the "none" sentinel when unclaimed.
-    int m_anSliderTouchId[kSliderTargetCount] = {}; // +0x54
-    bool m_bSliderHeld = {}; // +0x5c: set while the brightness slider is being dragged.
+    int m_anSliderTouchId[kSliderTargetCount] = {}; // +0x54: the "none" sentinel when unclaimed.
+    bool m_bSliderHeld = {};                        // +0x5c
     // unsigned char m_aReserved5d[3] = {}; // +0x5d
-    float m_flBrightness = {}; // +0x60: the layer brightness (0 to 1).
-    bool m_bBuilt = {};        // +0x64: set once the instancers are built.
+    float m_flBrightness = {}; // +0x60: 0 to 1.
+    bool m_bBuilt = {};        // +0x64
     // unsigned char m_aReserved65[3] = {}; // +0x65
-    // +0x68: the side-dependent transform block seeded when the instancers are built.
+    // +0x68: side-dependent, seeded when the instancers are built.
     float m_aTransform[kTransformWordCount] = {};
 };

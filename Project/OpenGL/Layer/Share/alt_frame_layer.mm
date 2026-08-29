@@ -253,8 +253,7 @@ constexpr int kActiveLane9 = 11;
 constexpr int kFrameAtlasSlot = 0;
 constexpr int kPartsAtlasSlot = 1;
 
-// The third entry indexes past the two-entry texture array, an out-of-bounds read the shipped code
-// makes and that SetAltFrameTexture masks by replacing that batch's texture before the frame draws.
+// The third entry indexes past the two-entry texture array, as the shipped code does.
 constexpr int kBatchTextureSlot[] = {0, 1, 3};
 
 constexpr int kOverlayBatchFirst = 1;

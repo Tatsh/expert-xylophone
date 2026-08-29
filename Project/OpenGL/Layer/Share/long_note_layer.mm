@@ -118,7 +118,6 @@ void LongNoteLayer::Create(int nColor,
                            float flRotation) {
     assert(nColor >= 0 && nColor < kPlayerColorMax);
 
-    // A full pool drops the note.
     for (int nSlot = g_nLongNoteDrawCount; nSlot < kNoteRecordCount; ++nSlot) {
         NoteRecord &record = m_aNoteRecords[nSlot];
         if (!record.bActive) {

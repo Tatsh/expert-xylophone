@@ -81,7 +81,7 @@ constexpr CGFloat kNoButtonWideX = 249.0;
     return self;
 }
 
-// The binary has no -dealloc; ARC clears the strong subview ivars through .cxx_destruct.
+// ARC clears the strong subview ivars through .cxx_destruct.
 // @ghidraAddress 0x19bd00
 
 #pragma mark Layout

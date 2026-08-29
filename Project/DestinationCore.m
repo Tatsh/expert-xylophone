@@ -7,16 +7,13 @@
 #import "ApplilinkUtilities.h"
 #import "ApplilinkWebAPI.h"
 
-// Request timeout, in seconds, for the destination registration.
 static const float kDestinationRequestTimeout = 10.0f;
 
-// Request parameter keys and the system marker value.
 static NSString *const kDestinationParamSystem = @"system";
 static NSString *const kDestinationParamCountryCode = @"country_code";
 static NSString *const kDestinationParamRturl = @"rturl";
 static NSString *const kDestinationSystemValueAd = @"ad";
 
-// HTTP method and endpoint path for the destination registration.
 static NSString *const kDestinationHTTPMethod = @"GET";
 static NSString *const kDestinationPath = @"/destination/regist.php";
 

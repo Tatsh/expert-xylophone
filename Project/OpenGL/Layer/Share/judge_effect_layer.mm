@@ -26,11 +26,11 @@ constexpr float kInitialScale = 1.0f;
 constexpr unsigned int kColorMax = 255;
 
 struct JudgeGlyphMetrics {
-    float flAnchorX;   // +0x00: the glyph's anchor X.
-    float flAnchorY;   // +0x04: the glyph's anchor Y.
-    float flSizeX;     // +0x08: the glyph's pixel width (also the pen advance).
-    float flSizeY;     // +0x0c: the glyph's pixel height.
-    int nUvFrameIndex; // +0x10: the frame into the shared sprite UV atlas.
+    float flAnchorX;
+    float flAnchorY;
+    float flSizeX; // Also the pen advance.
+    float flSizeY;
+    int nUvFrameIndex;
 };
 
 constexpr int kJudgeGlyphCount = 26;

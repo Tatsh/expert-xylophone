@@ -65,7 +65,6 @@ static NSString *const kAllButtonSelectedImageName = @"08_ranking/rank_all_sel";
 }
 
 - (void)dealloc {
-    // The base popup's teardown runs through super.
 }
 
 #pragma mark - Setup

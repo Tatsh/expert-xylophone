@@ -9,7 +9,6 @@
 #import "StoreUtil.h"
 #import "engineglobals.h"
 
-// Server catalogue dictionary keys read by the extend-note initialisers and by setDictionary:.
 static NSString *const kStoreExtendKeyPID = @"PID";
 static NSString *const kStoreExtendKeyPackID = @"PackID";
 static NSString *const kStoreExtendKeyExtID = @"ExtID";
@@ -18,10 +17,7 @@ static NSString *const kStoreExtendKeyComment = @"Comment";
 static NSString *const kStoreExtendKeyPrice = @"Price";
 
 #ifdef ENABLE_PATCHES
-// The extend-note identifiers the catalogue priced at zero. Held here rather than on the object so
-// the class gains nothing the shipped one does not have. The price property alone cannot answer
-// this: it is read with a bare -intValue, so a catalogue that sends no price leaves it at zero,
-// which must not count as free.
+// The price property cannot answer this: a catalogue entry that sends no price also reads as zero.
 static NSMutableSet<NSNumber *> *g_freeExtendNoteIDs = nil;
 
 BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID) {
@@ -29,18 +25,14 @@ BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID) {
 }
 
 NSString *RBStoreExtendNotePriceString(StoreExtendNoteInfo *info) {
-    // With no StoreKit product there is no localised amount to format and the label would be left
-    // blank, so the catalogue's own price is drawn instead. Unlike a pack, an extend note really
-    // does carry one: -initWithDictionary: reads it out of the entry in an unpatched build too. It
-    // is a bare integer in whatever unit the server prices in, which is how
-    // -[StoreExtendNoteInfo getButtonName] already shows it.
+    // Without a StoreKit product there is no localised amount, so the catalogue's bare integer
+    // price is drawn instead of leaving the label blank.
     if (info.product != nil) {
         return [StoreUtil priceString:info.product];
     }
     return @(info.price).stringValue;
 }
 
-// Record what the catalogue said about this note's price, if it said anything at all.
 static void RBNoteExtendNoteCatalogPrice(int extendNoteID, NSDictionary *dictionary) {
     NSNumber *price = dictionary[kStoreExtendKeyPrice];
     if (price == nil) {
@@ -62,8 +54,6 @@ static NSString *const kStoreExtendKeyExtURL2 = @"ExtURL2";
 static NSString *const kStoreExtendKeyIsNew = @"IsNew";
 static NSString *const kStoreExtendKeyMusic = @"Music";
 
-// Keys of the nested "Music" sub-dictionary read by setDictionary: into the inherited tune
-// metadata.
 static NSString *const kStoreExtendMusicKeyID = @"ID";
 static NSString *const kStoreExtendMusicKeyName = @"Name";
 static NSString *const kStoreExtendMusicKeyArtist = @"Artist";
@@ -73,21 +63,15 @@ static NSString *const kStoreExtendMusicKeyArtworkURL = @"ArtworkURL";
 static NSString *const kStoreExtendMusicKeyItunesURL = @"iTunesURL";
 static NSString *const kStoreExtendMusicKeyLevel = @"Level";
 
-// The number of difficulty entries the "Level" array must contain before it is read.
 static const NSUInteger kStoreExtendMinLevelCount = 3;
-// The clamp bounds applied to each parsed difficulty level.
 static const int kStoreExtendLevelMin = 1;
 static const int kStoreExtendLevelBasicMax = 10;
 static const int kStoreExtendLevelDetailedMax = 11;
 
-// The smallest value that counts as a valid pack or extend-note identifier.
 static const int kStoreExtendMinValidID = 1;
 
-// The more-info action-button title shown for a pack that has not been purchased.
 static NSString *const kStoreExtendButtonMoreInfo = @"More Info";
 
-// The blue channel of the not-purchased button tint, and the shared component of the purchased
-// tint.
 static const CGFloat kStoreExtendButtonTintComponent = 128.0 / 255.0;
 
 @implementation StoreExtendNoteInfo

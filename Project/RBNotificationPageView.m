@@ -1,15 +1,3 @@
-//
-//  RBNotificationPageView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBNotificationPageView). Verified
-//  against the arm64 disassembly: -setupView's theme- and idiom-dependent web-view inset
-//  was recovered from the soft-float register moves the decompiler folds into pseudo-variables,
-//  and -webView:shouldStartLoadWithRequest:navigationType:'s deep-link routing was read from raw
-//  branch structure. This class reaches only Objective-C collaborators (no C++ engine), so it is a
-//  plain Objective-C (.m) file.
-//
-
 #import "RBNotificationPageView.h"
 
 #import "AppDelegate.h"
@@ -18,20 +6,14 @@
 #import "UIAlertView+RB.h"
 #import "deviceenvironment.h"
 
-// The web view is inset below the title bar by one title-bar height per satisfied condition: once
-// for any non-Classic theme, and once again for the iPad (wide) layout. The binary materialises the
-// pad arm as a two-entry table at 0x302d40 holding 64.0 and 32.0, and the phone arm as a select
-// between the 32.0 at 0x2ee9b0 and zero, which is the same four results.
+// One title-bar height per satisfied condition: any non-Classic theme, and the iPad layout.
+// @ghidraAddress 0x302d40, 0x2ee9b0
 static const CGFloat kWebViewTitleBarInset = 32.0;
 
-// The centre is the midpoint of the inset content region.
 static const CGFloat kHalf = 0.5;
 
-// The tag stamped on the network-error alert.
 static const NSInteger kNetworkErrorAlertTag = 1000;
 
-// The reflecbeat deep-link scheme keywords intercepted by the web view, and the store path segment
-// count and marker that identify a pack link.
 static NSString *const kDeepLinkTwitter = @"twitter://";
 static NSString *const kDeepLinkOpenURL = @"openurl://";
 static NSString *const kDeepLinkStoreScheme = @"rbplus://store/";
@@ -41,7 +23,6 @@ static const NSUInteger kStorePackPathComponentCount = 3;
 static const NSUInteger kStorePackMarkerIndex = 1;
 static const NSUInteger kStorePackValueIndex = 2;
 
-// The JavaScript injected on load to suppress the iOS long-press touch callout.
 static NSString *const kDisableTouchCalloutScript =
     @"document.documentElement.style.webkitTouchCallout='none';";
 
@@ -65,11 +46,7 @@ static NSString *const kDisableTouchCalloutScript =
 - (void)setupView {
     [super setupView];
 
-    // Consume the pending news web-info URL and remember the last-update time as the read time,
-    // then clear both so the page is only shown once per update. The read side goes through the
-    // hand-written -getWebInfoURL / -getInfoLastUpdateTimeString accessors rather than the
-    // synthesised properties, and the clear goes through -setWebInfoURL:, which parses a string.
-    // The application delegate is re-fetched at every use rather than held in a local.
+    // Consuming the URL and the update time clears both, so the page is shown once per update.
     if ([[AppDelegate appDelegate] getWebInfoURL] != nil) {
         self.requestURL = [[AppDelegate appDelegate] getWebInfoURL];
     }
@@ -95,7 +72,6 @@ static NSString *const kDisableTouchCalloutScript =
     webView.backgroundColor = UIColor.clearColor;
     [webView setUseGrayView:NO];
 
-    // Prefer the just-consumed URL; fall back to the pre-release endpoint when there was none.
     NSURL *url = self.requestURL;
     self.requestURL = nil;
     if (url == nil) {
@@ -145,8 +121,7 @@ static NSString *const kDisableTouchCalloutScript =
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:httpString]];
         return NO;
     }
-    // The binary compares the URL scheme against the full store link string; kept faithfully even
-    // though the scheme alone never equals it, so this branch is effectively inert.
+    // The binary compares the scheme against the full store link string, so this branch is inert.
     if (![url.scheme isEqualToString:kDeepLinkStoreScheme]) {
         return YES;
     }
@@ -200,15 +175,13 @@ static NSString *const kDisableTouchCalloutScript =
 #pragma mark Orientation
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // The binary permits the two portrait orientations here (raw test orientation - 1 < 2), even
-    // though -supportedInterfaceOrientations reports landscape; kept faithful to each.
+    // The binary permits the two portrait orientations here (raw test orientation - 1 < 2).
     return interfaceOrientation == UIInterfaceOrientationPortrait ||
            interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    // The binary returns 6 (orr w0,wzr,#0x6 at 0x194148), which is the two portrait bits, and it
-    // agrees with -shouldAutorotateToInterfaceOrientation: above. Landscape is 24.
+    // The binary returns 6 (orr w0,wzr,#0x6 at 0x194148), which is the two portrait bits.
     return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
 }
 

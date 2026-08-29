@@ -114,12 +114,12 @@ public:
     }
 
 private:
-    double m_dSampleRate = {}; // +0x00 the source sample rate, in hertz
-    int m_nChannelCount = {};  // +0x08 the number of channels
-    bool m_bLoop = {};         // +0x0c whether ring reads wrap at the end of the PCM block
+    double m_dSampleRate = {}; // +0x00 in hertz
+    int m_nChannelCount = {};  // +0x08
+    bool m_bLoop = {};         // +0x0c ring reads wrap at the end
     // unsigned char m_aReserved0d[3] = {}; // +0x0d
-    void *m_pBuffer = {};             // +0x10 the decoded 16-bit PCM data block
-    unsigned int m_dwBufferSize = {}; // +0x14 the PCM data block's byte size
+    void *m_pBuffer = {};             // +0x10 the decoded 16-bit PCM block
+    unsigned int m_dwBufferSize = {}; // +0x14 in bytes
 };
 
 // code: language=Objective-C++

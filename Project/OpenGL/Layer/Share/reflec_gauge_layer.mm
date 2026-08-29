@@ -190,7 +190,8 @@ void ReflecGaugeLayer::SetValueBySide(float flValue, unsigned int nSide) {
     if (flQuantized <= 0.0f) {
         flQuantized = 0.0f;
     }
-    // Fetched unconditionally ahead of the comparison, as the binary does at 0x18aaa8.
+    // Fetched unconditionally ahead of the comparison, as the binary does.
+    // @ghidraAddress 0x18aaa8
     const bool bFullJustReflec = GameSystem::GetGameSystem()->GetFullJustReflec();
     if (flQuantized > kGaugeMax || bFullJustReflec) {
         flQuantized = kGaugeMax;
@@ -442,8 +443,7 @@ constexpr int kLabelGaugeMode = 1;
 
 /** @ghidraAddress 0x18ad94 */
 void ReflecGaugeLayer::UpdateGaugeBar(float flDelta) {
-    // The fade channel's floats are repurposed as the fill tween: start/end are the endpoints,
-    // duration the target, elapsed the current fill, and current the resolved fill.
+    // The fade channel's floats are repurposed here as the fill tween.
     const float flTarget = m_fadeChannel.GetDuration();
     float flRatio;
     if (flTarget > m_fadeChannel.GetElapsed()) {

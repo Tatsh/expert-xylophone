@@ -160,16 +160,13 @@ public:
     void SetMasterVoiceParameter(int volume);
 
 private:
-    // Registers @p pSource in a free slot of the sound array and returns its slot index (sound id).
     unsigned int RegisterSource(caSource *pSource);
-    // Returns the index of a free slot in the sound array, growing it by a fixed step and returning
-    // the first new index when none is free.
     unsigned int FindOrGrowFreeSlot();
 
-    caCAMixer *m_pMixer = {};                // +0x00 the Core Audio voice mixer
-    NSMutableDictionary *m_pSourceDict = {}; // +0x08 the call-name -> sound-id map
-    caSource **m_pSourceArray = {};          // +0x10 the registered sound buffers, indexed by id
-    int m_nSourceCount = {};                 // +0x18 the number of registered sounds
+    caCAMixer *m_pMixer = {};
+    NSMutableDictionary *m_pSourceDict = {}; // Maps a call name to a sound id.
+    caSource **m_pSourceArray = {};          // Indexed by sound id.
+    int m_nSourceCount = {};
 };
 
 // code: language=Objective-C++

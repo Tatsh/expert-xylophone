@@ -24,9 +24,9 @@ constexpr unsigned int kAlphaShift = 24;
 constexpr float kPortraitScale = 0.5f;
 
 struct EventSpriteDescriptor {
-    S_VECTOR2 anchor = {};  // +0x00: the sprite anchor offset.
-    S_VECTOR2 size = {};    // +0x08: the sprite pixel size.
-    int nUvFrameIndex = {}; // +0x10: the frame index into the event UV table.
+    S_VECTOR2 anchor = {};  // +0x00
+    S_VECTOR2 size = {};    // +0x08
+    int nUvFrameIndex = {}; // +0x10
 };
 
 // @ghidraAddress 0x3105b0

@@ -68,7 +68,7 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
 constexpr CGFloat kInteriorStepDivisor = 8.0;
 
 @interface RBMusicCPUView () {
-    unsigned int m_PrevSound; // +0x8
+    unsigned int m_PrevSound;
 }
 @end
 

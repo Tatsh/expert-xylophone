@@ -18,8 +18,7 @@
                   requestCode:(id)requestCode {
     _adModel = adModel;
     _adLocation = adLocation;
-    // The binary does not store verticalAlign in this setter; only the model, location, and request
-    // code are written.
+    // Yes, the binary never stores verticalAlign in this setter.
     _requestCode = requestCode;
 }
 

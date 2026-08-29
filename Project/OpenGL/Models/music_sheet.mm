@@ -1,11 +1,3 @@
-//
-//  music_sheet.mm
-//  REFLEC BEAT plus
-//
-//  The note-chart reader/parser (CMusicSheet2). Reconstructed from Ghidra project rb458, program
-//  rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "music_sheet.h"
 
 #include <cassert>
@@ -21,7 +13,6 @@
 
 namespace {
 
-// Reads one little-endian value of type T from the byte cursor and advances it.
 template <typename T>
 T ReadStream(const unsigned char *&pCursor) {
     T value;
@@ -30,9 +21,8 @@ T ReadStream(const unsigned char *&pCursor) {
     return value;
 }
 
-// A path node's speed slot holds the raw bit pattern of a float. The binary moves the word across
-// without converting it (`ldr s0` at 0x1316c8, and the `ldr w8` / `str w8` pairs at 0x130a40 and
-// 0x130a78), so reading it as an integer and converting would inflate every speed enormously.
+// A path node's speed slot holds the raw bit pattern of a float; the binary moves the word across
+// without converting it (`ldr s0` at 0x1316c8, `ldr w8` / `str w8` at 0x130a40 and 0x130a78).
 float NodeSpeed(int nRawSpeed) {
     float flSpeed;
     std::memcpy(&flSpeed, &nRawSpeed, sizeof(flSpeed));
@@ -50,7 +40,6 @@ int DeserializeNoteRecord(RbffChartNote *pRecord, const unsigned char **ppCursor
     pRecord->nStartTime = ReadStream<short>(pCursor);
     pRecord->nKind = ReadStream<signed char>(pCursor);
     pRecord->nPointCount = ReadStream<signed char>(pCursor);
-    // The first eight path-point coordinates.
     for (int i = 0; i < 8; ++i) {
         pRecord->pathPoints[i] = ReadStream<short>(pCursor);
     }
@@ -58,7 +47,6 @@ int DeserializeNoteRecord(RbffChartNote *pRecord, const unsigned char **ppCursor
     pRecord->nType = ReadStream<signed char>(pCursor);
     pRecord->nHoldFlag = ReadStream<signed char>(pCursor);
     pRecord->reserved1 = ReadStream<signed char>(pCursor);
-    // The chain-link ids and trailing reserved short (stored contiguously after the path points).
     pRecord->nChainLink = ReadStream<short>(pCursor);
     pRecord->nChainPartner = ReadStream<short>(pCursor);
     pRecord->reserved2 = ReadStream<short>(pCursor);
@@ -74,7 +62,6 @@ void InitPathPoint(RbffPathPoint *pPoint) {
 /** @ghidraAddress 0x12ea78 */
 void InitNoteChainData(RbffNoteReadRecord *pRecord) {
     *pRecord = RbffNoteReadRecord{};
-    // The chain-link ids start at the unset sentinel.
     pRecord->nChainLink = static_cast<short>(0xffff);
     pRecord->nChainPartner = static_cast<short>(0xffff);
 }
@@ -96,7 +83,6 @@ int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor)
     pOut->nNoteId = ReadStream<short>(pCursor);
     pOut->nStartTime = ReadStream<short>(pCursor);
     pOut->nPointCount = ReadStream<short>(pCursor);
-    // A positive point count allocates the path-point array and reads that many coordinates.
     if (pOut->nPointCount > 0) {
         pOut->pPathPoints = new short[pOut->nPointCount];
         for (int i = 0; i < pOut->nPointCount; ++i) {
@@ -115,9 +101,8 @@ int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor)
     pOut->nField29 = ReadStream<signed char>(pCursor);
     pOut->nField2a = ReadStream<short>(pCursor);
     pOut->nField2c = ReadStream<int>(pCursor);
-    // The chain payload is present only when flag bit 3 is set: the binary reads the eight bytes at
-    // the cursor into the chain-link block (+0x30) and the four bytes at cursor+8 into the extra
-    // field (+0x38), then advances the cursor twelve bytes past all of it.
+    // The chain payload is present only when flag bit 3 is set: eight bytes into the chain-link
+    // block (+0x30) and four into the extra field (+0x38).
     if ((pOut->nFlags & 8) != 0) {
         long chainBlock;
         std::memcpy(&chainBlock, pCursor, sizeof(chainBlock));
@@ -141,7 +126,6 @@ void ClearNotePair(RbffChartHeaderRecord *pRecord) {
 
 /** @ghidraAddress 0x12ed14 */
 int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor) {
-    // A tempo event is a verbatim 36-byte block.
     std::memcpy(pOut->aData, *ppCursor, sizeof(pOut->aData));
     *ppCursor += sizeof(pOut->aData);
     return 1;
@@ -153,8 +137,7 @@ int DeserializeChartHeaderRecord(RbffChartHeaderRecord *pRecord, const unsigned 
     pRecord->nField0 = ReadStream<unsigned short>(pCursor);
     pRecord->nField2 = ReadStream<unsigned short>(pCursor);
     pRecord->nField4 = ReadStream<unsigned short>(pCursor);
-    // Two reserved bytes sit between the third short and the first int: the cursor advance at
-    // 0x12ed7c is 4, not 2, so the ints are four-byte aligned and the record is 16 bytes.
+    // Two reserved bytes align the ints; the cursor advance at 0x12ed7c is 4, not 2.
     pCursor += 2;
     pRecord->nValueA = ReadStream<int>(pCursor);
     pRecord->nValueB = ReadStream<int>(pCursor);
@@ -164,27 +147,21 @@ int DeserializeChartHeaderRecord(RbffChartHeaderRecord *pRecord, const unsigned 
 
 namespace {
 
-// The default first-path speed used when the chart carries no speed-change nodes (@ghidraAddress
-// 0x2ec6b0, a shared read-only 100.0 constant).
+// @ghidraAddress 0x2ec6b0
 constexpr float kDefaultPathSpeed = 100.0f;
 
-// The side-object flag bit in a note record's flags.
 constexpr unsigned int kSideObjectFlag = 1u << 5;
-// The note type of a slide-tail (excluded from the late-note count), and the hold type (whose end
-// time includes the chain offset).
 constexpr int kNoteTypeSlideTail = 3;
 constexpr int kNoteTypeHold = 1;
 
 // The tolerance, in ticks, within which a note counts as near a query time.
 constexpr int kNearTimeTolerance = 2;
 
-// The chart-note-count thresholds selecting a density tier, and the per-tier fraction of the notes
-// that becomes the chart's just-reflec quota (@ghidraAddress 0x308af0).
 constexpr int kSpeedTierMidThreshold = 200;
 constexpr int kSpeedTierHighThreshold = 400;
+// @ghidraAddress 0x308af0
 constexpr float kJustReflecRates[] = {0.05f, 0.04f, 0.03f};
 
-// The note flag bits the legacy parser derives.
 constexpr unsigned int kNoteFlagSameLane = 1; // Paired with another note at the same time and side.
 constexpr unsigned int kNoteFlagLongHead = 8; // Heads a long note.
 constexpr unsigned int kNoteFlagDifferentLane =
@@ -192,32 +169,27 @@ constexpr unsigned int kNoteFlagDifferentLane =
 constexpr unsigned int kNoteFlagFree = 0x10;    // A free (anywhere) note; start time is -1.
 constexpr unsigned int kNoteFlagHasPath = 0x20; // Carries a path-point sub-array.
 
-// The on-disk note kind marking a long-note head, and the render type the v10 parser remaps it to.
-// The two parsers genuinely disagree here and must not be harmonised: the legacy parser maps a
-// long-note head to type 0 (the plain-note renderer, at 0x12fc28), while the v10 parser maps it to
-// type 3 (the held/slide renderer, the w27 = 3 seeded at 0x12ff1c and selected at 0x12fff4).
+// The two parsers genuinely disagree and must not be harmonised: the legacy parser maps a long-note
+// head to type 0 (0x12fc28), the v10 parser to type 3 (0x12ff1c, 0x12fff4).
 constexpr int kChartKindLongHead = 2;
 constexpr int kChartTypeLongHeadRender = 3;
 
-// The target-coordinate scaling: a coordinate is divided by the field width and scaled to the hash
-// range (@ghidraAddress 0x2f8578 = 60.0 field width, 0x2f8540 = 1000.0 hash scale).
+// @ghidraAddress 0x2f8578
 constexpr float kFieldWidth = 60.0f;
+// @ghidraAddress 0x2f8540
 constexpr float kTargetScale = 1000.0f;
 
-// The slide-target lane remap table: an on-disk slide lane (0..9) maps to the internal lane
-// (@ghidraAddress 0x308afc). Values at or above 0xfffe map to -2, 0xfffd to -4, and 0xfffc to -3.
+// @ghidraAddress 0x308afc
 constexpr int kSlideLaneRemap[] = {6, 5, 4, 3, 2, 1, 0, 9, 8, 7};
 
-// The note-colour table indexed by the remapped timing selector (@ghidraAddress 0x308ac8).
+// @ghidraAddress 0x308ac8
 constexpr int kNoteColorTable[] = {0, 1, 2, 3, 4, 5, 6, 3, 3, 3};
 
-// The side-note lane-scan flag count.
 constexpr int kSideScanSlotCount = 3;
 
-// The side-object note flag bit.
 constexpr unsigned int kNoteFlagSideObject = 0x40;
 
-// The chart-format version ranges: 10 through 14 take the modern parser, 6 and 7 the legacy one.
+// Versions 10 through 14 take the modern parser, 6 and 7 the legacy one.
 constexpr int kMinModernVersion = 10;
 constexpr unsigned int kModernVersionSpan = 5;
 constexpr int kMinLegacyVersion = 6;
@@ -228,9 +200,6 @@ namespace rb {
 
 /** @ghidraAddress 0x12f6f4 */
 void CMusicSheet2::InitPathNodeRegion() {
-    // The path-node array starts with room for one node and none read; the parse counter and timing
-    // block that follows it is zeroed. The member initialisers already zero these fields, so this
-    // reproduces the binary's explicit clears.
     m_pathNodes.Reserve();
     m_nChartEndTime = 0;
     m_nSeedA = 0;
@@ -253,8 +222,6 @@ void CMusicSheet2::InitPathNodeRegion() {
 
 /** @ghidraAddress 0x12f828 */
 CMusicSheet2::CMusicSheet2() {
-    // The version starts unread; the parser fills it in. Every count, timing, and buffer pointer is
-    // cleared by the member initialisers, matching the binary's field-by-field zeroing.
     m_nVersion = -1;
     InitPathNodeRegion();
     m_pRecords = nullptr;
@@ -267,7 +234,6 @@ CMusicSheet2::CMusicSheet2() {
 
 /** @ghidraAddress 0x12f970 */
 int CMusicSheet2::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem) {
-    // Only parse into an empty reader.
     if (m_pRecords != nullptr) {
         return 0;
     }
@@ -278,14 +244,11 @@ int CMusicSheet2::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem
         return 0;
     }
 
-    // The format version follows the four-byte magic; the note stream begins after the 16-byte
-    // header.
+    // The version follows the four-byte magic; the note stream begins after the 16-byte header.
     const auto *pWords = static_cast<const unsigned int *>(pBytes);
     m_nVersion = static_cast<int>(pWords[1]);
     const auto *pStream = static_cast<const unsigned char *>(pBytes) + 16;
 
-    // The parsers read the post-header byte stream as arrays of words; the cast reinterprets the
-    // raw chart bytes as the word type each format parser consumes.
     bool bParsed;
     if (static_cast<unsigned int>(m_nVersion - kMinModernVersion) < kModernVersionSpan) {
         bParsed = ParseNotesV10(reinterpret_cast<const unsigned long *>(pStream)) != 0;
@@ -299,24 +262,21 @@ int CMusicSheet2::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem
         ResolveNoteScrollSpeeds();
         return 1;
     }
-    // A parse or install failure still resolves scroll speeds before reporting failure.
     ResolveNoteScrollSpeeds();
     return 0;
 }
 
 namespace {
-// The default-chart geometry: twelve free notes from a base time, one per step, each a fixed
-// duration, with the chart end rounded up to a grid (@ghidraAddress 0x2fcff4/0x2feff4/0x453b8000/
-// 0x2feff0).
+// Twelve free notes from a base time, one per step, with the chart end rounded up to a grid
+// (@ghidraAddress 0x2fcff4/0x2feff4/0x453b8000/0x2feff0).
 constexpr int kDefaultNoteCount = 12;
 constexpr float kDefaultBaseTime = 1500.0f;
 constexpr float kDefaultStepTime = 500.0f;
 constexpr int kDefaultNoteDuration = 3000;
 constexpr float kDefaultEndRoundAdd = 3000.0f;
 constexpr float kDefaultEndGrid = 2000.0f;
-// The chart's single start path node carries a scroll speed of 120.0f, held as raw float bits in
-// the node's x slot (`movz w8,#0x42f0,lsl #16` at 0x130b30, then the 64-bit `str x8,[sp, #0x8]` at
-// 0x130b34 that leaves the time slot zero).
+// A scroll speed of 120.0f held as raw float bits (`movz w8,#0x42f0,lsl #16` at 0x130b30; the
+// 64-bit `str x8,[sp, #0x8]` at 0x130b34 leaves the time slot zero).
 constexpr int kDefaultChartPathSpeedBits = 0x42f00000;
 } // namespace
 
@@ -326,7 +286,6 @@ unsigned long CMusicSheet2::BuildDefaultNoteChart(GameSystem *pGameSystem) {
         return 0;
     }
 
-    // The chart opens with a single start path node carrying the default scroll speed.
     m_pathNodes.Append(NotePathPoint{kDefaultChartPathSpeedBits, 0});
     m_pRecords = new RbffNoteRecord[kDefaultNoteCount];
 
@@ -345,13 +304,11 @@ unsigned long CMusicSheet2::BuildDefaultNoteChart(GameSystem *pGameSystem) {
         record.SetHoldKind(0);
         record.SetType(0);
         record.SetFlags(kNoteFlagFree);
-        // Reset the chain link to the empty state (the binary's chain-link init).
         record.GetChainLink() = NoteChainLink();
         flTime += kDefaultStepTime;
         pLast = &record;
     }
 
-    // Round the last note's end time up to the grid to get the chart length.
     const float flEnd = static_cast<float>(
         static_cast<int>(
             (static_cast<float>(pLast->GetTimeB() + pLast->GetTimeA()) + kDefaultEndRoundAdd) /
@@ -369,15 +326,12 @@ unsigned long CMusicSheet2::BuildDefaultNoteChart(GameSystem *pGameSystem) {
 }
 
 namespace {
-// The v<11 colour-tone lane table, indexed by a per-side alternator (@ghidraAddress 0x308ac0).
+// @ghidraAddress 0x308ac0
 constexpr int kLegacyColorToneLane[] = {0, 2};
-// The per-side colour-tone alternator that flips 0<->1 each legacy note (@ghidraAddress 0x3de018).
+// @ghidraAddress 0x3de018
 int g_aColorToneAlternator[2] = {};
-// The difficulty value for the BASIC chart.
 constexpr int kDifficultyBasic = 0;
-// The initial minimum basic-note time.
 constexpr int kBasicNoteTimeInit = 9999;
-// The unset index-array sentinel.
 constexpr int kIndexArraySentinel = 0x7fffffff;
 } // namespace
 
@@ -405,7 +359,6 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
         record.SetColorTone(static_cast<short>(nSel));
         record.SetLinkA(record.GetTargetCoords()[2]);
 
-        // Derive the shot/route selector into nTimingSel.
         int nRoute = static_cast<short>(nSel);
         if (record.GetHoldKind() == 1) {
             nRoute += 7;
@@ -426,7 +379,6 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
         }
         record.SetTimingSel(nRoute);
 
-        // Legacy charts pick the colour tone from an alternating table.
         if (nVersion < 0xb) {
             const int nAlt = (nPlayColor == nSide) ? 1 : 0;
             const unsigned int nEntry = g_aColorToneAlternator[nAlt];
@@ -444,14 +396,12 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
         }
     }
 
-    // Fold each slide record's owning side into the playable and index counters.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         const int nSide = m_pRecords[m_pSlideRecords[i].nNoteIndex].GetSide();
         ++perSideCounters[nSide + 6];
         ++perSideCounters[nSide + 2];
     }
 
-    // Publish the per-side counts into the reader's count fields.
     m_aChartNoteCounts[0] = perSideCounters[6];
     m_aChartNoteCounts[1] = perSideCounters[7];
     m_aSideObjectCounts[0] = perSideCounters[4];
@@ -459,7 +409,6 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
     m_aPlayableCounts[0] = perSideCounters[2];
     m_aPlayableCounts[1] = perSideCounters[3];
 
-    // Build the free-note side-index array, sized to the free-note count.
     delete[] m_pSideIndexArray;
     m_pSideIndexArray = new int[m_nFreeNoteCount];
     const int nOwnSide = pGameSystem->GetPlayColor();
@@ -467,7 +416,6 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
     const int nOtherPlayable = (nOwnSide == 0) ? m_aPlayableCounts[1] : m_aPlayableCounts[0];
     m_nIndexCount = 0;
 
-    // Count the own-side playable-index entries (a hold note contributes two).
     int nOwnPlayable = 0;
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
@@ -481,7 +429,6 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
         }
     }
 
-    // Allocate the playable-index array and prefill the own-side slots with the sentinel.
     m_pIndexArrayB = new int[nOtherPlayable + nOwnPlayable];
     for (int i = 0; i < m_nIndexCount; ++i) {
         m_pIndexArrayB[i] = kIndexArraySentinel;
@@ -508,14 +455,12 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
             }
         }
 
-        // Record each free note's id in the side-index array.
         if (nFreeIndex >= 0 && (record.GetFlags() & kNoteFlagFree) != 0 &&
             nFreeIndex < m_nFreeNoteCount) {
             m_pSideIndexArray[nFreeIndex] = record.GetNoteId();
             ++nFreeIndex;
         }
 
-        // Derive the note's route by type.
         if (record.GetType() == kNoteTypeSlideTail) {
             record.SetRoute(7);
         } else if (record.GetType() == 1) {
@@ -539,8 +484,6 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
             record.SetRoute(7);
         }
 
-        // Populate the playable-index array for own-side, lane-0 notes and flag simultaneous
-        // cross-side notes.
         const bool bPlayable =
             (record.GetFlags() & kNoteFlagDifferentLane) == 0 && record.GetLane() == 0;
         if (bPlayable) {
@@ -570,7 +513,6 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
         }
     }
 
-    // Append each non-1-lane slide's time to the playable-index array when no note is near it.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         RbffSlideRecord &slide = m_pSlideRecords[i];
         if (m_pRecords[slide.nNoteIndex].GetLane() != 1 &&
@@ -590,17 +532,14 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
 
 /** @ghidraAddress 0x12fa34 */
 int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
-    // The header carries the note count and chart end time; the note records follow it.
     const unsigned int nNoteCount = pStream[1];
     m_nChartEndTime = static_cast<int>(pStream[2]);
     m_nSeedA = static_cast<int>(pStream[3]);
     m_nNoteCount = static_cast<int>(nNoteCount);
     m_nTempoEventCount = 0;
     m_nFreeNoteCount = 0;
-    // The first path node is the chart's implicit start node.
     m_pathNodes.Append(NotePathPoint{static_cast<int>(pStream[0]), 0});
 
-    // Walk the note records as a raw byte cursor past the four-word header.
     const auto *pCursor = reinterpret_cast<const unsigned char *>(pStream + 4);
     m_pRecords = new RbffNoteRecord[nNoteCount];
     for (unsigned int i = 0; i < nNoteCount; ++i) {
@@ -632,7 +571,6 @@ int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
         record.SetType(chartNote.nType);
 
         unsigned int dwFlags = 0;
-        // An on-disk note type of 2 marks a long-note head.
         if (chartNote.nType == kChartKindLongHead) {
             record.SetType(0);
             dwFlags = kNoteFlagLongHead;
@@ -645,12 +583,10 @@ int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
             dwFlags |= kNoteFlagHasPath;
         }
         record.SetFlags(dwFlags);
-        // Scale the first target coordinate into the hash range.
         record.GetTargetCoords()[0] = static_cast<short>(static_cast<int>(
             (static_cast<float>(record.GetTargetCoords()[0]) / kFieldWidth) * kTargetScale));
     }
 
-    // Second pass: pair notes sharing an absolute end time and resolve each long note's tail.
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &head = m_pRecords[i];
         for (int j = 0; j < m_nNoteCount; ++j) {
@@ -663,7 +599,6 @@ int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
                               ((head.GetSide() == other.GetSide()) ? kNoteFlagSameLane :
                                                                      kNoteFlagDifferentLane));
             }
-            // Resolve a long-note head's tail against the note whose id matches its chain link.
             if ((head.GetFlags() & kNoteFlagLongHead) != 0 &&
                 head.GetChainLink().GetChainId() != -1 &&
                 head.GetChainLink().GetChainId() == other.GetNoteId()) {
@@ -683,7 +618,6 @@ int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
 
 /** @ghidraAddress 0x12fdf4 */
 int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
-    // Read the header fields as a raw byte cursor over the chart stream.
     const auto *pHeader = reinterpret_cast<const unsigned char *>(pStream);
     const auto readHeaderInt = [pHeader](int nOffset) {
         int value;
@@ -729,22 +663,16 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
         record.SetKind(staging.nKind);
         record.SetSide(staging.nSide);
         record.SetHoldKind(staging.nHoldKind);
-        // The on-disk type of 2 is remapped to 3; any other value passes through. The type is the
-        // fourth byte of the same word as the kind, side, and hold kind above.
         record.SetType(staging.nType == kChartKindLongHead ? kChartTypeLongHeadRender :
                                                              staging.nType);
-        // Four target coordinates are copied, not three: the fourth lands in the target pad.
         for (int j = 0; j < 3; ++j) {
             record.GetTargetCoords()[j] = staging.aTargetCoords[j];
         }
         record.SetTargetPad(staging.aTargetCoords[3]);
         record.SetFlags(staging.nFlags);
-        // A v10 chart carries its chain block already resolved, and the binary copies all twelve
-        // payload bytes into the record's chain link verbatim: the eight-byte `stur x9,[x8, #0x3c]`
-        // at 0x130038 and the four-byte `str w9,[x8, #0x44]` at 0x130030. So the head's next index
-        // comes from the file. Do not route this through SetLongNoteHead, which leaves the next
-        // index at the -1 marker for the legacy parser's resolve pass to fill: with it unset every
-        // long-note head is also its own tail, and InstallParsedNotes asserts on the first one.
+        // A v10 chart carries its chain block already resolved; the binary copies all twelve
+        // payload bytes verbatim (0x130038, 0x130030). Do not route this through SetLongNoteHead,
+        // which leaves the next index unset and makes every head its own tail.
         if ((staging.nFlags & kNoteFlagLongHead) != 0) {
             record.GetChainLink().SetFromChartPayload(
                 staging.nChainLink, staging.nChainPartner, staging.nField34, staging.nChainExtra);
@@ -752,7 +680,6 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
         FreeNotePathArray(&staging);
     }
 
-    // The tempo events follow the notes; a speed-change event (kind 3) appends a path node.
     for (int i = 0; i < m_nTempoEventCount; ++i) {
         RbffTempoEvent event;
         ClearNoteChartHeader(&event);
@@ -771,7 +698,6 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
         }
     }
 
-    // The slide records follow the tempo events.
     if (m_nSlideRecordCount > 0) {
         m_pSlideRecords = new RbffSlideRecord[m_nSlideRecordCount]();
         for (int i = 0; i < m_nSlideRecordCount; ++i) {
@@ -783,7 +709,6 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
             RbffSlideRecord &slide = m_pSlideRecords[i];
             slide.nNoteIndex = static_cast<short>(header.nField0);
             slide.nField2 = static_cast<short>(header.nField2);
-            // Remap the slide's target lane; the high sentinels map to negative markers.
             const unsigned short nLane = header.nField4;
             if (nLane >= 0xfffe) {
                 slide.nTimingSel = -2;
@@ -802,7 +727,6 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
                 static_cast<int>((static_cast<float>(header.nValueB) * kFieldWidth) / kTargetScale);
         }
 
-        // Link each run of slides to its owning note, counting the run into the note's slide count.
         RbffNoteRecord *pOwner = nullptr;
         int nLastIndex = -1;
         for (int i = 0; i < m_nSlideRecordCount; ++i) {
@@ -829,7 +753,6 @@ CMusicSheet2::~CMusicSheet2() {
     delete[] m_pSideIndexArray;
     m_pSideIndexArray = nullptr;
     if (m_pRecords != nullptr) {
-        // Free each note's path-point sub-buffer before releasing the record pool itself.
         for (int i = 0; i < m_nNoteCount; ++i) {
             delete[] m_pRecords[i].GetPathPoints();
             m_pRecords[i].SetPathPoints(nullptr);
@@ -844,7 +767,6 @@ CMusicSheet2::~CMusicSheet2() {
 
 /** @ghidraAddress 0x130d64 */
 bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
-    // Scan the note records for one on the target lane whose end time is near the query time.
     for (int i = 0; i < m_nNoteCount; ++i) {
         const RbffNoteRecord &record = m_pRecords[i];
         if (record.GetLane() != nTarget) {
@@ -854,7 +776,6 @@ bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
         if (std::abs(nEndTime - nTime) < kNearTimeTolerance) {
             return true;
         }
-        // A hold note also matches on its tail end.
         if (record.GetType() == kNoteTypeHold) {
             const int nTailTime = nEndTime + record.GetChainOffset();
             if (std::abs(nTailTime - nTime) < kNearTimeTolerance) {
@@ -867,9 +788,6 @@ bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
         }
     }
 
-    // Otherwise scan the slide records, keyed to their owning note's lane. A slide matches only
-    // when it is within one tick of the query time; one that still lies ahead of it ends the scan
-    // with the not-found sentinel instead.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         const RbffSlideRecord &slide = m_pSlideRecords[i];
         if (m_pRecords[slide.nNoteIndex].GetLane() != nTarget) {
@@ -880,8 +798,7 @@ bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
         if (std::abs(nDelta) < kNearTimeTolerance) {
             return true;
         }
-        // 0x130e28 selects the sentinel 5 when the slide is still ahead, and 0x130e54 turns 5 into
-        // false, so an ahead slide stops the scan without matching.
+        // 0x130e28 selects the sentinel 5 when the slide is still ahead and 0x130e54 turns 5 false.
         if (nDelta > 0) {
             return false;
         }
@@ -894,14 +811,11 @@ bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
 void CMusicSheet2::ResolveNoteScrollSpeeds() {
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
-        // Seed both speeds from the first path node.
         record.SetScrollStartSpeed(GetFirstPathSpeed());
         record.SetScrollEndSpeed(GetFirstPathSpeed());
 
         const int nStartTime = record.GetTimeA();
         const int nEndTime = record.GetTimeA() + record.GetTimeB();
-        // Walk the path nodes, advancing the start speed up to the note's start time and the end
-        // speed up to its end time, until a node lies past the note's end.
         for (int nNode = 1; nNode < m_pathNodes.GetCount(); ++nNode) {
             // A node's time is its y coordinate and its speed its x coordinate.
             if (GetSheetPathNode(nNode)->y <= nStartTime) {
@@ -924,7 +838,6 @@ int CMusicSheet2::CalculateChartTiming() {
     int aPerSideEndTime[kSideCount] = {};
     bool aSideSeen[kSideCount] = {};
 
-    // Walk the records backward: for each side, record the end time of its last side-object note.
     for (int i = m_nNoteCount - 1; i >= 0; --i) {
         const RbffNoteRecord &record = m_pRecords[i];
         const int nSide = record.GetSide();
@@ -937,7 +850,6 @@ int CMusicSheet2::CalculateChartTiming() {
         }
     }
 
-    // Count the notes whose end time runs past their side's side-object end time.
     for (int i = 0; i < m_nNoteCount; ++i) {
         const RbffNoteRecord &record = m_pRecords[i];
         if (record.GetType() == kNoteTypeSlideTail) {
@@ -952,7 +864,6 @@ int CMusicSheet2::CalculateChartTiming() {
         }
     }
 
-    // Count the slide records likewise, keyed to their owning note's side.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         const RbffSlideRecord &slide = m_pSlideRecords[i];
         const int nSide = m_pRecords[slide.nNoteIndex].GetSide();
@@ -961,7 +872,6 @@ int CMusicSheet2::CalculateChartTiming() {
         }
     }
 
-    // Select a scroll-speed tier from the chart note count and compute the timings.
     int nTier = 0;
     if (m_aChartNoteCounts[0] > kSpeedTierHighThreshold) {
         nTier = 2;
@@ -987,8 +897,6 @@ float CMusicSheet2::GetFirstPathSpeed() {
         return kDefaultPathSpeed;
     }
     assert(m_pathNodes.GetCount() > 0);
-    // The node's speed occupies the path point's x slot as a raw float bit pattern; 0x1316c8
-    // loads it with `ldr s0`, it does not convert an integer.
     return NodeSpeed(m_pathNodes[0].x);
 }
 
@@ -1015,8 +923,6 @@ RbffNoteRecord *CMusicSheet2::FindChainNote(int nLane, int nTime, int nField, in
     int nBestEndTime = -1;
     for (int i = nStartIndex; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
-        // Only notes on the lane that are either not chain notes or a chain head, with a distinct
-        // hit time, are candidates.
         if (record.GetLane() != nLane) {
             continue;
         }
@@ -1045,15 +951,12 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
     NoteLaneTracker tracker;
     tracker.SetNoteData(dwSeed);
 
-    // First pass: assign each note its display lane.
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         int nLane;
         if ((record.GetFlags() & kNoteFlagLongHead) != 0 && !record.GetChainLink().IsHead()) {
-            // A chain note that is not the head inherits its previous segment's display lane.
             nLane = m_pRecords[record.GetChainLink().GetChainId()].GetDisplayLane();
         } else if (record.GetHoldKind() == 1) {
-            // A hold note reserves its fixed colour-tone lane.
             tracker.ReserveNoteLane(record.GetHitTime() + record.GetHitWindow(),
                                     record.GetRoute(),
                                     record.GetLane(),
@@ -1062,8 +965,6 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
             nLane = record.GetColorTone();
         } else {
             if ((record.GetFlags() & kNoteFlagSideObject) != 0) {
-                // A side note first marks the colour-tone slots of overlapping same-lane hold
-                // notes, then spreads onto them.
                 unsigned char aScanFlags[kSideScanSlotCount] = {};
                 int nMarked = -1;
                 for (int j = i; j < m_nNoteCount; ++j) {
@@ -1107,13 +1008,11 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
         record.SetDisplayLane(nLane);
     }
 
-    // Second pass: resolve each free note's display colour, driven by a default-seeded generator.
     Random colourRng;
     colourRng.SetSeed(dwSeed);
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         const int nColourIndex = colourRng.GetRandomRangeExclusive(0, 2);
-        // Paint each of the note's path-point targets with the shared colour index.
         for (int j = 0; j < record.GetPointCount(); ++j) {
             const int nTarget = record.GetPathPoints() != nullptr ? record.GetPathPoints()[j] : -1;
             m_pRecords[nTarget].SetColorIndex(nColourIndex);
@@ -1125,8 +1024,6 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
         if (((static_cast<unsigned int>(record.GetLinkA()) >> 1 & 1) == 0 &&
              static_cast<unsigned int>(record.GetTimingSel()) < 10) ||
             record.GetHoldKind() == 1) {
-            // Map the timing selector through the slide-lane remap, then the note-colour table, and
-            // mirror it into the 0..6 colour range.
             int nRemapped;
             const unsigned int nSel = static_cast<unsigned int>(record.GetTimingSel());
             if (nSel < 0xfffffffe) {
@@ -1140,8 +1037,7 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
             } else {
                 nRemapped = -2;
             }
-            // The binary indexes the colour table with the remapped selector even when it is
-            // negative (-2..-4), reading the words just before the table; reproduced faithfully.
+            // The binary indexes the table with a negative selector, reading the words before it.
             const int nTableColour = kNoteColorTable[nRemapped];
             nColour = static_cast<unsigned int>(nTableColour - 1) < 6 ? 6 - nTableColour : 6;
         }
@@ -1151,8 +1047,6 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
 
 /** @ghidraAddress 0x131450 */
 void CMusicSheet2::AssignGreenTargets() {
-    // First pass: record each hold note's or colour-resolved note's chosen target and mark its
-    // slot.
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         int nTarget = -1;
@@ -1169,8 +1063,6 @@ void CMusicSheet2::AssignGreenTargets() {
         }
     }
 
-    // Second pass: for eligible green notes, initialise the availability bitmap then clear the
-    // slots blocked by overlapping and chained notes.
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         const bool bEligible =
@@ -1180,7 +1072,6 @@ void CMusicSheet2::AssignGreenTargets() {
             continue;
         }
 
-        // The seven reachable targets start available; the three beyond are not.
         for (int nSlot = 0; nSlot < 7; ++nSlot) {
             record.GetGreenTargets()[nSlot] = 1;
         }
@@ -1189,8 +1080,6 @@ void CMusicSheet2::AssignGreenTargets() {
         }
 
         const int nHitEnd = record.GetHitTime() + record.GetHitWindow();
-        // Clear the slots taken by notes overlapping this one's span; each search resumes past the
-        // note it found.
         int nSearchStart = 0;
         for (RbffNoteRecord *pOther = FindNoteInTimeRange(
                  record.GetLane(), nHitEnd, nHitEnd + record.GetRoute(), nSearchStart);
@@ -1200,15 +1089,13 @@ void CMusicSheet2::AssignGreenTargets() {
             nSearchStart = pOther->GetNoteId() + 1;
             if (pOther != &record && pOther->GetChosenTarget() != -1) {
                 record.GetGreenTargets()[pOther->GetChosenTarget()] = 0;
-                // A hold note also blocks its colour-tone slot.
                 if (pOther->GetType() == 1 && pOther->GetHoldKind() == 1) {
                     record.GetGreenTargets()[pOther->GetColorTone()] = 0;
                 }
             }
         }
 
-        // Walk the chain forward (field -3) and backward (field -4); each step re-derives the
-        // search from the note just found, and each side trims the bitmap from one end.
+        // Field -3 walks the chain forward and -4 backward; each side trims one end of the bitmap.
         int nForward = 0;
         for (RbffNoteRecord *pChain = &record;
              (pChain = FindChainNote(pChain->GetLane(),
@@ -1236,10 +1123,8 @@ void CMusicSheet2::AssignGreenTargets() {
 
 /** @ghidraAddress 0x130cbc */
 RbffNoteRecord *CMusicSheet2::GetChainLastNote(const RbffNoteRecord *pNote) {
-    // The start note must be a chain note and must not already be the chain's tail.
     assert((pNote->GetFlags() & kNoteFlagLongHead) != 0);
     assert(!pNote->GetChainLink().IsTail());
-    // Follow the next-segment links until a note has no next segment.
     int nIndex = pNote->GetChainLink().GetNext();
     while (m_pRecords[nIndex].GetChainLink().GetNext() >= 0) {
         nIndex = m_pRecords[nIndex].GetChainLink().GetNext();
@@ -1252,7 +1137,6 @@ RbffNoteRecord *CMusicSheet2::GetNoteRecordByIndex(int nIndex) {
     if (nIndex < 0 || nIndex >= m_nNoteCount) {
         return nullptr;
     }
-    // The pool is a contiguous array of records; kNoteRecordStride equals sizeof(RbffNoteRecord).
     return &m_pRecords[nIndex];
 }
 

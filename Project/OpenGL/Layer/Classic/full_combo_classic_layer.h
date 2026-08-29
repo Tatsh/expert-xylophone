@@ -114,18 +114,16 @@ private:
 
     struct EffectRecord {
         bool m_bActive = {}; /*!< Whether the effect is playing. +0x00 */
-        // unsigned char m_aPad1[3]; // +0x01 (alignment padding, compiler-inserted)
+        // unsigned char m_aPad1[3]; // +0x01
         float m_flTimer = {};    /*!< The effect animation clock, in milliseconds. +0x04 */
         bool m_bVoiceFired = {}; /*!< Set once the effect has fired its themed voice cue. +0x08 */
-        // unsigned char m_aPad9[3]; // +0x09 (alignment padding, compiler-inserted)
+        // unsigned char m_aPad9[3]; // +0x09
     };
 
-    ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                                     // +0x10: the per-slot sprite batches.
+    ne::C_TEXTURE *m_pTexture = {};                                 // +0x08: the gm_parts2 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x10
     int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x28: each slot's initial count.
-    bool m_bBuilt = {};                         // +0x34: set once the sprites are built.
-    // +0x35..+0x37 is alignment padding before the effect records.
-    // unsigned char m_aPad35[3]; // +0x35 (alignment padding, compiler-inserted)
-    EffectRecord m_aEffects[kColorCount] = {}; // +0x38: one effect record per player colour.
+    bool m_bBuilt = {};                         // +0x34
+    // unsigned char m_aPad35[3]; // +0x35
+    EffectRecord m_aEffects[kColorCount] = {}; // +0x38
 };

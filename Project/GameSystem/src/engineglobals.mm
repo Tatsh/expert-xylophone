@@ -594,7 +594,6 @@ __attribute__((constructor)) void InitializeParticleOffsetTable(void) {
 /** @ghidraAddress 0x1b81d8 */
 __attribute__((constructor)) void InitializeTutorialPastelLayoutTables(void) {
     @autoreleasepool {
-        // Indexed head, body, left tail, and right tail.
         g_aTutorialPastelClipRects[0] = CGRectMake(361.0, 274.0, 136.0, 96.0);
         g_aTutorialPastelClipRects[1] = CGRectMake(499.0, 274.0, 48.0, 56.0);
         g_aTutorialPastelClipRects[2] = CGRectMake(498.0, 332.0, 24.0, 22.0);

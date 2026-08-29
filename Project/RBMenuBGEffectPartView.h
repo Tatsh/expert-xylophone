@@ -22,23 +22,23 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBMenuBGEffectPartView : UIView
 
 /** Image name for the first (rearmost) artwork layer. */
-@property(strong, nonatomic, nullable) NSString *image1Path; // +0x10
+@property(strong, nonatomic, nullable) NSString *image1Path;
 /** Image name for the second artwork layer. */
-@property(strong, nonatomic, nullable) NSString *image2Path; // +0x18
+@property(strong, nonatomic, nullable) NSString *image2Path;
 /** Image name for the third (frontmost) artwork layer. */
-@property(strong, nonatomic, nullable) NSString *image3Path; // +0x20
+@property(strong, nonatomic, nullable) NSString *image3Path;
 /** The image view that renders the current particle sprite. */
-@property(strong, nonatomic, nullable) UIImageView *effect; // +0x28
+@property(strong, nonatomic, nullable) UIImageView *effect;
 /** The first sprite frame, loaded from @c image1Path. */
-@property(strong, nonatomic, nullable) UIImage *image1; // +0x30
+@property(strong, nonatomic, nullable) UIImage *image1;
 /** The second sprite frame, loaded from @c image2Path. */
-@property(strong, nonatomic, nullable) UIImage *image2; // +0x38
+@property(strong, nonatomic, nullable) UIImage *image2;
 /** The third sprite frame, loaded from @c image3Path. */
-@property(strong, nonatomic, nullable) UIImage *image3; // +0x40
+@property(strong, nonatomic, nullable) UIImage *image3;
 /** Whether an animation cycle is currently running. */
-@property(assign, nonatomic) BOOL isAnimation; // +0x08
+@property(assign, nonatomic) BOOL isAnimation;
 /** Whether a completed cycle should immediately spawn again and loop. */
-@property(assign, nonatomic) BOOL isAnimationEnableLoop; // +0x09
+@property(assign, nonatomic) BOOL isAnimationEnableLoop;
 
 /** Build the particle's frames and effect view for the current bounds. */
 - (void)setupView;

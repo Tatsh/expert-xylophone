@@ -707,38 +707,34 @@ private:
      */
     float GetCurrentJudgeTime() const;
 
-    NoteEffectMgr *m_pSheet = {};   // +0x00: the owning note manager.
-    RbffNoteRecord *m_pRecord = {}; // +0x08: the parsed chart record, or null for a synthetic note.
-    int m_nNoteIndex = {};          // +0x10: the note's index in its sheet.
-    int m_nState = {};              // +0x14: the note-state-machine state.
-    int m_nSubState = {};           // +0x18: the sub-state within the state.
-    int m_nRivalMode = {};          // +0x1c: the rival-play mode.
-    int m_nKind = {};               // +0x20: the note kind.
-    int m_nJudgeGrade = {};         // +0x24: the judgement grade.
-    S_VECTOR2 m_basePos = {};       // +0x28: the note's base (spawn) position.
-    float m_flSpawnTime = {};       // +0x30: the spawn time.
-    S_VECTOR2 m_pos = {};           // +0x34: the current position.
-    S_VECTOR2 m_prevPos = {};       // +0x3c: the previous-frame position.
-    S_VECTOR2 m_velocity = {};      // +0x44: the per-frame velocity.
-    bool m_bShotActive = {};        // +0x4c: whether the note is in its shot (reflect) phase.
+    NoteEffectMgr *m_pSheet = {};   // +0x00
+    RbffNoteRecord *m_pRecord = {}; // +0x08: null for a synthetic note.
+    int m_nNoteIndex = {};          // +0x10
+    int m_nState = {};              // +0x14
+    int m_nSubState = {};           // +0x18
+    int m_nRivalMode = {};          // +0x1c
+    int m_nKind = {};               // +0x20
+    int m_nJudgeGrade = {};         // +0x24
+    S_VECTOR2 m_basePos = {};       // +0x28: the spawn position.
+    float m_flSpawnTime = {};       // +0x30
+    S_VECTOR2 m_pos = {};           // +0x34
+    S_VECTOR2 m_prevPos = {};       // +0x3c
+    S_VECTOR2 m_velocity = {};      // +0x44: per frame.
+    bool m_bShotActive = {};        // +0x4c: the shot phase is the reflect phase.
     // unsigned char m_aReserved4d[3] = {}; // +0x4d
-    float m_flShotDecayTimer = {}; // +0x50: the shot phase's decaying lifetime timer.
-    float m_flShotSpeed = {};      // +0x54: the shot step's travel speed.
-    float m_flShotProgress = {};   // +0x58: the shot step's travel progress.
-    float m_flRenderX = {};        // +0x5c: the note's render X coordinate.
-    float m_flRenderY = {};        // +0x60: the note's render Y coordinate.
-    int m_nLongGrade = {}; // +0x64: a held long note's stored timing grade (set when it is hit).
-    int m_nActiveKind =
-        {}; // +0x68: the active segment kind (5 = none); a resolved slide note stores
-            //        its timing grade here.
-    int m_nActiveIndex = {}; // +0x6c: the active segment index (-1 = none).
-    int m_nActiveKind2 = {}; // +0x70: a second active segment kind (5 = none).
+    float m_flShotDecayTimer = {}; // +0x50
+    float m_flShotSpeed = {};      // +0x54
+    float m_flShotProgress = {};   // +0x58
+    float m_flRenderX = {};        // +0x5c
+    float m_flRenderY = {};        // +0x60
+    int m_nLongGrade = {};         // +0x64: set when the note is hit.
+    int m_nActiveKind = {};        // +0x68: 5 = none; a resolved slide note stores its grade here.
+    int m_nActiveIndex = {};       // +0x6c: -1 = none.
+    int m_nActiveKind2 = {};       // +0x70: 5 = none.
 
     struct SubEntry {
-        int nKind = {};  /*!< The segment kind (5 = none). +0x00 */
-        int nIndex = {}; /*!< The source note index (-1 = none). +0x04 */
-        // +0x08..+0x20: this slide point's three interpolation times and its start/end control
-        // positions, set by the approach step's slide-path setup (UpdateStepApproach).
+        int nKind = {};     /*!< The segment kind (5 = none). +0x00 */
+        int nIndex = {};    /*!< The source note index (-1 = none). +0x04 */
         float flTime0 = {}; /*!< The point's first interpolation time. +0x08 */
         float flTime1 = {}; /*!< The point's second interpolation time. +0x0c */
         float flTime2 =
@@ -747,10 +743,8 @@ private:
         float flStartY = {}; /*!< The point's start Y. +0x18 */
         float flEndX = {};   /*!< The point's end X. +0x1c */
         float flEndY = {};   /*!< The point's end Y. +0x20 */
-        // +0x24..+0x28: the point's live interpolated position, advanced each frame by the slide
-        // step (UpdateStepSlideExisted) along the two axis slopes.
-        float flCurX = {}; /*!< The point's current interpolated X. +0x24 */
-        float flCurY = {}; /*!< The point's current interpolated Y. +0x28 */
+        float flCurX = {};   /*!< The point's current interpolated X. +0x24 */
+        float flCurY = {};   /*!< The point's current interpolated Y. +0x28 */
         float flSlopeX =
             {}; /*!< The X slope over the first time span (endX-startX)/(t1-t0). +0x2c */
         float flSlopeY =
@@ -765,57 +759,42 @@ private:
         int nMissCount = {};     /*!< The point's miss/combo tally (constructed to 0). +0x40 */
         int nIncomingGrade = {}; /*!< The incoming grade/kind, 5 while unresolved. +0x44 */
     };
-    // +0x74..+0x4f3: the 16 per-note sub-entry slots.
     SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74
-    // +0x4f4 and +0x4f8: two words the constructor zeroes (str wzr at 0x131a70 and 0x131a74) and
-    // that no other method of the class reads or writes, so their role is not recovered.
+    // +0x4f4 and +0x4f8: two words the constructor zeroes (0x131a70, 0x131a74), read by nothing.
     int m_nField4f4 = {};
     int m_nField4f8 = {};
     // +0x4fc..+0x507: twelve bytes no method of the class touches at all, not even to clear them.
-    // unsigned char m_aReserved4fc[0xc] = {};
-    // +0x508: eight bytes the constructor zeroes in one store (str xzr at 0x131a7c) and that
-    // nothing reads. Their type is unknown, so they are modelled as raw storage rather than a
-    // pointer.
-    // unsigned char m_aReserved508[8] = {};
-    bool m_bPlayStateFlag510 = {}; // +0x510: a play-state flag cleared on a play reset.
+    // +0x508: eight bytes the constructor zeroes (0x131a7c) whose type is unknown.
+    bool m_bPlayStateFlag510 = {}; // +0x510: cleared on a play reset.
     // unsigned char m_aReserved511[3] = {}; // +0x511
-    int m_nDirectionSign = {}; // +0x514: the shot direction, clamped to [-2, 2].
-    int m_nWaypointCount = {}; // +0x518: the shot's waypoint count (abs of direction).
-    int m_nWaypointIndex = {}; // +0x51c: the current waypoint's index into the block.
-    // +0x520..+0x5bf: the waypoint/path block, zeroed on construction and re-laid-out by SetRoute.
-    // The route fills the first m_nWaypointCount + 2 nodes: the spawn point, one node per bounce,
+    int m_nDirectionSign = {}; // +0x514: clamped to [-2, 2].
+    int m_nWaypointCount = {}; // +0x518: the absolute value of the shot direction.
+    int m_nWaypointIndex = {}; // +0x51c
+    // SetRoute fills the first m_nWaypointCount + 2 nodes: the spawn point, one node per bounce,
     // and the target line.
     WaypointNode m_aWaypointBlock[kWaypointBlockNodeCount] = {}; // +0x520
-    WaypointNode *m_pCurrentWaypoint = {}; // +0x5c0: the current path waypoint node, or null.
-    bool m_bLongNoteActive = {};           // +0x5c8: set while a long note is held, cleared when
-                                           //         the note is hit and finalised.
+    WaypointNode *m_pCurrentWaypoint = {};                       // +0x5c0
+    bool m_bLongNoteActive = {}; // +0x5c8: cleared when the note is hit and finalised.
     // unsigned char m_aReserved5c9[3] = {};  // +0x5c9
-    float m_flAppearScale = {}; // +0x5cc: the approach step's appearance scale, eased in.
-    float m_flFadeTimer =
-        {};                  // +0x5d0: the fade-out step's decaying timer, also the approach step's
-                             //         appearance progress fraction.
-    float m_flBornTime = {}; // +0x5d4: the note's spawn epoch, the approach progress's start time.
-    bool m_bRenderReflectPath =
-        {};                      // +0x5d8: set while the note's held/shot render endpoint is live.
-    bool m_bRenderShotTail = {}; // +0x5d9: set by the shot step to draw the reflected tail.
-    bool m_bScored = {}; // +0x5da: set once a normal (non-held) note has been scored and finalised.
-    bool m_bJustHit =
-        {}; // +0x5db: the perfect-hit flag, cleared when the note's path links notify.
-    bool m_bShotDecaying = {};  // +0x5dc: whether the shot phase runs its decay timer.
-    bool m_bShotResolved = {};  // +0x5dd: set once a CPU/ghost shot has been scored and its gauge
-                                //         penalty applied, gating the shot-direction pick.
-    bool m_bMissProcessed = {}; // +0x5de: whether a passed/missed tap note was already handled.
-    bool m_bTouched = {};       // +0x5df: the frame's nearest-hit winner flag.
-    bool m_bOwnSide = {};       // +0x5e0: the note's own side flag, used when it has no record.
-    bool m_bIsPad = {};         // +0x5e1: whether the device is an iPad, set at construction.
+    float m_flAppearScale = {}; // +0x5cc: eased in.
+    float m_flFadeTimer = {};   // +0x5d0: also the approach step's appearance progress fraction.
+    float m_flBornTime = {};    // +0x5d4: the approach progress's start time.
+    bool m_bRenderReflectPath = {}; // +0x5d8: set while the held/shot render endpoint is live.
+    bool m_bRenderShotTail = {};    // +0x5d9
+    bool m_bScored = {};            // +0x5da: only a normal (non-held) note sets it.
+    bool m_bJustHit = {};           // +0x5db: cleared when the note's path links notify.
+    bool m_bShotDecaying = {};      // +0x5dc
+    bool m_bShotResolved = {};      // +0x5dd: gates the shot-direction pick.
+    bool m_bMissProcessed = {};     // +0x5de
+    bool m_bTouched = {};           // +0x5df: the frame's nearest-hit winner.
+    bool m_bOwnSide = {};           // +0x5e0: used when the note has no record.
+    bool m_bIsPad = {};             // +0x5e1: set at construction.
     // unsigned char m_aReserved5e2[2] = {}; // +0x5e2
-    int m_nAutoShotMode = {}; // +0x5e4: the shot's auto-play mode (0 user-driven, 1 CPU, else off).
-    int m_nColorLockState =
-        {}; // +0x5e8: the recorded/assigned note result: the replay ghost stores the recorded judge
-    //         here, and the random colour pass leaves it open when it is above the threshold.
-    bool m_bEmphasisFallback = {}; // +0x5ec: the versus-mode emphasis fallback / JR flag.
+    int m_nAutoShotMode = {};      // +0x5e4: 0 user-driven, 1 CPU, else off.
+    int m_nColorLockState = {};    // +0x5e8: the replay ghost stores the recorded judge here.
+    bool m_bEmphasisFallback = {}; // +0x5ec: also the JR flag.
     // unsigned char m_aReserved5ed[3] = {}; // +0x5ed
-    float m_flLongRate = {}; // +0x5f0: the recorded long-note rate (from the replay).
+    float m_flLongRate = {}; // +0x5f0: from the replay.
     // unsigned char m_aReserved5f4[4] = {}; // +0x5f4: trailing state to the 0x5f8-byte size.
 };
 

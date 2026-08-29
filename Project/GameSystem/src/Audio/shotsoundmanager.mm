@@ -17,7 +17,6 @@ static NSString *const kSlotNames[] = {
 
 static NSString *const kVariantNames[] = {@"JUST", @"GREAT", @"GOOD", @"RIVAL"};
 
-// No shot is pending at this priority value.
 constexpr int kIdlePriority = 5;
 // In milliseconds: one frame at 30 fps.
 constexpr float kRetriggerPeriod = 33.333332f; // 0x42055555 at 0x1cd564/0x1cd5a4
@@ -119,7 +118,6 @@ unsigned int ShotSoundManager::PlaySlot(unsigned long uChannel, int iSlot, int i
     }
     const float flVolume = GameSystem::GetGameSystem()->GetShotVolume() * kVolumeScale;
     m_flVolume = flVolume;
-    // Play only when the slot's variant is loaded; variant zero also accepts the shared load.
     if (!m_aSlotLoaded[iSlot] && (iVariant != 0 || !m_bSharedLoaded)) {
         return m_aChannelHandle[uChannel];
     }

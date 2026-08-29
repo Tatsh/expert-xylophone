@@ -329,7 +329,6 @@ static NSString *const kExtendedLevelNames[] = {
             levelView.center = CGPointMake(button.bounds.size.width * kOverlayHalf + offsetX,
                                            button.bounds.size.height * kOverlayHalf + offsetY);
         } else {
-            // On the Colette themes the number nudges one point left on the iPad idiom.
             CGFloat offsetX = -static_cast<CGFloat>(isPad ? 1 : 0);
             levelView.center = CGPointMake(button.bounds.size.width * kOverlayHalf + offsetX,
                                            button.bounds.size.height * kOverlayHalf);

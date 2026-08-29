@@ -14,8 +14,8 @@
 #import "enginecrypto.h"
 #import "engineglobals.h"
 
-// The White accessors read the @c _b members and the Black accessors the @c _w ones; the binary
-// names its accessors the opposite way round from its assets.
+// The binary names its accessors the opposite way round from its assets: the White accessors read
+// the _b entries and the Black accessors the _w ones.
 static NSString *const kEntryMusic = @"bgm";
 static NSString *const kEntryMusicBasic = @"bgm_b";
 static NSString *const kEntryMusicMedium = @"bgm_m";
@@ -151,8 +151,7 @@ static UIImage *DoubleResolutionImageFromData(NSData *data) {
                          orientation:UIImageOrientationUp];
 }
 
-// The binary spells this out as colorWithRed:0 green:0 blue:0 alpha:1, which is exactly
-// +blackColor.
+// The binary spells this out as colorWithRed:0 green:0 blue:0 alpha:1.
 static UIColor *BlackTintColor(void) {
     return UIColor.blackColor;
 }
@@ -228,7 +227,6 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 + (NSMutableData *)decodeBF:(NSMutableData *)data Key:(const char *)key KeyLength:(int)keyLength {
     /** @ghidraAddress 0x5eb78 */
     unsigned char digest[kBlowfishKeyLength];
-    // The binary allocates this with operator new[], so the original file was Objective-C++.
     char *derived = (char *)malloc((size_t)keyLength);
     for (int index = 0; index < keyLength; ++index) {
         derived[index] = (char)index + key[index];
@@ -254,8 +252,7 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     if (![archive openFile:zipPath]) {
         return nil;
     }
-    // getData: declares NSData * but always returns the NSMutableData it filled, and decodeBF:
-    // deciphers it in place.
+    // getData: declares NSData * but always returns the NSMutableData it filled.
     NSMutableData *data = (NSMutableData *)[archive getData:entryName];
     if (data == nil) {
         [archive closeFile];
@@ -766,7 +763,7 @@ static NSData *GuardedBrownImageData(MusicData *self, NSData *imageData) {
 - (UIImage *)setColor:(UIImage *)image withColor:(UIColor *)color {
     /** @ghidraAddress 0x657e4 */
     // The binary reads image.size twice, taking the width from one send and the height from the
-    // other, so the rect is built component-wise and its size reused for the context.
+    // other.
     CGRect bounds = CGRectMake(0, 0, image.size.width, image.size.height);
     UIGraphicsBeginImageContextWithOptions(bounds.size, NO, image.scale);
     CGContextRef context = UIGraphicsGetCurrentContext();

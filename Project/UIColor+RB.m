@@ -1,29 +1,4 @@
-//
-//  UIColor+RB.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (category UIColor(RB)). Verified against
-//  the arm64 disassembly of InitializeUIColorPalette (@0x5517c): the routine pushes an autorelease
-//  pool, fills sixteen global colour slots (originally DAT_1003cff88 through DAT_1003d0000, eight
-//  bytes apart) via colorWithRed:green:blue:alpha:, whiteColor, and purpleColor, then pops the
-//  pool.
-//  The decompiler dropped the arguments of the first and third slots because their components are
-//  register-zeroed (movi v0/v1/v2, #0); the disassembly shows the dimming cover takes alpha 0.5
-//  (fmov d3, 0x3fe0000000000000 at @0x55158) and the opaque black takes alpha 1.0
-//  (fmov d8, 0x3ff0000000000000 at @0x551a4). Every red, green, and blue component is an exact
-//  eight-bit value over 255, read from the double constants at DAT_1002ef5e8 upward and confirmed
-//  by reading that memory. Several colours recur under more than one slot, matching the binary.
-//
-//  The binary has no named accessor for these colours: each screen reads the raw global slot
-//  directly. The palette is modelled here as an ordered table built once behind
-//  +rbPaletteColorAtIndex:, mirroring the binary's single-shot InitializeUIColorPalette.
-//
-
 #import "UIColor+RB.h"
-
-// The RGB component constants, each an exact eight-bit value over 255, read from the double
-// constants at DAT_1002ef5e8 upward. The names mirror the renamed Ghidra globals
-// (g_PaletteColor<Name><Channel>).
 
 // Green grass (63, 167, 0). @ghidraAddress 0x2ef5e8, 0x2ef5f0
 static const CGFloat kPaletteColorGreenGrassRed = 63.0 / 255.0;
@@ -52,8 +27,6 @@ static const CGFloat kPaletteColorGoldRed = 229.0 / 255.0;
 static const CGFloat kPaletteColorGoldGreen = 183.0 / 255.0;
 static const CGFloat kPaletteColorGoldBlue = 49.0 / 255.0;
 
-// The absent channel of a colour whose red, green, or blue is register-zeroed in the binary, and
-// the opaque and half alphas.
 static const CGFloat kPaletteChannelZero = 0.0;
 static const CGFloat kPaletteAlphaOpaque = 1.0;
 static const CGFloat kPaletteDimmingCoverAlpha = 0.5;

@@ -3,7 +3,6 @@
 #import "StoreExtendNoteInfo.h"
 #import "StoreUtil.h"
 
-// The key under which the extend-note-detail JSON carries a server-side error description.
 static NSString *const kStoreExtendNoteInfoErrorKey = @"Error";
 
 @implementation StoreExtendNoteInfoDownloader
@@ -75,8 +74,7 @@ static NSString *const kStoreExtendNoteInfoErrorKey = @"Error";
     if (self.downloader != downloader) {
         return;
     }
-    // Faithful oddity: the respondsToSelector: guard names -storeExtendInfoDownloaderProceed: (no
-    // "Note"), whereas the message actually sent is -storeExtendNoteInfoDownloaderProceed:.
+    // The binary's guard names the selector without the "Note", unlike the message it sends.
     if ([self.delegate respondsToSelector:@selector(storeExtendInfoDownloaderProceed:)]) {
         [self.delegate storeExtendNoteInfoDownloaderProceed:self];
     }
@@ -86,8 +84,7 @@ static NSString *const kStoreExtendNoteInfoErrorKey = @"Error";
     if (self.downloader != downloader) {
         return;
     }
-    // Faithful oddity: the respondsToSelector: guard names -storeExtendInfoDownloaderError: (no
-    // "Note"), whereas the message actually sent is -storeExtendNoteInfoDownloaderError:.
+    // The binary's guard names the selector without the "Note", unlike the message it sends.
     if ([self.delegate respondsToSelector:@selector(storeExtendInfoDownloaderError:)]) {
         [self.delegate storeExtendNoteInfoDownloaderError:self];
     }

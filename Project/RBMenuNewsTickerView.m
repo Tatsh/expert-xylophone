@@ -134,7 +134,6 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     // Anchoring top-left makes the layer position the text's origin rather than its centre.
     newsLabel.layer.anchorPoint = CGPointZero;
 
-    // The anchor-point animation runs on the ticker's own layer, not the text label's.
     CGPoint anchorPoint = self.layer.anchorPoint;
     CABasicAnimation *anchorAnimation = [CABasicAnimation animationWithKeyPath:@"anchorPoint"];
     anchorAnimation.duration = 0.0;

@@ -136,23 +136,22 @@ private:
      */
     PlayColorLayer();
 
-    ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] =
-        {};                                     // +0x10: the per-batch sprite instancers.
-    int m_aBatchBaseIndex[kBatchCount] = {};    // +0x20: unused per-batch base index.
-    int m_aBatchCapacity[kBatchCount] = {};     // +0x28: each batch's sprite capacity.
-    int m_aPartBaseIndex[kPartGroupCount] = {}; // +0x30: each part group's base index.
-    float m_aGaugePosX[kGaugeLaneXCount] = {};  // +0x58
-    float m_aGaugePosY[kGaugeLaneYCount] = {};  // +0x64
-    float m_flGlowPhase = {};                   // +0x6c: the pulsing glow rotation phase.
-    bool m_bBuilt = {};                         // +0x70: set once the batches are built.
-    bool m_bGaugeColorDirty = {}; // +0x71: set when a gauge animation snaps or the fill is set.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10
+    int m_aBatchBaseIndex[kBatchCount] = {};                   // +0x20: unused.
+    int m_aBatchCapacity[kBatchCount] = {};                    // +0x28
+    int m_aPartBaseIndex[kPartGroupCount] = {};                // +0x30
+    float m_aGaugePosX[kGaugeLaneXCount] = {};                 // +0x58
+    float m_aGaugePosY[kGaugeLaneYCount] = {};                 // +0x64
+    float m_flGlowPhase = {};                                  // +0x6c
+    bool m_bBuilt = {};                                        // +0x70
+    bool m_bGaugeColorDirty = {}; // +0x71: set when an animation snaps or the fill is set.
     // unsigned char m_aPad72[2] = {}; // +0x72
-    float m_flAnimFrom = {};        // +0x74: the shrink/grow animation's cached from-value.
-    LinearTween m_shrinkChannel;    // +0x78: the shared gauge shrink/grow channel (fill at +0x88).
-    float m_flPulseClock = {};      // +0x8c: the wrapping clock driving the glow phase.
-    float m_flGaugeBrightness = {}; // +0x90: the gauge fill brightness, seeded to 1 (full).
-    int m_nPlayColorValue = {};     // +0x94: the theme-indexed play-colour value.
-    float m_flScaleY = {};          // +0x98: a scale the constructor seeds to 1.
-    float m_flScaleZ = {};          // +0x9c: a scale the constructor seeds to 1.
+    float m_flAnimFrom = {};        // +0x74
+    LinearTween m_shrinkChannel;    // +0x78: the fill value sits at +0x88.
+    float m_flPulseClock = {};      // +0x8c
+    float m_flGaugeBrightness = {}; // +0x90: seeded to 1 (full).
+    int m_nPlayColorValue = {};     // +0x94
+    float m_flScaleY = {};          // +0x98: seeded to 1.
+    float m_flScaleZ = {};          // +0x9c: seeded to 1.
 };

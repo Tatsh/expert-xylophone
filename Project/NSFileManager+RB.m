@@ -1,43 +1,24 @@
-//
-//  NSFileManager+RB.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (category NSFileManager(RB)). Verified
-//  against the arm64 disassembly (the createDirectorysAtPath: attributes dictionary is variadic and
-//  partly dropped by the decompiler, and every path getter dispatches to the NSFileManager class
-//  object even though the metadata files the methods in the instance-method list). Each cached path
-//  getter assigns its global twice, first the searched path and then an owned copy of it, so the
-//  global is written rather than a local.
-//
-
 #import "NSFileManager+RB.h"
 #import "deviceenvironment.h"
 
-// The minimum free space, in bytes, that @c isFreeSystemSize requires (50 MiB).
 static const unsigned long long kMinimumFreeSystemSize = 50 * 1024 * 1024;
 
-// The sub-directory of the Documents directory that holds padding files.
 static NSString *const kPaddingDirectoryName = @"padding";
 
-// The caches sub-directory used as the temporary directory when @c NSTemporaryDirectory is
-// unavailable.
 static NSString *const kTemporaryFilesDirectoryName = @"Temporary Files";
 
-// Attribute values applied to each directory level created by @c createDirectorysAtPath:.
 static NSString *const kDirectoryOwnerName = @"owner";
 static NSString *const kDirectoryGroupName = @"group";
 
-// The attribute keys the same method uses. All but the modification date reach the code as their
-// own constant strings rather than as the Foundation symbols of the same spelling.
+// All but the modification date reach the code as their own constant strings rather than as the
+// Foundation symbols of the same spelling.
 static NSString *const kFileOwnerAccountNameKey = @"NSFileOwnerAccountName";
 static NSString *const kFileGroupOwnerAccountNameKey = @"NSFileGroupOwnerAccountName";
 static NSString *const kFilePosixPermissionsKey = @"NSFilePosixPermissions";
 static NSString *const kFileExtensionHiddenKey = @"NSFileExtensionHidden";
 
-// The directory the same method starts its walk from.
 static NSString *const kRootDirectoryPath = @"/";
 
-// Lazily initialised, owned copies of the resolved standard directory paths.
 // @ghidraAddress 0x3df510 (g_pDocumentDirectoryPathCache)
 // @ghidraAddress 0x3df518 (g_pApplicationSupportDirectoryPathCache)
 // @ghidraAddress 0x3df520 (g_pCachesDirectoryPathCache)
@@ -91,8 +72,8 @@ static NSString *g_pResourcePathCache = nil;
             [fileManager changeCurrentDirectoryPath:component];
             continue;
         }
-        // The fourth object is nil, so the list terminates there and the permissions and
-        // extension-hidden entries never reach the dictionary.
+        // The fourth object is nil, so the permissions and extension-hidden entries never reach
+        // the dictionary.
         NSDictionary *attributes =
             [NSDictionary dictionaryWithObjectsAndKeys:[NSDate date],
                                                        NSFileModificationDate,
@@ -125,8 +106,8 @@ static NSString *g_pResourcePathCache = nil;
 
 + (unsigned long long)freeFileSystemSize {
     /** @ghidraAddress 0x1c9ba0 */
-    // The binary measures the cached Documents path, which iOS always creates, not the
-    // application-support path this category can also vend, which it does not.
+    // The binary measures the Documents path, not the application-support path this category also
+    // vends.
     NSString *path = GetDocumentsDirectoryPath();
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];

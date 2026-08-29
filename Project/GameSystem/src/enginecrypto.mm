@@ -1,19 +1,10 @@
-//
-//  enginecrypto.mm
-//  REFLEC BEAT plus
-//
-//  The engine's MD5 and SHA-256 digest helpers. Reconstructed from Ghidra project rb458, program
-//  rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "enginecrypto.h"
 
 #include <cstring>
 
-// The digest byte counts and the hexadecimal capacities their strings pre-reserve.
 namespace {
-constexpr int kMd5HexCapacity = 0x20;    // 16 digest bytes rendered as two hex characters each.
-constexpr int kSha256HexCapacity = 0x40; // 32 digest bytes rendered as two hex characters each.
+constexpr int kMd5HexCapacity = 0x20;
+constexpr int kSha256HexCapacity = 0x40;
 } // namespace
 
 /** @ghidraAddress 0x174dc */

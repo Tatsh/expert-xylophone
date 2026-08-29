@@ -1,13 +1,3 @@
-//
-//  RBMusicCell.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicCell). The soft-float
-//  subview and layer geometry of -SetupView and the button frames of -initWithFrame: were recovered
-//  from the arm64 disassembly at 0xbaa1c/0xbb064, where the decompiler folds the floating-point
-//  register moves into pseudo-variables and drops the zero-valued origin arguments of -setFrame:.
-//
-
 #import "RBMusicCell.h"
 
 #import "RBUserSettingData.h"
@@ -16,14 +6,12 @@
 #import "deviceenvironment.h"
 #import "engineruntime.h"
 
-// The frame-bonus background images, indexed by ScoreDataFrameBonusType (None, Bronze, and Gold).
 static NSString *const kBgImageNames[] = {
     @"01_music_select/sel_mbg_d",
     @"01_music_select/sel_mbg_g",
     @"01_music_select/sel_mbg_p",
 };
 
-// The clear-rank base images per difficulty, indexed by the difficulty slot.
 static NSString *const kRankBaseImageNames[] = {
     @"01_music_select/sel_cl_bg_1",
     @"01_music_select/sel_cl_bg_2",
@@ -31,7 +19,6 @@ static NSString *const kRankBaseImageNames[] = {
     @"01_music_select/sel_cl_bg_7",
 };
 
-// The full-combo base images per difficulty, indexed by the difficulty slot.
 static NSString *const kClearBaseImageNames[] = {
     @"01_music_select/sel_cl_bg_4",
     @"01_music_select/sel_cl_bg_5",
@@ -39,8 +26,7 @@ static NSString *const kClearBaseImageNames[] = {
     @"01_music_select/sel_cl_bg_8",
 };
 
-// The clear-rank indicator images, indexed by the clear-rank tier returned by GetClearRank (highest
-// tier first).
+// Indexed by the GetClearRank tier, highest tier first.
 static NSString *const kRankImageNames[] = {
     @"01_music_select/sel_cl_5",
     @"01_music_select/sel_cl_4",
@@ -50,7 +36,6 @@ static NSString *const kRankImageNames[] = {
     @"01_music_select/sel_cl_0",
 };
 
-// The full-combo indicator images, indexed by the derived full-combo tier (0 through 3).
 static NSString *const kClearImageNames[] = {
     @"01_music_select/sel_cl_6",
     @"01_music_select/sel_cl_7",
@@ -58,25 +43,19 @@ static NSString *const kClearImageNames[] = {
     @"01_music_select/sel_cl_8",
 };
 
-// The "add to playlist" and "remove from playlist" button images.
 static NSString *const kAddButtonImageName = @"01_music_select/sel_add";
 static NSString *const kRemoveButtonImageName = @"01_music_select/sel_remove";
 
-// The cell shows four difficulty slots. Declared as an enumerator so it can size the rank and
-// clear-type arrays below, which a static const cannot do in C.
 enum {
     kDifficultyCount = 4,
 };
 
-// The add and remove buttons share a fixed 29x29 frame; the narrow-iPad idiom nudges it up and to
-// the left.
 static const CGFloat kPlaylistButtonSize = 29.0;
-// Both the add and the remove button take this origin, each from its own idiom test: the phone arms
-// at 0xbabf0 and 0xbadbc are identical, so one shared frame reproduces them.
+// Both buttons take this origin; the two phone arms are identical.
+// @ghidraAddress 0xbabf0, 0xbadbc
 static const CGFloat kPlaylistButtonOriginXNarrow = -1.5;
 static const CGFloat kPlaylistButtonOriginYNarrow = -2.0;
 
-// The artwork square, its top-left origin, and both are chosen by device idiom.
 static const CGFloat kArtworkOriginXNarrow = 7.0;
 static const CGFloat kArtworkOriginXWide = 14.0;
 static const CGFloat kArtworkOriginYNarrow = 8.0;
@@ -84,34 +63,26 @@ static const CGFloat kArtworkOriginYWide = 15.0;
 static const CGFloat kArtworkSizeNarrow = 78.0;
 static const CGFloat kArtworkSizeWide = 156.0;
 
-// The clear-rank and full-combo indicator columns start at these x positions, chosen by font
-// variant. The clear column sits at the artwork's left edge; the rank column is offset rightwards.
 static const CGFloat kClearColumnXNarrow = 7.0;
 static const CGFloat kClearColumnXWide = 14.0;
 static const CGFloat kRankColumnXNarrow = 64.0;
 static const CGFloat kRankColumnXWide = 143.0;
 
-// The indicator rows, top to bottom, for each of the four difficulties, chosen by device idiom.
 static const CGFloat kIndicatorRowsNarrow[] = {75.0, 64.0, 53.0, 42.0};
 /** @ghidraAddress 0x2eeed8, 0x3010d0, 0x3010d8, 0x3010e0 */
 static const CGFloat kIndicatorRowsWide[] = {152.0, 133.0, 114.0, 95.0};
 
-// The title label metrics for the wide-iPad idiom.
 static const CGFloat kTitleOriginXWide = 18.0;
 static const CGFloat kTitleOriginYWide = 182.0;
 static const CGFloat kTitleWidthWide = 146.0;
 static const CGFloat kTitleHeightWide = 18.0;
 
-// The title label metrics for the narrow-iPad idiom, sized relative to the cell's own frame. The
-// bottom inset differs by one point between the Classic/Limelight themes and the Colette theme.
 static const CGFloat kTitleOriginXNarrow = 5.0;
 static const CGFloat kTitleBottomInsetClassic = 23.0;
 static const CGFloat kTitleBottomInsetColette = 22.0;
 static const CGFloat kTitleWidthInsetNarrow = 10.0;
 static const CGFloat kTitleHeightNarrow = 15.0;
 
-// The artist label and its scrim, present only in the wide-iPad idiom. Both sit below the title
-// at a shared origin and width; the scrim is one point tall.
 static const CGFloat kArtistOriginXWide = 18.0;
 static const CGFloat kArtistOriginYWide = 197.0;
 static const CGFloat kArtistWidthWide = 146.0;
@@ -120,24 +91,16 @@ static const CGFloat kArtistScrimHeight = 1.0;
 // Yes, this exceeds 1.0; the binary sets it verbatim (a normal scale factor is <= 1.0).
 static const CGFloat kArtistMinimumScaleFactor = 5.0;
 
-// The title font point size, chosen by device idiom, and the fixed artist font point size.
 static const CGFloat kTitleFontSizeNarrow = 12.0;
 static const CGFloat kTitleFontSizeWide = 14.0;
 static const CGFloat kArtistFontSize = 12.0;
 
-// The Colette and Limelight themes draw the labels in black at this opacity; the Classic theme uses
-// white.
 static const CGFloat kDarkThemeTextAlpha = 0.7;
 
-// The wide-font scrim behind the title is a half-opaque white (Classic) or black (Limelight) fill;
-// the Colette theme leaves it clear.
 static const CGFloat kTitleScrimAlpha = 0.5;
 
-// The cross-fade duration shared by -show and -hide.
 static const NSTimeInterval kCrossFadeDuration = 0.15;
 
-// Private helpers de-inlined from the repeated indicator-layer construction and label-colouring
-// blocks of -SetupView.
 @interface RBMusicCell ()
 - (CALayer *)addIndicatorLayerWithImageName:(NSString *)imageName
                                     originX:(CGFloat)originX
@@ -146,8 +109,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
 @end
 
 @implementation RBMusicCell {
-    // The cached clear-rank and full-combo tier last applied to each difficulty's indicator layer,
-    // so a refresh only swaps a layer's contents when its tier changes.
+    // The tier last applied, so a refresh only swaps a layer's contents when the tier changes.
     int m_RankType[kDifficultyCount];
     int m_ClearType[kDifficultyCount];
 }
@@ -203,7 +165,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
 
     self.backgroundColor = UIColor.clearColor;
 
-    // The frame-bonus background layer, sized to its image and pinned to the cell's top-left.
     self.bgType = ScoreDataFrameBonusTypeNone;
     UIImage *bgImage = [UIImage imageWithName:kBgImageNames[self.bgType]];
     self.bgImageLayer = [CALayer layer];
@@ -213,7 +174,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
 
     BOOL wide = IsPad();
 
-    // The artwork view.
     self.artworkImageView = [[UIImageView alloc] init];
     self.artworkImageView.backgroundColor = UIColor.clearColor;
     self.artworkImageView.frame = CGRectMake(wide ? kArtworkOriginXWide : kArtworkOriginXNarrow,
@@ -222,8 +182,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
                                              wide ? kArtworkSizeWide : kArtworkSizeNarrow);
     [self.contentView addSubview:self.artworkImageView];
 
-    // Build the four indicator layers for each difficulty: full-combo base, full-combo, clear-rank
-    // base, and clear-rank. The clear-rank type and full-combo type caches start cleared.
     NSMutableArray<CALayer *> *rankBase = [NSMutableArray arrayWithCapacity:kDifficultyCount];
     NSMutableArray<CALayer *> *rank = [NSMutableArray arrayWithCapacity:kDifficultyCount];
     NSMutableArray<CALayer *> *clearBase = [NSMutableArray arrayWithCapacity:kDifficultyCount];
@@ -262,8 +220,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     self.clearBaseImageLayers = [NSArray arrayWithArray:clearBase];
     self.clearImageLayers = [NSArray arrayWithArray:clear];
 
-    // The title label. The wide-iPad idiom uses a fixed frame; the narrow-iPad idiom sizes the
-    // label from the cell's own frame. Only the Classic, Limelight, and Colette themes create it.
     if (wide) {
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(kTitleOriginXWide,
                                                                     kTitleOriginYWide,
@@ -292,7 +248,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
         [UIFont systemFontOfSize:(wide ? kTitleFontSizeWide : kTitleFontSizeNarrow)];
     [self.contentView addSubview:self.titleLabel];
 
-    // The artist label and its scrim exist only in the wide-iPad idiom.
     if (!wide) {
         return;
     }
@@ -324,8 +279,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     [self.contentView addSubview:self.artistLabel];
 }
 
-// Create a hidden indicator layer for the given image, sized to the image and positioned at the
-// given origin, add it to the content layer, and return it.
 - (CALayer *)addIndicatorLayerWithImageName:(NSString *)imageName
                                     originX:(CGFloat)originX
                                     originY:(CGFloat)originY {
@@ -339,8 +292,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     return layer;
 }
 
-// Colour a label for the current theme: white for Classic, and black at reduced opacity for
-// Limelight and Colette.
 - (void)applyThemeTextColor:(RBUserSettingDataTheme)thema toLabel:(UILabel *)label {
     if (thema == RBUserSettingDataThemeClassic) {
         label.textColor = UIColor.whiteColor;
@@ -367,14 +318,12 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     UIImage *bgImage = [UIImage imageWithName:kBgImageNames[bgBonusType]];
     self.bgImageLayer.contents = (__bridge id)bgImage.CGImage;
 
-    // The binary keeps the cell's origin but resizes it to the background image.
     self.frame = CGRectMake(
         self.frame.origin.x, self.frame.origin.y, bgImage.size.width, bgImage.size.height);
 
     for (NSInteger i = 0; i < kDifficultyCount; ++i) {
-        // Read the difficulty's achievement rate, full-combo flag, and personal clear count. The
-        // fourth (Special) slot comes from spData; the three-argument entry point passes no spData,
-        // so its fourth slot falls through to the never-played branch.
+        // The three-argument entry point passes no spData, so the fourth slot falls through to
+        // the never-played branch.
         float achievementRate = 0.0f;
         BOOL fullCombo = NO;
         int playCount = 0;
@@ -407,11 +356,9 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
             }
         }
 
-        // The achievement rate classifies the clear rank.
         int clearRank = GetClearRank(achievementRate);
 
         if (clearRank == 0 && playCount == 0) {
-            // Never played: hide every indicator for this difficulty.
             self.rankBaseImageLayers[i].hidden = YES;
             self.rankImageLayers[i].hidden = YES;
             self.clearBaseImageLayers[i].hidden = YES;
@@ -427,9 +374,6 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
             self.rankImageLayers[i].contents = (__bridge id)rankImage.CGImage;
         }
 
-        // Derive the full-combo indicator tier from the clear rank and the full-combo flag. A clear
-        // rank that is neither zero nor one, with no full combo, gives tier one; a full combo gives
-        // tier two; and a full combo at such a clear rank gives tier three.
         BOOL rankAboveOne = (clearRank != 1) && (clearRank != 0);
         int comboTier = fullCombo ? 2 : (rankAboveOne ? 1 : 0);
         if (fullCombo && rankAboveOne) {

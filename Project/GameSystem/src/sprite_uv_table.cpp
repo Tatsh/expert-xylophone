@@ -1,16 +1,5 @@
-//
-//  sprite_uv_table.cpp
-//  REFLEC BEAT plus
-//
-//  The shared sprite UV atlas table, transcribed from the binary's read-only data. Reconstructed
-//  from Ghidra project rb458, program rb458. @ghidraAddress values are relative to the image base.
-//
-
 #include "sprite_uv_table.h"
 
-// The shared sprite UV atlas the layout records index by atlas-frame number. Read-only ROM data
-// transcribed from the binary; the entry count is set by the span up to the next table
-// (g_aAltFrameMeshUvMid at 0x2f19d8) rather than by any bound in the code.
 // @ghidraAddress 0x2efcc8
 const SpriteUvEntry g_aSpriteUvTable[] = {
     {0.001953125f, 0.7167969f, 0.17578125f, 0.17578125f},

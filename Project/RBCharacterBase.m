@@ -1,10 +1,3 @@
-//
-//  RBCharacterBase.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCharacterBase).
-//
-
 #import "RBCharacterBase.h"
 
 @implementation RBCharacterBase

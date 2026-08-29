@@ -25,11 +25,11 @@ constexpr int kAdditiveBlendMode = 1;
 constexpr unsigned int kColorMax = 255;
 
 struct ZoomSpriteLayout {
-    float flAnchorX;   // +0x00: the sprite's anchor X.
-    float flAnchorY;   // +0x04: the sprite's anchor Y.
-    float flSizeX;     // +0x08: the sprite's pixel width.
-    float flSizeY;     // +0x0c: the sprite's pixel height.
-    int nUvFrameIndex; // +0x10: the frame into the shared sprite UV atlas.
+    float flAnchorX;
+    float flAnchorY;
+    float flSizeX;
+    float flSizeY;
+    int nUvFrameIndex;
 };
 
 // @ghidraAddress 0x301e4c
@@ -132,7 +132,6 @@ constexpr float kEffectDuration = 1600.0f;
 // @ghidraAddress 0x2ec6b0
 constexpr float kEffectStartTime = 100.0f;
 
-// The phone draws the whole effect at the same half scale that halves the viewport.
 constexpr float kHalfScale = 0.5f;
 constexpr float kFullScale = 1.0f;
 

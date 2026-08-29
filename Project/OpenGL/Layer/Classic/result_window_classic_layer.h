@@ -756,23 +756,15 @@ private:
                             unsigned int nIntensity,
                             unsigned int nAlpha);
 
-    ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x08: the selection-background atlas.
-    ne::C_TEXTURE *m_pPartsTexture = {};      // +0x10: the result-parts atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                    // +0x18: the per-slot sprite batches.
-    bool m_bSpritesBuilt = {}; // +0x58: set once the set is built.
-    // +0x59..+0x5b is alignment padding before the default alpha.
-    // unsigned char m_aPad59[3]; // +0x59 (alignment padding, compiler-inserted)
-    unsigned int m_nDefaultAlpha = {}; // +0x5c: the default sprite alpha (255).
-    float m_flDefaultScale = {};       // +0x60: the default sprite scale (1.0).
-    int m_nNetworkPlay =
-        {}; // +0x64: set for a networked/online play (game type not single-player).
-    float m_flSlideTimer =
-        {}; // +0x68: a signed slide/settle timer, advanced toward zero each frame.
-    // +0x6c..+0x8b: the four result-screen gesture hit-box regions. The customize-character reload
-    // flag reuses the first region's tap-edge byte (+0x71): the customize overlay and the
-    // result-screen gesture are never live at the same time, so the binary overlaps them in the
-    // same byte.
+    ne::C_TEXTURE *m_pBackgroundTexture = {};                       // +0x08
+    ne::C_TEXTURE *m_pPartsTexture = {};                            // +0x10
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x18
+    bool m_bSpritesBuilt = {};                                      // +0x58
+    // unsigned char m_aPad59[3]; // +0x59
+    unsigned int m_nDefaultAlpha = {}; // +0x5c: 255.
+    float m_flDefaultScale = {};       // +0x60: 1.0.
+    int m_nNetworkPlay = {};           // +0x64: set when the game type is not single-player.
+    float m_flSlideTimer = {};         // +0x68: signed, advanced toward zero each frame.
     struct GestureTouchRegion {
         int nTouchId = {};  /*!< The tracked touch id (-1 when none). +0x00 */
         bool bDown = {};    /*!< Whether a touch is currently inside the region. +0x04 */
@@ -781,74 +773,54 @@ private:
         // unsigned char m_aPad07[1] = {}; // +0x07
     };
     GestureTouchRegion m_aGestureRegions[kGestureRegionCount] = {}; // +0x6c
-    // +0x8c..+0x93: the in-game side-slider drag region. It shares the region stride but carries a
-    // float swipe start-Y where a hit-box region carries its flag bytes, so it is modelled on its
-    // own rather than as a fifth GestureTouchRegion.
-    int m_nSliderTouchId = {};   // +0x8c: the slider's tracked touch id (-1 when none).
-    float m_flSliderStartX = {}; // +0x90: the slider touch's start X, for the drag threshold.
-    int m_nRotationCounterA =
-        {}; // +0x94: a decoration rotation counter, wrapping every 400 frames.
-    int m_nRotationCounterB =
-        {};                    // +0x98: a decoration rotation counter, wrapping every 192 frames.
-    int m_nRotationFrame = {}; // +0x9c: the decoration animation frame index (0 through 3).
+    // The side-slider drag region shares the gesture-region stride but carries a float swipe
+    // start-Y where a hit-box region carries its flag bytes, so it is modelled on its own.
+    int m_nSliderTouchId = {};    // +0x8c: -1 when none.
+    float m_flSliderStartX = {};  // +0x90: for the drag threshold.
+    int m_nRotationCounterA = {}; // +0x94: wraps every 400 frames.
+    int m_nRotationCounterB = {}; // +0x98: wraps every 192 frames.
+    int m_nRotationFrame = {};    // +0x9c: 0 through 3.
     // +0xa0..+0xb7: further layer state, still being worked out.
     // unsigned char m_aReservedA0[0x18] = {}; // +0xa0
-    // +0xb8..+0x12f: the five result-score/effect display animation channels.
     FloatTween m_aScoreAnimChannels[kScoreAnimCount] = {}; // +0xb8
-    Polygon2dTrail *m_apTrails[kTrailCount] = {};          // +0x130: the ribbon trails.
-    bool m_bScoreAnimActive =
-        {}; // +0x150: set while the score animation (and gesture hold) is active.
-    // +0x151..+0x153 is alignment padding before the gesture-hold timer.
+    Polygon2dTrail *m_apTrails[kTrailCount] = {};          // +0x130
+    bool m_bScoreAnimActive = {};                          // +0x150: also gates the gesture hold.
     // unsigned char m_aPad151[3] = {}; // +0x151
-    float m_flGestureHoldTimer = {}; // +0x154: accumulates toward the gesture-hold release timeout.
+    float m_flGestureHoldTimer = {}; // +0x154
     // +0x158..+0x15f: further layer state, still being worked out.
     // unsigned char m_aReserved158[8] = {}; // +0x158
-    int m_nPlayerLevel = {};      // +0x160: the player's level, copied from the game system.
-    int m_nPlayerExp = {};        // +0x164: the player's experience, from the game system.
-    int m_nGainedExp = {};        // +0x168: the experience gained this play (when levelling).
-    int m_nExpThreshold = {};     // +0x16c: the level-up experience threshold.
-    bool m_bMainAssetActive = {}; // +0x170: whether the main customize asset is loaded and shown
-                                  //         (cleared when the asset is unavailable or the level cap
-                                  //         has no threshold).
-    // +0x171..+0x173 is alignment padding.
+    int m_nPlayerLevel = {};      // +0x160
+    int m_nPlayerExp = {};        // +0x164
+    int m_nGainedExp = {};        // +0x168
+    int m_nExpThreshold = {};     // +0x16c
+    bool m_bMainAssetActive = {}; // +0x170: cleared when the asset is unavailable.
     // unsigned char m_aPad171[3] = {}; // +0x171
-    // +0x174: the result screen's own elapsed-time accumulator, advanced by the frame delta on the
-    // pad render path and reset to zero each round. Read and written with float instructions
-    // (`ldr s0` / `fadd` / `str s0`), so it is a float despite being reset from an integer zero.
+    // Read and written with float instructions, so it is a float despite the integer-zero reset.
     float m_flResultElapsed = {}; // +0x174
-    float m_flExpAnimTimer = {};  // +0x178: the level-up experience-bar reveal timer (0 at reset).
-    bool m_bExpAnimSettled = {};  // +0x17c: set once the experience-bar reveal reaches its target.
-    // +0x17d..+0x17f is alignment padding.
+    float m_flExpAnimTimer = {};  // +0x178
+    bool m_bExpAnimSettled = {};  // +0x17c
     // unsigned char m_aPad17d[3] = {}; // +0x17d
-    int m_nLevelUpStep = {};       // +0x180: the level-up animation step.
-    int m_nRevealSeHandle = {};    // +0x184: the experience-bar reveal sound-effect play handle
-                                   //         (-1 when none is playing).
-    bool m_bCustomizePending = {}; // +0x188: whether a customize asset swap is pending.
-    // +0x189..+0x18b is alignment padding.
+    int m_nLevelUpStep = {};       // +0x180
+    int m_nRevealSeHandle = {};    // +0x184: -1 when none is playing.
+    bool m_bCustomizePending = {}; // +0x188
     // unsigned char m_aPad189[3] = {};  // +0x189
-    float m_flPhoneOverlayTimer = {}; // +0x18c: the phone customize-overlay slide timer (0 to 300).
-    int m_nMainAssetId = {};          // +0x190: the main customize asset id being shown.
-    int m_nTrackIndexC = {};          // +0x194: the resolved music-track index (-1 when unset).
-    // +0x198: a customize-asset sub-state byte cleared when the main asset loads.
-    bool m_bMainAssetSubState = {}; // +0x198
-    // +0x199..+0x19b is alignment padding.
+    float m_flPhoneOverlayTimer = {}; // +0x18c: 0 to 300.
+    int m_nMainAssetId = {};          // +0x190
+    int m_nTrackIndexC = {};          // +0x194: -1 when unset.
+    bool m_bMainAssetSubState = {};   // +0x198: cleared when the main asset loads.
     // unsigned char m_aPad199[3] = {};    // +0x199
-    float m_flMainAssetScale = {};      // +0x19c: the main customize asset scale, reset to 1.0.
-    bool m_bCustomizePreviewShown = {}; // +0x1a0: whether the customize character preview is shown.
-    // +0x1a1..+0x1a3 is alignment padding.
+    float m_flMainAssetScale = {};      // +0x19c: reset to 1.0.
+    bool m_bCustomizePreviewShown = {}; // +0x1a0
     // unsigned char m_aPad1a1[3] = {}; // +0x1a1
-    float m_flNameplateTimer =
-        {}; // +0x1a4: the customize nameplate-overlay slide timer (0 to 500).
-    int m_nCustomizeCharacterId = {}; // +0x1a8: the shown customize character/costume id (-1 none).
-    int m_nCustomizeSubId = {};       // +0x1ac: the customize character's cached unlock sub-id.
-    int m_nCustomizePendingId = {}; // +0x1b0: the customize character id pending on the next toggle
-                                    //         (-1 when none).
-    bool m_bTwitterAvailable = {};  // +0x1b4: whether the Twitter share API is available.
-    bool m_bPortrait = {};          // +0x1b5: selects the portrait position/separator tables.
-    // +0x1b6..+0x1b7 is alignment padding before the result scores.
+    float m_flNameplateTimer = {};    // +0x1a4: 0 to 500.
+    int m_nCustomizeCharacterId = {}; // +0x1a8: -1 when none.
+    int m_nCustomizeSubId = {};       // +0x1ac
+    int m_nCustomizePendingId = {};   // +0x1b0: -1 when none.
+    bool m_bTwitterAvailable = {};    // +0x1b4
+    bool m_bPortrait = {};            // +0x1b5: selects the portrait tables.
     // unsigned char m_aPad1b6[2] = {}; // +0x1b6
-    // +0x1b8: the two result score values seeded from the scene. The pad render path indexes them
-    // by a computed side/colour index, so they are one array rather than two scalars.
+    // +0x1b8: one array rather than two scalars because the pad render path indexes them by a
+    // computed side/colour index.
     int m_aResultScores[kSideCount] = {};
 };
 

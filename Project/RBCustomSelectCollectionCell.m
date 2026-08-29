@@ -3,7 +3,6 @@
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
 
-// The customize selection overlay image bundled with the app.
 static NSString *const kSelectedOverlayImageName = @"04_customize/cus_sel_1";
 
 @implementation RBCustomSelectCollectionCell
@@ -35,7 +34,6 @@ static NSString *const kSelectedOverlayImageName = @"04_customize/cus_sel_1";
 - (void)layoutSubviews {
     [super layoutSubviews];
 
-    // Centre the item button horizontally within the cell, keeping its own size.
     CGFloat cellWidth = self.frame.size.width;
     CGFloat buttonWidth = self.itemButton.frame.size.width;
     CGFloat buttonHeight = self.itemButton.frame.size.height;

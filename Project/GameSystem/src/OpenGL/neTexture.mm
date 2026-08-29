@@ -94,7 +94,6 @@ void C_TEXTURE::EnsureCacheList() {
     if (g_ppTextureCacheHead != nullptr) {
         return;
     }
-    // Value-initialisation zeroes the head cell, as the binary does before the sentinel is ready.
     g_ppTextureCacheHead = new C_TEXTURE *();
     auto *pSentinel = new C_TEXTURE();
     *g_ppTextureCacheHead = pSentinel;
@@ -159,8 +158,7 @@ int C_TEXTURE::LoadFromUIImage(const char *pszName) {
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
 
-    // Upload RGBA (format 1) when the image has an alpha channel; otherwise repack to tight 24-bit
-    // RGB (format 2) to save texture memory.
+    // The tight 24-bit repack saves texture memory when the image has no alpha channel.
     unsigned char *pUploadData;
     int nFormat;
     if (alphaInfo >= kCGImageAlphaPremultipliedLast && alphaInfo <= kCGImageAlphaFirst) {
@@ -299,7 +297,6 @@ int C_TEXTURE::ReloadFromSourceName() {
     m_nImageWidth = static_cast<int>(CGImageGetWidth(cgImage));
     m_nImageHeight = static_cast<int>(CGImageGetHeight(cgImage));
 
-    // GL ES 1.x requires power-of-two texture dimensions.
     int nPotWidth = 1;
     while (nPotWidth < m_nImageWidth) {
         nPotWidth <<= 1;
@@ -328,8 +325,6 @@ int C_TEXTURE::ReloadFromSourceName() {
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
 
-    // Upload RGBA (format 1) when the image has alpha; otherwise repack to tight 24-bit RGB
-    // (format 2).
     unsigned char *pUploadData;
     int nFormat;
     if (alphaInfo >= kCGImageAlphaPremultipliedLast && alphaInfo <= kCGImageAlphaFirst) {

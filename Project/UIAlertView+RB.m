@@ -120,8 +120,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
 
 + (void)strageAlertView:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0x169f2c */
-    // The declared argument is never read, and its type is inferred from the sibling factories
-    // rather than confirmed from the method metadata.
+    // The declared argument is never read.
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:RBLocalizedUIString(kLocalizedKeyCaution)
                                             message:RBLocalizedUIString(kLocalizedKeyFreeSpaceLow)

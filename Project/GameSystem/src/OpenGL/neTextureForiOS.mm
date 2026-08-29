@@ -4,14 +4,11 @@
 
 #include "neTexture.h"
 
-// The pixel formats ne::C_TEXTURE::CreateAndCache accepts.
 enum {
     kTexturePixelFormatRgba = 1,
     kTexturePixelFormatRgb = 2,
 };
 
-// The bitmap context is always built as 8-bit-per-component RGBA, four bytes per texel; the tight
-// repack drops the alpha byte and leaves three.
 constexpr int kBitsPerComponent = 8;
 constexpr int kRgbaBytesPerTexel = 4;
 constexpr int kRgbBytesPerTexel = 3;
@@ -38,10 +35,8 @@ constexpr int kRgbBytesPerTexel = 3;
         nPotHeight <<= 1;
     }
 
-    // Draw the image into a zeroed RGBA8888 bitmap. CoreGraphics uses a bottom-left origin, so the
-    // context is flipped vertically before the image is drawn at its original size into the
-    // (larger) power-of-two buffer. The flip translates by the image height rather than the
-    // allocated height, which is what leaves the drawn region at the bottom of the allocation.
+    // The flip translates by the image height rather than the allocated height, which leaves the
+    // drawn region at the bottom of the power-of-two allocation.
     const CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
     const int nRgbaStride = nPotWidth * kRgbaBytesPerTexel;
     auto *pRgbaBuffer = new unsigned char[nPotHeight * nRgbaStride]();
@@ -59,8 +54,7 @@ constexpr int kRgbBytesPerTexel = 3;
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
 
-    // Upload RGBA when the image has an alpha channel; otherwise repack to tight 24-bit RGB to save
-    // texture memory.
+    // An image without an alpha channel is repacked to tight 24-bit RGB to save texture memory.
     unsigned char *pUploadData;
     int nFormat;
     if (alphaInfo >= kCGImageAlphaPremultipliedLast && alphaInfo <= kCGImageAlphaFirst) {

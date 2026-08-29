@@ -4,8 +4,6 @@
 
 #import "RecommendCore.h"
 
-// The -[RecommendCore redirectViewContollerWithRequest:] outcome meaning the request's URL was
-// rewritten in place.
 static const int kRecommendRedirectReloadRequest = 2;
 
 @interface RecommendWebViewController ()

@@ -8,20 +8,14 @@
 #import "StoreDownloadTask.h"
 
 @interface StoreDownloadManager () {
-    // The binary reaches both of these as ivars rather than through accessors. m_IsStarted has no
-    // accessor at all, and currentIndex has only the getter the header declares, so giving either
-    // a property with a setter would add a selector the shipped class does not carry. The flag
-    // keeps the binary's name, which has no leading underscore.
+    // Reached as ivars: a property setter would add a selector the shipped class does not carry.
     BOOL m_IsStarted;
     unsigned int _currentIndex;
 }
 
 @end
 
-// The download-start and delegate-dispatch blocks below are repeated verbatim in -start, -restart,
-// and -downloaderFinished:. They are shared as file-static functions rather than as methods
-// because the binary has no selector for either, and a method would add a name to the class that
-// the runtime metadata does not carry.
+// File-static rather than methods: the binary carries no selector for either.
 static void StartTaskAtCurrentIndex(StoreDownloadManager *manager);
 static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
 
@@ -44,8 +38,6 @@ static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
 }
 
 - (void)dealloc {
-    // The binary cancels an in-flight download here, so a manager released mid-transfer does not
-    // leave its downloader running. Its own [super dealloc] is not reproduced: ARC emits that.
     if (self.fileDownloader) {
         [self.fileDownloader cancel];
         self.fileDownloader = nil;
@@ -88,9 +80,7 @@ static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
     }
 }
 
-// Build a plain (in-memory) downloader for the current task's URL and start it against this
-// manager. The task's own file path is applied later, when the body is written in
-// -downloaderFinished:.
+// The downloader is in-memory; the task's file path is applied later in -downloaderFinished:.
 static void StartTaskAtCurrentIndex(StoreDownloadManager *manager) {
     StoreDownloadTask *task = manager.tasks[manager->_currentIndex];
     NSURL *url = [NSURL URLWithString:task.fileURL];
@@ -98,8 +88,6 @@ static void StartTaskAtCurrentIndex(StoreDownloadManager *manager) {
     [manager.fileDownloader startDownloadingWithDelegate:manager];
 }
 
-// Forward a lifecycle event to the delegate when it responds. The binary dispatches through
-// -performSelector:withObject: rather than a direct message.
 static void NotifyDelegate(StoreDownloadManager *manager, SEL selector) {
     if ([manager.delegate respondsToSelector:selector]) {
 #pragma clang diagnostic push

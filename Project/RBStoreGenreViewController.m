@@ -7,21 +7,14 @@
 #import "StorePackListGenre.h"
 #import "deviceenvironment.h"
 
-// The localised navigation title key and its empty fallback value, shared with the store page.
 static NSString *const kStoreCategoryKey = @"Category";
 static NSString *const kStoreEmptyTitle = @"";
 
-// The reuse identifier for the genre table's cells.
 static NSString *const kStoreGenreTableCellIdentifier = @"StoreGenreTableCell";
 
-// The fixed genre-row height, in points.
 static const CGFloat kGenreRowHeight = 50.0;
-
-// The genre cell text size, in points.
 static const CGFloat kGenreCellFontSize = 19.0;
 
-// The preferred content size: a fixed width, and a height of the genre count times the row height
-// clamped to a maximum.
 static const CGFloat kGenrePreferredContentWidth = 320.0;
 static const CGFloat kGenrePreferredContentMaxHeight = 600.0;
 
@@ -109,9 +102,7 @@ static const CGFloat kGenrePreferredContentMaxHeight = 600.0;
                                  withObject:@((NSUInteger)indexPath.row)];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    // The binary branches on the iPad idiom here, but both arms dismiss identically, so the call
-    // is unconditional.
-    (void)IsPad();
+    (void)IsPad(); // Yes, the binary branches here but both arms dismiss identically.
     [self.storeViewCtrl hideGenreSelect:nil];
 }
 

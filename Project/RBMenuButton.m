@@ -21,8 +21,7 @@ static const UIViewAutoresizing kMenuButtonEffectTextAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// An fmov immediate at 0x9dcb0, not a pool slot, so it carries no @ghidraAddress. Ghidra prints it
-// as -0x4010000000000000, but the imm8 field 0xf0 decodes to -1.0, not -4.0.
+// An fmov immediate at 0x9dcb0 whose imm8 field 0xf0 decodes to -1.0, not the -4.0 Ghidra prints.
 static const CGFloat kMenuButtonCapInsetMargin = 1.0;
 
 // Only the first four of the binary's five slots per type are used; the fifth is a fallback.

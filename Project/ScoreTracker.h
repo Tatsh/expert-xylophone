@@ -12,8 +12,7 @@
  * rank, and a trailing field.
  *
  * The eleven 32-bit slots are addressed both by index (through @c ScoreTracker::GetPlayRecordCell)
- * and by name; slot 8 is reinterpreted as a float rate, slots 9 and 10 as integers. The trailing
- * @c // +0xNN comments document the original 32-bit member offsets for reference only.
+ * and by name; slot 8 is reinterpreted as a float rate, slots 9 and 10 as integers.
  */
 struct PlayRecord {
     int nCells[8] = {}; /*!< The per-grade judgement counters (cell indices 0 through 7). +0x00 */
@@ -26,8 +25,7 @@ struct PlayRecord {
  * The process-wide per-play score and judgement tracker.
  *
  * Holds one @c PlayRecord for each of the two player sides, behind a leading state field. Created
- * on first use by @c GetScoreTracker. The trailing @c // +0xNN comments document the original
- * 32-bit member offsets for reference only.
+ * on first use by @c GetScoreTracker.
  */
 class ScoreTracker {
 public:
@@ -215,6 +213,6 @@ public:
     static ScoreTracker *shared();
 
 private:
-    int m_nTotalNotes = {}; // +0x00: the chart's total note count (rate denominator).
-    PlayRecord m_aRecords[kSideCount] = {}; // +0x04: one play record per player side.
+    int m_nTotalNotes = {};
+    PlayRecord m_aRecords[kSideCount] = {};
 };

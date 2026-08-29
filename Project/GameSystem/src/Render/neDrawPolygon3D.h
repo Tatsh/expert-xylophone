@@ -169,48 +169,43 @@ public:
 private:
     void LoadBoneMatrices(neGLESRenderer *pRenderer);
     void PremultiplyVertexColors();
-    // The first derived member sits at +0xd4, in the polymorphic base's tail padding.
-    unsigned int m_nDrawMode = {};     // +0xd4: the primitive draw mode.
-    unsigned int m_nVertexFormat = {}; // +0xd8: the vertex-format attribute bit-set.
-    int m_nVertexCount = {};           // +0xdc: the number of vertices.
-    int m_nVertexStride = {};          // +0xe0: the interleaved byte stride between vertices.
-    int m_nPositionOffset = {};        // +0xe4: the position byte offset within a vertex.
-    int m_nUvOffset = {};           // +0xe8: the texcoord (format bit 1) byte offset in a vertex.
-    int m_nColorOffset = {};        // +0xec: the colour (format bit 2) byte offset in a vertex.
-    int m_nMatrixWeightOffset = {}; // +0xf0: the bone-weight byte offset within a vertex.
-    int m_nMatrixIndexOffset = {};  // +0xf4: the bone-index byte offset within a vertex.
-    int m_nBoneComponentCount = {}; // +0xf8: the number of bone components per vertex.
-    bool m_bVertexBufferExternal = {}; // +0xfc: whether the vertex buffer is externally owned.
-    bool m_bVertexDirty = {};          // +0xfd: set when a vertex attribute is modified.
-    bool m_bColorDirty = {};           // +0xfe: set when a vertex colour is modified.
-    // +0xff is alignment padding before the vertex VBO handle.
+    unsigned int m_nDrawMode = {};     // +0xd4
+    unsigned int m_nVertexFormat = {}; // +0xd8
+    int m_nVertexCount = {};           // +0xdc
+    int m_nVertexStride = {};          // +0xe0
+    int m_nPositionOffset = {};        // +0xe4
+    int m_nUvOffset = {};              // +0xe8: format bit 1.
+    int m_nColorOffset = {};           // +0xec: format bit 2.
+    int m_nMatrixWeightOffset = {};    // +0xf0
+    int m_nMatrixIndexOffset = {};     // +0xf4
+    int m_nBoneComponentCount = {};    // +0xf8
+    bool m_bVertexBufferExternal = {}; // +0xfc
+    bool m_bVertexDirty = {};          // +0xfd
+    bool m_bColorDirty = {};           // +0xfe
     // unsigned char m_aPadFf[1] = {};  // +0xff
-    unsigned int m_dwVertexVbo = {}; // +0x100: the vertex-buffer GL handle.
-    // +0x104 is alignment padding before the vertex-buffer pointer.
+    unsigned int m_dwVertexVbo = {}; // +0x100
     // unsigned char m_aPad104[4] = {}; // +0x104
-    void *m_pVertexArray = {};  // +0x108: the interleaved vertex-attribute buffer.
-    S_RGBA *m_pColorArray = {}; // +0x110: the per-vertex colour array (a.k.a. texcoord slot).
-    int m_nIndexCount = {};     // +0x118: the number of entries in the index buffer.
-    unsigned int m_nDrawIndexCount = {}; // +0x11c: the element count passed to the indexed draw.
-    bool m_bIndexBufferExternal = {};    // +0x120: whether the index buffer is externally owned.
-    bool m_bIndexDirty = {};             // +0x121: set when the index buffer is modified.
-    // +0x122 is alignment padding before the index VBO handle.
+    void *m_pVertexArray = {};           // +0x108: interleaved attributes.
+    S_RGBA *m_pColorArray = {};          // +0x110: also the texcoord slot.
+    int m_nIndexCount = {};              // +0x118
+    unsigned int m_nDrawIndexCount = {}; // +0x11c: the count passed to the indexed draw.
+    bool m_bIndexBufferExternal = {};    // +0x120
+    bool m_bIndexDirty = {};             // +0x121
     // unsigned char m_aPad122[2] = {};    // +0x122
-    unsigned int m_dwIndexVbo = {};     // +0x124: the index-buffer GL handle.
-    unsigned short *m_pIndexArray = {}; // +0x128: the 16-bit index buffer.
-    float m_flTranslateX = {};          // +0x130: the model translation X.
-    float m_flTranslateY = {};          // +0x134: the model translation Y.
-    float m_flTranslateZ = {};          // +0x138: the model translation Z.
-    float m_flRotationZ = {};           // +0x13c: the model rotation about Z.
-    float m_flScale = {};               // +0x140: the uniform model scale.
-    // +0x144..+0x147 is alignment padding before the per-bone array pointers.
-    // unsigned char m_aPad144[4] = {}; // +0x144
-    void *m_pBoneTranslate = {}; // +0x148: the per-bone translation array.
-    void *m_pBoneRotation = {};  // +0x150: the per-bone rotation array.
-    void *m_pBoneScale = {};     // +0x158: the per-bone scale array.
-    C_TEXTURE *m_pTexture = {};  // +0x160: the retained texture.
-    int m_aTexEnvParams[4] = {}; // +0x168: the texture-environment parameters.
-    int m_nBlendMode = {};       // +0x178: the blend-mode identifier.
+    unsigned int m_dwIndexVbo = {};     // +0x124
+    unsigned short *m_pIndexArray = {}; // +0x128
+    float m_flTranslateX = {};          // +0x130
+    float m_flTranslateY = {};          // +0x134
+    float m_flTranslateZ = {};          // +0x138
+    float m_flRotationZ = {};           // +0x13c
+    float m_flScale = {};               // +0x140
+    // unsigned char m_aPad144[4] = {}; // +0x144..+0x147
+    void *m_pBoneTranslate = {}; // +0x148
+    void *m_pBoneRotation = {};  // +0x150
+    void *m_pBoneScale = {};     // +0x158
+    C_TEXTURE *m_pTexture = {};  // +0x160: retained.
+    int m_aTexEnvParams[4] = {}; // +0x168
+    int m_nBlendMode = {};       // +0x178
 };
 
 /**

@@ -585,49 +585,48 @@ public:
     }
 
 private:
-    int m_nTimeA = {};      // +0x00: the note's primary time stamp.
-    int m_nTimeB = {};      // +0x04: the note's secondary time stamp.
-    int m_nNoteId = {};     // +0x08: the note identifier.
-    int m_nStartTime = {};  // +0x0c: the note's start time.
-    int m_nPointCount = {}; // +0x10: the number of path points.
-    // unsigned char m_aPad14[4]; // +0x14 (alignment padding, compiler-inserted)
-    short *m_pPathPoints = {};      // +0x18: the packed path-point array.
-    int m_nKind = {};               // +0x20: the note kind.
-    int m_nSide = {};               // +0x24: the note's play side.
-    int m_nHoldKind = {};           // +0x28: the hold-note kind.
-    int m_nType = {};               // +0x2c: the note type.
-    short m_aTargetCoords[3] = {};  // +0x30: the note's target coordinates (the first is scaled).
+    int m_nTimeA = {};      // +0x00
+    int m_nTimeB = {};      // +0x04
+    int m_nNoteId = {};     // +0x08
+    int m_nStartTime = {};  // +0x0c
+    int m_nPointCount = {}; // +0x10
+    // unsigned char m_aPad14[4]; // +0x14
+    short *m_pPathPoints = {};      // +0x18
+    int m_nKind = {};               // +0x20
+    int m_nSide = {};               // +0x24
+    int m_nHoldKind = {};           // +0x28
+    int m_nType = {};               // +0x2c
+    short m_aTargetCoords[3] = {};  // +0x30: the first element is scaled.
     short m_nTargetPad = {};        // +0x36: cleared alongside the target coordinates.
-    unsigned int m_dwFlags = {};    // +0x38: the note flag bits.
-    NoteChainLink m_chainLink = {}; // +0x3c: the 12-byte chain-link block threading chain notes.
-    int m_nHitTime = {};            // +0x48: the scheduled hit time.
-    int m_nHitWindow = {};          // +0x4c: the hit-window width.
-    int m_nSideIndex = {}; // +0x50: the note's index within its side (assigned on install).
-    int m_nLane = {};      // +0x54: the note's lane.
-    int m_nLaneSlot = {};  // +0x58: the lane slot.
-    // unsigned char m_aReserved5c[4] = {}; // +0x5c: an unused four-byte gap.
-    int m_nRoute = {};       // +0x60: the note's route.
+    unsigned int m_dwFlags = {};    // +0x38
+    NoteChainLink m_chainLink = {}; // +0x3c
+    int m_nHitTime = {};            // +0x48
+    int m_nHitWindow = {};          // +0x4c
+    int m_nSideIndex = {};          // +0x50: assigned on install.
+    int m_nLane = {};               // +0x54
+    int m_nLaneSlot = {};           // +0x58
+    // unsigned char m_aReserved5c[4] = {}; // +0x5c
+    int m_nRoute = {};       // +0x60
     int m_nTargetCopy = {};  // +0x64: a copy of the first target coordinate.
-    int m_nChainOffset = {}; // +0x68: the chain offset.
-    int m_nColorTone = {};   // +0x6c: the colour tone.
-    bool m_bBasicNote = {};  // +0x70: whether the note is a basic note.
-    // unsigned char m_aPad71[3]; // +0x71 (alignment padding, compiler-inserted)
-    int m_nDisplayLane = {};          // +0x74: the display lane.
-    int m_nColorIndex = {};           // +0x78: the colour index.
-    int m_nColor = {};                // +0x7c: the packed colour.
-    int m_nLinkA = {};                // +0x80: the primary link.
-    int m_nTimingSel = {};            // +0x84: the timing selector.
-    unsigned char m_aReserved88 = {}; // +0x88: a one-byte gap before the green-target bitmap.
-    // +0x89: the per-slot green-target availability bitmap (a byte per reachable target); the chart
-    // lane pass clears the slots blocked by overlapping or chained notes.
+    int m_nChainOffset = {}; // +0x68
+    int m_nColorTone = {};   // +0x6c
+    bool m_bBasicNote = {};  // +0x70
+    // unsigned char m_aPad71[3]; // +0x71
+    int m_nDisplayLane = {};          // +0x74
+    int m_nColorIndex = {};           // +0x78
+    int m_nColor = {};                // +0x7c
+    int m_nLinkA = {};                // +0x80
+    int m_nTimingSel = {};            // +0x84
+    unsigned char m_aReserved88 = {}; // +0x88
+    // +0x89: the chart lane pass clears the slots blocked by overlapping or chained notes.
     unsigned char m_aGreenTargets[11] = {};
-    int m_nChosenTarget = {};   // +0x94: the note's chosen green target.
-    bool m_bScrollVisible = {}; // +0x98: whether the note is on-screen (startSpeed < endSpeed).
-    // unsigned char m_aPad99[3]; // +0x99 (alignment padding, compiler-inserted)
-    float m_flScrollStartSpeed = {}; // +0x9c: the resolved scroll speed at the note's start.
-    float m_flScrollEndSpeed = {};   // +0xa0: the resolved scroll speed at the note's end.
-    // unsigned char m_aPadA4[4]; // +0xa4 (alignment padding, compiler-inserted)
-    RbffSlideRecord *m_pSlideRecord = {}; // +0xa8: the slide sub-record, when present.
-    int m_nSlidePointCount = {};          // +0xb0: the number of slide points.
-    // unsigned char m_aPadB4[4]; // +0xb4 (trailing alignment padding, compiler-inserted)
+    int m_nChosenTarget = {};   // +0x94
+    bool m_bScrollVisible = {}; // +0x98: startSpeed < endSpeed.
+    // unsigned char m_aPad99[3]; // +0x99
+    float m_flScrollStartSpeed = {}; // +0x9c
+    float m_flScrollEndSpeed = {};   // +0xa0
+    // unsigned char m_aPadA4[4]; // +0xa4
+    RbffSlideRecord *m_pSlideRecord = {}; // +0xa8
+    int m_nSlidePointCount = {};          // +0xb0
+    // unsigned char m_aPadB4[4]; // +0xb4
 };

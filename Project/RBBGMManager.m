@@ -1,32 +1,13 @@
-//
-//  RBBGMManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBBGMManager). Verified against
-//  the arm64 disassembly: the decompiler drops the theme-name format argument that the title and
-//  result loaders splice into their asset paths, and folds the fade duration's float-to-double
-//  conversion.
-//
-
 #import "RBBGMManager.h"
 
-// Collaborator singletons reached from these methods. AudioManager is committed; RBUserSettingData
-// is imported speculatively in the same no-seams style the rest of the tree uses, and resolves
-// once that class lands.
 #import "AudioManager.h"
 #import "RBUserSettingData.h"
 
-// The asset paths of the three background loops. The menu loop lives under the shared theme folder
-// and takes a theme-name suffix; the title and result loops live under the user's current theme
-// folder. All three are bundled @c .m4a resources.
 static NSString *const kMenuMusicPathFormat = @"Sounds/00_Share/BGM/SD_BGM_%@";
 static NSString *const kTitleMusicPathFormat = @"Sounds/%@/BGM/SD_BGM_TITLE";
 static NSString *const kResultMusicPathFormat = @"Sounds/%@/BGM/SD_BGM_RESULT";
 static NSString *const kMusicResourceType = @"m4a";
 
-// The theme asset-name suffixes spliced into the menu loop's path, indexed by the user's stored
-// background-music preference. This mirrors the shared theme asset-name table the sound-effect
-// loader also reads, so the suffix stays in step with the chosen theme.
 // @ghidraAddress 0x359d70 (g_pThemeAssetNames)
 static NSString *const kThemeAssetNames[] = {
     @"CUSTOM_CLASSIC",      @"CUSTOM_LIMELIGHT", @"CUSTOM_TAG",          @"CUSTOM_QRISPY",
@@ -41,9 +22,7 @@ static NSString *const kThemeAssetNames[] = {
 };
 
 @implementation RBBGMManager {
-    // Whether a background track is currently loaded in the audio manager.
     BOOL m_IsMusic;
-    // Whether a track has been pushed aside onto the audio manager's stack, awaiting a pop.
     BOOL m_IsPushMusic;
 }
 

@@ -7,15 +7,14 @@
 #import "RecommendAdCache.h"
 #import "RecommendDebug.h"
 
-// NSUserDefaults archive keys.
 static NSString *const kAllAdDataKey = @"ApplilinkRecommend.allAdData";
 static NSString *const kFrequencyKey = @"ApplilinkRecommend.frequency";
 static NSString *const kAdDisplayCountDailyKey = @"adDisplayCountDaily";
 static NSString *const kAdDisplayCountTotalKey = @"adDisplayCountTotal";
 
-// Sub-keys of the archived allAdData blob. The archive keys its entries by the fully qualified
-// name, so each one repeats the defaults key it was stored under rather than being a bare
-// sub-key; the literals are the __cfstring entries at 0x372300, 0x372320, 0x3722e0, and 0x372340.
+// The archive keys its entries by the fully qualified name, so each repeats the defaults key it
+// was stored under.
+// @ghidraAddress 0x372300, 0x372320, 0x3722e0, and 0x372340
 static NSString *const kBannerDisplayStatusListKey =
     @"ApplilinkRecommend.allAdData.banner_display_status_list";
 static NSString *const kAdModelSettingListKey =
@@ -24,7 +23,6 @@ static NSString *const kAdListKey = @"ApplilinkRecommend.allAdData.list";
 static NSString *const kInterstitialSpecListKey =
     @"ApplilinkRecommend.allAdData.interstitial_spec_list";
 
-// Advert-record and display-specification field keys.
 static NSString *const kAdIdKey = @"ad_id";
 static NSString *const kAppliIdKey = @"appli_id";
 static NSString *const kAdTypeKey = @"ad_type";
@@ -51,51 +49,42 @@ static NSString *const kAdDisplayDateKey = @"adDisplayDate";
 static NSString *const kFrequencyNKey = @"frequency_n";
 static NSString *const kFrequencyMKey = @"frequency_m";
 
-// Format strings.
 static NSString *const kIntegerFormat = @"%d";
 static NSString *const kCountFormat = @"count_%@";
 static NSString *const kFrequencyNFormat = @"frequency_n_%@";
 static NSString *const kFrequencyMFormat = @"frequency_m_%@";
 
-// Install-flag literal values, matched and returned as strings.
 static NSString *const kInstallFlgOn = @"1";
 static NSString *const kInstallFlgOff = @"0";
 
-// Small literals.
 static NSString *const kSchemeSeparator = @"://";
 static NSString *const kJapanLocaleIdentifier = @"JP";
 static NSString *const kJapanTimeZoneAbbreviation = @"JST";
 static NSString *const kDateTimeFormat = @"yyyy-MM-dd HH:mm:ss";
 static NSString *const kDateFormat = @"yyyy/MM/dd";
 
-// The user-info key each lottery-suppression message is filed under.
 static NSString *const kErrorUserInfoKey = @"Error";
 
-// Lottery-suppression messages, reported through the ApplilinkNetworkError user-info.
 static NSString *const kInterstitialSpecListIsZeroMessage = @"interstitial_spec_list is zero";
 static NSString *const kInterstitialSpecFrequencyIsZeroMessage =
     @"interstitial_spec_list.ad_display_spec frequency is zero";
 static NSString *const kLotteryMissFormat =
     @"display lottery is miss. Indication frequency:%d/%d execute:%d/%d";
 
-// Advert-type identifiers used by the lottery helpers.
 enum {
     kRecommendAdTypeAppBanner = 1,
     kRecommendAdTypeLotteryBanner = 2,
     kRecommendAdTypeLotteryIcon = 3,
 };
 
-// The maximum number of lottery icons drawn per request.
 static const int kMaxLotteryIconCount = 4;
 
-// The end-date substring length compared as a plain integer year before falling back to a date
-// comparison, and the sentinel year below which the comparison is skipped.
+// An end date whose year prefix reaches this sentinel is never checked for expiry.
 enum {
     kEndDateYearPrefixLength = 4,
     kEndDateComparableYear = 3000,
 };
 
-// Applilink error codes surfaced by the interstitial lottery.
 enum {
     kApplilinkErrorInterstitialLotteryMiss = 0x40a,
     kApplilinkErrorInterstitialSpecInvalid = 0x40b,
@@ -296,10 +285,8 @@ enum {
         totalPriority += [[record valueForKeyPath:kPriorityKey] integerValue];
     }
     uint32_t draw = arc4random();
-    // The draw is reduced modulo the total priority and mapped to the record whose cumulative
-    // priority window contains it. The binary has no zero test here: its udiv/msub pair returns the
-    // draw unchanged when the total is zero, because arm64 division by zero yields zero. The
-    // ternary reproduces that, since the same expression in C would be undefined.
+    // The binary has no zero test: arm64 division by zero yields zero, so the draw passes through
+    // unchanged, and the ternary reproduces what C would leave undefined.
     NSInteger target = totalPriority == 0 ? (draw + 1) : ((draw % totalPriority) + 1);
     NSInteger cumulative = 0;
     for (NSDictionary *record in list) {

@@ -1,14 +1,3 @@
-//
-//  RBMusicMenuPopupView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicMenuPopupView). Verified
-//  against the arm64 disassembly: -setupView's theme- and idiom-dependent frame maths were
-//  recovered from the soft-float register moves that the decompiler folds into pseudo-variables.
-//  This is an Objective-C++ file because -hideAnimation reaches the C++ SoundEffectManager engine
-//  singleton.
-//
-
 #import "RBMusicMenuPopupView.h"
 
 #import "RBMenuView.h"
@@ -18,14 +7,10 @@
 #import "engineglobals.h"
 #import "soundeffectmanager.h"
 
-// The music-menu popups all fade over a quarter second.
 constexpr NSTimeInterval kPopupAnimationDuration = 0.25;
 
-// The themed sound-effect slot played when a popup is dismissed.
 constexpr int kSoundEffectCancel = 4;
 
-// Autoresizing masks used across the popup chrome. The full mask keeps a subview pinned to its
-// superview's bounds; the centring mask keeps the base panel centred as the popup resizes.
 constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -34,21 +19,14 @@ constexpr UIViewAutoresizing kAutoresizingCentered =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// Base-panel geometry for the iPad (wide) layout, read from the pool at 0x301040 (x), 0x2eea38
-// (y), 0x2ee960 (width), and 0x3013f8 (height). The narrow variant uses a square panel centred on
-// the popup instead.
+// @ghidraAddress 0x301040 (x), 0x2eea38 (y), 0x2ee960 (width), 0x3013f8 (height)
 constexpr CGRect kWideBaseFrame = {{112.0, 160.0}, {544.0, 680.0}};
 constexpr CGFloat kNarrowBaseSize = 320.0;
 
-// Vertical reference heights used to place the title bar and content view relative to the base
-// panel's frame origin.
 constexpr CGFloat kWideContentTopReference = 188.0;
 constexpr CGFloat kNarrowTitleTopReference = 186.0;
 constexpr CGFloat kTitleTopOffsetWide = 174.0;
 
-// Common inset and corner metrics for the content view and its chrome. The content view is inset
-// by kContentInset on all four sides, so each dimension loses twice that. Ghidra prints the four
-// `fmov d0,#-4.0` immediates as -0x3ff0000000000000, the two's complement of the bit pattern.
 constexpr CGFloat kContentInset = 2.0;
 constexpr CGFloat kContentEdgeShrink = 2.0 * kContentInset;
 constexpr CGFloat kCornerRadiusSmall = 5.0;
@@ -56,8 +34,7 @@ constexpr CGFloat kCornerRadiusLarge = 10.0;
 constexpr CGFloat kNarrowTitleTopThemed = 5.0;
 constexpr CGFloat kNarrowBackgroundTopOffset = 10.0;
 
-// The title-bar and background artwork for each popup type. A title-bar name of nil means the type
-// draws no title bar. The tutorial type sizes the base panel to its background image.
+// A nil name means the type draws no title bar.
 static NSString *const kTitleBarImageNames[] = {
     @"03_howtoplay/how_bar",           // RBMusicMenuPopupViewTypeHowTo
     @"04_customize/cus_bar",           // RBMusicMenuPopupViewTypeCustomize
@@ -95,14 +72,11 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
 
     [self setAlpha:0.0];
-    // The popup dims whatever it covers; the binary loads the shared half-alpha black at 0x3cff88
-    // rather than leaving the backdrop transparent.
+    // @ghidraAddress 0x3cff88
     self.backgroundColor = g_pPaletteDimmingCoverColor;
     self.autoresizingMask = kAutoresizingFull;
     [self addTarget:self action:@selector(tap:) forControlEvents:UIControlEventTouchUpInside];
 
-    // The base-panel origin and the base width and height that the chrome is laid out against. The
-    // wide variant fixes the panel origin; the narrow variant leaves it at zero and centres later.
     CGPoint baseOrigin;
     CGFloat baseWidth;
     CGFloat baseHeight;
@@ -116,8 +90,6 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
         baseHeight = kNarrowBaseSize;
     }
 
-    // Select the title-bar and background artwork for the current popup type. The tutorial type has
-    // no title bar and sizes the base panel to its background image instead.
     UIImage *titleImage = nil;
     UIImage *backgroundImage = nil;
     RBMusicMenuPopupViewType type = self.musicMenuPopupViewType;
@@ -149,9 +121,6 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
         break;
     }
 
-    // The base panel hosts the whole popup chrome. The narrow variant centres it on the popup; the
-    // wide variant leaves it at its fixed origin. The tutorial type takes its size from the
-    // background image above.
     self.baseView = [[UIView alloc]
         initWithFrame:CGRectMake(baseOrigin.x, baseOrigin.y, baseWidth, baseHeight)];
     if (!wide) {
@@ -161,8 +130,6 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     self.baseView.backgroundColor = UIColor.clearColor;
     [self addSubview:self.baseView];
 
-    // The title bar sits at the top of the base panel; its offset from the panel origin depends on
-    // the theme and iPad idiom.
     CGFloat titleX = 0.0;
     CGFloat titleY = 0.0;
     if (wide) {
@@ -178,8 +145,6 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
         titleY = kNarrowBackgroundTopOffset;
     }
 
-    // The background panel fills the base panel below the title bar. Only the narrow default theme
-    // shortens it by the title inset.
     UIImageView *background = [[UIImageView alloc] initWithImage:backgroundImage];
     if (thema == RBUserSettingDataThemeClassic && !wide) {
         background.frame = CGRectMake(titleX, titleY, baseWidth, baseHeight - titleY);
@@ -190,9 +155,6 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     [self.baseView addSubview:background];
     self.backgroundImageView = background;
 
-    // The rounded, clipped content view is where subclasses lay their own content. Only the wide
-    // themed (Limelight and Colette) layouts use the large corner radius; both Classic arms and
-    // the narrow themed arm use the small one.
     CGRect contentFrame = CGRectZero;
     CGFloat cornerRadius = kCornerRadiusSmall;
     if (thema == RBUserSettingDataThemeClassic) {
@@ -222,7 +184,6 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     self.contentView.clipsToBounds = YES;
     [self.baseView addSubview:self.contentView];
 
-    // The customize and theme popups draw a gradation overlay at the top of the content.
     if (thema == RBUserSettingDataThemeColette || thema == RBUserSettingDataThemeLimelight) {
         UIImage *gradation = [UIImage imageWithName:kGradationImageName];
         UIImageView *gradationView = [[UIImageView alloc] initWithImage:gradation];
@@ -233,7 +194,6 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
         [self.baseView addSubview:gradationView];
     }
 
-    // The title bar, centred horizontally within the base panel's bounds.
     UIImageView *title = [[UIImageView alloc] initWithImage:titleImage];
     CGFloat titleWidth = titleImage.size.width;
     CGFloat titleHeight = titleImage.size.height;

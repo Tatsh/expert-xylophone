@@ -25,112 +25,88 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// Sort orders selectable on the manage screen.
 typedef NS_ENUM(NSUInteger, RBStoreManageSortOrder) {
-    RBStoreManageSortOrderDownloadAscending = 0,  // Download order, oldest first.
-    RBStoreManageSortOrderDownloadDescending = 1, // Download order, newest first.
-    RBStoreManageSortOrderTitle = 2,              // By tune-title reading.
-    RBStoreManageSortOrderArtist = 3,             // By artist-name reading.
+    RBStoreManageSortOrderDownloadAscending = 0,
+    RBStoreManageSortOrderDownloadDescending = 1,
+    RBStoreManageSortOrderTitle = 2,
+    RBStoreManageSortOrderArtist = 3,
 };
 
-// The number of collapsible list sections, matching the fixed section-open bit-field width.
-// Declared as an enumerator so it can size the section-open array, which a static const cannot do
-// in C.
 enum { kSectionCount = 11 };
 
-// The alert-button index that confirms a delete or a sort-metadata download.
 static const int kAlertButtonConfirm = 1;
 
-// The sentinel encoding used by the "no working row selected" state and the per-cell button tags.
 static const int kNoWorkingIndex = -1;
 
 // A cell button's tag packs its section and row: tag = section * kCellTagSectionMultiplier + row.
 static const int kCellTagSectionMultiplier = 1000000;
 
-// UILocalizedIndexedCollation returns this section index for entries with no collation letter (the
-// trailing "#" bucket); such entries are re-bucketed one section earlier when they have a reading.
+// UILocalizedIndexedCollation returns this section index for entries with no collation letter.
 static const int kCollationMiscSection = 0x24;
 
-// The number of leading placeholder sections the collation builds and this screen discards.
 static const int kCollationLeadingSectionsToDrop = 26;
 
-// Row-selection colours: even rows are a light grey, odd rows the shared translucent value. Each
-// pooled component is a single precision quotient widened to double, so the divisions are spelled
-// in float to reproduce the stored bits.
+// The divisions are spelled in float because the pooled component is a single-precision quotient.
 static const CGFloat kRowColorWhiteEven = 193.0f / 255.0f; // @ghidraAddress 0x310790
 static const CGFloat kRowColorAlpha = 1.0;
 
-// The tune-title label white value. Dark grey, not white.
+// Dark grey, not white.
 static const CGFloat kTitleLabelWhite = 50.0f / 255.0f; // @ghidraAddress 0x2eeef8
-// The table background white value. Dark grey, not white.
+// Dark grey, not white.
 static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0x2eef38
 
-// The scroll-to-top rectangle: a unit square at the origin, animated.
 static const CGRect kTopRect = {{0.0, 0.0}, {1.0, 1.0}};
 
-// The section-header heights, phone then pad.
 static const CGFloat kHeaderHeightPhone = 25.0;
 static const CGFloat kHeaderHeightPad = 30.0;
 
-// The cell action-button font sizes, phone then pad.
 static const CGFloat kCellButtonFontSizePhone = 14.0;
 static const CGFloat kCellButtonFontSizePad = 16.0;
-// The cell title-label bold font sizes, phone then pad.
 static const CGFloat kCellTitleFontSizePhone = 15.0;
 static const CGFloat kCellTitleFontSizePad = 17.0;
-// The sort/top bar-button title font sizes, phone then pad.
 static const CGFloat kBarButtonFontSizePhone = 12.0;
 static const CGFloat kBarButtonFontSizePad = 14.0;
 
-// The cell title-label frame width and its phone and pad heights.
 static const CGFloat kCellLabelWidthPhone = 10.0;
 static const CGFloat kCellLabelHeightPhone = 16.0;
 static const CGFloat kCellLabelHeightPad = 18.0;
 
-// The trailing gap between the action button and the cell's right edge without an index bar.
 static const CGFloat kCellButtonTrailingGap = 10.0;
 
-// The table row heights and action-button heights, indexed by the iPad idiom (phone, then pad).
 // @ghidraAddress 0x3107b0 (row heights), 0x3107c0 (button heights)
 static const CGFloat kRowHeight[] = {50.0, 60.0};
 static const CGFloat kButtonHeight[] = {36.0, 40.0};
 
-// The navigation title and the tab title. @ghidraAddress 0x36ebc0 (title), 0x36ebe0 (tab title)
+// @ghidraAddress 0x36ebc0 (title), 0x36ebe0 (tab title)
 static NSString *const kNavigationTitle = @"Manage Library";
 static NSString *const kTabTitle = @"Manage";
 
-// Store icon and action-button image asset names.
 static NSString *const kTabIconName = @"09_store/icon_manage";
 static NSString *const kDeleteImageName = @"09_store/manage_delete";
 static NSString *const kDownloadImageName = @"09_store/manage_download";
 
-// The reuse identifiers for the header and row cells and the sort header identifier.
 static NSString *const kHeaderReuseIdentifier = @"ManageHeader";
 static NSString *const kCellReuseIdentifier = @"StoreManageCell";
 
-// The version-string substring that marks the Japanese region, where the sort button is shown.
 static NSString *const kJapaneseVersionMarker = @"ja_";
 
-// The localization keys and empty-value placeholder for the sort and top bar-button titles.
 // @ghidraAddress 0x365fa0
 static NSString *const kSortButtonKey = @"並べ替え";
 static NSString *const kTopButtonKey = @"TOP";
 static NSString *const kEmptyLocalizedValue = @"";
 
-// The ascending and descending sort-button titles (Japanese: "purchase order" and "title order").
+// Japanese for "purchase order" and "title order".
 // @ghidraAddress 0x36ec40
 static NSString *const kSortTitleAscending = @"購入順にする";
 // @ghidraAddress 0x36ec60
 static NSString *const kSortTitleDescending = @"曲名順にする";
 
-// The header expand and collapse glyphs.
 // @ghidraAddress 0x36eba0
 static NSString *const kHeaderExpandedGlyph = @"\u25bc";
-// The collapsed glyph carries a trailing U+FE0E, forcing the text rather than the emoji
-// presentation of the triangle. @ghidraAddress 0x36ed20
+// The trailing U+FE0E forces the text rather than the emoji presentation of the triangle.
+// @ghidraAddress 0x36ed20
 static NSString *const kHeaderCollapsedGlyph = @"\u25b6\ufe0e";
 
-// The catalogue dictionary keys read while sorting and displaying tunes.
 static NSString *const kMusicKeyID = @"ID";
 static NSString *const kMusicKeyName = @"Name";
 static NSString *const kMusicKeyArtist = @"Artist";
@@ -144,17 +120,12 @@ static NSString *const kSortKeyTitleYomi = @"m_yomi";
 static NSString *const kSortKeyPackName = @"pack_name";
 static NSString *const kSortKeyMusicId = @"musicId";
 
-// The format used to build a tune's sort-dictionary lookup key from its identifier.
 static NSString *const kSortLookupKeyFormat = @"%d";
 
 @interface RBStoreManageViewController () {
-    // The section index whose cell action button is currently being acted on, or unused.
     NSInteger working_section;
-    // The per-section expanded flags, one byte per section (non-zero means expanded).
     unsigned char sectionOpenList[kSectionCount];
-    // The row index whose cell action button is currently being acted on, or kNoWorkingIndex.
     NSInteger working_index;
-    // The wide (pad) iPad idiom flag captured at initialisation.
     BOOL isPad;
 }
 @end
@@ -163,7 +134,6 @@ static NSString *const kSortLookupKeyFormat = @"%d";
 
 #pragma mark - Section-open helpers
 
-// Resets every section to expanded. The binary writes the fixed-width byte array in one go.
 static inline void ExpandAllSections(unsigned char *sectionOpen) {
     for (NSUInteger i = 0; i < kSectionCount; ++i) {
         sectionOpen[i] = 1;
@@ -190,7 +160,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     self.imgDownload = [UIImage imageWithName:kDownloadImageName];
     self.latestArrayCount = 0;
 
-    // The sort button is offered only in the Japanese region.
     if ([GetFormattedVersionString() rangeOfString:kJapaneseVersionMarker].location != NSNotFound &&
         self.sortButton == nil) {
         NSString *sortTitle = [[NSBundle mainBundle] localizedStringForKey:kSortButtonKey
@@ -207,8 +176,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     }
 
     self.sortDict = nil;
-    // The ten katakana-row initials and the no-reading bucket, the same constants the tune loader
-    // buckets titles into.
     self.sectionList =
         @[ @"あ", @"か", @"さ", @"た", @"な", @"は", @"ま", @"や", @"ら", @"わ", @"#" ];
     ExpandAllSections(sectionOpenList);
@@ -232,7 +199,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         [self.topButton setTitleTextAttributes:attributes forState:UIControlStateNormal];
     }
 
-    // Install whichever of the sort and top buttons exist as the right bar-button items.
     if (self.sortButton != nil && self.topButton != nil) {
         self.navigationItem.rightBarButtonItems = @[ self.sortButton, self.topButton ];
     } else if (self.topButton != nil) {
@@ -268,12 +234,8 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
     }
 #ifdef ENABLE_PATCHES
-    // The shipped binary predates UITableView.sectionHeaderTopPadding, so its older linked SDK gave
-    // it zero padding for free. Built against a current SDK the property defaults to
-    // UITableViewAutomaticDimension, which a plain table resolves to 22 pt above every section
-    // header including section 0 — even one whose header is nil and zero height, as this screen's
-    // is in the default download-order sort. That inserts a full-width strip of the table's own
-    // backdrop between the navigation bar and the first row.
+    // The shipped binary's older linked SDK gave zero padding for free; a current SDK defaults to
+    // 22 pt above every section header, including a nil zero-height one.
     if (@available(iOS 15.0, *)) {
         self.tableView.sectionHeaderTopPadding = 0.0;
     }
@@ -285,14 +247,12 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     self.sortNavCtrl =
         [[UINavigationController alloc] initWithRootViewController:self.sortViewCtrl];
 
-    // The sort selector is shown in a popover on the pad.
     if (IsPad()) {
         self.sortPopoverCtrl =
             [[UIPopoverController alloc] initWithContentViewController:self.sortNavCtrl];
         self.sortPopoverCtrl.delegate = self;
     }
 
-    // Make every navigation-bar subview exclusive-touch so a tap cannot leak through.
     for (UIView *subview in self.navigationController.navigationBar.subviews) {
         subview.exclusiveTouch = YES;
     }
@@ -346,7 +306,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         return;
     }
 
-    // Without the sort metadata dictionary, prompt to download it and defer the switch.
     if (self.sortDict == nil) {
         self.tmpCurrentSortIndex = newIndex;
         self.tmpCurrentSortTitle = title;
@@ -370,13 +329,11 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
 /** @ghidraAddress 0x1cf77c */
 - (void)SelectSort {
-    // Without the sort metadata dictionary, prompt to download it.
     if (self.sortDict == nil) {
         self.downloadAlertView = [UIAlertView showAlertNeedDownloadMusicNameList:self];
         return;
     }
 
-    // Toggle between the ascending and descending sort-button titles.
     if ([self.sortButton.title isEqualToString:kSortTitleAscending]) {
         self.sortButton.title = kSortTitleDescending;
         [self.tableView reloadData];
@@ -391,17 +348,16 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     if (self.currentSortIndex < RBStoreManageSortOrderTitle) {
         return self.sortedList[section][row];
     }
-    // The collated orders wrap each tune in an RBManageSortData record.
     RBManageSortData *record = self.sortedList[section][row];
     return record.dict;
 }
 
 #pragma mark - Sorting
 
-// Builds the collated, sectioned tune list for a title or artist sort. @p collationSelector is
-// @c \@selector(m_yomi) for the title sort and @c \@selector(a_yomi) for the artist sort. Both
-// sorts query a_yomi to decide whether a "#"-bucketed entry can shift one section earlier: the
-// title arm collates on m_yomi at 0x1d0484 but still tests a_yomi at 0x1d0494.
+// Both sorts test a_yomi when re-bucketing a "#" entry, even the title sort, which otherwise
+// collates on m_yomi.
+// @ghidraAddress 0x1d0484
+// @ghidraAddress 0x1d0494
 - (NSArray *)collatedListForSort:(NSArray *)list collationSelector:(SEL)collationSelector {
     NSArray *entries = [list copy];
     UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
@@ -418,7 +374,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
             [NSString stringWithFormat:kSortLookupKeyFormat, [entry[kMusicKeyID] intValue]];
         NSDictionary *sortInfo = self.sortDict[lookupKey];
         if (sortInfo == nil) {
-            // A tune with no sort-metadata entry keeps empty readings and is recorded as missing.
             record.a_yomi = @"";
             record.m_yomi = @"";
             record.pack_name = @"";
@@ -435,7 +390,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
         NSInteger sectionIndex = [collation sectionForObject:record
                                      collationStringSelector:collationSelector];
-        // Re-bucket a reading-bearing "#" entry one section earlier so it collates with letters.
         if (sectionIndex == kCollationMiscSection) {
             NSUInteger shift = (record.a_yomi != nil && record.a_yomi.length != 0) ? 1 : 0;
             sectionIndex = kCollationMiscSection - shift;
@@ -448,7 +402,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         [sorted addObject:[collation sortedArrayFromArray:section
                                   collationStringSelector:collationSelector]];
     }
-    // Drop the leading placeholder sections the collation produced.
     for (NSInteger i = 0; i < kCollationLeadingSectionsToDrop; ++i) {
         [sorted removeObjectAtIndex:0];
     }
@@ -467,11 +420,9 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         break;
     }
     case RBStoreManageSortOrderTitle:
-        // The title sort collates on m_yomi and re-buckets using a_yomi.
         result = [self collatedListForSort:list collationSelector:@selector(m_yomi)];
         break;
     case RBStoreManageSortOrderArtist:
-        // The artist sort collates on a_yomi and re-buckets using a_yomi.
         result = [self collatedListForSort:list collationSelector:@selector(a_yomi)];
         break;
     default:
@@ -626,7 +577,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     }
     [button sizeToFit];
 
-    // Right-align the action button within the cell, leaving room for the index bar when shown.
     CGFloat cellWidth = cell.frame.size.width;
     CGFloat cellHeight = cell.frame.size.height;
     CGFloat buttonWidth = button.frame.size.width;
@@ -690,14 +640,13 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
     NSDictionary *entry = [self getSortedDictionary:working_section row:working_index];
     int musicId = [entry[kMusicKeyID] unsignedIntValue];
-    // The binary checks the same purchased path twice here (it does not fall back to the old
-    // directory as the cell renderer does); reproduced faithfully.
+    // The binary checks the same purchased path twice rather than falling back to the old
+    // directory as the cell renderer does.
     BOOL fileExists = [NSFileManager isFileExist:[RBMusicManager getPathFromPurchesed:musicId]] ||
                       [NSFileManager isFileExist:[RBMusicManager getPathFromPurchesed:musicId]];
 
     if (!fileExists) {
-        // The tune is missing locally: show the modal dialog and start its info download. The
-        // dialog is laid out before its message is set, not after.
+        // The dialog is laid out before its message is set, not after.
         [self.parent.modalDialog layout:NO];
         self.parent.modalDialog.labelMessage.text =
             [NSString stringWithFormat:g_pDownloadingMessageFormat, entry[kMusicKeyName]];
@@ -712,7 +661,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         return;
     }
 
-    // The tune is present: prompt to delete it.
     NSString *message =
         [[NSString alloc] initWithFormat:g_pDeleteConfirmFormat, entry[kMusicKeyName]];
     if (self.deleteAlertView != nil) {
@@ -735,7 +683,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
                                                                AddObject:nil];
     [tasks addObject:tuneTask];
 
-    // Queue a download task for every purchased extend note of this tune.
     NSArray *extendNotes =
         [[RBExtendNoteManager getInstance] getPurchasedExtendNoteDictionaryWithMusicID:musicId];
     if (extendNotes.count != 0) {
@@ -781,7 +728,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
             }
         }
 
-        // Register every extend note the info payload carries.
         NSArray *noteList = json[kMusicKeyNoteList];
         if (noteList != nil) {
             NSMutableDictionary *musicOnly = [json mutableCopy];
@@ -811,7 +757,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         if (self.sortDict == nil) {
             [self downloaderError:downloader];
         } else {
-            // Normalise every sort-metadata entry's readings to yomigana.
             for (id key in self.sortDict) {
                 NSMutableDictionary *info = self.sortDict[key];
                 info[kSortKeyArtistYomi] = [StringConvert convertYomigana:info[kSortKeyArtistYomi]];
@@ -893,7 +838,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
             [self.parent.campaignViewCtrl refreshUnlockTable];
         }
     } else if (buttonIndex == kAlertButtonConfirm && self.downloadAlertView == alertView) {
-        // Confirm the sort-metadata download.
         self.sortDataDownloader = [[Downloader alloc] initWithURL:[StoreUtil manageSortListURL]
                                                              save:nil];
         [self.sortDataDownloader startDownloadingWithDelegate:self];
@@ -922,7 +866,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
 /** @ghidraAddress 0x1d41ac */
 - (void)didPresentAlertView:(UIAlertView *)alertView {
-    // Make the presented alert's key-window view exclusive-touch.
     UIView *presentedView = [[[[[UIApplication sharedApplication] keyWindow] rootViewController]
         presentedViewController] view];
     [UIAlertView setExclusiveTouchForView:presentedView];
@@ -938,7 +881,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 /** @ghidraAddress 0x1d4664 */
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    // Re-sort when the purchased-tune count has changed since the last sort.
     if (self.sortedList != nil) {
         if (self.latestArrayCount !=
             [[RBMusicManager getInstance] getPurchasedMusicDictionaris].count) {

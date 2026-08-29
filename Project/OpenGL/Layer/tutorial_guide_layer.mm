@@ -21,13 +21,11 @@ constexpr const char *kTextureName = "00_texture/gm_tutorial";
 
 constexpr int kTutorialPhaseGuideActive = 7;
 
-// Update treats a fade state at or above this value as the fade-out path.
 constexpr short kFadeStateHidden = 0x100;
 
-// Sprite kinds above this index are the small tap glyphs, halved on the phone (non-pad).
 constexpr unsigned int kTapGlyphKindBound = 4;
 
-// The tutorial walkthrough phases the state machine advances through (game-system field +0x130).
+// The walkthrough phases, in game-system field +0x130.
 enum {
     kTutorialPhaseIntro = 0,
     kTutorialPhaseHint1 = 1,
@@ -183,8 +181,7 @@ void TutorialGuideLayer::EmitTutorialSpriteSlot(
 
     const UvRect &uv = kUvRects[kind.nUvIndex];
 
-    // A non-zero fade-state low byte is the gauge-anchored mode: the sprite is recentred between
-    // its own position and the cached gauge coordinate.
+    // A non-zero fade-state low byte selects the gauge-anchored mode.
     if ((m_nFadeState & 0xff) != 0) {
         float flY;
         if (!IsPad()) {
@@ -264,7 +261,6 @@ void TutorialGuideLayer::BuildTutorialGuideSpriteTable() {
 /** @ghidraAddress 0x10b734 */
 void TutorialGuideLayer::Stop(float flDuration) {
     (void)flDuration; // The binary takes a duration in s0 and never reads it.
-    // RBPDBG: the tutorial cannot be completed, so every engine-side phase transition is logged.
     if (NE_DBG_FIRST(40)) {
         neDebugLog("tutorialGuide Stop active=%d fade=%d phase=%d",
                    m_bActive ? 1 : 0,
@@ -625,19 +621,16 @@ void TutorialGuideLayer::AdvanceStateMachine(float flDeltaTime) {
 }
 
 namespace {
-// Element anchor ids shared with ResultWindowColetteLayer.
 constexpr int kAnchorMusicInfo = 0x46;
 constexpr int kAnchorCentre = 1;
 constexpr int kAnchorScore = 5;
 
-// The per-orientation phase-1 element nudges, in pixels.
 constexpr float kPhase1NudgePortraitBottom = -4.0f;
 constexpr float kPhase1NudgePhoneLeft = -10.0f;
 constexpr float kPhase1NudgePhoneRight = 10.0f;
 constexpr float kPhase1NudgePadLeft = -20.0f;
 constexpr float kPhase1NudgePadRight = 20.0f;
 
-// The arrow/box quad offsets, in pixels.
 constexpr float kArrowVerticalNudge = -10.0f;
 constexpr float kArrowTailOffset = 20.0f;
 constexpr float kBoxInset = 4.0f;
@@ -646,7 +639,6 @@ constexpr float kPhraseBelowOffset = 50.0f;     // 0x2eedd0
 constexpr float kHandOffsetLandscape = -100.0f; // 0x2fcfec
 constexpr float kHandOffsetPad = -240.0f;       // 0x301f90
 
-// Modelled as file-scope constants rather than the binary's guarded runtime copies.
 // @ghidraAddress 0x3dd020 phone, 0x3dd050 iPad
 struct HandGlyphOffset {
     float flX;

@@ -9,8 +9,7 @@
  * A xorshift128 pseudo-random number generator.
  *
  * Holds four 32-bit state words advanced by the xorshift128 algorithm. Construct it for the
- * canonical default seed, or call @c SetSeed to reseed the fourth state word. The trailing
- * @c // +0xNN comments document the original 32-bit member offsets for reference only.
+ * canonical default seed, or call @c SetSeed to reseed the fourth state word.
  */
 class Random {
 public:
@@ -66,9 +65,8 @@ public:
     int GetRandomRangeExclusive(int nMin, int nMaxExclusive);
 
 private:
-    // +0x00: implicit vtable pointer (from the virtual destructor above).
-    unsigned int m_nState0 = {}; // +0x08
-    unsigned int m_nState1 = {}; // +0x0c
-    unsigned int m_nState2 = {}; // +0x10
-    unsigned int m_nState3 = {}; // +0x14
+    unsigned int m_nState0 = {};
+    unsigned int m_nState1 = {};
+    unsigned int m_nState2 = {};
+    unsigned int m_nState3 = {};
 };

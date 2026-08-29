@@ -167,8 +167,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
 + (void)checkLoginWithCallback:
     (void (^)(BOOL loginStatus, BOOL userIdPresent, NSError *_Nullable error))callback {
     if ([ApplilinkConsts isNeedRecommendLogin]) {
-        // The binary passes a third positional argument here even though callers read only the
-        // login state and error.
+        // The binary passes a third positional argument callers never read.
         callback(NO, YES, nil);
         return;
     }
@@ -553,8 +552,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                       [expireValue isKindOfClass:[NSNumber class]]) {
                       expire = [expireValue intValue];
                   }
-                  // The binary computes the expiry date here but discards it; only
-                  // the integer offset feeds the cache write below.
+                  // The binary computes the expiry date here but discards it.
                   (void)[[NSDate date] dateByAddingTimeInterval:expire];
                   id statusValue = info[kRecommendWebAPIKeyStatus];
                   if ([statusValue isKindOfClass:[NSString class]] ||
@@ -719,8 +717,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x232ae0 */
-          // The binary forwards only the captured status dictionary here and drops
-          // the transport error.
+          // The binary forwards only the status dictionary here and drops the transport error.
           callback(status, nil);
         }];
 }

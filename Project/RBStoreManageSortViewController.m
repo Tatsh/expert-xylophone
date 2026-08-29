@@ -3,27 +3,19 @@
 #import "RBStoreManageViewController.h"
 #import "deviceenvironment.h"
 
-// The four built-in sort-order titles, seeded into sortTitleList when it is empty.
 static NSString *const kSortTitleDownloadAscending = @"ダウンロード：昇順";
 static NSString *const kSortTitleDownloadDescending = @"ダウンロード：降順";
 static NSString *const kSortTitleSongName = @"楽曲名順";
 static NSString *const kSortTitleArtistName = @"アーティスト名順";
 
-// The localisation key for the navigation title (the "sort" heading).
 static NSString *const kSortTitleLocalizationKey = @"並べ替え";
 
-// The reuse identifier for the sort-order cells.
 static NSString *const kSortTableCellReuseIdentifier = @"ManageSortTableCell";
 
-// The height of every sort-order row.
 static const CGFloat kSortRowHeight = 50.0;
-// The per-row contribution to the popover's preferred content height.
 static const CGFloat kSortRowContentHeight = 50.0;
-// The upper bound on the popover's preferred content height.
 static const CGFloat kSortMaxContentHeight = 600.0;
-// The fixed width of the popover's preferred content size.
 static const CGFloat kSortContentWidth = 320.0;
-// The point size of the sort-order cell title font.
 static const CGFloat kSortCellFontSize = 19.0;
 
 @implementation RBStoreManageSortViewController

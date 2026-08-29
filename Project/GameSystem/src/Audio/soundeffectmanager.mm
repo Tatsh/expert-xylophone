@@ -1,11 +1,3 @@
-//
-//  soundeffectmanager.mm
-//  REFLEC BEAT plus
-//
-//  The themed sound-effect manager (SoundEffectManager). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "soundeffectmanager.h"
 
 #import <Foundation/Foundation.h>
@@ -17,15 +9,12 @@
 
 namespace {
 
-// The per-theme sound-effect slot names, substituted into "Sounds/<thema>/SE/SD_SE_<name>.m4a".
 static NSString *const kThemedSlotNames[] = {
     @"SELECT01",      @"SELECT02",     @"SELECT04",    @"WINDOW_OPEN", @"WINDOW_CLOSE",
     @"RESULT_WINDOW", @"RESULT_SCORE", @"RESULT_PAGE", @"CLEAR",       @"NEW",
     @"CROWN",         @"WARNING",      @"TAB",         @"GRA",         @"GRA3",
     @"SPECIAL",       @"TITLE",        @"PASTELIN",    @"PASTELOUT",   @"JUMP"};
 
-// The shared (theme-independent) sound-effect slot names, substituted into
-// "Sounds/00_Share/SE/SD_SE_<name>.m4a".
 static NSString *const kSharedSlotNames[] = {
     @"CUSTOM_CLASSIC",      @"CUSTOM_LIMELIGHT", @"CUSTOM_TAG",          @"CUSTOM_QRISPY",
     @"CUSTOM_YUKKY",        @"CUSTOM_LED",       @"CUSTOM_96",           @"CUSTOM_DJTAKA",
@@ -37,9 +26,6 @@ static NSString *const kSharedSlotNames[] = {
     @"CUSTOM_DJSILVERBERG", @"CUSTOM_SEIYA",     @"CUSTOM_TOTTO",        @"CUSTOM_AKHUTA",
     @"CUSTOM_VENUS",        @"CUSTOM_VENUS2",    @"CUSTOM_MAXMAXIMIZER", @"CUSTOM_MAXMAXIMIZER2"};
 
-// The per-theme voice (CV) names, substituted into "Sounds/<thema>/VOICE/SD_CV_<name>.m4a". The
-// binary indexes a table selected by the current theme; theme 0 and every non-zero theme share the
-// same eighteen entries apart from the second and third slots.
 static NSString *const kVoiceNamesTheme0[] = {@"REFLECBEAT",
                                               @"MUSICSELECT",
                                               @"BATTLESTART",
@@ -77,14 +63,10 @@ static NSString *const kVoiceNamesThemeOther[] = {@"REFLECBEAT",
                                                   @"REDWIN",
                                                   @"DECIDE"};
 
-// The playback group index the sound-effect manager loads and plays its slots on.
 constexpr int kSeGroup = 1;
-// The volume-table index every themed sound effect plays at.
 constexpr int kSePlayVolume = 0x7f;
-// The voice state that always plays regardless of the recorded state.
 constexpr long kVoiceStateAlways = 0x13;
 
-// Returns the localised path to a sound file in the bundle, or nil when it does not exist.
 NSString *SoundPath(NSString *relativeName) {
     return [NSBundle.mainBundle pathForResource:relativeName ofType:@"m4a"];
 }
@@ -123,7 +105,6 @@ void SoundEffectManager::LoadThemedSoundEffect(int theme, int slot) {
         [RBUserSettingData themaNameWithID:static_cast<RBUserSettingDataTheme>(theme)];
     NSString *path = SoundPath(
         [NSString stringWithFormat:@"Sounds/%@/SE/SD_SE_%@", themaName, kThemedSlotNames[slot]]);
-    // Only slots whose file ships are loaded; a missing file leaves the slot unloaded.
     if ([NSFileManager isFileExist:path]) {
         m_aThemeResourceId[theme][slot] = [AudioManager.sharedManager loadSe:path
                                                                       isLoop:NO
@@ -167,8 +148,6 @@ unsigned int SoundEffectManager::PlayThemedSoundEffect(int slotID) {
 
 /** @ghidraAddress 0x1cca20 */
 unsigned int SoundEffectManager::PlaySharedSoundEffect() {
-    // The current theme selects a shared slot: the Colette theme uses slot 15, the Limelight theme
-    // slot 1, and the Classic theme slot 0.
     constexpr int kColetteSharedSlot = 15;
     const RBUserSettingDataTheme theme = RBUserSettingData.sharedInstance.thema;
     int nSlot;

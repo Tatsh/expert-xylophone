@@ -9,23 +9,20 @@
 #include "neTexture.h"
 #import "s_vector2.h"
 
-// The process-wide play-colour layer, created lazily by shared().
 static PlayColorLayer *g_pPlayColorLayer = nullptr; // @ghidraAddress 0x3dc5a0
 
 namespace {
 
-// The atlas the gauge parts draw from (@ghidraAddress 0x3ceaa0).
+// @ghidraAddress 0x3ceaa0
 constexpr const char *kTextureName = "00_texture/gm_parts1";
 
-// Which batch each part group draws into (@ghidraAddress 0x2fe8a0).
+// @ghidraAddress 0x2fe8a0
 constexpr int kGroupBatch[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
 
-// How many sprites each part group emits (@ghidraAddress 0x2fe8c8).
+// @ghidraAddress 0x2fe8c8
 constexpr int kGroupPartCount[] = {6, 6, 6, 6, 3, 3, 6, 6, 3, 3};
 
-// One gauge part's source rect (anchor, size) and mapped UV rect (origin, size), combining the
-// source-rect table (@ghidraAddress 0x2fe900) with the UV table it indexes (@ghidraAddress
-// 0x2ef668).
+// @ghidraAddress 0x2fe900 and @ghidraAddress 0x2ef668
 struct GaugePart {
     float flAnchorX;
     float flAnchorY;
@@ -49,43 +46,35 @@ constexpr GaugePart kGaugeParts[] = {
     {31.0f, 31.0f, 62.0f, 62.0f, 0.89062f, 0.09961f, 0.06055f, 0.06055f},
 };
 
-// The additive-style vertex flag the gauge batches set.
 constexpr int kVertexFlagMode = 1;
 
-// The gauge fill brightness maps a normalised level onto [kGaugeFillBrightnessBase,
-// kGaugeFillBrightnessBase + kGaugeFillBrightnessRange] = [0.3, 1.0].
 constexpr float kGaugeFillBrightnessRange = 0.7f;
 constexpr float kGaugeFillBrightnessBase = 0.3f;
 
-// The glow-pulse clock's wrap period, in milliseconds, and its two ends. @ghidraAddress 0x2f8540
-// (period) and 0x2f8544 (the -1000 wrap subtrahend).
+// @ghidraAddress 0x2f8540
 constexpr float kPulseClockPeriod = 1000.0f;
+// @ghidraAddress 0x2f8544
 constexpr float kPulseClockWrap = -1000.0f;
 
-// The glow phase spans a full 2*pi turn; the base fill rotation is pi. @ghidraAddress 0x2fe898
-// (2*pi, a double) and 0x2fe894 (pi).
+// @ghidraAddress 0x2fe898
 constexpr double kGlowPhaseTurn = 6.2831853071795862;
+// @ghidraAddress 0x2fe894
 constexpr float kBaseFillRotation = 3.14159274f;
 
-// The maximum sprite alpha the fill/glow intensities scale. @ghidraAddress 0x2eed00
+// @ghidraAddress 0x2eed00
 constexpr float kMaxAlpha = 255.0f;
 
-// The per-play-colour gauge lane counts. @ghidraAddress 0x2fe8f0
+// @ghidraAddress 0x2fe8f0
 constexpr int kGaugeLaneCounts[] = {2, 2, 3, 3};
 
-// The number of play sides the gauge draws for, and the five layered part sprites emitted per lane:
-// three stacked base-fill parts, a highlight, and a glow.
 constexpr int kGaugeSideCount = 2;
 
-// The gauge part groups the five layers draw from (base fill, its two colour siblings, the
-// highlight, and the glow), keyed off the side's colour index.
 constexpr unsigned int kPartOffsetFillA = 0;
 constexpr unsigned int kPartOffsetFillB = 2;
 constexpr unsigned int kPartOffsetFillC = 4;
 constexpr unsigned int kPartOffsetHighlight = 6;
 constexpr unsigned int kPartOffsetGlow = 8;
 
-// The batch each layer emits into: the first four into batch 0, the glow into batch 1.
 constexpr unsigned int kBatchBase = 0;
 constexpr unsigned int kBatchGlow = 1;
 
@@ -93,14 +82,10 @@ constexpr unsigned int kBatchGlow = 1;
 
 /** @ghidraAddress 0x83460 */
 PlayColorLayer::PlayColorLayer() {
-    // Seed the gauge brightness to full and the transform block's scales to 1 (offsets
-    // +0x90/+0x98/+0x9c in the binary).
     m_flGaugeBrightness = 1.0f;
     m_flScaleY = 1.0f;
     m_flScaleZ = 1.0f;
 
-    // Assign each part group a non-overlapping index range within its batch, accumulating each
-    // batch's total capacity as it goes.
     for (int nGroup = 0; nGroup < kPartGroupCount; ++nGroup) {
         const int nBatch = kGroupBatch[nGroup];
         m_aPartBaseIndex[nGroup] = m_aBatchCapacity[nBatch];
@@ -111,7 +96,6 @@ PlayColorLayer::PlayColorLayer() {
 /** @ghidraAddress 0x8350c */
 PlayColorLayer *PlayColorLayer::shared() {
     if (g_pPlayColorLayer == nullptr) {
-        // The binary allocates the raw 0xa0-byte object and runs the constructor.
         g_pPlayColorLayer = new PlayColorLayer();
     }
     return g_pPlayColorLayer;
@@ -123,15 +107,11 @@ void PlayColorLayer::BuildGaugePartsSpriteBatches() {
         return;
     }
 
-    // The batches hang beneath the shared background layer's render object rather than the global
-    // scene root.
     BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
     ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
 
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTextureName);
 
-    // Build the two batches, each sized to hold all the part groups routed to it, and set the
-    // additive-style vertex flag on each.
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
         ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_aBatchCapacity[nBatch]));
@@ -143,7 +123,6 @@ void PlayColorLayer::BuildGaugePartsSpriteBatches() {
         pSprite->SetBlendMode(kVertexFlagMode);
     }
 
-    // Emit each part group's sprites into its batch.
     for (int nGroup = 0; nGroup < kPartGroupCount; ++nGroup) {
         for (int nPart = 0; nPart < kGroupPartCount[nGroup]; ++nPart) {
             EmitGaugePartSprite(0.0f,
@@ -198,7 +177,6 @@ void PlayColorLayer::StartShrinkAnimation(float flDuration) {
     m_shrinkChannel.SetEnd(0.0f);
     m_shrinkChannel.SetDuration(flDuration);
     m_shrinkChannel.SetElapsed(0.0f);
-    // A non-positive duration snaps straight to empty and marks the colour dirty.
     if (flDuration <= 0.0f) {
         m_shrinkChannel.SetCurrent(0.0f);
         m_bGaugeColorDirty = true;
@@ -212,7 +190,6 @@ void PlayColorLayer::StartGaugeGrowAnimation(float flDuration, float flFromValue
     m_shrinkChannel.SetEnd(1.0f);
     m_shrinkChannel.SetDuration(flDuration);
     m_shrinkChannel.SetElapsed(0.0f);
-    // A non-positive duration snaps straight to full and marks the colour dirty.
     if (flDuration <= 0.0f) {
         m_shrinkChannel.SetCurrent(1.0f);
         m_bGaugeColorDirty = true;
@@ -233,8 +210,7 @@ void PlayColorLayer::SetPlayColorValue(int nValue) {
 
 /** @ghidraAddress 0x837e8 */
 void PlayColorLayer::SyncGaugeValuesFromGameSystem() {
-    // The three X positions scale the sheet-inset half-width by the two per-side gauge-parts scales
-    // (the third scale is zero). The binary lazily copies the scale table into a local once.
+    // The binary lazily copies the scale table into a function-local static once.
     static const float kGaugePosXScale[kGaugeLaneXCount] = {
         g_aGaugePartsScale[0], g_aGaugePartsScale[1], 0.0f};
     for (int nLane = 0; nLane < kGaugeLaneXCount; ++nLane) {
@@ -242,7 +218,6 @@ void PlayColorLayer::SyncGaugeValuesFromGameSystem() {
             kGaugePosXScale[nLane] * GameSystem::GetGameSystem()->GetSheetInsetHalfX();
     }
 
-    // The two Y positions scale the sheet-inset half-height by the far-lane slopes, truncated.
     const float kGaugePosYScale[kGaugeLaneYCount] = {g_flPlayfieldFarLaneSlope,
                                                      g_flPlayfieldFarLaneSlopeNeg};
     for (int nLane = 0; nLane < kGaugeLaneYCount; ++nLane) {
@@ -253,7 +228,6 @@ void PlayColorLayer::SyncGaugeValuesFromGameSystem() {
 
 /** @ghidraAddress 0x839b8 */
 void PlayColorLayer::Update(float flDeltaTime) {
-    // Advance the fill tween toward its end value, marking the colour dirty once it moves.
     const float flDuration = m_shrinkChannel.GetDuration();
     const float flEndElapsed = flDuration + m_flAnimFrom;
     if (m_shrinkChannel.GetElapsed() < flEndElapsed) {
@@ -272,7 +246,6 @@ void PlayColorLayer::Update(float flDeltaTime) {
         m_bGaugeColorDirty = true;
     }
 
-    // Advance the glow-pulse clock, wrapping it at the period, and map it to the glow phase.
     float flClock = m_flPulseClock + flDeltaTime;
     if (flClock > kPulseClockPeriod) {
         flClock += kPulseClockWrap;
@@ -288,21 +261,17 @@ void PlayColorLayer::Update(float flDeltaTime) {
 
     const float flPartScale = GameSystem::GetGameSystem()->GetSheetRadiusScaled();
 
-    // Reset both batches' sprite counts before re-emitting.
     for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
 
     const int nLaneCount = kGaugeLaneCounts[m_nPlayColorValue];
     for (int nSide = 0; nSide < kGaugeSideCount; ++nSide) {
-        // The first side uses the play colour; the other side its opposite.
         unsigned int nColor = GameSystem::GetGameSystem()->GetPlayColor();
         if (nSide != 1) {
             nColor = nColor == 0 ? 1u : 0u;
         }
 
-        // Side 0 pulses its highlight rotation and glow; side 1 draws without rotation. Each side
-        // scales its intensity by its own transform scale.
         const float flFill = m_shrinkChannel.GetCurrent();
         const float flLayerScale = nSide == 0 ? m_flScaleY : m_flScaleZ;
         const float flRotation = nSide == 0 ? kBaseFillRotation : 0.0f;
@@ -312,9 +281,8 @@ void PlayColorLayer::Update(float flDeltaTime) {
         for (int nLane = 0; nLane < nLaneCount; ++nLane) {
             const float flX = m_aGaugePosX[nLane];
             const float flY = m_aGaugePosY[nSide];
-            // Arm the whole-frame sprite dump for the next frame, the first time the targets have a
-            // real position. Waiting for that rather than counting frames from the scene's setup is
-            // what makes the capture land on a frame that actually contains the play field.
+            // Arming only once the targets have a real position keeps the capture on a frame that
+            // contains the play field.
             NE_DBG(if (g_nDebugSnapshotFrame == 0 && flY != 0.0f) {
                 g_nDebugSnapshotFrame = g_nDebugFrameCounter + 1;
             });

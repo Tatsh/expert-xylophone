@@ -18,8 +18,7 @@ class C_SPRITE_INSTANCING_2D;
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * sprite instancer that draws a single screen-sized quad, and a fade tween that drives the quad's
- * alpha. The class name is inferred (the binary carries no RTTI or embedded path for it). The
- * trailing @c // +0xNN comments document the original 32-bit offsets for reference only.
+ * alpha. The class name is inferred (the binary carries no RTTI or embedded path for it).
  */
 class FadeOverlayLayer : public PlayFieldLayerBase {
 public:
@@ -79,15 +78,14 @@ private:
      */
     void EmitQuad(const S_VECTOR2 &size, unsigned int nAlpha);
 
-    ne::C_SPRITE_INSTANCING_2D *m_pInstancer = {}; // +0x08: the one-quad sprite instancer.
-    int m_nSlotCount = {};                         // +0x10: the slots emitted this frame.
-    bool m_bInstancerCreated = {};                 // +0x14: set once the instancer exists.
-    // +0x15..+0x17 is alignment padding before the tween block.
-    float m_flFadeStart = {};    // +0x18: the alpha the current tween starts from.
-    float m_flFadeTarget = {};   // +0x1c: the alpha the current tween ends at.
-    float m_flFadeDuration = {}; // +0x20: the current tween's duration, in frames.
-    float m_flFadeElapsed = {};  // +0x24: the current tween's elapsed time, in frames.
-    float m_flCurrentAlpha = {}; // +0x28: the overlay's current alpha.
+    ne::C_SPRITE_INSTANCING_2D *m_pInstancer = {};
+    int m_nSlotCount = {};
+    bool m_bInstancerCreated = {};
+    float m_flFadeStart = {};
+    float m_flFadeTarget = {};
+    float m_flFadeDuration = {}; // In frames.
+    float m_flFadeElapsed = {};  // In frames.
+    float m_flCurrentAlpha = {};
 };
 
 // code: language=Objective-C++

@@ -5,19 +5,6 @@
 
 #pragma once
 
-//
-//  neGLES.h
-//  REFLEC BEAT plus
-//
-//  The shared ne GL ES 1.1 render-state backend (the binary's neGLES.cpp). Its buffer,
-//  framebuffer-object, texture, draw, and render-state entry points are C++ instance methods, each
-//  an out-of-line trampoline over a GL / GL_OES_framebuffer_object call that also maintains the
-//  renderer's cached GL state so a redundant call is skipped.
-//
-//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
-//  the program image base.
-//
-
 /**
  * The engine render-kind that selects a GL framebuffer attachment point.
  *
@@ -434,79 +421,72 @@ public:
     void ClearMatrixIndexPointer(int nStride, int nSize, int nMatrixIndexOffset);
 
 private:
-    // The maximum number of texture units the per-unit texture-coordinate caches hold.
     static constexpr int kMaxTextureUnits = 8;
-    // The number of sampler parameters cached per texture unit (min filter, mag filter, wrap S,
-    // wrap T).
     static constexpr int kTexParamCount = 4;
 
-    // Only the state-cache fields the render-state setters above touch are modelled; the remainder
-    // of the 0x258-byte object is reserved until the full engine class is reconstructed. The
-    // trailing // +0xNN comments document the original offsets for reference only.
-    void *m_pField000 = {};        // +0x000 leading pointer field (zeroed on construct)
-    void *m_pField008 = {};        // +0x008 second pointer field (zeroed on construct)
-    float m_flCurrentColorR = {};  // +0x010 current vertex colour, red (defaults to 1.0)
-    int m_nField014 = {};          // +0x014 (zeroed on construct)
-    int m_nViewportX = {};         // +0x018 cached viewport x
-    int m_nViewportY = {};         // +0x01c cached viewport y
-    int m_nViewportWidth = {};     // +0x020 cached viewport width
-    int m_nViewportHeight = {};    // +0x024 cached viewport height
-    int m_nMatrixMode = {};        // +0x028 cached active matrix mode
-    int m_nPaletteMatrix = {};     // +0x02c cached current palette matrix
-    int m_nField030 = {};          // +0x030 (set to 7 on construct)
-    int m_nField034 = {};          // +0x034 (zeroed on construct)
-    bool m_bDepthTestEnabled = {}; // +0x038 depth-test enabled (defaults true)
+    void *m_pField000 = {};        // +0x000
+    void *m_pField008 = {};        // +0x008
+    float m_flCurrentColorR = {};  // +0x010 defaults to 1.0
+    int m_nField014 = {};          // +0x014
+    int m_nViewportX = {};         // +0x018
+    int m_nViewportY = {};         // +0x01c
+    int m_nViewportWidth = {};     // +0x020
+    int m_nViewportHeight = {};    // +0x024
+    int m_nMatrixMode = {};        // +0x028
+    int m_nPaletteMatrix = {};     // +0x02c
+    int m_nField030 = {};          // +0x030 set to 7 on construct
+    int m_nField034 = {};          // +0x034
+    bool m_bDepthTestEnabled = {}; // +0x038 defaults to true
     // unsigned char m_aReserved039[0x03] = {}; // +0x039
-    int m_nCullFace = {};         // +0x03c cull-face mode (defaults to 1)
-    int m_nArrayBufferBound = {}; // +0x040 currently-bound array buffer name (0 none)
+    int m_nCullFace = {};         // +0x03c defaults to 1
+    int m_nArrayBufferBound = {}; // +0x040 0 when none
     // unsigned char m_aReserved044[0x04] = {}; // +0x044
-    const void *m_pColorPointer = {}; // +0x048 cached colour array pointer
-    int m_nColorStride = {};          // +0x050 cached colour array stride
-    int m_nColorBufferBinding = {};   // +0x054 colour array buffer binding
+    const void *m_pColorPointer = {}; // +0x048
+    int m_nColorStride = {};          // +0x050
+    int m_nColorBufferBinding = {};   // +0x054
     // unsigned char m_aReserved058[0x08] = {}; // +0x058
-    int m_nHandle060 = {};             // +0x060 secondary handle slot (defaults to -1)
-    int m_nBufferBinding2 = {};        // +0x064 secondary array-buffer binding cache
-    const void *m_pVertexPointer = {}; // +0x068 cached vertex array pointer
-    int m_nVertexStride = {};          // +0x070 cached vertex array stride
-    int m_nVertexSize = {};            // +0x074 cached vertex component count
-    int m_nVertexBufferBinding = {};   // +0x078 vertex array buffer binding
-    int m_nActiveTexUnit = {};         // +0x07c active texture-unit index
-    const void *m_apTexCoordPointer[kMaxTextureUnits] = {}; // +0x080 per-unit texcoord pointers
-    int m_anTexCoordStride[kMaxTextureUnits] = {};          // +0x0c0 per-unit texcoord strides
-    int m_anTexCoordBufferBinding[kMaxTextureUnits] = {};   // +0x0e0 per-unit texcoord bindings
-    const void *m_pWeightPointer = {};                      // +0x100 cached weight array pointer
-    int m_nWeightStride = {};                               // +0x108 cached weight array stride
-    int m_nWeightSize = {};                                 // +0x10c cached weights per vertex
-    int m_nWeightBufferBinding = {};                        // +0x110 weight array buffer binding
+    int m_nHandle060 = {};                                  // +0x060 defaults to -1
+    int m_nBufferBinding2 = {};                             // +0x064
+    const void *m_pVertexPointer = {};                      // +0x068
+    int m_nVertexStride = {};                               // +0x070
+    int m_nVertexSize = {};                                 // +0x074 position components per vertex
+    int m_nVertexBufferBinding = {};                        // +0x078
+    int m_nActiveTexUnit = {};                              // +0x07c
+    const void *m_apTexCoordPointer[kMaxTextureUnits] = {}; // +0x080
+    int m_anTexCoordStride[kMaxTextureUnits] = {};          // +0x0c0
+    int m_anTexCoordBufferBinding[kMaxTextureUnits] = {};   // +0x0e0
+    const void *m_pWeightPointer = {};                      // +0x100
+    int m_nWeightStride = {};                               // +0x108
+    int m_nWeightSize = {};                                 // +0x10c weights per vertex
+    int m_nWeightBufferBinding = {};                        // +0x110
     // unsigned char m_aReserved114[0x04] = {};                // +0x114
-    const void *m_pMatrixIndexPointer = {};        // +0x118 cached matrix-index pointer
-    int m_nMatrixIndexStride = {};                 // +0x120 cached matrix-index stride
+    const void *m_pMatrixIndexPointer = {};        // +0x118
+    int m_nMatrixIndexStride = {};                 // +0x120
     int m_nMatrixIndexSize = {};                   // +0x124 matrix indices per vertex
-    int m_nMatrixIndexBufferBinding = {};          // +0x128 matrix-index buffer binding
-    int m_nElementBufferBound = {};                // +0x12c cached element-array binding
-    int m_nActiveTextureUnit = {};                 // +0x130 active texture unit for binds
-    int m_anTexturePerUnit[kMaxTextureUnits] = {}; // +0x134 per-unit bound texture cache
-    // +0x154 per-unit sampler-parameter cache: four ints per unit {min filter, mag filter, wrap S,
-    // wrap T}, defaulted to {4, 1, 7, 7}.
+    int m_nMatrixIndexBufferBinding = {};          // +0x128
+    int m_nElementBufferBound = {};                // +0x12c
+    int m_nActiveTextureUnit = {};                 // +0x130 the unit used for texture binds
+    int m_anTexturePerUnit[kMaxTextureUnits] = {}; // +0x134
+    // +0x154 per unit {min filter, mag filter, wrap S, wrap T}, defaulted to {4, 1, 7, 7}.
     int m_aTexParamCache[kMaxTextureUnits][kTexParamCount] = {};
-    int m_nBlendSrc = {};  // +0x1d4 cached blend source factor
-    int m_nBlendDest = {}; // +0x1d8 cached blend destination factor
-    int m_nField1dc = {};  // +0x1dc (zeroed on construct)
+    int m_nBlendSrc = {};  // +0x1d4
+    int m_nBlendDest = {}; // +0x1d8
+    int m_nField1dc = {};  // +0x1dc
     // unsigned char m_aReserved1e0[0x04] = {}; // +0x1e0
-    bool m_aEnableStateFlags[0x24] = {}; // +0x1e4 per-capability enable cache
-    bool m_aClientStateFlags[0x07] = {}; // +0x208 per-array client-state cache
-    short m_nField20c = {};              // +0x20c (zeroed on construct)
-    bool m_bField20e = {};               // +0x20e (zeroed on construct)
+    bool m_aEnableStateFlags[0x24] = {}; // +0x1e4
+    bool m_aClientStateFlags[0x07] = {}; // +0x208
+    short m_nField20c = {};              // +0x20c
+    bool m_bField20e = {};               // +0x20e
     // unsigned char m_aReserved20f[0x01] = {}; // +0x20f
-    float m_aColorMatrixDiagonal[4] = {}; // +0x210 colour-matrix diagonal (defaults {1,1,0,1})
-    int m_nField220 = {};                 // +0x220 (zeroed on construct)
+    float m_aColorMatrixDiagonal[4] = {}; // +0x210 defaults to {1, 1, 0, 1}
+    int m_nField220 = {};                 // +0x220
     // unsigned char m_aReserved224[0x0c] = {}; // +0x224
-    long m_nHandle230 = {};     // +0x230 handle slot (defaults to -1)
-    long m_nHandle238 = {};     // +0x238 handle slot (defaults to -1)
-    int m_nHandle240 = {};      // +0x240 handle slot (defaults to -1)
-    int m_nMaxTextureSize = {}; // +0x244 GL capability: GL_MAX_TEXTURE_SIZE
+    long m_nHandle230 = {};     // +0x230 defaults to -1
+    long m_nHandle238 = {};     // +0x238 defaults to -1
+    int m_nHandle240 = {};      // +0x240 defaults to -1
+    int m_nMaxTextureSize = {}; // +0x244 GL_MAX_TEXTURE_SIZE
     // unsigned char m_aReserved248[0x08] = {}; // +0x248
-    bool m_bHasMatrixPalette = {}; // +0x250 GL capability: GL_OES_matrix_palette present
+    bool m_bHasMatrixPalette = {}; // +0x250 GL_OES_matrix_palette present
     // unsigned char m_aReserved251[0x03] = {}; // +0x251
-    int m_nMaxPaletteMatrices = {}; // +0x254 GL capability: max palette matrices per draw
+    int m_nMaxPaletteMatrices = {}; // +0x254
 };

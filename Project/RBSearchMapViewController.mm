@@ -1,29 +1,13 @@
-//
-//  RBSearchMapViewController.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBSearchMapViewController).
-//  Verified against the arm64 disassembly: the controller builds a custom navigation bar, hosts a
-//  tagged RBSearchMapView that it creates lazily on first appearance, and mirrors the map's
-//  tracking state onto the current-location button.
-//
-
 #import "RBSearchMapViewController.h"
 
 #import <UIKit/UIKit.h>
 
 #import "UIImage+RB.h"
-
-// SoundEffectManager::GetInstance()->PlayThemedSoundEffect(slot).
 #import "engineglobals.h"
 #import "soundeffectmanager.h"
 
-// The shared web-view indicator autoresizing mask.
-
 namespace {
-// The back button plays the shared "cancel" sound-effect slot.
 constexpr int kSoundEffectCancel = 4;
-// The hosted RBSearchMapView is looked up in the controller's view by this tag.
 constexpr NSInteger kSearchMapViewTag = 0x23d;
 } // namespace
 

@@ -2701,8 +2701,7 @@ constexpr float kHalf = 0.5f;
 constexpr float kScaleNormal = 1.0f;
 constexpr float kScaleMirrored = -1.0f;
 
-// Materialised from the binary's own literal pool rather than the bonus palette, which the first
-// six of them duplicate. @ghidraAddress 0x2fd00c through 0x2fd044
+// @ghidraAddress 0x2fd00c through 0x2fd044
 constexpr ResultBonusColor kColorRate{34.0f, 149.0f, 238.0f};
 constexpr ResultBonusColor kColorJudgeCount{231.0f, 174.0f, 0.0f};
 constexpr ResultBonusColor kColorGoodCount{255.0f, 120.0f, 20.0f};
@@ -2807,8 +2806,8 @@ enum ResultPanelPosition {
     kPosPanelFrame = 1,
     kPosTwitterButton = 2,
     kPosDecorationBase = 3,
-    // Crossed in the binary at 0x75158 and 0x75184: part 0x0f draws at slot 16 and part 0x10 at
-    // slot 15. Frame part 0x11 is not crossed, so do not "correct" this back.
+    // Parts 0x0f and 0x10 are deliberately crossed onto slots 16 and 15; part 0x11 is not.
+    // @ghidraAddress 0x75158
     kPosMusicInfoLower = 15,
     kPosMusicInfoUpper = 16,
     kPosMusicInfoFrame = 17,

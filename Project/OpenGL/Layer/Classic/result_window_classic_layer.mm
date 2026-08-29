@@ -3087,7 +3087,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
 
     m_flResultElapsed += flDeltaTime;
 
-    // Each sparkle trails the previous one by a fixed phase, wrapping back through zero.
     if (m_bMainAssetActive) {
         const float flPhase = static_cast<float>(m_nRotationCounterA) / kSparkleCounterPeriod;
         float flLevel = 1.0f - flPhase;

@@ -75,8 +75,7 @@ static const float kPopBounceTimingControlPoint2Y = 0.5f;
         pulse.beginTime = stepDuration * step;
         pulse.duration = stepDuration;
         pulse.autoreverses = NO;
-        // The binary sets both endpoints here and then again in the arm below, with the same
-        // values each time.
+        // The binary sets both endpoints again in the arm below, with the same values.
         pulse.fromValue = @((step & 1) == 0 ? start : end);
         pulse.toValue = @((step & 1) == 0 ? end : start);
         if ((step & 1) == 0) {

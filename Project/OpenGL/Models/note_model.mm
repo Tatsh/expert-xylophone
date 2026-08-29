@@ -2167,7 +2167,7 @@ float NoteModel::GetLaneX() const {
     return GetNoteLaneFraction(nKind, nLane) * GameSystem::GetGameSystem()->GetSheetInsetHalfX();
 }
 
-// Reached through the __mod_init_func table (the pointer at 0x358cb8), not by name.
+// Reached through the __mod_init_func table, not by name. @ghidraAddress 0x358cb8
 /** @ghidraAddress 0x136afc */
 __attribute__((constructor)) void InitNoteLaneTable() {
     g_noteLaneTable.flLaneSpread = 288.0f;
@@ -2190,7 +2190,7 @@ float GetNoteLaneFraction(int nKind, int nLane) {
         if (nLane == kWideLaneRight) {
             return g_noteLaneTable.flWideLaneRight;
         }
-        // The fall-through is the left wide lane, not the centre (0x136a98).
+        // The fall-through is the left wide lane, not the centre. @ghidraAddress 0x136a98
         return g_noteLaneTable.flWideLaneLeft;
     }
 

@@ -422,8 +422,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 
 #pragma mark - Helpers
 
-// The stringWithFormat: at 0x6fe58 takes no arguments, loading the empty string at 0x361a20 into
-// x2 and writing no stack slots.
+// The stringWithFormat: takes no arguments. @ghidraAddress 0x6fe58, 0x361a20
 - (NSError *)errorWithEmptyDescription {
     NSString *description = [NSString stringWithString:[NSString stringWithFormat:@""]];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObject:description
@@ -456,8 +455,9 @@ constexpr NSUInteger kBase64OutputGroup = 4;
                 next = nextAfterSecond + 1;
                 padCount = secondIsNul ? 1 : 0;
             }
-            // The lsr at 0x6f484 and 0x6f498 shifts the sign-extended byte, so a high bit carries
-            // ones into the masked field; the combines at 0x6f488 and 0x6f49c are add, not or.
+            // The lsr shifts the sign-extended byte, so a high bit carries ones into the masked
+            // field, and the combines are add, not or.
+            // @ghidraAddress 0x6f484, 0x6f488, 0x6f498, 0x6f49c
             cursor[0] = kBase64Alphabet[b1 >> 2];
             cursor[1] = kBase64Alphabet[((b1 << 4) + (static_cast<unsigned int>(b2) >> 4)) & 0x3f];
             cursor[2] = kBase64Alphabet[((b2 << 2) + (static_cast<unsigned int>(b3) >> 6)) & 0x3f];
@@ -537,8 +537,8 @@ constexpr NSUInteger kBase64OutputGroup = 4;
             unsigned char values[kBase64OutputGroup];
             for (int slot = 0; slot < static_cast<int>(kBase64OutputGroup); ++slot) {
                 unsigned char value = 0xff;
-                // The bound is 0x41, so the search reaches the NUL terminator and maps a NUL input
-                // byte to 64; it reads as an off-by-one and is not one.
+                // The bound reaches the NUL terminator and maps a NUL input byte to 64; it reads as
+                // an off-by-one and is not one.
                 for (int index = 0; index < static_cast<int>(sizeof(kBase64Alphabet)); ++index) {
                     if (kBase64Alphabet[index] == chars[slot]) {
                         value = static_cast<unsigned char>(index);

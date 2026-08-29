@@ -80,22 +80,17 @@ public:
     void HideMesh();
 
 private:
-    // Clears every mesh vertex back to the strip's first point in transparent white (the shared
-    // hidden state used by Start and Reset).
     void ClearMeshVertices();
 
-    bool m_bActive = {}; // +0x00: whether the trail is animating.
-    // +0x01..+0x03 is alignment padding before the progress value.
+    bool m_bActive = {}; // +0x00
     // unsigned char m_aPad01[3] = {}; // +0x01
-    float m_flProgress = {};       // +0x04: the elapsed reveal progress, driven by Update.
-    float m_flRevealLength = {};   // +0x08: the reveal's total travel length (the progress bound).
-    float m_flTotalLength = {};    // +0x0c: the cached geometric length of the strip (sum of
-                                   //        segment lengths), computed by Init.
-    int m_nHeadIndex = {};         // +0x10: the index of the strip's current head vertex.
-    float m_flReachRemainder = {}; // +0x14: the reach carried between segments while advancing.
-    int m_nVertexCount = {};       // +0x18: the number of strip vertices.
-    // +0x1c..+0x1f is padding before the vertex array pointer.
+    float m_flProgress = {};       // +0x04
+    float m_flRevealLength = {};   // +0x08: the bound on the progress.
+    float m_flTotalLength = {};    // +0x0c: the sum of the segment lengths, computed by Init.
+    int m_nHeadIndex = {};         // +0x10
+    float m_flReachRemainder = {}; // +0x14: carried between segments while advancing.
+    int m_nVertexCount = {};       // +0x18
     // unsigned char m_aPad1c[4] = {};      // +0x1c
-    S_VECTOR2 *m_pVertices = {};         // +0x20: the strip vertex positions.
-    ne::C_DRAW_POLYGON_2D *m_pMesh = {}; // +0x28: the mesh node that draws the strip.
+    S_VECTOR2 *m_pVertices = {};         // +0x20
+    ne::C_DRAW_POLYGON_2D *m_pMesh = {}; // +0x28
 };

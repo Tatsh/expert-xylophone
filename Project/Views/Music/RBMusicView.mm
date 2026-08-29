@@ -33,7 +33,7 @@
 #import "gamesystem.h"
 #import "soundeffectmanager.h"
 
-// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
+// @ghidraAddress 0x2eedc0
 extern const double g_dMascotMessageAnimDuration;
 
 constexpr int kDifficultyCount = 4;
@@ -103,7 +103,6 @@ static const UIViewAutoresizing kLineAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// Background-music fade durations, in seconds.
 static const float kBgmPauseFadeDuration = 0.25f;
 static const float kBgmReplayFadeDuration = 1.5f;
 static const NSTimeInterval kMusicViewCoverFadeDuration = 0.25;
@@ -172,16 +171,16 @@ struct SelLineLayer {
 };
 } // namespace
 static const SelLineLayer kSelLineLayout[] = {
-    {1.0, 0.0, 272.0, -1.0},  // 0
-    {0.0, 0.0, 0.0, 10.0},    // 1
-    {0.0, 0.0, 0.0, 662.0},   // 2
-    {0.0, 0.0, 272.0, -1.0},  // 3
-    {0.0, 0.0, 535.0, 10.0},  // 4
-    {1.0, 0.0, 546.0, 662.0}, // 5
-    {1.0, 0.0, 529.0, 20.0},  // 6
-    {0.0, 0.0, 15.0, 21.0},   // 7
-    {0.0, 0.0, 15.0, 657.0},  // 8
-    {0.0, 1.0, 528.0, 657.0}, // 9
+    {1.0, 0.0, 272.0, -1.0},
+    {0.0, 0.0, 0.0, 10.0},
+    {0.0, 0.0, 0.0, 662.0},
+    {0.0, 0.0, 272.0, -1.0},
+    {0.0, 0.0, 535.0, 10.0},
+    {1.0, 0.0, 546.0, 662.0},
+    {1.0, 0.0, 529.0, 20.0},
+    {0.0, 0.0, 15.0, 21.0},
+    {0.0, 0.0, 15.0, 657.0},
+    {0.0, 1.0, 528.0, 657.0},
 };
 
 // @ghidraAddress 0x35a5f8
@@ -229,8 +228,7 @@ static const CGFloat kPageTintWhiteCurrent = 0.5;
 static const CGFloat kNameAlphaDim = 0.699999988;
 static const CGFloat kNameAlphaFull = 1.0;
 
-// On the narrow layout the CPU view deliberately shares the speed view's page, as the binary lays
-// it out.
+// On the narrow layout the CPU view shares the speed view's page, as the binary lays it out.
 static const CGFloat kColorPage = 0.0;
 static const CGFloat kDifficultyPage = 1.0;
 static const CGFloat kSpeedPage = 2.0;
@@ -291,9 +289,8 @@ static NSString *const kDetDecDoubleTable[] = {
 static NSString *const kDetDecDoubleColette =
     @"02_music_detail/det_dec_d"; // @ghidraAddress 0x35b048
 
-// The detail-view geometry per (iPad idiom, theme) leg, recovered from the six-leg block at
-// 0xcca64..0xccf30. The address trailing each row is the call site that consumes it, not the pool
-// the value is stored in, so these are deliberately not @ghidraAddress tags.
+// The address trailing each row is the call site that consumes it, not the pool the value is
+// stored in, so these are deliberately not @ghidraAddress tags.
 namespace {
 struct DetailGeometry {
     CGFloat jacketX, jacketY, jacketSize;
@@ -406,11 +403,11 @@ static const CGFloat kNarrowOtherTitleYNonWhite = 150.0;
 @interface RBMusicView () {
     int m_GameType;
     int m_SelectedSetting;
-    int m_Score[kDifficultyCount];      // +0x10, per-difficulty score
-    float m_AR[kDifficultyCount];       // +0x20, per-difficulty achievement rate
-    int m_Rank[kDifficultyCount];       // +0x30, per-difficulty clear rank (derived from m_AR)
-    BOOL m_FullCombo[kDifficultyCount]; // +0x40
-    int m_PlayCount[kDifficultyCount];  // +0x44, per-difficulty play count
+    int m_Score[kDifficultyCount];
+    float m_AR[kDifficultyCount]; // The achievement rate.
+    int m_Rank[kDifficultyCount]; // The clear rank, derived from m_AR.
+    BOOL m_FullCombo[kDifficultyCount];
+    int m_PlayCount[kDifficultyCount];
     BOOL m_Animating;
     BOOL m_FirstInfo;
     int _thema;
@@ -455,8 +452,6 @@ constexpr int kDetMbgPlainIndex = 3;
 
 - (void)setMusicData:(MusicData *)musicData {
     /** @ghidraAddress 0xca818 */
-    // The binary implements this setter by hand: SetupView builds the subviews, and assigning the
-    // music data is what fills them for the tune being shown.
     _musicData = musicData;
     self.jacketImage = musicData.artwork;
 
@@ -500,7 +495,6 @@ constexpr int kDetMbgPlainIndex = 3;
                                    kDetMbgTable[kDetMbgPlainIndex];
     self.bgImageView.image = [UIImage imageWithName:backgroundName];
 
-    // Any other theme leaves both images untouched, as the binary's fall-through does.
     UIImage *musicNameSrc = nil;
     UIImage *artistNameSrc = nil;
     if (self->_thema == RBUserSettingDataThemeClassic) {
@@ -645,7 +639,6 @@ constexpr int kDetMbgPlainIndex = 3;
 
     self.bpmOrigin = CGPointMake(geometry.bpmX, geometry.bpmY);
 
-    // The name artwork variant follows the theme (the binary switches on _thema at 0xccf48).
     UIImage *musicNameSrc = nil;
     UIImage *artistNameSrc = nil;
     switch (self->_thema) {
@@ -679,7 +672,6 @@ constexpr int kDetMbgPlainIndex = 3;
     [self.baseView addSubview:self.jacketImageView];
 
     self.musicNameImageView = [[UIImageView alloc] initWithImage:musicNameSrc];
-    // Only the Limelight theme dims the name artwork (the binary tests _thema == 1 at 0xcd368).
     self.musicNameImageView.alpha =
         self->_thema == RBUserSettingDataThemeLimelight ? kNameAlphaDim : kNameAlphaFull;
     if (isPad) {
@@ -726,8 +718,7 @@ constexpr int kDetMbgPlainIndex = 3;
     self.scoreView = [[RBMusicScoreView alloc]
         initWithFrame:CGRectMake(
                           geometry.scoreX, geometry.scoreY, geometry.scoreW, geometry.scoreH)];
-    // The binary seeds the readout with a random four-digit value here; ShowSelectDifficulty
-    // overwrites it from m_Score before the view is ever displayed.
+    // The binary seeds the readout randomly; ShowSelectDifficulty overwrites it from m_Score.
     int seedScore =
         static_cast<int>(static_cast<float>(rand()) * kInverseRandMax * kSeedScoreScale);
     [self.scoreView UpdateScore:seedScore];
@@ -747,8 +738,7 @@ constexpr int kDetMbgPlainIndex = 3;
 
     self.arView =
         [[RBMusicARView alloc] initWithFrame:CGRectMake(geometry.arX, geometry.arY, 0.0, 0.0)];
-    // The binary seeds the rate readout blank, not from m_AR; ShowSelectDifficulty pushes the
-    // real rate immediately afterwards.
+    // Seeded blank rather than from m_AR; ShowSelectDifficulty pushes the real rate right after.
     [self.arView UpdateScore:0.0f];
     [self.baseView addSubview:self.arView];
 
@@ -767,7 +757,6 @@ constexpr int kDetMbgPlainIndex = 3;
     self.settingScroll = [[UIScrollView alloc]
         initWithFrame:CGRectMake(
                           geometry.scrollX, geometry.scrollY, geometry.scrollW, geometry.scrollH)];
-    // The page count is an idiom branch (IsPad() at 0xce340, branch at 0xce34c).
     self.settingScroll.contentSize = CGSizeMake(self.settingScroll.bounds.size.width *
                                                     (isPad ? kScrollPagesNormal : kScrollPagesAlt),
                                                 self.settingScroll.bounds.size.height);
@@ -780,7 +769,6 @@ constexpr int kDetMbgPlainIndex = 3;
 
     self.settingPage = [[UIPageControl alloc]
         initWithFrame:CGRectMake(geometry.pageX, geometry.pageY, geometry.pageW, geometry.pageH)];
-    // The same idiom branch as the content size (IsPad() at 0xce5ec, branch at 0xce5f8).
     self.settingPage.numberOfPages = isPad ? kSettingPagesNormal : kSettingPagesAlt;
     self.settingPage.currentPage = m_SelectedSetting;
     self.settingPage.transform = CGAffineTransformMakeScale(kPageScale, kPageScale);
@@ -804,8 +792,7 @@ constexpr int kDetMbgPlainIndex = 3;
                               kDifficultyPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
         MusicSelectedBase:self];
     [self.settingScroll addSubview:self.difficultyView];
-    // The speed page is the pad's alone: the idiom test at 0xceaa8 skips straight to the CPU view
-    // at 0xcee20 on the phone, so the narrow layout renumbers rather than leaving a gap.
+    // The phone has no speed page, so the narrow layout renumbers rather than leaving a gap.
     if (isPad) {
         self.speedView = [[RBMusicSpeedView alloc]
                 initWithFrame:CGRectMake(
@@ -814,7 +801,6 @@ constexpr int kDetMbgPlainIndex = 3;
         [self.settingScroll addSubview:self.speedView];
     }
 
-    // The CPU and other pages split by iPad idiom (IsPad at 0xceaa8).
     CGFloat cpuPage = isPad ? kCpuPageWide : kCpuPageNarrow;
     CGFloat otherPage = isPad ? kOtherPageWide : kOtherPageNarrow;
     self.cpuView = [[RBMusicCPUView alloc]
@@ -893,8 +879,7 @@ constexpr int kDetMbgPlainIndex = 3;
     [self.baseView addSubview:self.doubleButtonCoverView];
     self.doubleButton.enabled = [RBUserSettingData sharedInstance].speedType == 0;
     self.doubleButtonCoverView.hidden = [RBUserSettingData sharedInstance].speedType == 0;
-    // Yes, the binary immediately overrides both of the above, so the speed-lock cross is always
-    // hidden and the button always enabled here.
+    // Yes, the binary immediately overrides both of the above.
     self.doubleButtonCoverView.hidden = YES;
     self.doubleButton.enabled = YES;
 
@@ -1147,8 +1132,6 @@ constexpr int kDetMbgPlainIndex = 3;
 - (void)SetRankView:(int)SetRankView {
     if (SetRankView == -1) {
         [self.rankView setImage:nil];
-        // The width and height are zeroed at 0xd2f6c and 0xd2f70, so the badge keeps its origin
-        // and collapses to nothing.
         CGRect frame = self.rankView.frame;
         [self.rankView setFrame:CGRectMake(frame.origin.x, frame.origin.y, 0.0, 0.0)];
     } else {
@@ -1173,8 +1156,6 @@ constexpr int kDetMbgPlainIndex = 3;
         return;
     }
 
-    // The binary dispatches through a four-entry jump table (@0xd2754) whose difficulty-0 and
-    // difficulty-3 arms share the basic artwork.
     UIImage *artwork;
     switch (switchWithDifficulty) {
     case kDifficultyMedium:
@@ -1194,7 +1175,6 @@ constexpr int kDetMbgPlainIndex = 3;
         self.jacketImageView.image = self.jacketImage;
     }
 
-    // Shared music-name tail (@0xd13f0/@0xd16c0/@0xd1898): the themed name image keyed on _thema.
     self.musicNameImageView.image = [self musicNameImageOfMusic:difficultyMusic
                                                   forDifficulty:switchWithDifficulty];
 }
@@ -1238,8 +1218,7 @@ constexpr int kDetMbgPlainIndex = 3;
     if (changed) {
         self->m_SelectedSetting = ShowSettingView;
         int selected = ShowSettingView;
-        // The block captures self strongly: the binary retains it at 0xd3410 and balances that
-        // with a release at 0xd3438 once animateWithDuration:animations: has returned.
+        // The block captures self strongly, matching the binary's retain/release pair.
         [UIView animateWithDuration:g_dMascotMessageAnimDuration
                          animations:^{
                            /** @ghidraAddress 0xd3464 */

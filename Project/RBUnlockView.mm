@@ -128,9 +128,6 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     return self;
 }
 
-// The binary's -dealloc only chains to [super dealloc], which ARC does for us, so it has no
-// override here.
-
 - (void)setParentView:(RBCustomView *)parentView {
     self.parentCustomView = parentView;
 }

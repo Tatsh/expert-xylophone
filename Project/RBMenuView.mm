@@ -90,7 +90,7 @@ static const long kSoundEffectSearchBarHide = 0x12;
 
 static const NSTimeInterval kArtworkFadeInDuration = 0.3; // @ghidraAddress 0x2ec718
 
-static const int kSearchMascotDefaultBias = 90; // rand()%100 threshold; below it uses image [0].
+static const int kSearchMascotDefaultBias = 90;
 static const float kSearchPushNotificationOverlapFactor = -0.9f;
 
 static const CGFloat kAlphaHidden = 0.0;
@@ -383,15 +383,15 @@ static BOOL g_bRandamIntSeeded = NO;
             if (editMode == kMenuModePlaylistFinished) {
                 playlistRowY = static_cast<int>((self.height + kLayoutWideThemaClassicHeightDelta +
                                                  kLayoutWideThemaClassicFooterEdit));
-                sideButtonRowY = kLayoutWideThemaClassicCol0;      // 0x361 reused as the row Y.
-                settingRowY = kLayoutWideThemaClassicPlaylistFinX; // 0x38c reused as the row Y.
+                sideButtonRowY = kLayoutWideThemaClassicCol0;
+                settingRowY = kLayoutWideThemaClassicPlaylistFinX;
             } else {
                 sideButtonRowY =
                     static_cast<int>((self.height + kLayoutWideThemaClassicHeightDelta +
                                       kLayoutWideThemaClassicFooterNormal));
                 settingRowY = static_cast<int>((self.height + kLayoutWideThemaClassicHeightDelta +
                                                 kLayoutWideThemaClassicFooterEdit));
-                playlistRowY = kLayoutWideThemaClassicPlaylistFinX; // 0x38c reused as the row Y.
+                playlistRowY = kLayoutWideThemaClassicPlaylistFinX;
             }
             settingColX = kLayoutWideThemaClassicSettingX;
             col1 = kLayoutWideThemaClassicCol1;
@@ -413,15 +413,15 @@ static BOOL g_bRandamIntSeeded = NO;
             if (editMode == kMenuModePlaylistFinished) {
                 playlistRowY = static_cast<int>((self.height + kLayoutWideThemaCampaignHeightDelta +
                                                  kLayoutWideThemaCampaignFooterEdit));
-                sideButtonRowY = kLayoutWideThemaOtherCol0;      // 0x363 reused as the row Y.
-                settingRowY = kLayoutWideThemaOtherPlaylistFinX; // 0x390 reused as the row Y.
+                sideButtonRowY = kLayoutWideThemaOtherCol0;
+                settingRowY = kLayoutWideThemaOtherPlaylistFinX;
             } else {
                 sideButtonRowY =
                     static_cast<int>((self.height + kLayoutWideThemaCampaignHeightDelta +
                                       kLayoutWideThemaCampaignFooterNormal));
                 settingRowY = static_cast<int>((self.height + kLayoutWideThemaCampaignHeightDelta +
                                                 kLayoutWideThemaCampaignFooterEdit));
-                playlistRowY = kLayoutWideThemaOtherPlaylistFinX; // 0x390 reused as the row Y.
+                playlistRowY = kLayoutWideThemaOtherPlaylistFinX;
             }
             col1 = kLayoutWideThemaOtherCol1;
             col2 = kLayoutWideThemaOtherCol2;
@@ -443,15 +443,15 @@ static BOOL g_bRandamIntSeeded = NO;
             if (editMode == kMenuModePlaylistFinished) {
                 playlistRowY = static_cast<int>((self.height + kLayoutWideThemaCampaignHeightDelta +
                                                  kLayoutWideThemaCampaignFooterEdit));
-                sideButtonRowY = kLayoutWideThemaOtherCol0;      // 0x363 reused as the row Y.
-                settingRowY = kLayoutWideThemaOtherPlaylistFinX; // 0x390 reused as the row Y.
+                sideButtonRowY = kLayoutWideThemaOtherCol0;
+                settingRowY = kLayoutWideThemaOtherPlaylistFinX;
             } else {
                 sideButtonRowY =
                     static_cast<int>((self.height + kLayoutWideThemaCampaignHeightDelta +
                                       kLayoutWideThemaCampaignFooterNormal));
                 settingRowY = static_cast<int>((self.height + kLayoutWideThemaCampaignHeightDelta +
                                                 kLayoutWideThemaCampaignFooterEdit));
-                playlistRowY = kLayoutWideThemaOtherPlaylistFinX; // 0x390 reused as the row Y.
+                playlistRowY = kLayoutWideThemaOtherPlaylistFinX;
             }
             settingColX = kLayoutWidePastelWhiteSettingX;
             col1 = kLayoutWideThemaOtherCol1;
@@ -475,7 +475,7 @@ static BOOL g_bRandamIntSeeded = NO;
                                             kLayoutTallThemaClassicFooterYExtra));
                 base = static_cast<int>((bounds.width + kLayoutTallBoundsInset8));
                 rowBase = static_cast<int>((bounds.height + kLayoutTallHeightExtra60));
-                settingColX = kLayoutTallSettingXClassicPastel; // 4.0 slot reused as button X.
+                settingColX = kLayoutTallSettingXClassicPastel;
                 collectionOriginX = 0.0;
             } else {
                 footerY = 0; // The tall Colette theme has no footer.
@@ -483,8 +483,7 @@ static BOOL g_bRandamIntSeeded = NO;
                        kLayoutTallBaseInsetPastel;
                 rowBase = static_cast<int>((bounds.height + kLayoutTallHeightExtra64 +
                                             kLayoutTallThemaCampaignFooterYExtra));
-                settingColX =
-                    kLayoutTallSettingXClassicPastel; // 4.0 slot reused (via shared tail).
+                settingColX = kLayoutTallSettingXClassicPastel;
                 collectionOriginX = 0.0;
             }
             pageLabelInnerY = static_cast<int>((static_cast<double>(rowBase) +
@@ -549,7 +548,7 @@ static BOOL g_bRandamIntSeeded = NO;
                 ((bounds.width + kLayoutTallCol2BiasWhite) - static_cast<double>(menuButtonWidth)));
             playlistX = sixth + kLayoutTallPlaylistXBiasWhite;
             randomX = (sixth + col2) + kLayoutTallRandomXBias;
-            settingColX = kLayoutTallSettingXWhite; // 12.0 slot reused as settingButton X.
+            settingColX = kLayoutTallSettingXWhite;
             collectionOriginX = kLayoutTallWhiteCollectionOriginXExtra;
             collectionOriginY = 0.0;
             storeInfoInsetWidth = bounds.width + kLayoutTallWhiteStoreInfoInset;
@@ -596,8 +595,6 @@ static BOOL g_bRandamIntSeeded = NO;
                    static_cast<double>(pageLabelInnerY),
                    kPageLabelWidth,
                    static_cast<double>(sideButtonSize));
-    // The binary passes the view's own bounds width and a recovered height here, not the grid's
-    // current frame.
     self.collectionView.frame = CGRectMake(
         collectionOriginX,
         collectionOriginY,
@@ -953,8 +950,7 @@ static BOOL g_bRandamIntSeeded = NO;
                          forState:UIControlStateNormal];
     [self.playListButton setImage:[UIImage imageWithName:kPlaylistSelImageName]
                          forState:UIControlStateSelected];
-    // The binary wires no touch target on this button here; the playlist-edit toggle is driven
-    // through the collection-view long press instead.
+    // No touch target here; the playlist-edit toggle comes from the collection view's long press.
     [self addSubview:self.playListButton];
 
     self.playlistInfoView =
@@ -1830,7 +1826,6 @@ static BOOL g_bRandamIntSeeded = NO;
         if (isNew) {
             [self.storeButton setFlashEffect];
             self.storeInfoView.hidden = NO;
-            // Both origin coordinates are re-read from a fresh frame call, as the binary does.
             [self.storeInfoView
                 SetJumpEffectBaseX:static_cast<float>(self.storeInfoView.frame.origin.x)
                              BaseY:static_cast<float>(self.storeInfoView.frame.origin.y)];
@@ -1864,7 +1859,6 @@ static BOOL g_bRandamIntSeeded = NO;
                     [bundleVer compare:entryVer options:NSNumericSearch] != NSOrderedAscending) {
                     NSString *image = entry[kNewsKeyImage];
                     RBNewsHUDView *hud = [[RBNewsHUDView alloc] initWithFrame:self.bounds];
-                    // The bounds are re-read for each centre component, matching the binary.
                     hud.center = CGPointMake(self.bounds.size.width * kNewsHUDCenterScale,
                                              self.bounds.size.height * kNewsHUDCenterScale);
                     [self addSubview:hud];

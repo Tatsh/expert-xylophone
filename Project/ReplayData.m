@@ -1,23 +1,10 @@
-//
-//  ReplayData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ReplayData). Verified against the
-//  arm64 disassembly (the coder msgSends are variadic and dropped by the decompiler, and the
-//  convert-date time interval is passed through the soft-float path).
-//
-
 #import "ReplayData.h"
 
-// Collaborator classes and helpers reached from the persistence path. Their headers are not yet
-// reconstructed in this tree; the imports resolve once those land, matching the speculative-import
-// style already used by AppDelegate.mm and ScoreData.m.
 #import "BFCodec.h"
 #import "NSFileManager+RB.h"
 #import "SSZipArchive.h"
 #import "enginecrypto.h"
 
-// Archive keys for each field. Several are abbreviations of their property name.
 static NSString *const kVersionCoderKey = @"ver";
 static NSString *const kTuneIDCoderKey = @"tuneID";
 static NSString *const kDiffCoderKey = @"diff";
@@ -36,25 +23,17 @@ static NSString *const kPlayDateCoderKey = @"playDate";
 static NSString *const kUserCoderKey = @"user";
 static NSString *const kChkscoCoderKey = @"chksco";
 
-// The documents-directory sub-directory that holds the saved replay files. It doubles as the
-// @c replay archive key above.
 static NSString *const kReplayDirectoryName = @"replay";
 
-// Format string for a replay's on-disk ZIP path: the replay directory, the nine-digit tune
-// identifier, and the difficulty.
 static NSString *const kReplayPathFormat = @"%@/%09d_%d.rbp";
 
-// Format string for the temporary archive path unzipped from and zipped into the replay ZIP.
 static NSString *const kTempDataPathFormat = @"%@/tmp.data";
 
-// The passphrase whose MD5 digest keys the Blowfish cipher applied to saved replays.
 static NSString *const kReplayCipherPassphrase = @"REFLECBEATplus";
 
-// The default replay version applied when a loaded or saved replay carries none.
 static const int kDefaultReplayVersion = 10000;
 
-// The default replay version boxed once at load time and applied when a loaded or saved replay
-// carries no version. The load and save paths use their own cached box.
+// The load and save paths each keep their own boxed copy.
 static NSNumber *g_pReplayDataDefaultVersion = nil;     // @ghidraAddress 0x3dc9f0
 static NSNumber *g_pReplayDataDefaultVersionSave = nil; // @ghidraAddress 0x3dc9f8
 
@@ -69,15 +48,12 @@ __attribute__((constructor)) static void InitializeDefaultReplayVersions(void) {
     }
 }
 
-// The first difficulty index treated as an advanced chart. Advanced difficulties are folded back
-// into the basic range by subtracting @c kAdvancedDifficultyOffset before a path is formed.
+// Advanced difficulties are folded back into the basic range before a path is formed.
 static const int kFirstAdvancedDifficulty = 3;
 static const int kAdvancedDifficultyOffset = 3;
 
-// The length in bytes of the random salt word prefixed to enciphered replay data.
 static const NSUInteger kReplaySaltLength = 4;
 
-// The initial capacity reserved for the mutable buffer that encode builds.
 static const NSUInteger kReplayEncodeCapacity = 128;
 
 @implementation ReplayData
@@ -253,7 +229,6 @@ static const NSUInteger kReplayEncodeCapacity = 128;
     if (!replayData) {
         return NO;
     }
-    // Fold an advanced difficulty back into the basic range before it is written out.
     if (replayData.diff.intValue >= kFirstAdvancedDifficulty) {
         replayData.diff =
             [NSNumber numberWithInt:replayData.diff.intValue - kAdvancedDifficultyOffset];

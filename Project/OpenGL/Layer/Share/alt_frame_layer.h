@@ -129,19 +129,17 @@ private:
     // unsigned char m_aReserved08[8] = {}; // +0x08: untouched by the constructor and never read.
     ne::C_TEXTURE *m_apTextures[kTextureSlotCount] =
         {}; // +0x10: the frame atlas and the shared parts atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                                     // +0x20: the frame sprite batches.
-    int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x38: each batch's initial sprite count.
-    int m_nFrameType = {};                      // +0x44: the frame type (default 32).
-    int m_nFrameMode = {};                      // +0x48: the frame mode/kind (default 5).
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x20
+    int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x38: each batch's initial count.
+    int m_nFrameType = {};                      // +0x44: default 32.
+    int m_nFrameMode = {};                      // +0x48: default 5.
     bool m_bReady = {};                         // +0x4c: cleared when the frame type changes.
     // unsigned char m_aReserved4d[3] = {};        // +0x4d
-    LinearTween m_fadeChannel; // +0x50: the frame fade channel.
+    LinearTween m_fadeChannel; // +0x50
     bool m_bFadeDone = {};     // +0x64: set when the fade snaps to its endpoint.
     // unsigned char m_aReserved65[3] = {};        // +0x65
-    int m_nActiveLane = {};  // +0x68: the highlighted (active) lane marker index.
-    int m_nMarkerCount = {}; // +0x6c: the number of markers this frame draws.
-    int m_anBatchCapacity[kSpriteSlotCount] =
-        {}; // +0x70: each batch's sprite capacity and draw count.
+    int m_nActiveLane = {};                       // +0x68
+    int m_nMarkerCount = {};                      // +0x6c
+    int m_anBatchCapacity[kSpriteSlotCount] = {}; // +0x70: also the draw count.
     // unsigned char m_aReserved7c[4] = {}; // +0x7c: trailing state to the 0x80-byte size.
 };

@@ -49,12 +49,12 @@ constexpr int kSpriteTypeCount = 0x4a;
 constexpr int kTitlePartBatch = 0;
 
 struct LimelightSpriteDescriptor {
-    int nBatch;        // +0x00: the sprite batch (and atlas) selector.
-    float flAnchorX;   // +0x04: the sprite's anchor X.
-    float flAnchorY;   // +0x08: the sprite's anchor Y.
-    float flSizeX;     // +0x0c: the sprite's pixel width.
-    float flSizeY;     // +0x10: the sprite's pixel height.
-    int nUvFrameIndex; // +0x14: the atlas frame index.
+    int nBatch; // Also selects the atlas.
+    float flAnchorX;
+    float flAnchorY;
+    float flSizeX; // In pixels.
+    float flSizeY; // In pixels.
+    int nUvFrameIndex;
 };
 
 // @ghidraAddress 0x307348
@@ -274,7 +274,6 @@ constexpr int kEmberColumnIndex[kColumnEmberCount] = {
     0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 9, 9, 10, 11, 11, 12, 12,
 };
 
-// The binary encodes this table as the bit mask 0x3fff01b0 tested by the sprite index.
 constexpr bool kEmberUsesFirstVariant[kColumnEmberCount] = {
     false, false, false, false, true, true, false, true, true, false, false, false,
     false, false, false, false, true, true, true,  true, true, true,  true,

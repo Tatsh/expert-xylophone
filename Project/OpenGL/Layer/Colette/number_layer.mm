@@ -15,12 +15,12 @@ namespace {
 
 // @ghidraAddress 0x30d9f4
 struct NumberMarkerLayout {
-    int nBatch = {};        // +0x00: the sprite batch index.
-    float flAnchorX = {};   // +0x04: the sprite anchor X.
-    float flAnchorY = {};   // +0x08: the sprite anchor Y.
-    float flSizeX = {};     // +0x0c: the sprite pixel width.
-    float flSizeY = {};     // +0x10: the sprite pixel height.
-    int nUvFrameIndex = {}; // +0x14: the atlas-frame index (into the shared sprite UV atlas).
+    int nBatch = {};
+    float flAnchorX = {};
+    float flAnchorY = {};
+    float flSizeX = {};
+    float flSizeY = {};
+    int nUvFrameIndex = {};
 };
 constexpr NumberMarkerLayout kNumberMarkerLayout[] = {
     {0, 23.0f, 23.5f, 46.0f, 47.0f, 0x67},
@@ -51,7 +51,6 @@ constexpr const char *kEffectTextureName = "00_texture/ti_parts_eff"; // @ghidra
 
 constexpr unsigned int kSlotCapacities[] = {13, 28}; // @ghidraAddress 0x30d4b0
 
-// 0 binds the parts atlas, 1 binds the effect atlas.
 // @ghidraAddress 0x30d4b8
 constexpr int kSlotTextureField[] = {0, 1};
 
@@ -61,7 +60,7 @@ constexpr int kAdditiveBlendMode = 1;
 
 constexpr int kNumberMarkerRun = 12;
 
-// The per-digit alpha-envelope curve (4 {time, value} points per marker). @ghidraAddress 0x30d824
+// 4 {time, value} points per marker. @ghidraAddress 0x30d824
 constexpr float kNumberAlphaCurve[kNumberMarkerRun][8] = {
     {400.0f, 0.0f, 650.0f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
     {366.66666f, 0.0f, 616.6667f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
@@ -77,7 +76,7 @@ constexpr float kNumberAlphaCurve[kNumberMarkerRun][8] = {
     {400.0f, 0.0f, 650.0f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
 };
 
-// The per-digit scale curve (9 {time, value} points per marker). @ghidraAddress 0x30d4c4
+// 9 {time, value} points per marker. @ghidraAddress 0x30d4c4
 constexpr float kNumberScaleCurve[kNumberMarkerRun][18] = {
     {400.0f,
      0.0f,

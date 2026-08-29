@@ -11,109 +11,78 @@
 
 namespace {
 
-// The number of concurrent sound-effect instances tracked for the cached voice subsystem.
 constexpr int kInstanceSlotCount = 4;
-// The head slot of an instance table, holding the oldest tracked instance; it is the one dropped
-// first when the table is full.
 constexpr int kOldestInstanceSlot = 0;
-// The number of mixer groups whose per-group instance tables and volumes are tracked.
 constexpr int kGroupCount = 2;
 
-// The number of engine channels the cached voice subsystem is initialised with.
 constexpr int kVoiceChannelCount = 4;
 
-// The sentinel stored in an instance slot's handle field to mark it free.
 constexpr unsigned int kInvalidHandle = 0xffffffff;
 
-// The instance-slot state values kept alongside each handle.
 enum InstanceSlotState {
     kInstanceSlotStatePlaying = 0,
     kInstanceSlotStateFree = 2,
 };
 
-// The engine playback-status values returned for a handle.
 enum PlaybackStatus {
     kPlaybackStatusStopped = -1,
     kPlaybackStatusPlaying = 2,
     kPlaybackStatusFinished = 4,
 };
 
-// The bit mask isolating the raw engine index from a tagged sound-effect resource handle.
 constexpr unsigned int kResourceIndexMask = 0x0fffffff;
-// The tag set on a resource handle registered by index in the cached voice subsystem.
 constexpr unsigned int kResourceTagVoiceIndex = 0x10000000;
-// The tag set on a resource handle registered by index in the mixer-bus subsystem.
 constexpr unsigned int kResourceTagBusIndex = 0x60000000;
 
-// The exclusive upper bound on an accepted group volume.
 constexpr int kMaxVolume = 0x80;
-// The default per-group sound-effect volume, one step below the maximum.
 constexpr int kDefaultSeVolume = kMaxVolume - 1;
 
-// The mixer group whose sound effects route to the cached @c caPlayer voice backend
-// (@c sePlayer). Any other group value routes to the @c AVFoundation bus mixer (@c seAVPlayer).
+// Any group other than this one routes to the AVFoundation bus mixer instead.
 constexpr int kSeGroupCaPlayer = 0;
 
-// The sentinel returned by the register-by-key backends (@c RegisterSourceForKey,
-// @c LoadAndCacheSoundForKey) when registration fails; any non-zero value means the source was
-// registered.
 constexpr int kRegisterFailed = 0;
 
-// The @c AVAudioPlayer loop count that repeats a clip indefinitely.
 constexpr int kLoopForever = -1;
-// The @c AVAudioPlayer loop count that plays a clip exactly once.
 constexpr int kPlayOnce = 0;
 
-// The fade duration, in seconds, that requests an immediate (non-faded) start or stop.
 constexpr double kNoFadeTime = 0.0;
 
-// The full-scale @c AVAudioPlayer volume.
 constexpr float kFullVolume = 1.0f;
-// The silent @c AVAudioPlayer volume.
 constexpr float kSilentVolume = 0.0f;
 
-// The player selector passed to the interruption helpers: index @c 0 is the music player, index
-// @c 1 the voice player.
 enum PlayerIndex {
     kPlayerIndexBgm = 0,
     kPlayerIndexVoice = 1,
 };
 
-// One tracked sound-effect instance: its play handle and its owning mixer group.
 struct SeManageId {
-    unsigned int instanceId; // +0x0
-    int busId;               // +0x4
-    int group;               // +0x8
+    unsigned int instanceId;
+    int busId;
+    int group;
 };
 
 } // namespace
 
-// The step interval of the background-music fade timers, in seconds; a fade shorter than this plays
-// or stops immediately. The pool holds a float widened to double, so the literal keeps its suffix.
+// The pool holds a float widened to double, so the literal keeps its suffix.
 // @ghidraAddress 0x2eef30 (g_dAudioManagerFadeStepInterval)
 constexpr double kFadeStepInterval = 0.05f;
 
-// The background-music fade-in duration applied when resuming after an interruption, in seconds.
-// Widened from a float in the same way.
 // @ghidraAddress 0x2ec718 (g_dAudioManagerResumeFadeInTime)
 constexpr double kResumeFadeInTime = 0.3f;
 
 @interface AudioManager () {
-    // Engine-side subsystems and the instance-tracking tables, in the order and at the offsets the
-    // ivar list gives. The offsets are documentation only; access always goes through these named
-    // fields.
-    caPlayerMgr *sePlayer;                                  // +0x08
-    AudioSourceSlot *seAVPlayer;                            // +0x10
-    SeManageId seList[kInstanceSlotCount];                  // +0x18
-    BOOL isSuspend;                                         // +0x48
-    BOOL isInterruption[kGroupCount];                       // +0x49
-    BOOL isPlaying[kGroupCount];                            // +0x4b
-    float unitVolume;                                       // +0x50
-    BOOL isOnPause;                                         // +0x54
-    BOOL isOnPauseVoice;                                    // +0x55
-    SeManageId seManageId[kGroupCount][kInstanceSlotCount]; // +0x58
-    int seVolume[kGroupCount];                              // +0xb8
-    BOOL _isStart;                                          // +0xc0
+    caPlayerMgr *sePlayer;
+    AudioSourceSlot *seAVPlayer;
+    SeManageId seList[kInstanceSlotCount];
+    BOOL isSuspend;
+    BOOL isInterruption[kGroupCount];
+    BOOL isPlaying[kGroupCount];
+    float unitVolume;
+    BOOL isOnPause;
+    BOOL isOnPauseVoice;
+    SeManageId seManageId[kGroupCount][kInstanceSlotCount];
+    int seVolume[kGroupCount];
+    BOOL _isStart;
 }
 @end
 
@@ -180,8 +149,7 @@ constexpr double kResumeFadeInTime = 0.3f;
         delete sePlayer;
         sePlayer = nullptr;
     }
-    // The binary clears every object property by hand before the superclass call, even though it
-    // also emits a .cxx_destruct that would release them.
+    // The binary clears every object property by hand even though .cxx_destruct would too.
     self.seNameList = nil;
     self.seRidList = nil;
     self.bgmPlayer = nil;
@@ -631,9 +599,7 @@ constexpr double kResumeFadeInTime = 0.3f;
                      resourceId:(int)resourceId
                           group:(int)group
                          volume:(int)volume {
-    // The four-way dispatch that -prepare:resourceId:volume: (0x3e8e4) runs twice, once before and
-    // once after stopping the oldest instance. Extracted so the binary's duplicated block is
-    // written only once.
+    // De-inlined from the block -prepare:resourceId:volume: (0x3e8e4) runs twice.
     if (callName == nil) {
         if (group == kSeGroupCaPlayer) {
             return sePlayer->PlaySoundByIndex(
@@ -779,8 +745,7 @@ constexpr double kResumeFadeInTime = 0.3f;
 
 - (BOOL)onPauseSeAll {
     /** @ghidraAddress 0x3f090 */
-    // The binary walks all four slots without testing for a free one, so an empty slot's
-    // 0xffffffff handle is passed to the engine.
+    // The binary walks all four slots, so an empty slot's 0xffffffff handle reaches the engine.
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->PauseVoiceByHandle(seList[slot].instanceId);
@@ -793,8 +758,7 @@ constexpr double kResumeFadeInTime = 0.3f;
 
 - (BOOL)offPauseSeAll {
     /** @ghidraAddress 0x3f110 */
-    // The binary walks all four slots without testing for a free one, so an empty slot's
-    // 0xffffffff handle is passed to the engine.
+    // The binary walks all four slots, so an empty slot's 0xffffffff handle reaches the engine.
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->ResumeVoiceByHandle(seList[slot].instanceId);
@@ -807,8 +771,7 @@ constexpr double kResumeFadeInTime = 0.3f;
 
 - (BOOL)stopSeAll {
     /** @ghidraAddress 0x3f190 */
-    // The binary walks all four slots without testing for a free one, so an empty slot's
-    // 0xffffffff handle is passed to the engine.
+    // The binary walks all four slots, so an empty slot's 0xffffffff handle reaches the engine.
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->StopVoiceByHandle(seList[slot].instanceId);
@@ -852,7 +815,6 @@ constexpr double kResumeFadeInTime = 0.3f;
         }
     }
 
-    // Compact the freed slots by pulling later live entries forward.
     for (int slot = 0; slot < kInstanceSlotCount - 1; ++slot) {
         if (seList[slot].instanceId != kInvalidHandle) {
             continue;
@@ -947,8 +909,7 @@ constexpr double kResumeFadeInTime = 0.3f;
 
 - (void)setSeVolume:(int)seVolumeValue groupId:(int)groupId {
     /** @ghidraAddress 0x3f624 */
-    // The guard at 0x3f640 is b.hi, which is unsigned, so a negative volume reads as a large
-    // value and is rejected as well. The accepted range is 0 to kMaxVolume - 1.
+    // The guard at 0x3f640 is b.hi, which is unsigned, so a negative volume is rejected as well.
     if (seVolumeValue < 0 || seVolumeValue >= kMaxVolume) {
         return;
     }
@@ -957,8 +918,7 @@ constexpr double kResumeFadeInTime = 0.3f;
         seAVPlayer->SetAllVolume(seVolumeValue);
         return;
     }
-    // Yes, the binary repeats this call with identical arguments; the channel is never passed, and
-    // the wrapper hardcodes voice zero, so only the first iteration can have any effect.
+    // Yes, the binary repeats this call; the wrapper hardcodes voice zero, so only the first acts.
     for (int channel = 0; channel < kVoiceChannelCount; ++channel) {
         sePlayer->SetMasterVoiceParameter(seVolumeValue);
     }

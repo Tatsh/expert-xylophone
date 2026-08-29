@@ -1,33 +1,17 @@
-//
-//  RBWebView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBWebView). Verified against the
-//  arm64 disassembly: -initWithFrame:superView:'s soft-float colour, indicator transform, and
-//  autoresizing-mask constants, and the navigation allow-list in
-//  -webView:shouldStartLoadWithRequest:navigationType:, were recovered from the register moves the
-//  decompiler folds into pseudo-variables.
-//
-
 #import "RBWebView.h"
 
 #import "RBMacros.h"
 #import "deviceenvironment.h"
 
-// The white component and alpha of the translucent loading cover shown over the content.
 static const CGFloat kGrayViewWhite = 0.9;
 static const CGFloat kGrayViewAlpha = 0.5;
 
-// The scale applied to the activity indicator through its layer's transform.scale key path.
 static const CGFloat kIndicatorScale = 1.5;
 
-// The custom URL scheme whose hosts this view interprets rather than loading directly.
 static NSString *const kReflecBeatScheme = @"reflecbeat";
 
-// The recognised reflecbeat scheme hosts, seeded into urlList in priority order.
 static NSString *const kUrlListHosts[] = {@"link", @"store", @"openurl", @"twitter"};
 
-// urlList index of each recognised reflecbeat scheme host.
 enum {
     kUrlListHostLink = 0,
     kUrlListHostStore = 1,
@@ -35,27 +19,21 @@ enum {
     kUrlListHostTwitter = 3,
 };
 
-// The konaminet hosts whose links are loaded inside this web view rather than opened externally.
 static NSString *const kInAppLoadHosts[] = {
     @"stg.akx21.s.konaminet.jp",
     @"akx-new.s.konaminet.jp",
     @"akx.s.konaminet.jp",
 #ifdef ENABLE_PATCHES
-    // The configured API host, so a redirected build keeps its own links in-app. With the default
-    // configuration this repeats the third entry, which a membership test does not mind.
+    // The configured API host, so a redirected build keeps its own links in-app.
     @RB_API_HOST,
 #endif
 };
 
-// The separator between the parts of a reflecbeat://openurl query, and the leading part that
-// selects the move-to-store action.
 static NSString *const kOpenUrlQuerySeparator = @"_";
 static NSString *const kOpenUrlQueryPackToken = @"pack";
 
-// The number of parts a well-formed reflecbeat://openurl query splits into.
 static const NSUInteger kOpenUrlQueryPartCount = 2;
 
-// JavaScript run on every finished page to suppress the iOS long-press callout menu.
 static NSString *const kDisableTouchCalloutScript =
     @"document.documentElement.style.webkitTouchCallout='none';";
 
@@ -128,8 +106,7 @@ static NSString *const kDisableTouchCalloutScript =
         NSURL *target = [NSURL URLWithString:url.query];
         if (target) {
 #ifdef ENABLE_PATCHES
-            // Walk the whole table so the configured API host in the last slot is tested too. The
-            // binary spells the three shipped hosts out as separate comparisons instead.
+            // Walk the whole table so the configured API host in the last slot is tested too.
             BOOL loadInApp = NO;
             for (size_t index = 0; index < ARRAY_SIZE(kInAppLoadHosts); ++index) {
                 if ([target.host isEqualToString:kInAppLoadHosts[index]]) {

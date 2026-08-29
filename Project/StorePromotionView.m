@@ -9,27 +9,22 @@
 #import "StorePackInfo.h"
 #import "deviceenvironment.h"
 
-// Promotion-dictionary keys shared with the store pack list and the promotion banners.
 static NSString *const kPromotionKeyID = @"ID";
 static NSString *const kPromotionKeyImageURL = @"ImageURL";
 static NSString *const kPromotionKeyName = @"Name";
 static NSString *const kPromotionKeySampleURL = @"SampleURL";
 static NSString *const kPromotionKeyImage = @"image";
 
-// The default-region banner geometry: the paging scroll view is inset so a page is 300 points wide,
-// and the banner tile sits 292 points narrower and 96 points shorter than the view, both halved to
-// centre. @ghidraAddress 0x301088, 0x100301878, 0x100301880 (g_dCustomizeLayoutMetric* pool).
+// @ghidraAddress 0x301088, 0x100301878, 0x100301880
 static const CGFloat kPageInsetReference = -300.0;
 static const CGFloat kBannerWidthReference = -292.0;
 static const CGFloat kBannerHeightReference = -96.0;
 static const CGFloat kCenterScale = 0.5;
 
-// The wide (pad) iPad idiom uses fixed banner geometry.
 static const CGFloat kPadPageOffsetX = 145.0;
 static const CGFloat kPadBannerOffsetX = 20.0;
 static const CGFloat kPadBannerOffsetY = 8.0;
 
-// The banner tile appearance.
 static const CGFloat kBannerBackgroundWhite = 0.5;
 static const CGFloat kBannerCornerRadius = 8.0;
 static const CGFloat kBannerShadowOffsetHeight = 1.0;
@@ -39,23 +34,17 @@ static const CGFloat kBannerShadowRadius = 1.0;
 // The carousel holds two extra wrap-around banner copies so paging can loop seamlessly.
 static const NSInteger kWrapAroundBannerCount = 2;
 
-// The banner strip is this fraction of a page wide tall; the scroll view content height is the page
-// width scaled by it. @ghidraAddress 0x301890 (g_dCustomizeLayoutMetric pool).
+// @ghidraAddress 0x301890
 static const CGFloat kBannerContentHeightRatio = 0.32876712328767121;
 
-// The page timer fires every two seconds to advance the carousel.
 static const NSTimeInterval kPageAdvanceInterval = 2.0;
 
-// The default-region scroll-view size used when re-laying after a rotation.
 static const CGFloat kRotatedScrollViewWidth = 300.0;  // @ghidraAddress 0x2ee930
 static const CGFloat kRotatedScrollViewHeight = 102.0; // @ghidraAddress 0x3012a8
 
-// The initial capacity hints for the downloader collections.
 static const NSUInteger kDownloaderCapacity = 32;
 
 @implementation StorePromotionView {
-    // The current centred page index, tracked as the carousel scrolls and wrapped to the promotion
-    // count. This is a bare ivar in the binary (named @c m_Index, no property).
     NSInteger m_Index;
 }
 
@@ -119,8 +108,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     if (self.promotionDataArray != nil) {
         return;
     }
-    // The binary keeps this second nil-check even though the early return above makes it dead; it
-    // is reproduced faithfully.
+    // Dead in the binary too: the early return above already covers it.
     if (self.promotionDataArray != nil) {
         self.promotionDataArray = nil;
     }
@@ -206,7 +194,6 @@ static const NSUInteger kDownloaderCapacity = 32;
     };
     [self.promotionDataArray replaceObjectAtIndex:index withObject:updated];
 
-    // Update every banner (including the wrap-around copies) that shows this promotion page.
     for (NSInteger bannerIndex = index; bannerIndex < (NSInteger)self.bannerViewArray.count;
          bannerIndex += self.promotionDataArray.count) {
         BannerView *banner = self.bannerViewArray[bannerIndex];
@@ -216,7 +203,7 @@ static const NSUInteger kDownloaderCapacity = 32;
         banner.hidden = NO;
     }
 
-    // Once the last outstanding image loads, mount the banners, seed the scroll offset, and run.
+    // A count of one means this is the last outstanding image.
     if (self.imageDownloader.count == 1) {
         for (BannerView *banner in self.bannerViewArray) {
             [self.scrollView addSubview:banner];
@@ -310,8 +297,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 
     for (NSUInteger i = 0; i < self.bannerViewArray.count; ++i) {
         if ([self.bannerViewArray[i] getIsSamplePlaying]) {
-            // The binary guards the loop index against -1, which an unsigned index never is; the
-            // check is reproduced faithfully.
+            // An unsigned index is never -1, but the binary checks anyway.
             if ((int)i != -1) {
                 if ([[RBBGMManager getInstance] isPushMusic]) {
                     [[RBBGMManager getInstance] StopMusic:1.0];
@@ -365,7 +351,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 - (void)nextShowEnd {
 }
 
-// An empty stub in the binary; no image-view size is applied. @ghidraAddress 0x1008c8
+// @ghidraAddress 0x1008c8
 - (void)setImageViewSize:(CGSize)imageViewSize {
 }
 
@@ -533,8 +519,6 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 /** @ghidraAddress 0xffcf8 */
 - (void)dealloc {
-    // The project is ARC, so the ivar releases and the destructor are synthesised; only the
-    // binary's non-generated teardown is reproduced here (no explicit [super dealloc]).
     for (ImageDownloader *imageDownloader in self.imageDownloader) {
         imageDownloader.delegate = nil;
         [imageDownloader cancelDownload];

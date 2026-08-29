@@ -12,6 +12,3 @@
  * 1.4e-44.
  */
 constexpr unsigned int kKeyframeStepNoMatch = 10;
-
-// The lookup itself is @c TutorialGuideLayer::KeyframeStepTableLookup (its sole caller is that
-// layer's finger-sprite animation); it is declared with the class in tutorial_guide_layer.h.

@@ -3,19 +3,13 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The placeholder jacket shown in the background view until the real artwork downloads.
 static NSString *const kPlaceholderJacketName = @"09_store/store_jacket_110";
 
-// The fade-in duration, in seconds, used when the downloaded artwork first appears. The binary
-// reads this from the same constant the audio manager uses for its resume fade-in.
 static const NSTimeInterval kArtworkFadeInDuration = 0.3;
 
-// The child image views start fully transparent so that a fresh download can fade in.
 static const CGFloat kHiddenAlpha = 0.0;
-// The target alpha the foreground artwork animates to once loaded.
 static const CGFloat kVisibleAlpha = 1.0;
 
-// A screen or image scale strictly greater than this is treated as a Retina context.
 static const CGFloat kNonRetinaScale = 1.0;
 
 @implementation StoreImageView
@@ -82,7 +76,7 @@ static const CGFloat kNonRetinaScale = 1.0;
  * @ghidraAddress 0xf3de4
  */
 - (void)setImage:(UIImage *)image {
-    [self.imageView setImage:nil]; // Yes, the binary discards the passed image here.
+    [self.imageView setImage:nil];
     self.imageView.alpha = kHiddenAlpha;
 }
 

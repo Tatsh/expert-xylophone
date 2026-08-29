@@ -78,7 +78,6 @@ constexpr float kPreviewBgmPauseTime = 0.2f;
 
 constexpr float kPreviewSheetHeight = 25.0f;
 
-// The GL clear masks (GL_COLOR_BUFFER_BIT and GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT).
 constexpr unsigned int kClearColor = 0x4000;
 constexpr unsigned int kClearColorAndDepth = 0x4100;
 
@@ -168,14 +167,14 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
 @end
 
 @implementation RBViewController {
-    float m_LoopTime;              // +0x08
-    C_TIME m_TaskTime;             // +0x10
-    C_TIME m_RenderTime;           // +0x18
-    BOOL m_IsResume;               // +0x20
-    BOOL m_IsLoop;                 // +0x21
-    BOOL m_Tweeting;               // +0x22
-    int m_PreviewGrageCache;       // +0x24
-    int m_PreviewPlayerColorCache; // +0x28
+    float m_LoopTime;
+    C_TIME m_TaskTime;
+    C_TIME m_RenderTime;
+    BOOL m_IsResume;
+    BOOL m_IsLoop;
+    BOOL m_Tweeting;
+    int m_PreviewGrageCache;
+    int m_PreviewPlayerColorCache;
 }
 
 #pragma mark - Class helpers
@@ -339,7 +338,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
         viewport->Release();
     } else {
         float halfViewH = scaledSize.y * 0.5f;
-        // The fdiv pair at 0x8aa54 and 0x8aa58 divides both ratios out up front.
         float sheetRatio = gameSystem->GetSheetHeight() / halfViewH;
         float pitchRatio = gameSystem->GetCameraPitchHeight() / halfViewH;
         float sheetFarX = gameSystem->GetSheetFarX();
@@ -359,8 +357,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
         if (tilted) {
             gameSystem->SetSheetLayerFlags(1);
             float pitch = acosf(root);
-            // The four ComposeMatrices calls fold look-at, rotation, y-offset, and z-offset in that
-            // order (0x8ac80 through 0x8aca4), and composition does not commute.
+            // Composition does not commute, so the order at 0x8ac80-0x8aca4 is load-bearing.
             float sheetMidY = sheetFarY * 0.5f;
             float lookAt[16] = {};
             S_VECTOR3 lookEye{0.0f, sheetMidY, 0.0f};
@@ -1023,7 +1020,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
 
 - (void)closeItunesWithURL {
     /** @ghidraAddress 0x8d204 */
-    // Route through the finish handler so the dismissal and audio-resume path is shared.
     [self productViewControllerDidFinish:self.itunesViewCtrl];
 }
 
@@ -1069,8 +1065,8 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
               return;
           }
           strongSelf->m_Tweeting = NO;
-          // The binary leaves the dimming cover up until the next preview transition, which with a
-          // sheet the player dismisses in place would strand it over the result screen.
+          // The binary leaves the cover up until the next preview transition, stranding it over a
+          // sheet dismissed in place.
           strongSelf.tweetCoverView.hidden = YES;
         };
     [self presentViewController:share animated:YES completion:nil];
@@ -1119,8 +1115,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     self.twitterImageCreater = imageCreater;
     self.tweetText = text;
 #ifdef ENABLE_PATCHES
-    // The probe requests http://twitter.com in the clear, which App Transport Security refuses, so
-    // it can only fail and take the share down with it.
+    // The probe requests http://twitter.com in the clear, which App Transport Security refuses.
     EnqueueImageCreaterOperation(self);
 #else
     NSURL *url = [NSURL URLWithString:@"http://twitter.com"];

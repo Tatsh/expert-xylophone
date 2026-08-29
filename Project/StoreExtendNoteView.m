@@ -5,10 +5,8 @@
 #import "UIImage+RB.h"
 #import "engineglobals.h"
 
-// The placeholder artwork shown behind the tune jacket.
 static NSString *const kArtworkPlaceholderImageName = @"09_store/store_jacket_64";
 
-// Artwork plate geometry. Both the shadowed backing plate and the jacket occupy the same square.
 static const CGFloat kArtworkOriginX = 15.0;
 static const CGFloat kArtworkOriginY = 15.0;
 static const CGFloat kArtworkSize = 110.0;
@@ -18,8 +16,6 @@ static const CGFloat kArtworkShadowOffset = 2.0;
 static const CGFloat kArtworkShadowOpacity = 0.6;
 static const CGFloat kArtworkShadowRadius = 2.0;
 
-// Text-column geometry. The name, artist, and comment labels start at the same x and take the
-// cell width less a fixed right inset; the level and purchased labels use fixed sizes.
 static const CGFloat kTextColumnX = 140.0;
 static const CGFloat kTextColumnWidthInset = -154.0;
 static const CGFloat kNameLabelY = 12.0;
@@ -32,24 +28,20 @@ static const CGFloat kLevelLabelWidth = 90.0;
 static const CGFloat kPurchasedLabelX = 232.0;
 static const CGFloat kPurchasedLabelWidth = 120.0;
 
-// Font sizes.
 static const CGFloat kNameFontSize = 17.0;
 static const CGFloat kArtistFontSize = 14.0;
 static const CGFloat kPurchasedFontSize = 15.0;
 static const CGFloat kCommentFontSize = 13.0;
 static const CGFloat kLevelFontSize = 15.0;
-// The binary passes 11.0 to -setMinimumScaleFactor:, a point size carried over from the pre-iOS-6
-// -minimumFontSize meaning; it is reproduced verbatim.
+// The binary passes this point size to -setMinimumScaleFactor:, a pre-iOS-6 carry-over.
 static const CGFloat kLabelMinimumScaleFactor = 11.0;
 
-// Text colours. The level colour is a magenta expressed as 8-bit components over 255.
 static const CGFloat kPurchasedTextWhite = 0.3;
 static const CGFloat kCommentTextWhite = 50.0 / 255.0;
 static const CGFloat kLevelColorRed = 170.0 / 255.0;
 static const CGFloat kLevelColorGreen = 9.0 / 255.0;
 static const CGFloat kLevelColorBlue = 120.0 / 255.0;
 
-// The comment label wraps to at most this many lines.
 static const NSInteger kCommentLabelLineCount = 3;
 
 @implementation StoreExtendNoteView
@@ -162,7 +154,6 @@ static const NSInteger kCommentLabelLineCount = 3;
 
 /** @ghidraAddress 0x4d004 */
 - (void)reset {
-    // Clears the artwork first, then chains to the base reset, which is empty.
     [self setArtwork:nil];
     [super reset];
 }
@@ -185,13 +176,10 @@ static const NSInteger kCommentLabelLineCount = 3;
     StoreExtendNoteButtonState state = info.getButtonState;
     if (state >= StoreExtendNoteButtonStateDownloadBin &&
         state <= StoreExtendNoteButtonStateInstalled) {
-        // The three download/installed states show the standing "purchased" caption.
         self.purchasedLabel.text = g_pLocalizedPurchased;
     } else if (state == StoreExtendNoteButtonStateMoreInfo ||
                state == StoreExtendNoteButtonStatePurchase) {
-        // The not-yet-installed states show the formatted product price. The error state (-1) is
-        // excluded: the binary tests the state as unsigned, so a negative value fails both
-        // branches.
+        // The error state (-1) is excluded: the binary tests the state as unsigned.
 #ifdef ENABLE_PATCHES
         self.purchasedLabel.text = RBStoreExtendNotePriceString(info);
 #else
@@ -211,7 +199,7 @@ static const NSInteger kCommentLabelLineCount = 3;
 
 /** @ghidraAddress 0x4cbc8 */
 - (void)setIsPurchased:(BOOL)isPurchased {
-    // The compiled setter ignores its argument and unconditionally sets the standing caption.
+    // The compiled setter ignores its argument and always sets the standing caption.
     self.purchasedLabel.text = g_pLocalizedPurchased;
 }
 

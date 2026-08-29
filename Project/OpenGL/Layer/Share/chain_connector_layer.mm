@@ -1,11 +1,3 @@
-//
-//  chain_connector_layer.mm
-//  REFLEC BEAT plus
-//
-//  The note chain-connector layer (ChainConnectorLayer). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "chain_connector_layer.h"
 
 #include <cassert>
@@ -21,50 +13,37 @@
 #include "vectormath.h"
 
 namespace {
-// The atlas the connector sprites draw from.
 constexpr const char *kAtlasTextureName = "00_texture/gm_parts1";
 
-// The connector sprite batch draws additively; the non-tutorial build seeds two texture parameters.
 constexpr int kAdditiveBlendMode = 1;
 constexpr int kTexParamValue = 1;
 } // namespace
 
-// The shared connector draw count, reset when the layer is constructed.
 int g_nChainConnectorDrawCount = {}; // @ghidraAddress 0x3def48
 
-// The process-wide chain-connector layer, created lazily by shared().
 static ChainConnectorLayer *g_pChainConnectorLayer = nullptr; // @ghidraAddress 0x3def50
 
-// The shared sprite-UV atlas the connector sprite types index (@ghidraAddress 0x2ef668).
+// @ghidraAddress 0x2ef668
 extern const SpriteUvEntry g_aScoreGaugeUvTable[];
 
 namespace {
-// The number of connector colours a queued connector may carry (0 up to, but not including, this).
 constexpr int kPlayerColorMax = 2;
 
-// The play colour that maps colour 1 to the play side (and colour 0 to the rival side); any other
-// value swaps the two.
+// Play colour 1 makes record colour 1 the play side; any other value swaps the two.
 constexpr int kPlayColorSide1 = 1;
 
-// Scales the rival-alpha setting (0 to 1) into an 8-bit sprite alpha.
 constexpr float kAlphaScale = 255.0f;
 
-// The minimum endpoint distance, in pixels, for a connector to be oriented along its delta; shorter
-// connectors keep a zero rotation.
 constexpr float kMinConnectorLength = 1.0f;
 
-// Scales a connector's endpoint length into its sprite y-scale (one sixteenth).
 constexpr float kLengthToScaleY = 0.0625f;
 
-// Added to the endpoint delta's angle so the connector sprite points along the chain (a quarter
-// turn).
+// A quarter turn, so the connector sprite points along the chain.
 constexpr double kRotationBias = M_PI_2;
 
-// The number of connector sprite types, and the UV-table entry each indexes (both draw the same
-// fixed quad; the type only selects the atlas frame).
+// Both types draw the same fixed quad; the type only selects the atlas frame.
 constexpr int kConnectorTypeCount = 2;
 constexpr int kConnectorUvIndex[kConnectorTypeCount] = {71, 72};
-// The fixed connector-quad anchor and size every connector sprite uses.
 constexpr float kConnectorAnchorX = 7.0f;
 constexpr float kConnectorAnchorY = 0.0f;
 constexpr float kConnectorSizeW = 14.0f;
@@ -79,17 +58,12 @@ ChainConnectorLayer *ChainConnectorLayer::shared() {
     return g_pChainConnectorLayer;
 }
 
-// The sprite-batch capacity the constructor seeds. As in the sibling effect layers the binary
-// reaches it by adding to the freshly zeroed field rather than by a plain store; the value is 256.
 constexpr int kSpriteBatchCapacity = 256;
 
 /** @ghidraAddress 0x1857e4 */
 ChainConnectorLayer::ChainConnectorLayer() {
-    // The base constructor and member initialisers clear the sprite header and pooled records; the
-    // shared connector draw count resets to zero.
     g_nChainConnectorDrawCount = 0;
-    // Without this the batch is created with capacity zero and the first connector trips the
-    // sprite-index assertion. The binary adds 0x100 to the freshly zeroed field at 0x185834.
+    // Without this the batch has capacity zero; the binary adds 0x100 at 0x185834.
     m_nCapacity = kSpriteBatchCapacity;
 }
 
@@ -108,7 +82,6 @@ void ChainConnectorLayer::CreateSprites() {
     m_pSprite->SetSpriteCount(0);
     m_pSprite->SetBlendMode(kAdditiveBlendMode);
 
-    // A non-tutorial build seeds two texture parameters.
     if (!IsHardwareType9()) {
         m_pSprite->SetTexParam(1, kTexParamValue);
         m_pSprite->SetTexParam(0, kTexParamValue);
@@ -128,7 +101,6 @@ void ChainConnectorLayer::Create(
         return;
     }
 
-    // Scan from the draw count for the first free pooled record.
     for (int nIndex = g_nChainConnectorDrawCount; nIndex < kChainRecordCount; ++nIndex) {
         ChainRecord &record = m_aChains[nIndex];
         if (record.bActive) {
@@ -149,8 +121,6 @@ void ChainConnectorLayer::Create(
 void ChainConnectorLayer::Update() {
     m_nSpriteCount = 0;
 
-    // The play side's connectors draw opaque; the rival side's draw at the scaled rival alpha. The
-    // play colour selects which record colour is the play side.
     const GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const int nScaledRivalAlpha = static_cast<int>(pGameSystem->GetRivalAlpha() * kAlphaScale);
     const bool bColor1IsPlaySide = pGameSystem->GetPlayColor() == kPlayColorSide1;
@@ -161,8 +131,7 @@ void ChainConnectorLayer::Update() {
 
     for (int nIndex = 0; nIndex < kChainRecordCount; ++nIndex) {
         ChainRecord &record = m_aChains[nIndex];
-        // Every slot at or past the shared draw count is retired without being drawn
-        // (0x185a7c-0x185a84, 0x185ad0).
+        // @ghidraAddress 0x185a7c, 0x185ad0
         if (nIndex >= g_nChainConnectorDrawCount) {
             record.bActive = false;
             continue;
@@ -172,8 +141,6 @@ void ChainConnectorLayer::Update() {
         }
         record.bActive = false;
 
-        // The sprite is anchored at the start endpoint; the delta from start to end sets its length
-        // and orientation.
         S_VECTOR2 vStart{record.flStartX, record.flStartY};
         S_VECTOR2 vDelta{record.flEndX, record.flEndY};
         SubtractVector2(&vDelta, &vStart);

@@ -10,7 +10,7 @@
  * UV-table index it samples.
  *
  * A 20-byte read-only record indexed by the sprite type (0 through 15); the batch the sprite draws
- * into is chosen separately by the object type, not this record. The trailing @c // +0xNN comments
+ * into is chosen separately by the object type, not this record. The trailing @c +0xNN comments
  * document the byte offsets within the record.
  */
 struct ClassicFullComboSpriteType {

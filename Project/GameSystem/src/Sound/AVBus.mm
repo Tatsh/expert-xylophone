@@ -1,30 +1,16 @@
-//
-//  AVBus.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class AVBus). @ghidraAddress values are
-//  relative to the program image base.
-//
-
 #import "AVBus.h"
 
 #import <AVFoundation/AVFoundation.h>
 
-// The loop counts handed to AVAudioPlayer: a negative count repeats forever, zero plays once.
 static const NSInteger kLoopForever = -1;
 static const NSInteger kLoopOnce = 0;
 
-// The gain reported for a voice that holds no player.
 static const float kUnboundVoiceVolume = 1.0f;
 
 @interface AVBus () <AVAudioPlayerDelegate> {
-    // The bound source record. The binary compares it by identity in isSameSource: and clears it
-    // on unbind.
     AudioSourceSlot::SourceRecord *mSource;
-    // Bumped on every unbind, so a play handle minted against an older binding stops resolving to
-    // this voice.
+    // Bumped on every unbind, so a handle minted against an older binding stops resolving here.
     unsigned short mCurrentID;
-    // The playback state reported by status.
     AVBusStatus mStatus;
 }
 
@@ -35,9 +21,8 @@ static const float kUnboundVoiceVolume = 1.0f;
  */
 @property(nonatomic, strong) AVAudioPlayer *player;
 
-// The two source-binding constructors setSource: dispatches between. They are spelled "init..." in
-// the binary but return a success flag rather than an object, so they are held out of the init
-// method family.
+// Spelled "init..." in the binary but returning a success flag rather than an object, so they are
+// held out of the init method family.
 - (BOOL)initWithContentsOfURL:(NSURL *)url
                        isLoop:(BOOL)isLoop __attribute__((objc_method_family(none)));
 - (BOOL)initWithContentsOfData:(NSData *)data
@@ -102,8 +87,7 @@ static const float kUnboundVoiceVolume = 1.0f;
 /** @ghidraAddress 0x4169c */
 - (unsigned short)setSource:(AudioSourceSlot::SourceRecord *)source {
     mSource = source;
-    // A record carries the sound either as a URL or as a data buffer; the URL wins when both are
-    // set, matching the binary's null test on the first field.
+    // The URL wins when both fields are set, matching the binary's null test on the first field.
     if (source->source != nil) {
         [self initWithContentsOfURL:source->source isLoop:source->bLoop];
     } else {

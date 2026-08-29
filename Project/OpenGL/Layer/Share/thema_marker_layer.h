@@ -119,24 +119,22 @@ private:
      */
     void AnimateEffects(float flDelta);
 
-    ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] =
-        {};                                          // +0x10: the 2D and 3D sprite batches.
-    int m_aBatchBaseIndex[kBatchCount] = {};         // +0x20: unused per-batch base index.
-    int m_aBatchCapacity[kBatchCount] = {};          // +0x28: each batch's sprite capacity.
-    int m_aMarkerBaseIndex[kMarkerLayoutCount] = {}; // +0x30: each marker group's base index.
-    bool m_bBuilt = {};                              // +0x48: set once the sprites are built.
-    bool m_bFadeColorDirty = {};                     // +0x49: set when the fade snaps or advances.
-    // +0x4a..+0x4b is alignment padding before the active-marker value.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10
+    int m_aBatchBaseIndex[kBatchCount] = {};                   // +0x20: unused.
+    int m_aBatchCapacity[kBatchCount] = {};                    // +0x28
+    int m_aMarkerBaseIndex[kMarkerLayoutCount] = {};           // +0x30
+    bool m_bBuilt = {};                                        // +0x48
+    bool m_bFadeColorDirty = {};                               // +0x49
     // unsigned char m_aPad4a[2] = {};  // +0x4a
-    float m_flActiveMarker = {};     // +0x4c: the active marker value the fade-in selects.
-    LinearTween m_fadeChannel;       // +0x50: the marker fade channel.
-    float m_flScaleX = {};           // +0x64: a scale the constructor seeds to 1.
-    float m_flScaleY = {};           // +0x68: a scale the constructor seeds to 1.
-    float m_flDangerTimer = {};      // +0x6c: the danger fade-in ramp timer, reset by StartFadeIn.
+    float m_flActiveMarker = {};     // +0x4c
+    LinearTween m_fadeChannel;       // +0x50
+    float m_flScaleX = {};           // +0x64: seeded to 1.
+    float m_flScaleY = {};           // +0x68: seeded to 1.
+    float m_flDangerTimer = {};      // +0x6c: reset by StartFadeIn.
     float m_aTransform[6] = {};      // +0x70: the per-group danger alpha scales (groups 2, 3).
-    float m_flWobbleTimer = {};      // +0x88: the marker-wobble animation timer.
-    float m_flDangerBrightness = {}; // +0x8c: the low-gauge danger/warning brightness.
-    int m_nMarkerCount = {};         // +0x90: the active marker count (6 for theme 0, else 4).
-    // unsigned char m_aReserved94[4] = {}; // +0x94: padding to the 0x98-byte allocation size.
+    float m_flWobbleTimer = {};      // +0x88
+    float m_flDangerBrightness = {}; // +0x8c: the low-gauge warning brightness.
+    int m_nMarkerCount = {};         // +0x90: 6 for theme 0, else 4.
+    // unsigned char m_aReserved94[4] = {}; // +0x94: pads to the 0x98-byte allocation size.
 };

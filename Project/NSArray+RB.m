@@ -3,7 +3,6 @@
 
 #import "NSArray+RB.h"
 
-// The iOS version at and above which CFPropertyListCreateWithData is available.
 static NSString *const kPropertyListModernAPIVersion = @"4.0";
 
 static const NSStringCompareOptions kVersionCompareOptions = NSNumericSearch;

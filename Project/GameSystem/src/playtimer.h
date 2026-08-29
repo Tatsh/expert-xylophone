@@ -41,20 +41,19 @@ public:
     }
 
 private:
-    double m_dBaseTime = {}; // +0x00: the timing origin; a resume adds the paused interval to it.
-    double m_dLastTime = {}; // +0x08: the media time of the last update, seeded at playback start.
-    float m_flPlayTime = {}; // +0x10: the current play time, in scaled units.
-    float m_flFrameDelta = {};       // +0x14: the per-frame time step.
-    bool m_bRunning = {};            // +0x18: set while playback is running (cleared when paused).
-    char m_reserved19[3] = {};       // +0x19: alignment padding before the OS-version tier.
+    double m_dBaseTime = {};         // +0x00: a resume adds the paused interval to it.
+    double m_dLastTime = {};         // +0x08: media time, seeded at playback start.
+    float m_flPlayTime = {};         // +0x10: in scaled units.
+    float m_flFrameDelta = {};       // +0x14
+    bool m_bRunning = {};            // +0x18: cleared when paused.
+    char m_reserved19[3] = {};       // +0x19
     int m_nOsVersionTier = {};       // +0x1c
     float m_flDelayFrameOffset = {}; // +0x20
     char m_reserved24[4] = {};       // +0x24: further timing state, still being worked out.
-    double m_dAccumulated = {};      // +0x28: an accumulated-time field, cleared at playback start.
-    bool m_bPaused = {};             // +0x30: set while the play timer is paused.
-    // +0x31..+0x37 is alignment padding before the pause timestamp.
-    char m_reserved31[7] = {};     // +0x31
-    double m_dPauseMediaTime = {}; // +0x38: the media time captured when the timer paused.
+    double m_dAccumulated = {};      // +0x28: cleared at playback start.
+    bool m_bPaused = {};             // +0x30
+    char m_reserved31[7] = {};       // +0x31
+    double m_dPauseMediaTime = {};   // +0x38
 
 public:
     /**

@@ -119,11 +119,10 @@ static NSString *const kSettingUserInfoKey = @"Setting";
       [RecommendAdCache
           getAllAdDataWithCallBack:^(id _Nullable data, NSError *_Nullable innerError) {
             /** @ghidraAddress 0x241970 */
-            // The block reads its error from the second argument; the first is never used.
             if (innerError == nil) {
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
                   /** @ghidraAddress 0x2419e0 */
-                  [RecommendAdData class]; // ProcessRecommendAdLists processes the fetched records.
+                  [RecommendAdData class];
                 });
             }
           }];
@@ -134,7 +133,6 @@ static NSString *const kSettingUserInfoKey = @"Setting";
     [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *_Nullable error) {
       /** @ghidraAddress 0x241cec */
       if (error != nil) {
-          // Every invocation passes a nil first argument; only the error is ever carried.
           callback(nil, error);
           return;
       }
@@ -146,7 +144,6 @@ static NSString *const kSettingUserInfoKey = @"Setting";
         }
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
           /** @ghidraAddress 0x241e5c */
-          // PersistAllAdData saves the response data and reports completion to the callback.
           (void)data;
           callback(nil, nil);
         });
@@ -388,7 +385,7 @@ static NSString *const kSettingUserInfoKey = @"Setting";
     case RecommendAdCacheAdTypeInterstitial: {
         NSError *lottery = [RecommendAdData lotteryInterstitialWithAdLocation:adLocation];
         if (lottery != nil) {
-            return lottery; // Faithful: the lottery result short-circuits the return.
+            return lottery;
         }
         bannerList = [RecommendAdData getAppInterstitialList];
         break;

@@ -116,7 +116,6 @@ private:
      */
     JudgeEffectLayer();
 
-    // A per-lane judge popup record.
     struct JudgeRecord {
         bool m_bActive = {}; /*!< Whether the popup is showing. +0x00 */
         // unsigned char m_aPad01[3] = {}; // +0x01
@@ -126,11 +125,11 @@ private:
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the judge-effect sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the instancer's initial sprite count.
-    bool m_bBuilt = {};                         // +0x1c: set once the sprite is built.
-    LinearTween m_fadeChannel;                  // +0x20: the layer's fade-in/out channel.
-    float m_flScaleX = {};                      // +0x34: a scale the constructor seeds to 1.
-    float m_flScaleY = {};                      // +0x38: a scale the constructor seeds to 1.
-    JudgeRecord m_aJudgeRecords[2] = {};        // +0x3c: two per-judge records.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10
+    int m_nSpriteCount = {};                    // +0x18
+    bool m_bBuilt = {};                         // +0x1c
+    LinearTween m_fadeChannel;                  // +0x20
+    float m_flScaleX = {};                      // +0x34: seeded to 1.
+    float m_flScaleY = {};                      // +0x38: seeded to 1.
+    JudgeRecord m_aJudgeRecords[2] = {};        // +0x3c
 };

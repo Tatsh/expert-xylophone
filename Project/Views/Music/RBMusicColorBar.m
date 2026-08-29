@@ -5,35 +5,25 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The autoresizing mask applied to the background, track, and grip views: the four flexible
-// margins plus flexible width and height (0x3f).
 static const UIViewAutoresizing kBarAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin |
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The half factor (the 0x3fe0000000000000 literal) used to centre the grip vertically on the
-// track.
 static const double kHalf = 0.5;
 
-// The slider-value clamp range.
 static const float kSliderValueMin = 0.0f;
 static const float kSliderValueMax = 1.0f;
 
-// The background and grip image names.
 static NSString *const kBackgroundImageName = @"02_music_detail/det_col_br_4";
 static NSString *const kGripImageName = @"02_music_detail/det_col_br_5";
 
-// The track base-view frame on the compact (default-font) layout. The horizontal origin and width
-// are fixed; the vertical origin depends on the theme.
 static const CGFloat kCompactTrackX = 28.0;
 static const CGFloat kCompactTrackYColette = 13.0;
 static const CGFloat kCompactTrackYOther = 10.0;
 static const CGFloat kCompactTrackWidth = 99.0;
 static const CGFloat kCompactTrackHeight = 4.0;
 
-// The track base-view frame on the iPad idiom (Colette) layout. The horizontal origin and width
-// depend on the theme; the vertical origin and height are fixed.
 static const CGFloat kVariantTrackXColette = 40.0;
 static const CGFloat kVariantTrackXOther = 38.0;
 static const CGFloat kVariantTrackY = 20.0;
@@ -45,9 +35,7 @@ static const CGFloat kVariantTrackHeight = 9.0;
 static const UIGestureRecognizerState kPanIgnoredState = UIGestureRecognizerStateEnded;
 
 @interface RBMusicColorBar ()
-// The tap gesture action: move the grip to the tapped horizontal position.
 - (void)tap:(UITapGestureRecognizer *)tap;
-// The pan gesture action: track the drag's horizontal position onto the grip.
 - (void)pan:(UIPanGestureRecognizer *)pan;
 @end
 
@@ -114,7 +102,6 @@ static const UIGestureRecognizerState kPanIgnoredState = UIGestureRecognizerStat
     UIImage *gripImage = [UIImage imageWithName:kGripImageName];
     UIImageView *grip = [[UIImageView alloc] initWithImage:gripImage];
     self.gripView = grip;
-    // The grip starts pinned to the left of the track, vertically centred on the track's height.
     self.gripView.center =
         CGPointMake(0.0, (double)(int)(self.baseView.bounds.size.height * kHalf));
     self.gripView.autoresizingMask = kBarAutoresizingMask;

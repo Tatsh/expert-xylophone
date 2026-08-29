@@ -11,7 +11,7 @@
  * A polymorphic 32-byte object: its ctor installs a one-slot vtable (the destructor) at @c +0x00,
  * so the six 32-bit time fields follow at @c +0x08. Freshly initialised, every time is the free
  * sentinel. The lane-assignment routines inline this object's own behaviour; it is de-inlined here
- * into named methods. The trailing @c // +0xNN comments document the byte offsets.
+ * into named methods.
  */
 class NoteLaneSlot {
 public:
@@ -57,5 +57,5 @@ public:
     void ExtendSpanPair(int nPair, int nTimeStart, int nTimeEnd);
 
 private:
-    unsigned int m_aTimes[6] = {}; // +0x08: three start/end time pairs (all the free sentinel).
+    unsigned int m_aTimes[6] = {};
 };

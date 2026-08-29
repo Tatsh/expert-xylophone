@@ -4,7 +4,7 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// @ghidraAddress 0x2f8540 (g_flAchievementRateHashScale)
+// @ghidraAddress 0x2f8540
 static const float kAchievementRateHashScale = 1000.0f;
 
 enum {
@@ -17,7 +17,7 @@ static const int kMinimumGlyphCount = 2;
 static const int kDecimalPointDigitIndex = 1;
 
 // The caller's frame width and height are overridden with these.
-// @ghidraAddress 0x2eea20 (g_dCustomizeArtworkNarrowSize)
+// @ghidraAddress 0x2eea20
 static const CGFloat kReadoutWidth = 62.0;
 static const CGFloat kReadoutHeight = 8.0;
 

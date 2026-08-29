@@ -736,46 +736,40 @@ private:
     unsigned short m_nPressedState = {}; // +0x08
     bool m_bSliderSwiped = {};           // +0x0a
     // unsigned char m_aReserved0b[5] = {};      // +0x0b
-    ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.
-    ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas.
-    ne::C_TEXTURE *m_pOverlayTexture = {};    // +0x20: the overlay atlas (left unset).
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                // +0x28: the per-slot sprite batches.
-    bool m_bBuilt = {};    // +0x68: set once the sprites are built.
-    bool m_bPortrait = {}; // +0x69: selects the portrait phone anchor-position table.
-    // unsigned char m_aPad6a[2]; // +0x6a (alignment padding, compiler-inserted)
-    int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
-    float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
-    int m_nActive = {};       // +0x74: set once the phone result screen is initialised and running.
-    float m_flSlideTimer =
-        {}; // +0x78: a signed slide/settle timer, advanced toward zero each frame.
+    ne::C_TEXTURE *m_pBackgroundTexture = {};                       // +0x10
+    ne::C_TEXTURE *m_pPartsTexture = {};                            // +0x18
+    ne::C_TEXTURE *m_pOverlayTexture = {};                          // +0x20: left unset.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x28
+    bool m_bBuilt = {};                                             // +0x68
+    bool m_bPortrait = {}; // +0x69: selects the portrait anchor-position table.
+    // unsigned char m_aPad6a[2]; // +0x6a
+    int m_nDefaultAlpha = {};  // +0x6c: 255, cleared to 0 once the sprites are built.
+    float m_flBaseScale = {};  // +0x70: seeded to 0.7.
+    int m_nActive = {};        // +0x74: set once the phone result screen is running.
+    float m_flSlideTimer = {}; // +0x78: advanced toward zero each frame.
     ResultButtonRecord m_aButtons[kButtonCount] = {}; // +0x7c
-    // The phone touch/share handler reuses this slot as the side-slider's tracked touch id.
-    int m_nCurrentStep = {};     // +0x9c
-    float m_flSliderStartX = {}; // +0xa0: the side-slider touch's start X, for the drag threshold.
-    int m_nRotationCounter =
-        {};                    // +0xa4: the decoration rotation counter, wrapping each 192 frames.
-    int m_nRotationFrame = {}; // +0xa8: the decoration animation frame index (0 through 3).
-    int m_aStepAnimA[kStepAnimSlotCount] = {};             // +0xac
-    int m_aStepAnimB[kStepAnimSlotCount] = {};             // +0xb4
-    int m_aStepAnimC[kStepAnimSlotCount] = {};             // +0xbc
-    FloatTween m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4: the bonus/EX
-                                                           //        animation channels.
-    bool m_bBonusCueArmed = {}; // +0x13c: whether the bonus voice cue is still pending.
+    int m_nCurrentStep = {};                   // +0x9c: also the side-slider's tracked touch id.
+    float m_flSliderStartX = {};               // +0xa0: for the drag threshold.
+    int m_nRotationCounter = {};               // +0xa4: wraps every 192 frames.
+    int m_nRotationFrame = {};                 // +0xa8: 0 through 3.
+    int m_aStepAnimA[kStepAnimSlotCount] = {}; // +0xac
+    int m_aStepAnimB[kStepAnimSlotCount] = {}; // +0xb4
+    int m_aStepAnimC[kStepAnimSlotCount] = {}; // +0xbc
+    FloatTween m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4
+    bool m_bBonusCueArmed = {};                            // +0x13c
     // unsigned char m_aPad13d[3] = {}; // +0x13d
-    float m_flBonusCueTimer = {}; // +0x140: time accumulated toward the bonus voice cue.
+    float m_flBonusCueTimer = {}; // +0x140
     // unsigned char m_aReserved144[8] = {}; // +0x144
-    bool m_bTwitterAvailable = {}; // +0x14c: whether the Twitter share API is available.
+    bool m_bTwitterAvailable = {}; // +0x14c
     // unsigned char m_aPad14d[3] = {}; // +0x14d
-    float m_flClearBonus = {};     // +0x150: the clear bonus.
-    float m_flMissBonus = {};      // +0x154: the miss (full-combo/miss1/miss2) bonus.
-    float m_flRankBonus = {};      // +0x158: the rank (B/A/AA/AAA/AAAP) bonus.
-    float m_flFirstPlayBonus = {}; // +0x15c: the first-play bonus (plus any pastel field bonus).
-    float m_flExperienceBonus =
-        {};                    // +0x160: the experience-point total shown on the result screen.
-    int m_nResultScore = {};   // +0x164: the result score value seeded from the scene.
-    int m_nResultScoreHi = {}; // +0x168: the second result score value seeded from the scene.
-    // unsigned char m_aReserved16c[4]; // +0x16c (trailing pad to the 0x170-byte allocation)
+    float m_flClearBonus = {};      // +0x150
+    float m_flMissBonus = {};       // +0x154: covers full combo, miss1, and miss2.
+    float m_flRankBonus = {};       // +0x158: B, A, AA, AAA, or AAAP.
+    float m_flFirstPlayBonus = {};  // +0x15c: includes any pastel field bonus.
+    float m_flExperienceBonus = {}; // +0x160
+    int m_nResultScore = {};        // +0x164
+    int m_nResultScoreHi = {};      // +0x168
+    // unsigned char m_aReserved16c[4]; // +0x16c
 
     /**
      * Advances the bonus voice-cue timer and fires the cue once past its threshold.

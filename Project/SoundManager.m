@@ -37,15 +37,15 @@ enum {
 static const UInt32 kMixerElementCount = 8;
 
 @interface SoundManager () {
-    SoundData *m_SoundData[kSoundDataPoolCount];        // +0x08
-    SoundPlayer *m_SoundPlayer[kSoundPlayerVoiceCount]; // +0x58
-    BOOL m_InitGraph;                                   // +0x98
-    BOOL m_IsPlayGraph;                                 // +0x99
-    AUGraph m_Graph;                                    // +0xa0
-    AUNode m_MixerNode;                                 // +0xa8
-    AUNode m_OutputNode;                                // +0xac
-    AudioUnit m_MixerUnit;                              // +0xb0
-    AudioUnit m_OutputUnit;                             // +0xb8
+    SoundData *m_SoundData[kSoundDataPoolCount];
+    SoundPlayer *m_SoundPlayer[kSoundPlayerVoiceCount];
+    BOOL m_InitGraph;
+    BOOL m_IsPlayGraph;
+    AUGraph m_Graph;
+    AUNode m_MixerNode;
+    AUNode m_OutputNode;
+    AudioUnit m_MixerUnit;
+    AudioUnit m_OutputUnit;
 }
 
 - (void)setupAudioSession;

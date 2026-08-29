@@ -140,7 +140,6 @@ constexpr long kPageControlMinPageCount = 2;
                    self.frame.size.height);
     [self addSubview:self.backgroundView];
 
-    // The controls sit below the framed background's top cap inset.
     if (self.customizeType == RBCustomizeItemTypeNote) {
         [self setupNoteButtonsWideFont:wideFont topY:capInset];
     } else if (self.customizeType == RBCustomizeItemTypeGauge) {
@@ -155,9 +154,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// Lays out the note category's three fixed size buttons, each embedding a hidden highlight
-// overlay. Every button is the size of the overlay artwork, and the row straddles the horizontal
-// centre of the view against that overlay width.
 - (void)setupNoteButtonsWideFont:(BOOL)wideFont topY:(CGFloat)topY {
     [self reloadData];
 
@@ -165,8 +161,6 @@ constexpr long kPageControlMinPageCount = 2;
     CGFloat overlayWidth = overlayImage.size.width;
     CGFloat center = (self.frame.size.width - overlayWidth) * kCenterFactor;
 
-    // The three buttons straddle the horizontal centre; the wide layout spreads them one and a half
-    // overlay widths apart, the narrow layout one width apart.
     CGFloat spread = wideFont ? overlayWidth * 1.5 : overlayWidth;
     CGFloat buttonX[] = {center - spread, center, center + spread};
 
@@ -200,9 +194,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// Lays out the gauge category's two fixed style buttons, each embedding a hidden highlight
-// overlay. Each button is the size of the overlay artwork; the pair is inset from the two ends of
-// the button area, which is the framed background's width less the shave, centred in the view.
 - (void)setupGaugeButtonsWideFont:(BOOL)wideFont buttonAreaWidth:(CGFloat)buttonAreaWidth {
     UIImage *overlayImage = [UIImage imageWithName:kGaugeStyleOverlayImageName];
     CGFloat areaLeft = (self.frame.size.width - buttonAreaWidth) * kCenterFactor;
@@ -248,8 +239,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// Builds the paged RBCollectionView of item cells, the page control below it, and (for the shot and
-// explosion categories) the slider that edits the associated setting.
 - (void)setupCollectionViewWideFont:(BOOL)wideFont topY:(CGFloat)topY width:(CGFloat)width {
     CGFloat itemSize = wideFont ? kGridItemSizeWide : kGridItemSizeNarrow;
     RBMusicGridLayout *layout = [RBMusicGridLayout new];
@@ -262,8 +251,6 @@ constexpr long kPageControlMinPageCount = 2;
         pageInsetSide, kGridPageInsetHorizontal, pageInsetSide, kGridPageInsetHorizontal);
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
 
-    // The collection is the width of the framed background less the shave, centred in the view, at
-    // the per-category height.
     const float *heights = wideFont ? kCollectionHeightsWide : kCollectionHeightsNarrow;
     self.collectionView = [[RBCollectionView alloc]
                initWithFrame:CGRectMake((self.frame.size.width - width) * kCenterFactor,
@@ -282,8 +269,6 @@ constexpr long kPageControlMinPageCount = 2;
     self.collectionView.dataSource = self;
     [self addSubview:self.collectionView];
 
-    // The page indicator tints depend on the theme. The Classic arm only sets the current-page
-    // tint; its dot tint keeps the 0.5 left in the register by the frame maths (see the constants).
     int thema = [RBUserSettingData sharedInstance].thema;
     CGFloat currentPageTint;
     CGFloat pageIndicatorTint;
@@ -353,7 +338,6 @@ constexpr long kPageControlMinPageCount = 2;
     [self reloadData];
 }
 
-// Builds the judge-timing category's slider, centred within the framed background.
 - (void)setupTimingSlider {
     RBTimingSlider *slider = [[RBTimingSlider alloc] initWithDigit:2];
     CGFloat margin = (IsPad()) ? kTimingSliderMarginWide : kTimingSliderMarginNarrow;
@@ -374,9 +358,7 @@ constexpr long kPageControlMinPageCount = 2;
     slider.tag = kSliderTagTiming;
 }
 
-// Copies the current user settings into the global GameSystem so a live preview reflects them. The
-// binary inlines this block; it is de-inlined here because -setupView and -sliderChanged: both use
-// it.
+// The binary inlines this block at both call sites.
 - (void)commitUserSettingsToGameSystem {
     GameSystem *gameSystem = GameSystem::GetGameSystem();
     RBUserSettingData *settings = [RBUserSettingData sharedInstance];
@@ -414,7 +396,6 @@ constexpr long kPageControlMinPageCount = 2;
     [self.collectionView reloadData];
 }
 
-// The Classic theme offers the level-threshold takeover items for each category.
 - (void)buildClassicItemsWithLevelTables:(LevelTables *)levelTables {
     // @ghidraAddress 0x2ef190 (g_anTakeoverBgmTypeIds)
     static const int takeoverBgmTypeIds[] = {0, 2, 3, 4, 5, 6};
@@ -462,7 +443,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// Fills the item list with the identifiers whose level threshold the player has reached.
 - (void)buildLevelGatedItems:(const int *)itemIDs
                        count:(NSUInteger)count
                  levelTables:(LevelTables *)levelTables {
@@ -474,7 +454,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// The note category always offers its three fixed sizes.
 - (void)buildNoteItems {
     self.items = [NSMutableArray arrayWithCapacity:kNoteSizeButtonCount];
     for (int i = 0; i < kNoteSizeButtonCount; ++i) {
@@ -482,7 +461,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// The Limelight theme offers the experience-data unlock catalogue for each category.
 - (void)buildUnlockItemsForLimelight {
     RBExperienceData *experience = [RBExperienceData sharedInstance];
     // @ghidraAddress 0x2ef1a8 (g_anLimelightBgmTypeIds)
@@ -536,7 +514,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// The Colette theme offers a larger experience-data unlock catalogue for each category.
 - (void)buildUnlockItemsForColette {
     RBExperienceData *experience = [RBExperienceData sharedInstance];
     // @ghidraAddress 0x2ef1e4 (g_anColetteBgmTypeIds)
@@ -597,7 +574,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// Fills the item list with the identifiers the experience data reports as unlocked.
 - (void)buildUnlockedItems:(const int *)itemIDs
                      count:(NSUInteger)count
                   category:(RBExperienceItemType)category
@@ -654,8 +630,6 @@ constexpr long kPageControlMinPageCount = 2;
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
 }
 
-// Shows the highlight overlay on the sibling button whose tag matches the tapped selection and
-// hides it on the rest.
 - (void)refreshButtonHighlightsForTappedTag:(NSInteger)tappedTag inSuperviewOf:(UIView *)button {
     for (UIView *sibling in button.superview.subviews) {
         UIView *overlay = [sibling viewWithTag:kHighlightOverlayTag];
@@ -703,7 +677,6 @@ constexpr long kPageControlMinPageCount = 2;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGFloat rawPage = scrollView.contentOffset.x / scrollView.bounds.size.width;
     int page = static_cast<int>(rawPage);
-    // Round to the nearest page: snap up only once the offset passes the halfway point.
     float targetPage = (static_cast<float>(rawPage) - static_cast<float>(page) <= kCenterFactor) ?
                            static_cast<float>(page) :
                            static_cast<float>(page + 1);
@@ -726,7 +699,6 @@ constexpr long kPageControlMinPageCount = 2;
 
 - (void)collectionView:(UICollectionView *)collectionView
     didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    // Clear every visible cell's selection, then mark the tapped cell.
     for (RBCustomSelectCollectionCell *cell in collectionView.visibleCells) {
         cell.itemSelected = NO;
     }
@@ -816,8 +788,6 @@ constexpr long kPageControlMinPageCount = 2;
     }
     cell.itemSelected = (selectedType == itemID);
 
-    // Load the item image off the main queue and apply it to the cell's button on the main queue
-    // once it is ready.
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
       /** @ghidraAddress 0x1596dc */
       NSString *imagePath = BuildCustomizeAssetPathString(self.customizeType, itemID);

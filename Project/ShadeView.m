@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 
-// The binary reuses the shared literal Ghidra labels g_dMascotMessageAnimDuration @0x2eedc0 here.
+// The binary reuses the shared 0x2eedc0 literal here.
 static const CGFloat kShadeBackdropGray = 0.2;
 
 static const CGFloat kShadeBackdropAlpha = 0.8;

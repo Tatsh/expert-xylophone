@@ -1,23 +1,11 @@
-//
-//  RBGameKitManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBGameKitManager). Verified
-//  against the arm64 disassembly (the two completion-handler blocks and the weak capture of the
-//  local player in -loginGameCenter are obscured by the decompiler).
-//
-
 #import "RBGameKitManager.h"
 
 #import <GameKit/GameKit.h>
 #import <UIKit/UIKit.h>
 
-// The minimum system version the GameKit APIs are supported on. Compared as a string against
-// -[UIDevice systemVersion].
 // @ghidraAddress 0x3bf4b8 (the "4.1" literal)
 static NSString *const kMinimumGameCenterSystemVersion = @"4.1";
 
-// The class name probed with NSClassFromString to decide whether GameKit is present at all.
 static NSString *const kGameCenterLocalPlayerClassName = @"GKLocalPlayer";
 
 @implementation RBGameKitManager

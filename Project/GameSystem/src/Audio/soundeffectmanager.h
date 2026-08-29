@@ -104,11 +104,11 @@ private:
     // @ghidraAddress 0x1cc548
     void LoadThemedSoundEffect(int theme, int slot);
 
-    long m_nCurrentVoiceState = {};                             // +0x00 last-requested voice state
-    bool m_aThemeLoaded[kThemeCount][kThemedSlotCount] = {};    // +0x08 per-theme slot loaded flags
-    int m_aThemeResourceId[kThemeCount][kThemedSlotCount] = {}; // +0x44 per-theme slot resource ids
-    bool m_aSharedLoaded[kSharedSlotCount] = {};                // +0x134 shared slot loaded flags
-    int m_aSharedResourceId[kSharedSlotCount] = {};             // +0x158 shared slot resource ids
+    long m_nCurrentVoiceState = {};
+    bool m_aThemeLoaded[kThemeCount][kThemedSlotCount] = {};
+    int m_aThemeResourceId[kThemeCount][kThemedSlotCount] = {};
+    bool m_aSharedLoaded[kSharedSlotCount] = {};
+    int m_aSharedResourceId[kSharedSlotCount] = {};
 };
 
 // code: language=Objective-C++

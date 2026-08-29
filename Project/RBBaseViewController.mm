@@ -1,17 +1,5 @@
-//
-//  RBBaseViewController.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBBaseViewController). Verified
-//  against the arm64 disassembly: the rotation overrides gate on the region iPad idiom and the
-//  engine's "background music playing" flag, and the status-bar override returns a constant.
-//
-
 #import "RBBaseViewController.h"
 
-// GetGameSystem() -> GameSystem* (with the fBgmPlaying playback flag) and IsPad(),
-// which reports whether the region uses the wide (variant) font layout that also selects the
-// constrained-rotation behaviour.
 #import "deviceenvironment.h"
 #import "gamesystem.h"
 

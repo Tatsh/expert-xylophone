@@ -1,19 +1,7 @@
-//
-//  RBExtendNoteManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBExtendNoteManager). Verified
-//  against the arm64 disassembly (the fast-enumeration loops, the Blowfish key derivation, and the
-//  property-list salt-and-encipher round-trip are partly obscured by the decompiler).
-//
-
 #import "RBExtendNoteManager.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 
-// Collaborator classes reached from these methods. Their headers are not all reconstructed in this
-// tree yet (the same speculative-import style RBMusicManager.m and MusicData.m already use); they
-// resolve once those classes land. MusicDataExtend is committed.
 #import "AppDelegate.h"
 #import "BFCodec.h"
 #import "MusicDataExtend.h"
@@ -24,16 +12,11 @@
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 
-// The archive filename format: a nine-digit zero-padded extend-note identifier with a @c .rb
-// extension.
-// @ghidraAddress 0x337a27 (the format-string literal)
+// @ghidraAddress 0x337a27
 static NSString *const kExtendNoteDataFilenameFormat = @"%09d.rb";
 
-// The filename of the enciphered purchased-extend-note list under the Application Support
-// directory.
 static NSString *const kPurchasedNoteListFilename = @"nolist";
 
-// The keys of a purchased-extend-note dictionary within the persisted list.
 static NSString *const kPurchasedNoteKeyExtID = @"ExtID";
 static NSString *const kPurchasedNoteKeyID = @"ID";
 static NSString *const kPurchasedNoteKeyPackID = @"PackID";
@@ -42,22 +25,15 @@ static NSString *const kPurchasedNoteKeyComment = @"Comment";
 static NSString *const kPurchasedNoteKeyExtURL = @"ExtURL";
 static NSString *const kPurchasedNoteKeyExtURL2 = @"ExtURL2";
 
-// The initial capacity reserved for the purchased-extend-note list.
 static const NSUInteger kPurchasedNoteListCapacity = 64;
 
-// The initial capacity reserved for the extend-note-identifier lists.
 static const NSUInteger kExtendNoteIDsCapacity = 3;
 
-// The initial capacity reserved for the enciphered-list scratch buffer and a fresh purchase
-// dictionary.
 static const NSUInteger kEncipherBufferCapacity = 128;
 static const NSUInteger kPurchaseDictionaryCapacity = 5;
 
-// The number of leading salt bytes prepended to the plaintext before enciphering; the same count
-// is stripped after deciphering.
 static const NSUInteger kListSaltLength = 4;
 
-// The number of client extend-note entries reserved per outstanding page.
 static const int kClientNoteEntriesPerPage = 20;
 
 @implementation RBExtendNoteManager
@@ -239,7 +215,6 @@ static const int kClientNoteEntriesPerPage = 20;
         return YES;
     }
 
-    // Merge changed fields into a copy of the existing entry.
     NSDictionary *existing = self.purchasedExtendNoteDictionaries[index];
     NSMutableDictionary *merged = [NSMutableDictionary dictionaryWithDictionary:existing];
     BOOL changed = NO;
@@ -311,8 +286,7 @@ static const int kClientNoteEntriesPerPage = 20;
     for (NSDictionary *entry in self.purchasedExtendNoteDictionaries) {
         NSNumber *extendNoteID = entry[kPurchasedNoteKeyExtID];
 #ifdef ENABLE_PATCHES
-        // Extend-note archives use the same %09d.rb naming as songs, so they resolve through the
-        // same drop-in search: Private Documents, Documents, Caches, then the bundle.
+        // Extend-note archives share the songs' naming, so they use the same drop-in search.
         NSString *path = [RBMusicManager resolveArchivePath:extendNoteID.intValue];
         if (path != nil) {
 #else
@@ -395,11 +369,8 @@ static const int kClientNoteEntriesPerPage = 20;
 
 - (void)setClientMusicPageNum:(int)pageNum {
     /** @ghidraAddress 0x1840d0 */
-    // Same defect as -[RBMusicManager setClientMusicPageNum:]: the binary opens by sending
-    // releaseClientMusic, and that method is nothing but [self setClientMusicPageNum:0], so the
-    // pair recurse until the stack is exhausted. The release send is dropped here for the same
-    // reason it is dropped there — it would only allocate an empty array for the line below to
-    // replace — and for the same reason it is not gated behind ENABLE_PATCHES.
+    // The binary opens by sending releaseClientMusic, which recurses back here until the stack is
+    // exhausted; that send is dropped.
     self.clientExtendNotePageNum = pageNum;
     self.clientExtendNotes =
         [[NSMutableArray alloc] initWithCapacity:(NSUInteger)(pageNum * kClientNoteEntriesPerPage)];

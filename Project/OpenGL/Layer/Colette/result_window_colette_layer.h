@@ -837,57 +837,45 @@ private:
                                   float flGreen,
                                   float flBlue);
 
-    // +0x08/+0x09: driven from the live touch count.
     bool m_bTutorialTouchPresent = {}; // +0x08
     bool m_bTutorialTouchEnded = {};   // +0x09
     bool m_bPageDirty = {};            // +0x0a
-    // +0x0b..+0x0f: presentation-transform state seeded by the constructor.
-    // unsigned char m_aReserved0b[5] = {};      // +0x0b
+    // unsigned char m_aReserved0b[5] = {};      // +0x0b..+0x0f
     ne::C_TEXTURE *m_pBackgroundTexture = {};               // +0x10
     ne::C_TEXTURE *m_pPartsTexture = {};                    // +0x18
     ne::C_TEXTURE *m_pOverlayTexture = {};                  // +0x20: not set by the sprite builder.
     ne::C_SPRITE_INSTANCING_2D *m_apSlots[kSlotCount] = {}; // +0x28
     bool m_bBuilt = {};                                     // +0x68
     bool m_bPortrait = {};                                  // +0x69
-    // +0x6a..+0x6b is alignment padding before the glyph-table base indices.
-    // unsigned char m_aPad6a[2] = {}; // +0x6a
-    int m_nGlyphBaseA = {};    // +0x6c
-    int m_nGlyphBaseB = {};    // +0x70
-    int m_nGlyphBaseC = {};    // +0x74
-    float m_flPartsScale = {}; // +0x78
-    int m_nActive = {};        // +0x7c
-    float m_flSwipeDir = {};   // +0x80: +1 up, -1 down.
-    // +0x84: the four touch hit-regions the input pass tracks.
+    // unsigned char m_aPad6a[2] = {}; // +0x6a..+0x6b
+    int m_nGlyphBaseA = {};                                   // +0x6c
+    int m_nGlyphBaseB = {};                                   // +0x70
+    int m_nGlyphBaseC = {};                                   // +0x74
+    float m_flPartsScale = {};                                // +0x78
+    int m_nActive = {};                                       // +0x7c
+    float m_flSwipeDir = {};                                  // +0x80: +1 up, -1 down.
     ResultTouchRegion m_aTouchRegion[kTouchRegionCount] = {}; // +0x84
     int m_nSwipeTouchId = {};                                 // +0xa4: -1 when none.
     float m_flSwipeStartY = {};                               // +0xa8
     int m_nRotationCounter = {};                              // +0xac: wraps every 192 frames.
     int m_nRotationFrame = {};                                // +0xb0: 0 through 3.
-    // +0xb4..+0xcb: further per-frame presentation state, still being worked out.
-    // unsigned char m_aReservedB4[0x18] = {}; // +0xb4
-    // +0xcc: an alpha fade plus four offset/scale channels.
-    FloatTween m_aTween[kTweenChannelCount] = {}; // +0xcc
+    // unsigned char m_aReservedB4[0x18] = {}; // +0xb4..+0xcb
+    FloatTween m_aTween[kTweenChannelCount] = {}; // +0xcc: alpha plus four offset/scale channels.
     bool m_bBonusCueArmed = {};                   // +0x144
-    // +0x145..+0x147 is alignment padding before the bonus-cue timer.
-    // unsigned char m_aPad145[3] = {}; // +0x145
+    // unsigned char m_aPad145[3] = {}; // +0x145..+0x147
     float m_flBonusCueTimer = {}; // +0x148
-    // +0x14c..+0x153: further presentation state, still being worked out.
-    // unsigned char m_aReserved14c[8] = {}; // +0x14c
+    // unsigned char m_aReserved14c[8] = {}; // +0x14c..+0x153
     bool m_bTwitterAvailable = {}; // +0x154
-    // +0x155..+0x157 is alignment padding before the bonus values.
-    // unsigned char m_aPad155[3] = {}; // +0x155
-    // +0x158..+0x173: computed by rb::GameScene::ComputeResultBonusesAndExperience.
-    float m_flClearBonus = {};      // +0x158
-    float m_flMissBonus = {};       // +0x15c: full-combo/miss1/miss2.
-    float m_flRankBonus = {};       // +0x160: B/A/AA/AAA/AAAP.
-    float m_flFirstPlayBonus = {};  // +0x164: plus any pastel field bonus.
-    float m_flHotMusicBonus = {};   // +0x168
-    float m_flEarlyPlayBonus = {};  // +0x16c
-    float m_flExperienceBonus = {}; // +0x170
-    // +0x174: the chart's per-side object counts, indexed by the side's play colour.
-    int m_anResultScore[kResultScoreColorCount] = {}; // +0x174
-    // +0x17c..+0x17f: trailing presentation state to the allocation size.
-    // unsigned char m_aReserved17c[4] = {}; // +0x17c
+    // unsigned char m_aPad155[3] = {}; // +0x155..+0x157
+    float m_flClearBonus = {};                        // +0x158
+    float m_flMissBonus = {};                         // +0x15c: full-combo/miss1/miss2.
+    float m_flRankBonus = {};                         // +0x160: B/A/AA/AAA/AAAP.
+    float m_flFirstPlayBonus = {};                    // +0x164: plus any pastel field bonus.
+    float m_flHotMusicBonus = {};                     // +0x168
+    float m_flEarlyPlayBonus = {};                    // +0x16c
+    float m_flExperienceBonus = {};                   // +0x170
+    int m_anResultScore[kResultScoreColorCount] = {}; // +0x174: the per-side object counts.
+    // unsigned char m_aReserved17c[4] = {}; // +0x17c..+0x17f
 };
 
 // code: language=Objective-C++

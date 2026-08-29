@@ -1,65 +1,40 @@
-//
-//  RBHttpUtil.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBHttpUtil). Verified against the
-//  arm64 disassembly: the variadic stringWithFormat: and setValue:forHTTPHeaderField: argument
-//  lists are dropped by the decompiler, the block completion handlers invoke through the block's
-//  +0x10 pointer, and the delegate selector names (including the binary's downloadProceed: and
-//  downloaderFinished: typos) were read straight from the selector references.
-//
-
 #import "RBHttpUtil.h"
 
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 #import "neDebugLog.h"
 
-// The common request headers stamped on every request.
 static NSString *const kUserAgentHeaderField = @"User-Agent";
 static NSString *const kAcceptLanguageHeaderField = @"Accept-Language";
 static NSString *const kContentTypeHeaderField = @"Content-Type";
 
-// The HTTP methods used by the initialisers.
 static NSString *const kHTTPMethodGet = @"GET";
 static NSString *const kHTTPMethodPost = @"POST";
 
-// The default request timeout, in seconds, for the GET, download, and rebuilt requests.
 static const NSTimeInterval kDefaultTimeoutInterval = 15.0;
-// The default request timeout, in seconds, for a POST when the caller gives no explicit value. It
-// is a float rather than an NSTimeInterval: the four-argument initialiser it feeds encodes its
-// timeout parameter as f, and the binary supplies this default with a single-precision fmov.
+// A float, not an NSTimeInterval: the initialiser it feeds encodes its timeout parameter as f.
 static const float kDefaultPostTimeoutInterval = 15.0f;
-// The sentinel stored in the timeout properties when no interval has been set.
 static const long long kUnsetTimeoutInterval = -1;
 
-// The cache policy every request is built with.
 static const NSURLRequestCachePolicy kRequestCachePolicy =
     NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
 
-// The HTTP status code treated as success.
 static const NSInteger kHTTPStatusOK = 200;
 
-// The initial capacity for the in-memory response buffer when the length is unknown.
 static const NSUInteger kDefaultResponseCapacity = 65536;
 
-// The response header key carrying the expected body hash, and the salt folded into that hash.
 // cspell:ignore Rhdvru Yvgs
 static NSString *const kResponseCodeHeaderKey = @"code";
 static NSString *const kHashCheckSalt = @"kdRhdvruVoJ1sUan4TJpsXYvgsSNG2yn";
 
-// The query-string builder: the format for one key-value pair, the pair separator, and the set of
-// characters escaped out of each key and value.
 static NSString *const kQueryPairFormat = @"%@=%@";
 static NSString *const kQueryPairSeparator = @"&";
 static NSString *const kQueryPercentEscapeCharacters = @"!*'();:@&=+$,/?%#[]";
 
-// The user-facing message stored when the body fails its hash check.
 static NSString *const kHashCheckErrorMessage = @"hash check error ...";
 
 #if RBPDBG
-// The most of one log line neDebugLog will carry. It formats into a 512-byte buffer, so a long URI
-// or body is emitted in numbered pieces rather than silently cut off at the boundary.
+// neDebugLog formats into a 512-byte buffer, so longer text is emitted in numbered pieces.
 static const NSUInteger kLogChunkLength = 400;
 
 static void RBLogLong(const char *label, NSString *text) {
@@ -81,15 +56,9 @@ static void RBLogLong(const char *label, NSString *text) {
     }
 }
 
-// Report one outgoing request in full: method and URI, every header on its own line, and the body.
-// Every request the app makes is started here, whichever initialiser built it, so this covers all
-// of them rather than one endpoint at a time. The query is not broken out parameter by parameter,
-// because the URI above already carries it.
 static void RBLogRequest(NSURLRequest *request) {
     RBLogLong("request",
               [NSString stringWithFormat:@"%@ %@", request.HTTPMethod, request.URL.absoluteString]);
-    // Worth naming rather than assuming: several endpoints are posted with no content type at all,
-    // so the header simply will not appear for them.
     for (NSString *field in request.allHTTPHeaderFields) {
         neDebugLog(
             "  header %s: %s", field.UTF8String, [request.allHTTPHeaderFields[field] UTF8String]);
@@ -141,15 +110,11 @@ static void RBLogRequest(NSURLRequest *request) {
                     kCFStringEncodingUTF8);
             id escapeValue = value;
 #ifdef ENABLE_PATCHES
-            // The binary hands the dictionary's value straight to
-            // CFURLCreateStringByAddingPercentEscapes, which requires a CFStringRef. Several
-            // callers put NSNumbers in that dictionary -- +[RBServerAPIManager
-            // unlockedAPIWithType:identity:point:] boxes all three of its arguments at 0x17d52c,
-            // 0x17d554 and 0x17d580 -- so the escape is handed a __NSCFNumber and sends it
-            // -length. That aborts the process, and it takes the customise unlock with it, which
-            // is the step the tutorial cannot get past. The shipped app has the same defect; it
-            // is reached on this build because the modern CoreFoundation forwards rather than
-            // tolerating it. Stringify first, which changes nothing for the string values.
+            // The binary escapes the raw value, but callers box NSNumbers into the dictionary, so
+            // CFURLCreateStringByAddingPercentEscapes aborts on a modern CoreFoundation.
+            // @ghidraAddress 0x17d52c
+            // @ghidraAddress 0x17d554
+            // @ghidraAddress 0x17d580
             if (![escapeValue isKindOfClass:NSString.class]) {
                 escapeValue = [escapeValue description];
             }
@@ -470,10 +435,8 @@ static void RBLogRequest(NSURLRequest *request) {
     if (self.proceedBlock) {
         self.proceedBlock(self);
     } else if (self.delegate) {
-        // No class in the binary implements downloadProceed:, so this send throws whenever a
-        // delegate is set and no proceed block is. That is the original's behaviour. Whether the
-        // combination is reachable has not been established: delegates are assigned in the store
-        // controllers and the block is not always set, so it may well be.
+        // No class implements downloadProceed:, so this throws when a delegate but no proceed
+        // block is set; that is the original's behaviour.
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloadProceed:)
                                                     withObject:self
                                                  waitUntilDone:NO];

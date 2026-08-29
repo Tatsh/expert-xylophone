@@ -20,9 +20,7 @@ class C_SPRITE_INSTANCING_2D;
  * atlas and a single sprite batch drawn beneath the shared background layer. Each frame the layer
  * advances two independent spin phases and, for every result mark queued that frame, emits a
  * spinning sprite whose graphic is chosen from the mark's judge. The class name comes from its
- * embedded
- * @c slide_note_result_layer.mm path; it carries no RTTI (it is non-polymorphic). The trailing
- * @c // +0xNN comments document the original 32-bit offsets for reference only.
+ * embedded @c slide_note_result_layer.mm path; it carries no RTTI (it is non-polymorphic).
  */
 class SlideNoteResultLayer : public PlayFieldLayerBase {
 public:
@@ -118,11 +116,11 @@ private:
         S_VECTOR2 position = {}; /*!< The result mark's screen position. +0x08 */
     };
 
-    ne::C_TEXTURE *m_pTexture = {};            // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pBatch = {}; // +0x10: the result sprite batch.
-    int m_nWriteIndex = {};                    // +0x18: the running sprite write index for a frame.
-    bool m_bBuilt = {};                        // +0x1c: set once the batch is built.
-    float m_flSpinPhaseA = {}; // +0x20: the first spin phase, wrapped to (-3000, 3000].
-    float m_flSpinPhaseB = {}; // +0x24: the second spin phase, wrapped to [-400/3, 400/3).
-    ResultMark m_aResults[kMaxResults] = {}; // +0x28: the per-frame result-mark queue.
+    ne::C_TEXTURE *m_pTexture = {};
+    ne::C_SPRITE_INSTANCING_2D *m_pBatch = {};
+    int m_nWriteIndex = {};
+    bool m_bBuilt = {};
+    float m_flSpinPhaseA = {}; // Wrapped to (-3000, 3000].
+    float m_flSpinPhaseB = {}; // Wrapped to [-400/3, 400/3).
+    ResultMark m_aResults[kMaxResults] = {};
 };

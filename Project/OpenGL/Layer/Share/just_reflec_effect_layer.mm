@@ -165,7 +165,6 @@ void JustReflecEffectLayer::Update(float flDeltaSeconds) {
         m_flSpinPhaseA += kSpinPhaseAStep;
     }
 
-    // Each overflow spawns one burst particle per active charge.
     int nParticleBursts = 0;
     m_flSpinPhaseB += flDeltaSeconds;
     while (m_flSpinPhaseB > kSpinPhaseBWrap) {

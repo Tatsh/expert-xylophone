@@ -309,33 +309,32 @@ private:
     int ParseNotesV10(const unsigned long *pStream);
 
     // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual dtor).
-    int m_nVersion = {}; // +0x08: the parsed chart format version.
-    // +0x10: the speed-change path nodes in the reader's growable array (entry pointer at +0x10,
-    // the live count at +0x18, and the capacity at +0x1c).
+    int m_nVersion = {}; // +0x08
+    // +0x10: the entry pointer, with the live count at +0x18 and the capacity at +0x1c.
     NotePathPointArray m_pathNodes = {};
-    int m_nChartEndTime = {};       // +0x20: the chart's end time.
+    int m_nChartEndTime = {};       // +0x20
     int m_nSeedA = {};              // +0x24: a parse seed/scratch value.
-    int m_nNoteCount = {};          // +0x28: the number of note records in the pool.
-    int m_nTempoEventCount = {};    // +0x2c: the number of tempo events.
-    int m_nFreeNoteCount = {};      // +0x30: the number of free (synthetic) notes.
-    int m_nSlideRecordCount = {};   // +0x34: the number of slide records.
-    int m_nChartEndTimeScaled = {}; // +0x38: the chart end time in scaled units.
+    int m_nNoteCount = {};          // +0x28
+    int m_nTempoEventCount = {};    // +0x2c
+    int m_nFreeNoteCount = {};      // +0x30: free notes are the synthetic ones.
+    int m_nSlideRecordCount = {};   // +0x34
+    int m_nChartEndTimeScaled = {}; // +0x38
     int m_nField3c = {};            // +0x3c: chart-parse scratch, still being worked out.
-    // +0x40: the per-side playable-note counts; side 0's also drives the scroll-speed tier.
+    // +0x40: side 0's also drives the scroll-speed tier.
     int m_aChartNoteCounts[kSideCount] = {};
-    int m_aSideObjectCounts[kSideCount] = {}; // +0x48: the per-side side-object note counts.
-    int m_aPlayableCounts[kSideCount] = {};   // +0x50: the per-side playable (slide-index) counts.
+    int m_aSideObjectCounts[kSideCount] = {}; // +0x48
+    int m_aPlayableCounts[kSideCount] = {};   // +0x50: the slide-index counts.
     int m_aSideCount[kSideCount] = {};        // +0x58: the per-side late-note counts.
-    int m_nJustReflecQuota = {};              // +0x60: the chart's just-reflec opportunity count.
-    // +0x64: the same quota over the note count less side 0's late notes.
+    int m_nJustReflecQuota = {};              // +0x60
+    // +0x64: the quota over the note count less side 0's late notes.
     int m_nJustReflecQuotaRemain = {};
-    RbffNoteRecord *m_pRecords = {};       // +0x68: the note-record pool (kNoteRecordStride each).
-    RbffSlideRecord *m_pSlideRecords = {}; // +0x70: the slide-record array.
-    int *m_pSideIndexArray = {};           // +0x78: the per-side note-index array.
+    RbffNoteRecord *m_pRecords = {};       // +0x68
+    RbffSlideRecord *m_pSlideRecords = {}; // +0x70
+    int *m_pSideIndexArray = {};           // +0x78
     int *m_pIndexArrayB = {};              // +0x80: a second note-index array.
-    int m_nFirstIndex = {};                // +0x88: the first active note index.
-    int m_nIndexCount = {};                // +0x90: the active note-index count.
-    unsigned char m_aTailPad[4] = {};      // +0x94: trailing padding.
+    int m_nFirstIndex = {};                // +0x88
+    int m_nIndexCount = {};                // +0x90
+    unsigned char m_aTailPad[4] = {};      // +0x94
 };
 
 } // namespace rb

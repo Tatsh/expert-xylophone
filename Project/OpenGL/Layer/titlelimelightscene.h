@@ -179,13 +179,13 @@ private:
     void AdvanceSwipeState(int nSwipeEvent);
 
     // The base's trailing bool ends at +0x4a, so +0x4b is alignment padding before the state.
-    int m_nState = {};                               // +0x4c
-    int m_nAnimationTime = {};                       // +0x50: in ms; wraps to the end of the intro.
-    int m_nReadyDelay = {};                          // +0x54
-    ne::C_TEXTURE *m_apTextures[kTextureCount] = {}; // +0x58
+    int m_nState = {};                                              // +0x4c
+    int m_nAnimationTime = {};                                      // +0x50: in milliseconds.
+    int m_nReadyDelay = {};                                         // +0x54
+    ne::C_TEXTURE *m_apTextures[kTextureCount] = {};                // +0x58
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x70
-    int m_aSpriteCount[kSpriteSlotCount] = {}; // +0x308: each instancer's seed sprite count.
-    // +0x454: only the constructor's zeroing loop ever touches this array; its role is unknown.
+    int m_aSpriteCount[kSpriteSlotCount] = {};                      // +0x308
+    // Role undetermined: only the constructor's zeroing loop ever touches this array.
     int m_aSpriteSlotState[kSpriteSlotCount] = {}; // +0x454
     float m_flFadeStart = {};                      // +0x5a0
     float m_flFadeEnd = {};                        // +0x5a4
@@ -193,18 +193,16 @@ private:
     float m_flFadeElapsed = {};                    // +0x5ac
     float m_flFadeStartDelay = {};                 // +0x5b0
     float m_flFadeValue = {};                      // +0x5b4: seeded to 1.0.
-    bool m_bLeaving = {}; // +0x5b8: set once the start prompt is taken; touches then stop
-                          // being accepted.
+    bool m_bLeaving = {};                          // +0x5b8: touches stop being accepted once set.
     // +0x5b9..+0x5bb is the natural alignment padding after the leaving flag.
-    int m_nUnusedCounter = {};        // +0x5bc: zeroed by the constructor and never read again.
+    int m_nUnusedCounter = {};        // +0x5bc
     float m_flCornerButtonClock = {}; // +0x5c0: advanced six times as fast while leaving.
     int m_nTrackedTouchId = {};       // +0x5c4: -1 when no touch is tracked.
     int m_nSwipeState = {};           // +0x5c8: the hidden-code (Konami) sequence's progress.
-    bool m_bSecretActive = {};        // +0x5cc: the hidden-code flag; doubles the burst scale.
+    bool m_bSecretActive = {};        // +0x5cc: doubles the burst scale.
     // +0x5cd..+0x5cf is the natural alignment padding before the cached viewport size.
-    float m_flViewportWidth = {};  // +0x5d0: cached each frame; halved into the screen X origin.
-    float m_flViewportHeight = {}; // +0x5d4
-    // +0x5d8: recorded by the part emitter for the interactive parts.
+    float m_flViewportWidth = {};            // +0x5d0: halved into the screen X origin.
+    float m_flViewportHeight = {};           // +0x5d4
     HitRect m_aHitRects[kHitRectCount] = {}; // +0x5d8
 };
 

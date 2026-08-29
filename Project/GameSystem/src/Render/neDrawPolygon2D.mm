@@ -227,7 +227,6 @@ void C_DRAW_POLYGON_2D::SetRGBA(int nIndex,
     }
     assert(nIndex >= 0 && nIndex < m_nVertexCount);
     m_pColorArray[nIndex] = S_RGBA{nRed, nGreen, nBlue, nAlpha};
-    // The binary writes both dirty bytes together as a single halfword of 0x0101.
     m_bVertexDirty = true;
     m_bColorDirty = true;
 }
@@ -239,7 +238,6 @@ void C_DRAW_POLYGON_2D::SetVertexAlpha(int nIndex, unsigned char nAlpha) {
     }
     assert(nIndex >= 0 && nIndex < m_nVertexCount);
     m_pColorArray[nIndex].nAlpha = nAlpha;
-    // The binary writes both dirty bytes together as a single halfword of 0x0101.
     m_bVertexDirty = true;
     m_bColorDirty = true;
 }

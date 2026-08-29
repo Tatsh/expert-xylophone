@@ -10,8 +10,7 @@
  *
  * Holds the presentation context common to every theme layer: the is-pad flag, whether the device
  * is the older hardware type, and the selected theme. Concrete play-field layers (the clear gauge,
- * the player-field score layer, the effect layers) derive from it. The trailing @c // +0xNN
- * comments document the original 32-bit offsets for reference only.
+ * the player-field score layer, the effect layers) derive from it.
  */
 class PlayFieldLayerBase {
 public:
@@ -70,7 +69,7 @@ protected:
     PlayFieldLayerBase();
 
 private:
-    bool m_bIsPad = {};           // +0x00: whether the device is an iPad (from IsPad()).
-    bool m_fIsHardwareType9 = {}; // +0x01
-    int m_nThema = {};            // +0x04
+    bool m_bIsPad = {};
+    bool m_fIsHardwareType9 = {};
+    int m_nThema = {};
 };

@@ -76,8 +76,8 @@ static const int kCampaignHideTypeVisible = 0;
 @implementation StoreCampaignItemInfo
 
 #ifdef ENABLE_PATCHES
-// Overriding a readonly property's getter suppresses its synthesis, so the backing ivar that
-// -termCheck and -registSuccess assign has to be named explicitly.
+// Overriding a readonly property's getter suppresses its synthesis, so the backing ivar has to be
+// named explicitly.
 @synthesize bUnlock = _bUnlock;
 
 // Report every gift as granted even before -termCheck has run.
@@ -132,8 +132,7 @@ static const int kCampaignHideTypeVisible = 0;
 /** @ghidraAddress 0x109088 */
 - (BOOL)termCheck {
 #ifdef ENABLE_PATCHES
-    // Grant every gift outright, overriding the experience-point arm at the tail of the original
-    // that would otherwise clear _bUnlock for every campaign item.
+    // Grant every gift outright, overriding the experience-point arm at the tail of the original.
     _bUnlock = YES;
     _alreadyDownload = [self hasItem:self.itemType itemID:self.itemID];
     _buttonType = kCampaignButtonInfoDownload;

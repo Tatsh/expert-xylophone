@@ -1,14 +1,5 @@
-//
-//  RBNotificationData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBNotificationData). Verified
-//  against the arm64 disassembly (the coder msgSends are variadic and dropped by the decompiler).
-//
-
 #import "RBNotificationData.h"
 
-// The archive key under which the payload dictionary is encoded and decoded.
 static NSString *const kNotificationListCoderKey = @"notificationList";
 
 @implementation RBNotificationData

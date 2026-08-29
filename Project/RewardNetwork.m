@@ -1,11 +1,3 @@
-//
-//  RewardNetwork.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458.
-//  See RewardNetwork.h for the class overview.
-//
-
 #import "RewardNetwork.h"
 
 #import "ApplilinkConsts.h"
@@ -15,18 +7,16 @@
 #import "ApplilinkParameters.h"
 #import "RewardCore.h"
 
-// Applilink error codes messaged as the localised-error factory argument.
 enum {
     kRewardErrorSdkUnavailable = 0x401, // The SDK cannot run on this device.
     kRewardErrorNotInitialized = 0x3f2, // The SDK has not finished initialising.
 };
 
-// The reward app-list navigation-bar title key, looked up in the reward message bundle.
 static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTitle";
 
 @implementation RewardNetwork
 
-// @ 0x21f524
+// @ghidraAddress 0x21f524
 + (void)openAdScreenWithAdLocation:(NSString *)adLocation
                        requestCode:(id)requestCode
                           delegate:(id)delegate {
@@ -36,7 +26,7 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
                                      delegate:delegate];
 }
 
-// @ 0x21f598
+// @ghidraAddress 0x21f598
 + (void)openAdScreenWithParentView:(UIView *)parentView
                         adLocation:(NSString *)adLocation
                           delegate:(id)delegate {
@@ -46,7 +36,7 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
                                      delegate:delegate];
 }
 
-// @ 0x21f60c
+// @ghidraAddress 0x21f60c
 + (void)openAdScreenWithParentView:(UIView *)parentView
                         adLocation:(NSString *)adLocation
                        requestCode:(id)requestCode
@@ -74,14 +64,14 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
                                                    delegate:delegate];
 }
 
-// @ 0x21f808
+// @ghidraAddress 0x21f808
 + (void)closeAdScreen {
     if ([ApplilinkConsts canUseApplilinkSdk]) {
         [[RewardCore sharedInstance] closeAdScreen];
     }
 }
 
-// @ 0x21f880
+// @ghidraAddress 0x21f880
 + (void)allInstallFlgWithCallback:(void (^)(NSInteger flg, NSError *error))callback {
     if (![ApplilinkConsts canUseApplilinkSdk]) {
         callback(
@@ -89,12 +79,12 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
         return;
     }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-      // @ 0x21f970 — forward to the RewardCore all-install query on a background queue.
+      // @ghidraAddress 0x21f970
       [[RewardCore sharedInstance] allInstallFlgWithCallback:callback];
     });
 }
 
-// @ 0x21f9e0
+// @ghidraAddress 0x21f9e0
 + (void)getAdDisplayStatusWithCallback:(void (^)(NSDictionary *status, NSError *error))callback {
     NSMutableDictionary *defaultStatus = [NSMutableDictionary dictionaryWithCapacity:2];
     [defaultStatus setValue:@(0) forKey:@"allInstallFlg"];
@@ -106,12 +96,12 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
         return;
     }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-      // @ 0x21fba4 — forward to the RewardCore ad-display query on a background queue.
+      // @ghidraAddress 0x21fba4
       [[RewardCore sharedInstance] getAdDisplayStatusWithCallback:callback];
     });
 }
 
-// @ 0x21fc14
+// @ghidraAddress 0x21fc14
 + (void)getAdStatusWithBlock:(void (^)(NSInteger status, NSError *error))block {
     if (![ApplilinkConsts canUseApplilinkSdk]) {
         block(0,
@@ -119,17 +109,17 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
         return;
     }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-      // @ 0x21fd04 — forward to the RewardCore app-list status query on a background queue.
+      // @ghidraAddress 0x21fd04
       [[RewardCore sharedInstance] getAppListStatusWithBlock:block];
     });
 }
 
-// @ 0x21fd74
+// @ghidraAddress 0x21fd74
 + (void)setNavigationBarHidden:(BOOL)navigationBarHidden {
     [[RewardCore sharedInstance] setNavigationBarHidden:navigationBarHidden];
 }
 
-// @ 0x21fdcc
+// @ghidraAddress 0x21fdcc
 + (NSString *)getNavigationTitle {
     return [ApplilinkMessage localizedMessage:kRewardNetworkAppListTitleKey];
 }

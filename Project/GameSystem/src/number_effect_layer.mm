@@ -16,11 +16,11 @@
 namespace {
 constexpr const char *kAtlasTextureName = "00_texture/gm_parts2";
 
-constexpr float kMirrorOffset = -6.0f;    // 0xc0c00000
+constexpr float kMirrorOffset = -6.0f;
 constexpr float kTransformPadX = -103.0f; // @ghidraAddress 0x30fb00
 constexpr float kTransformPadZ = 206.0f;  // @ghidraAddress 0x30fb08
 constexpr float kTransformPhoneZ = 96.0f; // @ghidraAddress 0x30fb0c
-constexpr float kTransformPadW = 7.0f;    // 0x40e00000
+constexpr float kTransformPadW = 7.0f;
 
 // @ghidraAddress 0x30fb70
 constexpr int kBatchCapacity[] = {1, 1, 1, 2};

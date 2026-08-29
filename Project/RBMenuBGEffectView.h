@@ -33,18 +33,18 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Populated by @c setupRainbow with the three rainbow and four ring images, in that order.
  */
-@property(strong, nonatomic, nullable) NSMutableArray *animImageList; // +0x28
+@property(strong, nonatomic, nullable) NSMutableArray *animImageList;
 /** The base name of the rainbow (bow) artwork, without its @c "%02d" index suffix. */
-@property(strong, nonatomic, nullable) NSString *rainbowImageBasePath; // +0x10
+@property(strong, nonatomic, nullable) NSString *rainbowImageBasePath;
 /** The base name of the ring artwork, without its @c "%02d" index suffix. */
-@property(strong, nonatomic, nullable) NSString *ringImageBasePath; // +0x18
+@property(strong, nonatomic, nullable) NSString *ringImageBasePath;
 /**
  * The number of @c RBMenuBGEffectPartView particle layers this background hosts.
  * @ghidraAddress 0xe8e90 (getter)
  */
-@property(assign, nonatomic) int EFFECT_NUM; // +0x08
+@property(assign, nonatomic) int EFFECT_NUM;
 /** The live @c RBMenuBGEffectPartView particle layers attached to this background. */
-@property(strong, nonatomic, nullable) NSMutableArray *effList; // +0x20
+@property(strong, nonatomic, nullable) NSMutableArray *effList;
 
 /**
  * Build the rainbow and ring image layers from @c rainbowImageBasePath and

@@ -105,7 +105,6 @@ private:
     void
     EmitBurstSprite(unsigned int nColorRow, float flScale, const S_VECTOR2 &position, int nAlpha);
 
-    // One pooled spawn-burst effect record (20 bytes): its animation state.
     struct EffectRecord {
         bool bActive = {}; /*!< Whether the record holds a live burst. +0x00 */
         // unsigned char aReserved01[3] = {}; // +0x01
@@ -120,14 +119,14 @@ private:
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the spawn-burst sprite instancer.
-    int m_nSlotCount = {};                      // +0x18: the live sprite-slot count this frame.
-    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10
+    int m_nSlotCount = {};                      // +0x18
+    int m_nCapacity = {};                       // +0x1c
+    bool m_bLoaded = {};                        // +0x20
     // unsigned char m_aReserved21[3] = {};        // +0x21
-    EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24: the pooled burst records.
-    float m_aScale[2] = {};                           // +0xa24: the default scale pair (one, one).
-    // unsigned char m_aReservedA2c[4] = {}; // +0xa2c: trailing state to the 0xa30-byte size.
+    EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24
+    float m_aScale[2] = {};                           // +0xa24: seeded to one.
+    // unsigned char m_aReservedA2c[4] = {}; // +0xa2c
 };
 
 // code: language=Objective-C++

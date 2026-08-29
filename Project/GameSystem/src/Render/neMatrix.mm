@@ -40,7 +40,6 @@ void CrossProductVector3(S_VECTOR3 *pOut, S_VECTOR3 *pB) {
 /** @ghidraAddress 0x20d20 */
 void NormalizeVector3(S_VECTOR3 *pVec) {
     const float lengthSquared = pVec->x * pVec->x + pVec->y * pVec->y + pVec->z * pVec->z;
-    // Leave a near-zero-length vector unchanged to avoid dividing by zero.
     if (lengthSquared > kNormalizeLengthSquaredEpsilon) {
         const float length = std::sqrt(lengthSquared);
         pVec->x /= length;
@@ -96,7 +95,6 @@ float Vector2Length(S_VECTOR2 *pVec) {
 /** @ghidraAddress 0x20c38 */
 void NormalizeVector2(S_VECTOR2 *pVec) {
     const float lengthSquared = pVec->x * pVec->x + pVec->y * pVec->y;
-    // Leave a near-zero-length vector unchanged to avoid dividing by zero.
     if (lengthSquared > kNormalizeLengthSquaredEpsilon) {
         const float length = std::sqrt(lengthSquared);
         pVec->x /= length;
@@ -365,8 +363,7 @@ float Matrix4x4Determinant(float *pMatrix) {
 
 /** @ghidraAddress 0x18fe0 */
 float *InvertMatrix4x4(float *pMatrix) {
-    // A singular matrix is returned unchanged. The shared two-factor products keep the
-    // multiplication grouping identical to the binary's.
+    // The shared two-factor products keep the multiplication grouping identical to the binary's.
     const float flDet = Matrix4x4Determinant(pMatrix);
     if (flDet == 0.0f) {
         return pMatrix;

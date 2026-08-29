@@ -1,12 +1,3 @@
-//
-//  StoreUtil.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class StoreUtil). Verified against the
-//  arm64 disassembly (the stringWithFormat: argument lists are variadic and dropped by the
-//  decompiler, so their operand order was recovered from the register and stack setup).
-//
-
 #import "StoreUtil.h"
 
 #import <StoreKit/StoreKit.h>
@@ -19,21 +10,15 @@
 // Source constant the receipt-check salt is carved out of; only a 27-character slice is used.
 static NSString *const kReceiptSaltSource = @"2012 Konami Digital Entertainment";
 
-// The slice of kReceiptSaltSource used as the salt: 27 characters starting at index 2, giving
-// "12 Konami Digital Entertain".
 static const NSUInteger kReceiptSaltLocation = 2;
 static const NSUInteger kReceiptSaltLength = 27;
 
-// Shared secret folded into the V2 digest alongside the caller-supplied nonce.
 static NSString *const kReceiptCheckSecretV2 = @"d0dc0448e6c701c9bcfb5358945f4ede";
 
-// The product-identifier prefixes and numeric-tail formatter shared by the pack and extend-note
-// product-id mappings.
 static NSString *const kPackProductIDPrefix = @"rbplus.pack";
 static NSString *const kNoteProductIDPrefix = @"rbplus.note";
 static NSString *const kProductIDFormat = @"%@%05d";
 
-// The receipt-verification and campaign request JSON payload formats.
 static NSString *const kReceiptCheckV2JSONFormat =
     @"{\"receiptdata\":\"%@\",\"target\":\"%@\",\"nonce\":\"%@\",\"products\":[%@],\"uuid\":\"%@\","
     @"\"device\":\"%@\",\"os\":\"%@\",\"locale\":\"%@\",\"version\":\"%@\",\"userid\":\"%@\","
@@ -50,8 +35,7 @@ static NSString *const kCampaignSerialCheckJSONFormat = @"{\"target\":\"%@\",\"u
 static NSString *const kCampaignItemInfoJSONFormat =
     @"{\"target\":\"%@\",\"userId\":\"%@\",\"passwd\":\"%@\",\"campId\":\"%d\"}";
 
-// The two product-array element formats used while assembling the V2 receipt payload: every element
-// but the last carries a trailing comma.
+// Every product-array element but the last carries a trailing comma.
 static NSString *const kProductElementFormat = @"\"%@\"";
 static NSString *const kProductElementWithCommaFormat = @"\"%@\",";
 
@@ -59,13 +43,11 @@ static NSString *const kProductElementWithCommaFormat = @"\"%@\",";
 static const NSUInteger kServerDataUserIdIndex = 0;
 static const NSUInteger kServerDataPasswdIndex = 1;
 
-// The iTunes affiliate-link host and the query-parameter keys carried by an affiliate URL.
 static NSString *const kITunesHost = @"itunes.apple.com";
 static NSString *const kAffiliateItemKey = @"i";
 static NSString *const kAffiliateTokenKey = @"at";
 static NSString *const kAffiliateCampaignKey = @"ct";
 
-// The pattern matching a bare numeric iTunes item id in an affiliate URL that carries no query.
 static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 
 @implementation StoreUtil
@@ -115,7 +97,6 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 + (NSString *)createReceiptCheckJSONForV2:(NSString *)receipt
                                productIds:(NSArray *)productIds
                                     nonce:(NSString *)nonce {
-    // Assemble the product-id array literal, comma-separating every element but the last.
     NSMutableString *products = [[NSMutableString alloc] initWithString:@""];
     for (NSUInteger i = 0; i < productIds.count; ++i) {
         NSString *element =
@@ -179,7 +160,6 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 
 /** @ghidraAddress 0x874f4 */
 + (int)productIDToPid:(NSString *)productID {
-    // A note product identifier is the note prefix followed by a positive integer.
     if (productID.length > kNoteProductIDPrefix.length &&
         [productID hasPrefix:kNoteProductIDPrefix]) {
         int pid = [productID substringFromIndex:kNoteProductIDPrefix.length].intValue;
@@ -203,7 +183,6 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     if (url == nil) {
         return nil;
     }
-    // Only a link on the iTunes host is parsed; any other host yields no parameters at all.
     if (![url.host isEqualToString:kITunesHost]) {
         return nil;
     }
@@ -212,8 +191,6 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     NSString *affiliateToken = nil;
     NSString *campaignToken = nil;
 
-    // An affiliate link on the iTunes host carries the item id, affiliate token, and campaign token
-    // as query parameters; parse them out of the query.
     NSArray *pairs = [url.query componentsSeparatedByString:@"&"];
     for (NSString *pair in pairs) {
         if (pair.length == 0) {
@@ -270,7 +247,6 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 
 /** @ghidraAddress 0x85a4c */
 + (int)packIDForProductID:(NSString *)productID {
-    // A pack product identifier is the pack prefix followed by a positive integer.
     if (productID.length > kPackProductIDPrefix.length &&
         [productID hasPrefix:kPackProductIDPrefix]) {
         int packID = [productID substringFromIndex:kPackProductIDPrefix.length].intValue;
@@ -294,8 +270,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 
 /** @ghidraAddress 0x85b7c */
 + (NSString *)priceString:(SKProduct *)product useCatalogPrice:(BOOL)useCatalogPrice {
-    // The catalogue-price flag is accepted for call-site compatibility but does not affect the
-    // formatting: the price is always the StoreKit product's own localised price.
+    // The flag is ignored; the price is always the StoreKit product's own localised price.
     (void)useCatalogPrice;
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     formatter.formatterBehavior = NSNumberFormatterBehavior10_4;

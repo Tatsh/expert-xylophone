@@ -3,12 +3,9 @@
 #import "StorePackInfo.h"
 #import "UIImage+RB.h"
 
-// The reflection height is the artwork height scaled by this shared engine double (0.2), reused
-// here from the same global the store detail controller reads.
 // @ghidraAddress 0x2eedc0 (0.2)
 extern const double g_dMascotMessageAnimDuration;
 
-// Image asset names.
 static NSString *const kPackBackgroundImageName = @"09_store/store_pack_bg_0";
 static NSString *const kDefaultJacketImageName = @"09_store/store_jacket_80";
 static NSString *const kButtonNormalImageName = @"09_store/store_btn_normal_1";
@@ -16,21 +13,15 @@ static NSString *const kButtonHighlightedImageName = @"09_store/store_btn_clicke
 static NSString *const kButtonDisabledImageName = @"09_store/store_btn_disabled";
 static NSString *const kNewMarkerImageName = @"09_store/store_new";
 
-// The pack background stretchable cap inset.
 static const NSInteger kBackgroundCapInset = 4;
-// The purchase button background stretchable cap inset.
 static const NSInteger kButtonCapInset = 6;
 
-// Artwork layout: the jacket is an 80-point square inset 8 points from the top-left; its reflection
-// sits directly below it, 16 points tall.
 static const CGFloat kArtworkInset = 8.0;
 static const CGFloat kArtworkSize = 80.0;
 static const CGFloat kReflectionTop = 88.0;
 static const CGFloat kReflectionHeight = 16.0;
 static const CGFloat kReflectionAlpha = 0.4;
 
-// Name label layout: pinned 96 points from the left, 8 points down, stretching to 106 points shy of
-// the view's trailing edge, and a fixed 40 points tall.
 static const CGFloat kNameLabelX = 96.0;
 static const CGFloat kNameLabelTop = 8.0;
 static const CGFloat kNameLabelTrailingInset = 106.0;
@@ -38,16 +29,12 @@ static const CGFloat kNameLabelHeight = 40.0;
 static const NSInteger kNameLabelLineCount = 2;
 static const CGFloat kNameLabelFontSize = 18.0;
 
-// Comment label layout: inset 15 points, drawn 102 points down, stretching to 30 points shy of the
-// trailing edge, and initially 10 points tall before it is resized to its measured content.
 static const CGFloat kCommentLabelX = 15.0;
 static const CGFloat kCommentLabelTop = 102.0;
 static const CGFloat kCommentLabelTrailingInset = 30.0;
 static const CGFloat kCommentLabelInitialHeight = 10.0;
 static const CGFloat kCommentLabelFontSize = 12.0;
 
-// Purchase button layout: 120 by 25 points, pinned 130 points from the trailing edge and 63 points
-// down.
 static const CGFloat kButtonTrailingInset = 130.0;
 static const CGFloat kButtonTop = 63.0;
 static const CGFloat kButtonWidth = 120.0;
@@ -55,19 +42,14 @@ static const CGFloat kButtonHeight = 25.0;
 static const CGFloat kButtonTitleFontSize = 15.0;
 static const CGFloat kButtonShadowOffsetY = -1.0;
 
-// The enabled title shadow and disabled title colours (white components): a mid-grey shadow and a
-// 158/255 grey for the disabled title.
 static const CGFloat kButtonShadowWhite = 0.6;
 static const CGFloat kButtonDisabledTitleWhite = 0.6196078431372549;
 
-// The name and comment strings are measured against these effectively-unbounded boxes before their
-// labels are resized to fit.
 static const CGFloat kNameMeasureWidth = 214.0;
 static const CGFloat kNameMeasureHeight = 50.0;
 static const CGFloat kCommentMeasureWidth = 290.0;
 static const CGFloat kCommentMeasureHeight = 120.0;
 
-// The header is at least this tall; a non-empty comment adds its measured height on top.
 static const CGFloat kHeaderBaseHeight = 110.0;
 
 @implementation StoreDetailHeaderView

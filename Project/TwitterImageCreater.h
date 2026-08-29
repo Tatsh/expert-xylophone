@@ -24,19 +24,19 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface TwitterImageCreater : NSObject {
     /** The bitmap context width, in pixels. */
-    int m_Width; // +0x08
+    int m_Width;
     /** The bitmap context height, in pixels. */
-    int m_Height; // +0x0c
+    int m_Height;
     /** The device scale of the background image, applied to every drawn element. */
-    float m_Scale; // +0x10
+    float m_Scale;
     /** The backing byte buffer for @c m_Context. */
-    unsigned char *m_Data; // +0x18
+    unsigned char *m_Data;
     /** The off-screen RGBA bitmap context the image is composited into. */
-    CGContextRef m_Context; // +0x20
+    CGContextRef m_Context;
     /** The device RGB colour space backing @c m_Context. */
-    CGColorSpaceRef m_ColorSpace; // +0x28
+    CGColorSpaceRef m_ColorSpace;
     /** The two score columns: index 0 is the local player, index 1 is the rival. */
-    TwitterImageCreaterScoreElement *m_Score[2]; // +0x30
+    TwitterImageCreaterScoreElement *m_Score[2];
 }
 
 /**

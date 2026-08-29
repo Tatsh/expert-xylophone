@@ -2,20 +2,12 @@
 
 #import "engineglobals.h"
 
-// The wrap width of the copyright and terms label, shared with the store extend-note cell. Reached
-// by its Ghidra address as the other reconstructed store views do; it is not yet in the engine
-// bridge header.
-
-// The label is inset a uniform 5 points from the cell's top-left; its width is fixed and its height
-// is grown by the table's row-height measurement, so it starts flat.
 static const CGFloat kLabelInset = 5.0;
 static const CGFloat kLabelInitialHeight = 0.0;
 
-// The label text is drawn at full opacity; the mid-grey white component is the shared short-fade
-// value (@c g_dAudioManagerResumeFadeInTime, 0x2ec718) that the binary loads directly.
+// The binary loads the shared short-fade value (0x2ec718) directly as the label's white component.
 static const CGFloat kLabelTextAlpha = 1.0;
 
-// The label wraps across as many lines as needed.
 static const NSInteger kLabelUnlimitedLines = 0;
 
 @implementation StoreDetailCopyrightCell

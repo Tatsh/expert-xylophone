@@ -14,7 +14,6 @@ constexpr unsigned int kHandleMask = 0x0fffffff;
 
 constexpr unsigned int kInvalidHandle = 0xffffffff;
 
-// An untagged handle decodes to the sentinel, which the mixer's index/generation check rejects.
 unsigned int DecodeVoiceHandle(unsigned int hTagged) {
     return (hTagged & kOneShotSourceTag) != 0 ? (hTagged & kHandleMask) : kInvalidHandle;
 }

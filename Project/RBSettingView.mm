@@ -1,15 +1,3 @@
-//
-//  RBSettingView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBSettingView). Verified against
-//  the arm64 disassembly: -setupView:'s per-theme panel styling and the vertical button-stack maths
-//  were recovered from the soft-float register moves that the decompiler folds into
-//  pseudo-variables, and the open/close frame animations were confirmed against the block literals
-//  the decompiler emits. This is an Objective-C++ file because several handlers reach the C++
-//  SoundEffectManager engine singleton.
-//
-
 #import "RBSettingView.h"
 
 #import "AppDelegate.h"
@@ -23,17 +11,11 @@
 #import "engineglobals.h"
 #import "soundeffectmanager.h"
 
-// Themed sound-effect slots. The panel plays a theme-specific slot when it opens: the Classic theme
-// uses its own slot, and the Limelight and Colette themes share another. Dismissal and every
-// sub-screen selection reuse the shared cancel and decide slots.
 constexpr int kSoundEffectDecide = 1;
 constexpr int kSoundEffectCancel = 4;
 constexpr int kSoundEffectSettingOpenClassic = 3;
 constexpr int kSoundEffectSettingOpen = 12;
 
-// Autoresizing masks. The overlay itself stays pinned to the whole screen; the panel keeps its
-// width and stays anchored to the top; each button keeps its width and stays anchored to the bottom
-// of the panel so the column grows downward.
 constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -44,12 +26,9 @@ constexpr UIViewAutoresizing kAutoresizingPanel = UIViewAutoresizingFlexibleWidt
 constexpr UIViewAutoresizing kAutoresizingButton =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
 
-// The panel fades and slides over a quarter second.
 constexpr NSTimeInterval kSettingAnimationDuration = 0.25;
 
-// Colette-theme (thema == 2) panel background and border colours, and the shared border width used
-// by the Classic and Colette themes. Read from the binary's constant pool at 0x1003016a0
-// (background RGB), 0x1003016c0 (border RGB), and 0x1003016b8 (border width).
+// Pool: 0x1003016a0 (background RGB), 0x1003016b8 (border width), 0x1003016c0 (border RGB).
 constexpr CGFloat kColetteBackgroundRed = 0.945;
 constexpr CGFloat kColetteBackgroundGreen = 0.882353;
 constexpr CGFloat kColetteBackgroundBlue = 0.7647;
@@ -58,48 +37,32 @@ constexpr CGFloat kColetteBorderGreen = 0.749020;
 constexpr CGFloat kColetteBorderBlue = 0.6470;
 constexpr CGFloat kThemedBorderWidth = 1.3;
 
-// The Limelight theme (thema == 1) uses a plain white panel with a fixed corner radius.
 constexpr CGFloat kLimelightCornerRadius = 10.0;
 
-// Per-theme panel corner radii, indexed by RBUserSettingData.thema. The default table is used for
-// the iPad (wide) layout; the region table (IsPad() == 0) is used otherwise. Values read from the
-// binary's constant pool at 0x1003017d0 and 0x1003017dc.
+// Pool: 0x1003017d0 (default) and 0x1003017dc (region, used when IsPad() == 0).
 constexpr CGFloat kSettingCornerRadiusDefault[] = {22.0, 22.0, 33.0};
 constexpr CGFloat kSettingCornerRadiusRegion[] = {14.0, 14.0, 14.0};
 
-// The panel button-column origin (x, y of the first button, in panel coordinates) and the vertical
-// gap inserted before each subsequent button, both indexed by theme and iPad idiom. These mirror
-// the layout tables InitializeSettingLayoutGlobals (0xec450) builds at 0x1003dc8d0/0x1003dc900
-// (origin) and 0x1003dc930/0x1003dc960 (step, whose y component is the gap).
 typedef struct SettingButtonLayout {
     CGFloat originX;
     CGFloat originY;
     CGFloat step;
 } SettingButtonLayout;
 
-// The menu buttons in column order, with the artwork index passed to
-// -[RBSettingMenuButton initWithFilename:] and the action each button's inner control triggers. The
-// artwork index 4 is intentionally skipped, and the terms button is the eighth entry.
 typedef struct SettingMenuEntry {
     int filename;
     SEL action;
 } SettingMenuEntry;
 
-// The panel background is fully opaque and the borders are drawn at full alpha.
 constexpr CGFloat kOpaqueAlpha = 1.0;
 constexpr CGFloat kTransparentAlpha = 0.0;
 
-// The customise tutorial identifier passed to -startTutorialWithType:withRootView:.
 constexpr NSInteger kTutorialTypeCustomize = 27;
 
 @implementation RBSettingView {
-    // The active theme, cached from RBUserSettingData when the panel is built.
     RBUserSettingDataTheme _thema;
-    // Whether an open or close animation is currently running.
     BOOL m_Animating;
-    // The panel's collapsed height (before the button column is stacked).
     float m_DefaultHeight;
-    // The additional height the button column adds when the panel is open.
     float m_NeedMenuHeight;
 }
 
@@ -120,9 +83,6 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     _thema = thema;
 
-    // The settings panel dims what it covers: the binary loads the shared half-alpha black at
-    // 0x3cff88 here. Ghidra renders the send as setBackgroundColor:0x0 only because the global is
-    // seeded at run time, which is what makes it look like nil.
     self.backgroundColor = g_pPaletteDimmingCoverColor;
     self.autoresizingMask = kAutoresizingFull;
 
@@ -131,8 +91,6 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     self.baseView.autoresizingMask = kAutoresizingPanel;
     [self addSubview:self.baseView];
 
-    // The panel's outer height, captured before the buttons are stacked, is used by the close
-    // animation to shrink the panel back to the top edge.
     m_DefaultHeight = (float)CGRectGetHeight(self.baseView.frame);
 
     const CGFloat *cornerRadii =
@@ -159,12 +117,8 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
         self.baseView.layer.cornerRadius = cornerRadii[thema];
     }
 
-    // The button-column origin and step gap, built by InitializeSettingLayoutGlobals (0xec450) into
-    // the layout tables at 0x1003dc8d0/0x1003dc900 (origin) and 0x1003dc930/0x1003dc960 (step). The
-    // region tables apply when IsPad() == 0, the default tables otherwise; both are
-    // indexed by theme.
-    // Rows 0 and 1 are identical in both tables: each of the two `stp q0,q0` stores writes one pool
-    // value into two rows at once. Row 2 is written separately.
+    // Rows 0 and 1 are identical: each `stp q0,q0` store writes one pool value into two rows.
+    // @ghidraAddress 0xec450
     static const SettingButtonLayout defaultLayout[] = {
         {13.0, 30.0, 26.0},
         {13.0, 30.0, 26.0},
@@ -177,10 +131,8 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     };
     SettingButtonLayout layout = (isPad == 0) ? regionLayout[thema] : defaultLayout[thema];
 
-    // The menu buttons in column order, each with the artwork index passed to
-    // -[RBSettingMenuButton initWithFilename:] and the action its inner control triggers. Artwork
-    // index 4 is skipped; the terms button (index 7) is stored into infoButton, overwriting the
-    // information button (index 5) that also went there, exactly as the binary does.
+    // Artwork index 4 is skipped, and the terms button overwrites infoButton with the information
+    // button already stored there, exactly as the binary does.
     const int kEntryCustom = 1;
     const int kEntryThema = 2;
     const int kEntrySearch = 3;
@@ -206,7 +158,6 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
         RBSettingMenuButton *button =
             [[RBSettingMenuButton alloc] initWithFilename:entries[i].filename];
         CGFloat buttonHeight = CGRectGetHeight(button.bounds);
-        // Every button after the first is separated from the previous one by the theme's step gap.
         if (i != 0) {
             y = layout.step + y + previousHeight;
         }
@@ -233,11 +184,8 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
         previousHeight = buttonHeight;
     }
 
-    // The total stacked height (final button's bottom edge) is what the open animation grows the
-    // panel by.
     m_NeedMenuHeight = (float)(layout.step + y + previousHeight);
 
-    // Flash the buttons whose sub-screens have new content to advertise.
     if ([RBUserSettingData sharedInstance].newCustomItem) {
         [self.customButton setFlashEffect];
     }
@@ -277,7 +225,6 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     }
     CGRect panelFrame = self.baseView.frame;
     m_Animating = YES;
-    // The panel starts fully transparent and fades in as it grows.
     self.alpha = kTransparentAlpha;
 
     __weak RBSettingView *weakSelf = self;
@@ -294,16 +241,10 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0xeb4c4 */
-          // The Colette theme launches the customise tutorial the first time the panel finishes
-          // opening.
           if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
               [RBTutorialManager isTutorialCustomize]) {
-              // The root view is this setting view, not the parent. The binary reloads the
-              // captured weak self at 0xeb574 and passes it in x3 at 0xeb590; the parent is loaded
-              // separately only to reach its tutorialView. It has to be this way round:
-              // -startTutorialWithType:withAnimation: sends the root view
-              // -getCustomizeButtonView, which RBSettingView implements and RBMenuView does not,
-              // so passing the parent threw an unrecognized selector the moment the panel opened.
+              // The root view must be this setting view: it is sent -getCustomizeButtonView, which
+              // RBMenuView does not implement.
               [weakSelf.parentView.tutorialView startTutorialWithType:kTutorialTypeCustomize
                                                          withRootView:weakSelf];
           }
@@ -327,8 +268,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     [UIView setAnimationDuration:kSettingAnimationDuration];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(hideAnimationEnd)];
-    // The panel fades out as it collapses; the binary passes zero here, not full opacity.
-    self.alpha = kTransparentAlpha;
+    self.alpha = kTransparentAlpha; // The binary passes zero here, not full opacity.
     self.baseView.frame = CGRectMake(CGRectGetMinX(panelFrame),
                                      (CGRectGetMinY(panelFrame) + CGRectGetHeight(panelFrame)) -
                                          (CGFloat)m_DefaultHeight,
@@ -347,7 +287,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 
 /** @ghidraAddress 0xeb9c0 */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    // The overlay only acts on touch-up; began/moved/cancelled are intentionally empty.
+    // The overlay only acts on touch-up; began, moved, and cancelled are empty in the binary too.
 }
 
 /** @ghidraAddress 0xeb9c4 */
@@ -358,8 +298,6 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     if (m_Animating) {
         return;
     }
-    // Any tap that reaches the overlay (the buttons take exclusive touches of their own) dismisses
-    // the panel: the touch is closed when its location falls within the overlay's own bounds.
     for (UITouch *touch in [event touchesForView:self]) {
         CGPoint location = [touch locationInView:self];
         CGRect bounds =

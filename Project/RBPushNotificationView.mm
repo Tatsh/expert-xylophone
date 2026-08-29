@@ -8,7 +8,6 @@
 #import "engineglobals.h"
 #import "soundeffectmanager.h"
 
-// The same slot RBMenuView's search bar uses for its slide-in.
 constexpr int kSoundEffectNotificationShow = 0x11;
 
 constexpr float kDefaultUpMargin = 2.0f;

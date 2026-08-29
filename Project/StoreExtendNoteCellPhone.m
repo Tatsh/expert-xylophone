@@ -5,23 +5,14 @@
 #import "UIImage+RB.h"
 #import "engineglobals.h"
 
-// A shared layout metric of 32 points, reached by its Ghidra address as the other reconstructed
-// views (for example RBSearchMapView and StorePackView) do. The 100-point metric and the 0.3
-// white value (shared with the short UI fade) come from the engine bridge header instead.
 extern const double g_dLayoutMetricThirtyTwo; // @ghidraAddress 0x2ee9b0 (32.0)
 
-// Store badge asset name used by the cell.
 static NSString *const kStoreNewBadgeImageName = @"09_store/store_new";
 
-// The purchased label carries an empty title while the item is installed: it is the shared
-// store-layer empty-string global.
 static NSString *const kStoreEmptyTitle = @""; // @ghidraAddress 0x3cfd10
 
-// The level label shows the extend note's difficulty as a formatted line.
 static NSString *const kLevelLabelFormat = @"LEVEL %d"; // @ghidraAddress 0x362b20
 
-// The jacket layer is a fixed 64-point square inset 10 points from the left and 8 from the top,
-// drawn with a soft rasterised drop shadow.
 static const CGFloat kJacketLayerLeft = 10.0;
 static const CGFloat kJacketLayerTop = 8.0;
 static const CGFloat kJacketLayerSize = 64.0;
@@ -29,9 +20,6 @@ static const CGFloat kJacketShadowOffset = 1.0;
 static const CGFloat kJacketShadowOpacity = 0.6;
 static const CGFloat kJacketShadowRadius = 2.0;
 
-// The text column starts 85 points from the left. The name label runs to 70 points shy of the
-// content width, the artist label to 76 points shy, the level label is a fixed 80-point column,
-// and the purchased label is a fixed 100-point column pinned 110 points in from the right.
 static const CGFloat kTextColumnLeft = 85.0;
 
 static const CGFloat kNameLabelTop = 10.0;
@@ -39,8 +27,6 @@ static const CGFloat kNameLabelWidthInset = 70.0;
 static const CGFloat kNameLabelHeight = 20.0;
 static const CGFloat kNameLabelFontSize = 16.0;
 static const CGFloat kNameLabelMinimumScaleFactor = 13.0;
-// The binary sets the name label's minimum scale factor a second time, from the artist label's
-// setup block, to a smaller value; reproduced verbatim.
 static const CGFloat kNameLabelMinimumScaleFactorSecond = 12.0;
 
 static const CGFloat kArtistLabelTop = 32.0;
@@ -57,17 +43,11 @@ static const CGFloat kLevelLabelFontSize = 13.0;
 static const CGFloat kPurchasedLabelWidthInset = 110.0;
 static const CGFloat kPurchasedLabelFontSize = 13.0;
 
-// The secondary-text labels are drawn in a mid grey; the purchased label uses a slightly lighter
-// grey.
-static const CGFloat kSecondaryTextWhite = 0.3; // g_dAudioManagerResumeFadeInTime (0x2ec718)
+static const CGFloat kSecondaryTextWhite = 0.3; // @ghidraAddress 0x2ec718
 static const CGFloat kPurchasedTextWhite = 0.4;
 
-// The lowest extend-note button state at which the tune archive is already downloaded, so the
-// purchased label is blanked rather than showing a price.
 static const StoreExtendNoteButtonState kFirstDownloadedButtonState =
     StoreExtendNoteButtonStateDownloadBin;
-// The three contiguous states from @c kFirstDownloadedButtonState onward (download-archive,
-// download-note, and installed) at which the purchased label is blanked.
 static const unsigned int kDownloadedButtonStateCount = 3;
 
 static const UIViewAutoresizing kBackgroundAutoresizing =
@@ -77,8 +57,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
 
 @implementation StoreExtendNoteCellPhone
 
-// The comment label appears in the class metadata but has no backing ivar or accessors in the
-// binary, so it stays dynamic.
+// The comment label is in the class metadata but has no backing ivar or accessors in the binary.
 @dynamic commentLabel;
 
 /** @ghidraAddress 0x1c0abc */
@@ -114,7 +93,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
         self.nameLabel.font = [UIFont boldSystemFontOfSize:kNameLabelFontSize];
         self.nameLabel.autoresizingMask = kNameLabelAutoresizing;
         self.nameLabel.adjustsFontSizeToFitWidth = YES;
-        // The binary passes 13.0 here, an out-of-range minimum scale factor; reproduced verbatim.
+        // Out of range, but the binary passes 13.0 here.
         self.nameLabel.minimumScaleFactor = kNameLabelMinimumScaleFactor;
 
         self.artistLabel =
@@ -128,8 +107,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
                                                        alpha:1.0];
         self.artistLabel.autoresizingMask = kNameLabelAutoresizing;
         self.artistLabel.adjustsFontSizeToFitWidth = YES;
-        // The binary re-targets the name label here, lowering its minimum scale factor a second
-        // time; reproduced verbatim.
+        // Yes, the binary re-targets the name label from the artist label's setup.
         self.nameLabel.minimumScaleFactor = kNameLabelMinimumScaleFactorSecond;
 
         self.levelLabel = [[UILabel alloc]
@@ -183,8 +161,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
 
 /** @ghidraAddress 0x1c202c */
 - (void)setBgColor:(UIColor *)bgColor {
-    // The phone cell ignores the tint colour; the method exists only for call-site parity with
-    // the pad layout.
+    // The phone cell ignores the tint colour; it exists only for parity with the pad layout.
 }
 
 /** @ghidraAddress 0x1c1c34 */
@@ -196,10 +173,8 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
     self.iconNewLayer.hidden = !loadExtendNoteInfo.isNew;
     self.purchasedLabel.hidden = NO;
 
-    // The binary switches on the button state with unsigned comparisons, so the error state
-    // (-1, which is a large unsigned value) falls through both arms and leaves the label as-is:
-    // the archive-present states (download or installed) blank the label, and the still-
-    // purchasable states (more-info or purchase) show a price.
+    // The comparisons are unsigned, so the error state (-1) falls through both arms and leaves
+    // the label as it was.
     unsigned int state = (unsigned int)loadExtendNoteInfo.getButtonState;
     if (state - (unsigned int)kFirstDownloadedButtonState < kDownloadedButtonStateCount) {
         self.purchasedLabel.text = kStoreEmptyTitle;

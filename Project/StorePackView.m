@@ -6,35 +6,24 @@
 #import "UIImage+RB.h"
 #import "engineglobals.h"
 
-// Layout metrics shared with other screens but not declared in the engine bridge header. Reached
-// by their Ghidra addresses, matching how the other reconstructed views (for example
-// RBSearchMapView) pull them in. The 100.0-point and 0.3-second metrics come from the bridge
-// header instead.
 extern const double g_dLayoutMetricThirtyTwo; // @ghidraAddress 0x2ee9b0 (32.0)
 
-// Store asset names used by the tile.
 static NSString *const kStoreJacketPlaceholderImageName = @"09_store/store_jacket_64";
 static NSString *const kStoreButtonDisabledImageName = @"09_store/store_btn_disabled";
 static NSString *const kStoreNewBadgeImageName = @"09_store/store_new";
 static NSString *const kStoreSequenceBadgeImageName = @"09_store/store_sp";
 
-// The owned-state overlay button carries an empty title: it is a shared store-layer string global.
 static NSString *const kStoreEmptyTitle = @""; // @ghidraAddress 0x3cfd10
 
-// The two framed jacket image views are a fixed 110-point square inset 15 points from the tile's
-// top left corner.
 static const CGFloat kJacketFrameInset = 15.0;
 static const CGFloat kJacketFrameSize = 110.0;
 
-// The jacket backing view is faintly darkened and drawn with a bright border and a soft drop
-// shadow.
 static const CGFloat kJacketBackgroundWhite = 0.0;
 static const CGFloat kJacketBorderWidth = 1.0;
 static const CGFloat kJacketShadowOffset = 2.0;
 static const CGFloat kJacketShadowOpacity = 0.6;
 static const CGFloat kJacketShadowRadius = 2.0;
 
-// The name label sits to the right of the jacket, 145 points narrower than the tile.
 static const CGFloat kTextColumnLeft = 140.0;
 static const CGFloat kNameLabelTop = 12.0;
 static const CGFloat kNameLabelWidthInset = 145.0;
@@ -42,22 +31,16 @@ static const CGFloat kNameLabelHeight = 20.0;
 static const CGFloat kNameLabelFontSize = 17.0;
 static const CGFloat kNameLabelMinimumScaleFactor = 11.0;
 
-// The comment label is 144 points narrower than the tile and starts below the name label.
 static const CGFloat kCommentLabelWidthInset = 144.0;
 static const CGFloat kCommentLabelFontSize = 13.0;
 static const int kCommentLabelNumberOfLines = 4;
 
-// The price label is a fixed 100-point wide column aligned with the owned-state button's top.
 static const CGFloat kPriceLabelFontSize = 15.0;
 
-// The owned-state overlay button is stretched from a 6-point cap image, sized to fit its (empty)
-// title, then padded and pinned near the tile's bottom-right corner.
 static const int kButtonStretchCap = 6;
 static const CGFloat kButtonFontSize = 15.0;
 static const CGFloat kButtonTitleWhite = 0.62;
 
-// The white component of the song-list and price labels, 50/255. Not to be confused with
-// g_dRBWebViewGrayViewWhite, which is 0.6 and is this file's purchased-button title-shadow alpha.
 // @ghidraAddress 0xfe2f8 (song list)
 // @ghidraAddress 0xfe424 (price)
 static const CGFloat kBodyLabelWhite = 0.196078;
@@ -67,7 +50,6 @@ static const CGFloat kButtonRightInset = 15.0;
 static const CGFloat kButtonBottomInset = 5.0;
 static const CGFloat kButtonShadowOffsetY = -1.0;
 
-// The comment label's bottom is pulled a further 30 points above the owned-state button's top.
 static const CGFloat kCommentLabelBottomLift = 30.0;
 
 @interface StorePackView ()
@@ -156,9 +138,6 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
     return self;
 }
 
-// Builds one of the two framed jacket image views: a 110-point square, inset 15 points, faintly
-// darkened, with a white border and a rasterised drop shadow. The backing view shows the
-// placeholder jacket; the front view is left empty for the downloaded artwork.
 - (UIImageView *)makeJacketImageViewWithImageName:(nullable NSString *)imageName {
     UIImageView *jacket = [[UIImageView alloc] initWithFrame:CGRectMake(kJacketFrameInset,
                                                                         kJacketFrameInset,
@@ -181,8 +160,6 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
     return jacket;
 }
 
-// Builds the owned-state overlay button: a custom button whose disabled state shows a stretched
-// cover image and an empty title, sized to fit and pinned near the tile's bottom-right corner.
 - (UIButton *)makePurchasedButton {
     UIImage *cover = [[UIImage imageWithName:kStoreButtonDisabledImageName]
         stretchableImageWithLeftCapWidth:kButtonStretchCap
@@ -212,7 +189,6 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
 
 /** @ghidraAddress 0xfe958 */
 - (void)dealloc {
-    // ARC synthesises the ivar teardown; only the delegate detach is reproduced here.
     self.delegate = nil;
 }
 

@@ -3,11 +3,8 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 
-// The score is always drawn as a fixed four-digit column. Declared as an enumerator so it can size
-// the digit array, which a static const cannot do in C.
 enum { kScoreDigitCount = 4 };
 
-// The difficulty grades selecting the themed glyph set.
 enum {
     kGradeA = 0,
     kGradeB = 1,
@@ -15,15 +12,11 @@ enum {
     kGradeD = 3,
 };
 
-// The horizontal gap, in points, inserted after each digit glyph.
 static const CGFloat kDigitSpacing = 2.0;
 
-// The two glyph opacities: significant digits are fully opaque and leading zeros are dimmed.
 static const CGFloat kDigitAlphaFull = 1.0;
 static const CGFloat kDigitAlphaDimmed = 0.5;
 
-// The digit glyph image names, indexed by digit value. The white theme uses this plain set; the
-// black and brown themes pick one of the grade sets below.
 static NSString *const kDigitImageNamesWhite[] = {
     @"02_music_detail/det_sc_0",
     @"02_music_detail/det_sc_1",
@@ -90,9 +83,7 @@ static NSString *const kDigitImageNamesGradeD[] = {
 };
 
 @interface RBMusicScoreView () {
-    // The last score passed to UpdateScore:, named as in the binary's ivar list. The binary
-    // records it here but the readout is driven entirely by the argument, so nothing reads it
-    // back.
+    // Written but never read: the readout is driven entirely from the argument.
     int m_Score; // +0x8
 }
 @end
@@ -116,8 +107,6 @@ static NSString *const kDigitImageNamesGradeD[] = {
 - (void)UpdateScore:(int)UpdateScore {
     m_Score = UpdateScore;
 
-    // Split the score into its four decimal digits, least significant first, and record the index
-    // of the most significant non-zero digit so the leading zeros can be dimmed.
     int digits[kScoreDigitCount];
     int highestNonZero = 0;
     int remaining = UpdateScore;
@@ -131,7 +120,6 @@ static NSString *const kDigitImageNamesGradeD[] = {
 
     RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
     int x = 0;
-    // Draw from the most significant digit (index 3) down to the ones place (index 0).
     for (int i = kScoreDigitCount - 1; i >= 0; --i) {
         NSString *const *glyphNames = nil;
         if (theme == RBUserSettingDataThemeClassic) {
@@ -163,8 +151,6 @@ static NSString *const kDigitImageNamesGradeD[] = {
         digitView.image = glyph;
         digitView.frame = CGRectMake(x, 0.0, glyphSize.width, glyphSize.height);
 
-        // The ones place and every digit at or below the most significant non-zero digit are fully
-        // opaque; the leading insignificant zeros are dimmed.
         if (i == 0 || i <= highestNonZero) {
             digitView.alpha = kDigitAlphaFull;
         } else {

@@ -7,90 +7,69 @@
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
 
-// The 32-point layout metric shared across the store screens, reached by its Ghidra address the way
-// the sibling store views (for example StorePackView) pull it in.
 extern const CGFloat g_dLayoutMetricThirtyTwo; // @ghidraAddress 0x2ee9b0 (32.0)
 
-// Tune-cell background image names. Index 0 (light) is used for the top two rows and index 1 (dark)
-// for the bottom two. @c setBG: clamps its argument into this range.
+// Index 0 (light) backs the top two rows and index 1 (dark) the bottom two.
 static NSString *const kTuneCellBackgroundImageNames[] = {
     @"09_store/store_pack_bg_1",
     @"09_store/store_pack_bg_2",
 };
 
-// Sample-button state images.
 static NSString *const kSampleIdleImageName = @"09_store/store_sample_1";
 static NSString *const kSamplePlayingImageName = @"09_store/store_sample_2";
 
-// The iTunes-link button image.
 static NSString *const kITunesLinkImageName = @"09_store/store_itunes";
 
-// The extend-note cross-sell badge image.
 static NSString *const kExtendNoteBadgeImageName = @"09_store/store_sp";
 
-// The difficulty-levels label format ("LEVEL:  %d / %d / %d"). @ghidraAddress 0x32d550.
+// @ghidraAddress 0x32d550
 static NSString *const kLevelsFormat = @"LEVEL:  %d / %d / %d";
 
-// Jacket artwork frame.
 static const CGFloat kArtworkOriginX = 18.0;
 static const CGFloat kArtworkOriginY = 76.0; // @ghidraAddress 0x2eec58
 static const CGFloat kArtworkSide = 110.0;   // @ghidraAddress 0x2eece0
 
-// Name label frame.
 static const CGFloat kNameOriginX = 18.0;
 static const CGFloat kNameOriginY = 15.0;
 static const CGFloat kSideLabelWidth = 244.0; // @ghidraAddress 0x3012d8
 static const CGFloat kNameHeight = 22.0;
 
-// Artist label frame.
 static const CGFloat kArtistOriginY = 35.0; // @ghidraAddress 0x2eeca8
 static const CGFloat kArtistHeight = 20.0;
 
-// Levels label frame.
 static const CGFloat kLevelsOriginX = 146.0; // @ghidraAddress 0x3010e8
 static const CGFloat kLevelsOriginY = 171.0; // @ghidraAddress 0x301860
 static const CGFloat kLevelsWidth = 160.0;   // @ghidraAddress 0x2eea38
 static const CGFloat kLevelsHeight = 20.0;
 
-// Sample-button frame.
 static const CGFloat kSampleButtonOriginX = 277.0; // @ghidraAddress 0x301858
 static const CGFloat kSampleButtonOriginY = 20.0;
-static const CGFloat kSampleButtonHeight = 35.0; // reuses the artist-origin metric
+static const CGFloat kSampleButtonHeight = 35.0;
 
-// Link-button origin (its size comes from the intrinsic image size).
 static const CGFloat kLinkButtonOriginX = 146.0; // @ghidraAddress 0x3010e8
 static const CGFloat kLinkButtonOriginY = 120.0; // @ghidraAddress 0x2ef168
 
-// The busy indicator's own frame, before it is centred on the sample button.
 static const CGFloat kIndicatorSide = 20.0;
 
-// Font point sizes.
 static const CGFloat kNameFontSize = 16.0;
 static const CGFloat kArtistFontSize = 13.0;
 static const CGFloat kLevelsFontSize = 15.0;
 
-// Artist label text colour (white component).
 static const CGFloat kArtistTextWhite = 50.0f / 255.0f; // @ghidraAddress 0x2eeef8
 
-// Levels label text colour components (a dark green-blue).
 static const CGFloat kLevelsColorRed = 0.3333333333333333;   // @ghidraAddress 0x2eec78
 static const CGFloat kLevelsColorGreen = 9.0f / 255.0f;      // @ghidraAddress 0x2eec80
 static const CGFloat kLevelsColorBlue = 0.47058823529411764; // @ghidraAddress 0x2eec88
 
-// Jacket layer shadow and border parameters.
 static const CGFloat kArtworkBorderWidth = 1.0;
 static const CGFloat kArtworkShadowOffset = 2.0;
 static const CGFloat kArtworkShadowOpacity = 0.6f; // @ghidraAddress 0x2ec6b8
 static const CGFloat kArtworkShadowRadius = 2.0;
 
-// Tune-cell background stretchable-image cap size.
 static const NSInteger kBackgroundCap = 4;
 
-// The centre-scaling factor used to place the busy indicator over the sample button.
 static const CGFloat kCenterScale = 0.5;
 
-// The index of the light tune-cell background, and the highest valid index into
-// kTuneCellBackgroundImageNames. Any @c setBG: argument above this clamps to the dark background.
 static const int kTuneCellBackgroundLight = 0;
 static const int kTuneCellBackgroundMaxIndex = 1;
 
@@ -105,8 +84,6 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
     return label;
 }
 
-// The class acts as the delegate for its own cross-sell alert even though the binary adopts no
-// formal protocols.
 @interface StorePackMusicView () <UIAlertViewDelegate>
 @end
 
@@ -181,8 +158,6 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
     [self addSubview:self.buttonSample];
     [self addSubview:self.buttonLink];
 
-    // The badge overlays the artwork's right edge, spanning from the artwork's top down to its
-    // bottom.
     self.iconSpView =
         [[UIView alloc] initWithFrame:CGRectMake(0.0,
                                                  self.artworkView.y,
@@ -236,8 +211,6 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
 
 /** @ghidraAddress 0xfd100 */
 - (void)setBG:(int)bg {
-    // The argument is a signed int, not a BOOL: the binary clamps it with signed gt and lt tests,
-    // and the lower clamp would be unreachable for a BOOL. Its types string encodes i.
     int index = bg;
     if (index > kTuneCellBackgroundMaxIndex) {
         index = kTuneCellBackgroundMaxIndex;
@@ -263,8 +236,7 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
 /** @ghidraAddress 0xfcf28 */
 - (void)sampleDownloading {
     [self.indicatorSample startAnimating];
-    // The button keeps the idle image; only the spinner marks the downloading state, matching the
-    // binary.
+    // The binary keeps the idle image here; only the spinner marks the downloading state.
     [self.buttonSample setImage:[UIImage imageWithName:kSampleIdleImageName]
                        forState:UIControlStateNormal];
 }

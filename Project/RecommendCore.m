@@ -1522,7 +1522,6 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
 }
 
 - (void)appStoreFailLoadNoticeWithError:(NSError *)error appParam:(ApplilinkParameters *)appParam {
-    // The appParam argument is unused.
     if (self.adScreenViewController == nil) {
         [ApplilinkCore toDelegateFailOpenWithError:error
                                           appParam:self.uniqueApplilinkParams

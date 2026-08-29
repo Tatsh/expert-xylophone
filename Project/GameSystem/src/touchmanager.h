@@ -113,9 +113,9 @@ public:
     }
 
 private:
-    TouchPoint *m_apSlots[kSlotCount] = {}; // +0x00 the slot pointer array (active slots first)
-    int m_nActiveCount = {};                // +0x100 number of active slots at the array head
-    int m_nNextId = {};                     // +0x104 the next rolling id to assign
+    TouchPoint *m_apSlots[kSlotCount] = {}; // Active slots first.
+    int m_nActiveCount = {};
+    int m_nNextId = {};
 };
 
 /** The global touch-manager singleton, constructed by @c TouchManager::EnsureSingleton. */

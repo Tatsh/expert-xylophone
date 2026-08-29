@@ -116,25 +116,25 @@ private:
 
     void RecenterBackgroundSprites();
 
-    ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {};      // +0x08: root container node.
-    ne::C_TEXTURE *m_pBackgroundTexture = {};            // +0x10: the background image texture.
-    ne::C_TEXTURE *m_pClearEffectTexture = {};           // +0x18: the clear-effect overlay texture.
-    ne::C_SPRITE_INSTANCING_2D *m_pBackgroundBatch = {}; // +0x20: draws the background image.
-    ne::C_SPRITE_INSTANCING_2D *m_pClearEffectBatch = {}; // +0x28: draws the clear-effect overlay.
-    int m_nSpriteCapacity = {};  // +0x30: sprite capacity and count of the background batches.
-    bool m_bBuilt = {};          // +0x34: whether the subtree has been built.
-    int m_nBackgroundId = {};    // +0x38: selected background (index into the texture-name table).
-    float m_flFadeCurrent = {};  // +0x3c: the main fade's current value (0 to 1).
-    float m_flFadeFrom = {};     // +0x40: the main fade's start value.
-    float m_flFadeTo = {};       // +0x44: the main fade's target value.
-    float m_flAnimTime = {};     // +0x48: free-running animation clock, advanced every frame.
-    float m_flFadeDuration = {}; // +0x4c: the main fade's duration, in frames.
-    float m_flFadeElapsed = {};  // +0x50: the main fade's elapsed time, in frames.
-    float m_flBrightness = {};   // +0x54: brightness applied to the sprite colours.
-    bool m_bColorDirty = {};     // +0x58: set when a tween advances, cleared after colours applied.
-    bool m_bClearEffectActive = {}; // +0x59: whether the clear-effect fade drives the overlay.
-    // +0x5a..+0x5b is alignment padding before the clear-effect fade floats.
-    float m_flClearEffectCurrent = {};  // +0x5c: the clear-effect fade's current value (0 to 1).
-    float m_flClearEffectDuration = {}; // +0x60: the clear-effect fade's duration, in frames.
-    float m_flClearEffectElapsed = {};  // +0x64: the clear-effect fade's elapsed time, in frames.
+    ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {};       // +0x08
+    ne::C_TEXTURE *m_pBackgroundTexture = {};             // +0x10
+    ne::C_TEXTURE *m_pClearEffectTexture = {};            // +0x18
+    ne::C_SPRITE_INSTANCING_2D *m_pBackgroundBatch = {};  // +0x20
+    ne::C_SPRITE_INSTANCING_2D *m_pClearEffectBatch = {}; // +0x28
+    int m_nSpriteCapacity = {};                           // +0x30: also the batches' sprite count.
+    bool m_bBuilt = {};                                   // +0x34
+    int m_nBackgroundId = {};       // +0x38: an index into the texture-name table.
+    float m_flFadeCurrent = {};     // +0x3c: 0 to 1.
+    float m_flFadeFrom = {};        // +0x40
+    float m_flFadeTo = {};          // +0x44
+    float m_flAnimTime = {};        // +0x48: free-running.
+    float m_flFadeDuration = {};    // +0x4c: in frames.
+    float m_flFadeElapsed = {};     // +0x50: in frames.
+    float m_flBrightness = {};      // +0x54
+    bool m_bColorDirty = {};        // +0x58: set when a tween advances, cleared once applied.
+    bool m_bClearEffectActive = {}; // +0x59
+    // +0x5a..+0x5b: alignment padding before the clear-effect fade floats.
+    float m_flClearEffectCurrent = {};  // +0x5c: 0 to 1.
+    float m_flClearEffectDuration = {}; // +0x60: in frames.
+    float m_flClearEffectElapsed = {};  // +0x64: in frames.
 };

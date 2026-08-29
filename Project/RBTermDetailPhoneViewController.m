@@ -31,7 +31,7 @@ static const CGFloat kTermTextInsetHorizontal = 5.0;
 static const CGFloat kColorAlphaHalf = 0.5;
 static const CGFloat kColorAlphaOpaque = 1.0;
 
-// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
+// @ghidraAddress 0x2eedc0 (g_dMascotMessageAnimDuration)
 extern const double g_dMascotMessageAnimDuration;
 
 // @ghidraAddress 0x2ec6a0 (g_dTranslucentAlpha)

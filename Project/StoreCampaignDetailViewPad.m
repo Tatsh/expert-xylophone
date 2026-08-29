@@ -307,8 +307,7 @@ static const CGFloat kFullAlpha = 1.0;
         UIActivityIndicatorView *sampleIndicator = [[UIActivityIndicatorView alloc]
             initWithFrame:CGRectMake(0, 0, kSampleBtnGlyphSize, kSampleBtnGlyphSize)];
         self.indicatorSample = sampleIndicator;
-        // The binary reads sampleBtn's frame twice, so keep both sends rather than hoisting a
-        // local.
+        // The binary reads sampleBtn's frame twice rather than hoisting a local.
         self.indicatorSample.center = CGPointMake(self.sampleBtn.frame.size.width * 0.5,
                                                   self.sampleBtn.frame.size.height * 0.5);
         self.indicatorSample.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
@@ -514,7 +513,6 @@ static const CGFloat kFullAlpha = 1.0;
 
 /** @ghidraAddress 0x45364 */
 - (void)cancelLoading {
-    // The binary body is empty.
 }
 
 #pragma mark - Acquisition button
@@ -645,7 +643,6 @@ static const CGFloat kFullAlpha = 1.0;
 
 /** @ghidraAddress 0x45f7c */
 - (void)downloaderProceed:(Downloader *)downloader {
-    // The binary body is empty.
 }
 
 #pragma mark - Alert view delegate
@@ -659,12 +656,10 @@ static const CGFloat kFullAlpha = 1.0;
 
 /** @ghidraAddress 0x4605c */
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    // The binary body is empty.
 }
 
 /** @ghidraAddress 0x46060 */
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
-    // The binary body is empty.
 }
 
 /** @ghidraAddress 0x46064 */

@@ -1,21 +1,8 @@
-//
-//  StorePackInfo.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class StorePackInfo). Verified against
-//  the arm64 disassembly (the setMusicInfo: four-tune cap and immutable-copy store, the
-//  setDictionary: key reads, and the allDownloaded/downloadDetailInfo tune-list checks).
-//
-
 #import "StorePackInfo.h"
 
-// Collaborator classes reached from these methods. Their headers are not all reconstructed in this
-// tree yet (the same speculative-import style the other data models already use); they resolve once
-// those classes land.
 #import "StoreMusicInfo.h"
 #import "StoreUtil.h"
 
-// The catalogue entry dictionary keys.
 static NSString *const kPackInfoKeyID = @"ID";
 static NSString *const kPackInfoKeyMusicList = @"MusicList";
 static NSString *const kPackInfoKeyName = @"Name";
@@ -29,22 +16,16 @@ static NSString *const kPackInfoKeyArtistBunnerURL = @"ArtistBunnerURL";
 static NSString *const kPackInfoKeyExtNum = @"ExtNum";
 
 #ifdef ENABLE_PATCHES
-// The catalogue price. The shipped server never sends this for a pack — a pack is priced entirely
-// by its StoreKit product — so it is read only when present, and its absence leaves the sentinel
-// below in place and the pack behaving exactly as before.
+// The shipped server never sends a pack price, so this is read only when present.
 static NSString *const kPackInfoKeyPrice = @"Price";
 #endif
 
-// The most tunes kept when a pack's music list is read from the catalogue.
 static const NSUInteger kMaxPackMusicInfos = 4;
 
-// The advertised extend-note count when the entry omits it.
 static const int kDefaultExtCount = 0;
 
 #ifdef ENABLE_PATCHES
-// What the catalogue said each pack costs, keyed by identifier. Held here rather than on the object
-// so the class gains no ivar and no accessor the shipped one does not have. A pack absent from this
-// map was sent without a price, and behaves exactly as before.
+// Held off the object so the class gains no ivar and no accessor the shipped one lacks.
 static NSMutableDictionary<NSNumber *, NSNumber *> *g_catalogPackPrices = nil;
 
 NSNumber *RBStorePackCatalogPrice(int packID) {
@@ -56,7 +37,6 @@ BOOL RBStorePackIsFreeFromCatalog(int packID) {
     return price != nil && price.intValue == 0;
 }
 
-// Record what the catalogue said about this pack's price, if it said anything at all.
 static void RBNotePackCatalogPrice(int packID, NSDictionary *dictionary) {
     NSNumber *price = dictionary[kPackInfoKeyPrice];
     if (price == nil) {
@@ -131,7 +111,6 @@ static void RBNotePackCatalogPrice(int packID, NSDictionary *dictionary) {
     if (copyright != nil) {
         self.copyright = copyright;
     }
-    // The three URL entries are only stored when they arrive as real strings.
     NSString *artworkURL = dictionary[kPackInfoKeyArtworkURL];
     if (artworkURL != nil && [artworkURL isKindOfClass:[NSString class]]) {
         self.artworkURL = artworkURL;
@@ -181,10 +160,8 @@ static void RBNotePackCatalogPrice(int packID, NSDictionary *dictionary) {
 
 - (NSString *)priceString {
 #ifdef ENABLE_PATCHES
-    // With no StoreKit product there is no localised price to format, and the label would be left
-    // blank. Fall back to what the catalogue reported, drawn as the bare number the binary itself
-    // shows for an extend note's price in -[RBStoreExtendNoteDetailViewController] rather than
-    // dressed in a currency the catalogue never named.
+    // With no StoreKit product there is no localised price, so fall back to the catalogue's bare
+    // number rather than leaving the label blank.
     if (self.product == nil) {
         NSNumber *price = RBStorePackCatalogPrice(self.packID);
         return price != nil ? price.stringValue : nil;

@@ -1,96 +1,65 @@
-//
-//  RBMusicManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicManager). Verified against
-//  the arm64 disassembly (the fast-enumeration loops, the Blowfish key derivation, and the
-//  property-list salt-and-encipher round-trip are partly obscured by the decompiler).
-//
-
 #import "RBMusicManager.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 
-#import "RBMacros.h"
-
-// Collaborator classes reached from these methods. Their headers are not all reconstructed in this
-// tree yet (the same speculative-import style AppDelegate.mm and ScoreData.m already use); they
-// resolve once those classes land. MusicData is committed.
 #import "AppDelegate.h"
 #import "BFCodec.h"
 #import "MusicData.h"
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
+#import "RBMacros.h"
 #import "StoreMusicInfo.h"
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 
 #ifdef ENABLE_PATCHES
-// minizip's legacy unz API, for the central-directory CRC-32 the drop-in reconcile pairs archives
-// by. It is already linked into the target through the vendored SSZipArchive.
 #import "RBExtendNoteManager.h"
 #import "minizip/mz_compat.h"
 #endif
 
-// The archive filename format: a nine-digit zero-padded tune identifier with a @c .rb extension.
 // @ghidraAddress 0x337a27 (the format-string literal)
 static NSString *const kMusicDataFilenameFormat = @"%09d.rb";
 
-// The archive resource type passed to @c -[NSBundle pathForResource:ofType:] (already carried by
-// the filename, so the type is empty).
 static NSString *const kEmptyResourceType = @"";
 
-// The empty replacement stored for a missing name or artist string in a purchase dictionary.
 static NSString *const kEmptyString = @"";
 
-// The filename of the enciphered purchased-music list under the Application Support directory.
 static NSString *const kPurchasedMusicListFilename = @"mulist";
 
-// The keys of a purchased-music dictionary within the persisted list.
 static NSString *const kPurchasedMusicKeyID = @"ID";
 static NSString *const kPurchasedMusicKeyName = @"Name";
 static NSString *const kPurchasedMusicKeyArtist = @"Artist";
 static NSString *const kPurchasedMusicKeyItemURL = @"ItemURL";
 static NSString *const kPurchasedMusicKeyITunesURL = @"iTunesURL";
 
-// The three songs shipped inside the bundle, read from the table -createPreInMusics indexes. They
-// name 100000107.rb, 100000109.rb and 100000419.rb, which are exactly the three .rb files the
-// bundle carries. @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
+// @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
 static const int kPreinstallMusicIDs[] = {100000107, 100000109, 100000419};
 static const NSUInteger kPreinstallMusicIDCount = ARRAY_SIZE(kPreinstallMusicIDs);
 
-// The initial capacity reserved for the purchased-music and identifier lists.
 static const NSUInteger kPurchasedMusicListCapacity = 64;
 static const NSUInteger kMusicIDsCapacity = 3;
 
-// The initial capacity reserved for the enciphered-list scratch buffer and a fresh purchase
-// dictionary.
 static const NSUInteger kEncipherBufferCapacity = 128;
 static const NSUInteger kPurchaseDictionaryCapacity = 5;
 
-// The number of leading salt bytes prepended to the plaintext before enciphering; the same count
-// is stripped after deciphering.
 static const NSUInteger kListSaltLength = 4;
 
 #ifdef ENABLE_PATCHES
-// The archive extension and identifier width, used to recognise a canonical %09d.rb name on disk.
 static NSString *const kMusicDataFileExtension = @"rb";
 static const NSUInteger kMusicDataIDDigits = 9;
 
-// Extend-note packages occupy their own identifier block. Every one is 100050xxx, and the tune it
-// holds the SPECIAL chart for is the same number 50000 lower: 100050433 belongs to 100000433. That
-// is the whole pairing rule, and it needs neither archive opened.
+// Extend-note packages occupy their own identifier block: every one is 100050xxx, and the tune it
+// holds the SPECIAL chart for is the same number 50000 lower.
 static const int kExtendNoteIDFirst = 100050000;
 static const int kExtendNoteIDCount = 1000;
 static const int kExtendNoteIDParentDelta = 50000;
 
-// The three chart entries. An extend-note archive carries only its SPECIAL chart, served out of the
-// basic slot, and ships the other two as blank placeholders.
+// An extend-note archive carries only its SPECIAL chart, served out of the basic slot, and ships
+// the other two entries blank.
 static NSString *const kArchiveChartEntry = @"note_bas";
 static NSString *const kArchiveMediumChartEntry = @"note_med";
 static NSString *const kArchiveHardChartEntry = @"note_har";
 
-// The three chart entries in the order the blank test reads them.
 enum {
     kChartSlotBasic,
     kChartSlotMedium,
@@ -98,34 +67,27 @@ enum {
     kChartSlotCount,
 };
 
-// The largest a chart entry can be and still be a placeholder rather than a real chart. The blanks
-// an extend note ships run to a few dozen bytes, where the sparsest real chart is measured in tens
-// of kilobytes, so anything in between separates the two.
+// A blank placeholder chart runs to a few dozen bytes; the sparsest real chart is tens of
+// kilobytes.
 static const uint32_t kBlankChartMaximumSize = 1024;
 
-// The lowest level an archive's difficulty field can hold, mirroring MusicData's own kLevelMinimum.
+// Mirrors MusicData's own kLevelMinimum.
 static const int kArchiveLevelMinimum = 1;
 
-// The bundle ships two archives that are not catalogue tunes: the timing-adjust preview used by the
-// customise screen (kPreviewMusicID in RBViewController.mm) and the tutorial tune (kTutorialMusicID
-// in RBMusicView.mm, spelled 0x3b9ac9fe there). Both are loaded straight from the bundle by
-// identifier wherever they are needed, so registering either would list it as an ordinary song.
+// The customise screen's timing-adjust preview and the tutorial tune, neither of them catalogue
+// entries.
 static const int kReservedArchiveIDs[] = {999999998, 999999999};
 
-// The item URL given to a drop-in song: the configured API endpoint with the archive's own name on
-// the end. It has to be something rather than nothing, because -[StoreDownloadTask initWithURL:]
-// builds its field with -[NSString initWithString:], which raises on nil — so an entry with no item
-// URL turns the store's manage-tab download button into a crash.
+// A drop-in song must carry some item URL: -[StoreDownloadTask initWithURL:] builds its field with
+// -[NSString initWithString:], which raises on nil.
 static NSString *const kDropInItemURLFormat = @"%@://%@%@%@";
 #endif
 
-// The number of client-music entries reserved per outstanding page.
 static const int kClientMusicEntriesPerPage = 20;
 
 @implementation RBMusicManager
 
-// The page count keeps its own backing ivar because the setter is overridden to reset the
-// accumulated client-music list.
+// The page count keeps its own backing ivar because the setter is overridden.
 @synthesize clientMusicPageNum = _clientMusicPageNum;
 
 #pragma mark - Singleton
@@ -208,8 +170,6 @@ static const int kClientMusicEntriesPerPage = 20;
 
 #pragma mark - Drop-in archive discovery (ENABLE_PATCHES)
 
-// Whether an identifier falls in the extend-note block, and the tune an extend note belongs to.
-// Neither reads the archive, so classifying and pairing a drop-in costs no file access at all.
 static BOOL RBIsExtendNoteID(int musicID) {
     return musicID >= kExtendNoteIDFirst && musicID < kExtendNoteIDFirst + kExtendNoteIDCount;
 }
@@ -218,11 +178,8 @@ static int RBExtendNoteParentID(int extendNoteID) {
     return extendNoteID - kExtendNoteIDParentDelta;
 }
 
-// A structural second opinion, for an archive whose identifier is outside the block above. An
-// extend note has no MEDIUM or HARD chart to carry and ships both entries blank, which no tune
-// does, so this recognises one that does not follow the numbering. It cannot say which tune the
-// note belongs to — only the identifier can — so such a note is passed over rather than listed.
-// The archive is opened once for all three entries rather than once per entry.
+// A structural second opinion for an archive whose identifier is outside the block above: no tune
+// ships both the MEDIUM and HARD entries blank.
 static BOOL RBArchiveIsExtendNote(NSString *archivePath) {
     unzFile archive = unzOpen(archivePath.fileSystemRepresentation);
     if (archive == NULL) {
@@ -253,8 +210,6 @@ static BOOL RBArchiveIsExtendNote(NSString *archivePath) {
            sizes[kChartSlotHard] <= kBlankChartMaximumSize;
 }
 
-// Every canonical %09d.rb identifier in one directory. A name that is not exactly nine digits is
-// ignored, so only archives the loaders can actually resolve by identifier are considered.
 static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *outIDs) {
     if (directory == nil) {
         return;
@@ -275,16 +230,14 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     }
 }
 
-// The directories a drop-in archive may be placed in, in the order they are searched. The writable
-// locations come first so a file put there overrides one of the same name shipped in the bundle,
-// and the bundle comes last because it is the only one a non-jailbroken install cannot write to.
-// Extend-note archives use the same %09d.rb naming, so this resolves either kind.
+// The writable locations come first so a file placed there overrides one of the same name shipped
+// in the bundle.
 + (NSArray<NSString *> *)archiveSearchDirectories {
     return @[
-        GetPrivateDocumentsPath(),      // Library/Private Documents, where purchases land
-        GetDocumentsDirectoryPath(),    // Documents, reachable over iTunes file sharing
-        GetCachesDirectoryPath(),       // Library/Caches, the binary's legacy download directory
-        NSBundle.mainBundle.bundlePath, // the .app itself
+        GetPrivateDocumentsPath(),
+        GetDocumentsDirectoryPath(),
+        GetCachesDirectoryPath(),
+        NSBundle.mainBundle.bundlePath,
     ];
 }
 
@@ -305,10 +258,7 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
 - (BOOL)reconcilePurchasedMusics {
     RBExtendNoteManager *noteManager = [RBExtendNoteManager getInstance];
 
-    // Drop any song entry that is really an extend note. An earlier pairing rule went by the audio
-    // alone, so a note whose package re-encoded its tune's audio matched nothing and was filed as a
-    // song of its own; clearing those here lets the pass below place them properly instead of
-    // skipping them as already listed.
+    // Misfiled extend notes are dropped so the pass below can place them properly.
     NSIndexSet *misfiled = [self.purchasedMusicDictionaries
         indexesOfObjectsPassingTest:^BOOL(NSDictionary *entry, NSUInteger index, BOOL *stop) {
           return RBIsExtendNoteID([entry[kPurchasedMusicKeyID] intValue]);
@@ -316,8 +266,8 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     const BOOL misfiledRemoved = misfiled.count != 0;
     [self.purchasedMusicDictionaries removeObjectsAtIndexes:misfiled];
 
-    // What each list already claims. An identifier in either list is left alone: it is already
-    // provided, and re-registering it is exactly how a duplicate song appears.
+    // An identifier already in either list is left alone; re-registering one is how a duplicate
+    // song appears.
     NSMutableSet<NSNumber *> *listedMusicIDs = [NSMutableSet set];
     for (NSDictionary *entry in self.purchasedMusicDictionaries) {
         [listedMusicIDs addObject:entry[kPurchasedMusicKeyID]];
@@ -330,9 +280,6 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     NSMutableSet<NSNumber *> *knownMusicIDs = [NSMutableSet setWithSet:listedMusicIDs];
     [knownMusicIDs addObjectsFromArray:self.preinstallMusicIDs];
 
-    // The bundle's two non-catalogue archives are skipped outright: the tutorial and preview tunes
-    // are loaded straight from the bundle by identifier, so registering either would list it as an
-    // ordinary song.
     NSMutableSet<NSNumber *> *reservedIDs = [NSMutableSet set];
     for (NSUInteger index = 0; index < ARRAY_SIZE(kReservedArchiveIDs); ++index) {
         [reservedIDs addObject:@(kReservedArchiveIDs[index])];
@@ -343,13 +290,9 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         RBCollectArchiveIDs(directory, presentSet);
     }
 
-    // Sorted, so a batch is always considered in the same order rather than in whatever order the
-    // set's hashes fall in.
     NSArray<NSNumber *> *presentIDs =
         [presentSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
 
-    // Sort the unlisted archives into tunes and extend notes. The identifier decides it, so a note
-    // and the tune it belongs to can be dropped in together in either order.
     NSMutableArray<NSNumber *> *newTuneIDs = [NSMutableArray array];
     NSMutableArray<NSNumber *> *newNoteIDs = [NSMutableArray array];
     for (NSNumber *foundID in presentIDs) {
@@ -366,9 +309,8 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         } else if (!RBArchiveIsExtendNote(path)) {
             [newTuneIDs addObject:foundID];
         }
-        // An extend note numbered outside the block is passed over: its charts give it away, but
-        // nothing says which tune it belongs to, and listing it would draw a second copy of that
-        // tune with two empty difficulties.
+        // An extend note numbered outside the block is passed over: nothing says which tune it
+        // belongs to.
     }
 
     BOOL musicListChanged = misfiledRemoved;
@@ -382,11 +324,6 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
             continue;
         }
 
-        // The name and artist are copied out of the archive rather than left blank: the store's
-        // manage tab draws its rows, its download prompt, and its delete prompt from these two
-        // fields rather than from the archive. The item URL is built from the configured endpoint
-        // and the archive's own name, so a replacement server serving the file under that name can
-        // fetch it again.
         NSMutableDictionary *entry =
             [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
         entry[kPurchasedMusicKeyID] = foundID;
@@ -411,20 +348,15 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
             continue;
         }
 
-        // The tune is named by the identifier itself, so the pairing needs nothing read and holds
-        // whether or not the note ships that tune's audio unchanged.
         NSNumber *parentMusicID = @(RBExtendNoteParentID(foundID.intValue));
 
-        // With the tune absent the note is left out rather than registered: it carries no MEDIUM or
-        // HARD chart, so listing it would draw a second copy of the tune with two empty
-        // difficulties.
+        // With the tune absent the note is left out: listing it would draw a second copy of the
+        // tune with two empty difficulties.
         if (![knownMusicIDs containsObject:parentMusicID] &&
             [RBMusicManager resolveArchivePath:parentMusicID.intValue] == nil) {
             continue;
         }
 
-        // Its level is the archive's own basic level, because the SPECIAL chart is served out of
-        // the basic slot.
         if ([noteManager addDiscoveredExtendNote:foundID.intValue
                                          musicID:parentMusicID.intValue
                                            level:data.difficultyBasic + kArchiveLevelMinimum]) {
@@ -433,7 +365,6 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         }
     }
 
-    // Forget entries whose archive has gone, so a deleted file does not linger in the list.
     NSUInteger before = self.purchasedMusicDictionaries.count;
     NSIndexSet *missing = [self.purchasedMusicDictionaries
         indexesOfObjectsPassingTest:^BOOL(NSDictionary *entry, NSUInteger index, BOOL *stop) {
@@ -479,7 +410,6 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         [self setMusicDataArrayDirty];
     }
 #ifdef ENABLE_PATCHES
-    // Pick up anything dropped into the purchased directory since last launch. See PATCHES.md.
     [self reconcilePurchasedMusics];
 #endif
 }
@@ -550,7 +480,6 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         return YES;
     }
 
-    // Merge changed fields into a copy of the existing entry.
     NSDictionary *existing = self.purchasedMusicDictionaries[index];
     NSMutableDictionary *merged = [NSMutableDictionary dictionaryWithDictionary:existing];
     BOOL changed = NO;
@@ -607,8 +536,7 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     for (NSDictionary *entry in self.purchasedMusicDictionaries) {
         NSNumber *musicID = entry[kPurchasedMusicKeyID];
 #ifdef ENABLE_PATCHES
-        // Search every drop-in directory, not just the two the binary knows, so an archive placed
-        // in Documents or in the bundle plays rather than merely appearing in the list.
+        // Search every drop-in directory, not just the two the binary knows.
         NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
         const BOOL exists = path != nil;
 #else
@@ -677,13 +605,7 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
 
 - (void)setClientMusicPageNum:(int)clientMusicPageNum {
     /** @ghidraAddress 0x6cc90 */
-    // The binary opens by sending releaseClientMusic to self and then sends its own selector
-    // rather than storing. Since -releaseClientMusic above is nothing but
-    // [self setClientMusicPageNum:0], the two recurse into each other until the stack is
-    // exhausted, whichever is called first. The cycle is broken here by both storing directly and
-    // dropping the release send: the release would only have allocated an empty array for this
-    // line to immediately replace. Not gated behind ENABLE_PATCHES, because the faithful form is
-    // an immediate stack overflow and no build wants it.
+    // The binary sends -releaseClientMusic here, which recurses back into this setter forever.
     _clientMusicPageNum = clientMusicPageNum;
     self.clientMusics = [[NSMutableArray alloc]
         initWithCapacity:(NSUInteger)(clientMusicPageNum * kClientMusicEntriesPerPage)];

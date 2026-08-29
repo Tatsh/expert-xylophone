@@ -1,30 +1,13 @@
-//
-//  ImageDownloader.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ImageDownloader). Verified against
-//  the arm64 disassembly: the completion handlers are reconstructed from the captured block layout
-//  (each block calls the connection's -getData), and the screen-scale comparisons travel the
-//  soft-float path that the decompiler renders through an extra register.
-//
-
 #import "ImageDownloader.h"
 
-// The HTTP connection primitive this downloader drives. Its header is already reconstructed in this
-// tree.
 #import "RBHttpUtil.h"
 
-// The HTTP method used for every image request.
 static NSString *const kImageRequestHTTPMethod = @"GET";
 
-// The format that inserts the "@2x" Retina marker between an image URL's base and its extension,
-// producing "<base>@2x.<ext>".
 static NSString *const kRetinaImageURLFormat = @"%@@2x.%@";
 
-// The screen scale at or below which an image is treated as plain (non-Retina) resolution.
 static const CGFloat kNonRetinaScreenScale = 1.0;
 
-// The image orientation used when rebuilding a Retina image from its backing @c CGImage.
 static const UIImageOrientation kRetinaImageOrientation = UIImageOrientationUp;
 
 @interface ImageDownloader ()
@@ -94,7 +77,6 @@ static const UIImageOrientation kRetinaImageOrientation = UIImageOrientationUp;
     [weakSelf.conn startDownloadingWithProceed:nil
         success:^(RBHttpUtil *connection) {
           /** @ghidraAddress 0x8431c */
-          // On a decoded body, keep the image and report success; on an empty body, retry at 1x.
           if ([connection getData] == nil) {
               [weakSelf startDownloadNonRetina];
           } else {
@@ -126,7 +108,6 @@ static const UIImageOrientation kRetinaImageOrientation = UIImageOrientationUp;
     [weakSelf.conn startDownloadingWithProceed:nil
         success:^(RBHttpUtil *connection) {
           /** @ghidraAddress 0x8478c */
-          // On a decoded body, keep the image and report success; on an empty body, report failure.
           if ([connection getData] == nil) {
               [weakSelf failure];
           } else {
@@ -187,7 +168,7 @@ static const UIImageOrientation kRetinaImageOrientation = UIImageOrientationUp;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
           /** @ghidraAddress 0x84d34 */
-          // The binary dispatches the failure selector here; the quirk is preserved.
+          // The binary dispatches the failure selector here.
           [weakSelf.delegate performSelector:@selector(imageDownloaderDidFail:didLoad:)
                                   withObject:weakSelf
                                   withObject:weakSelf.indexPathInTableView];

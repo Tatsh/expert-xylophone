@@ -1,34 +1,17 @@
-//
-//  SePlayer.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class SePlayer). Verified against the
-//  arm64 disassembly of -initWithPath:. This is a self-contained OpenAL one-shot sound-effect
-//  player: it owns its own device, context, buffer, and source, decodes an audio file to 16-bit
-//  PCM through Core Audio, and hands the samples to OpenAL with the alBufferDataStatic extension.
-//  Everything is Objective-C over the OpenAL and Core Audio C APIs, so this lives in a .m file.
-//
-
 #import "SePlayer.h"
 
 #import <AudioToolbox/AudioToolbox.h>
 #import <OpenAL/al.h>
 #import <OpenAL/alc.h>
 
-// The OpenAL alBufferDataStatic extension, resolved lazily on first use. It references the caller's
-// PCM samples in place rather than copying them, so the player must keep the samples alive for the
-// buffer's lifetime.
+// alBufferDataStatic references the caller's samples in place, so they must outlive the buffer.
 typedef ALvoid (*AlBufferDataStaticProc)(
     ALuint buffer, ALenum format, ALvoid *data, ALsizei size, ALsizei frequency);
 
-// The player decodes to signed 16-bit PCM, so at most a stereo stream is supported.
 static const UInt32 kMaxChannelCount = 2;
 static const UInt32 kBitsPerChannel = 16;
 static const UInt32 kBytesPerChannel = 2;
 
-// Load an audio file and decode it to interleaved signed 16-bit PCM for OpenAL. Returns a malloc'd
-// buffer the caller frees, or NULL on failure, writing the byte size, OpenAL format, and sample
-// rate to the out-parameters.
 // @ghidraAddress 0x17840
 static void *LoadAudioFileToPcm(NSURL *url, ALsizei *outSize, ALenum *outFormat, ALsizei *outFreq) {
     SInt64 frameCount = 0;
@@ -91,25 +74,20 @@ done:
     return pcmData;
 }
 
-// Call the alBufferDataStatic extension, resolving it lazily on first use.
 // @ghidraAddress 0x179c8 (CallAlBufferDataStatic)
 // @ghidraAddress 0x3dc238 (g_alBufferDataStaticProc)
 static void
 CallAlBufferDataStatic(ALuint buffer, ALenum format, void *data, ALsizei size, ALsizei frequency);
 
-// The cached alBufferDataStatic extension pointer, shared across every player.
 // @ghidraAddress 0x3dc238
 static AlBufferDataStaticProc g_alBufferDataStaticProc = NULL;
 
 @implementation SePlayer {
-    // The binary's own ivars, in declaration order. The 32-bit offsets are documentation only;
-    // access always goes through these named fields. These are plain (non-property) ivars, so they
-    // keep the binary's literal names with no leading underscore.
-    ALuint soundBuffer;       // +0x08
-    ALuint soundSource;       // +0x0c
-    ALCdevice *soundDevice;   // +0x10
-    void *soundData;          // +0x18
-    ALCcontext *soundContext; // +0x20
+    ALuint soundBuffer;
+    ALuint soundSource;
+    ALCdevice *soundDevice;
+    void *soundData;
+    ALCcontext *soundContext;
 }
 
 - (nullable instancetype)initWithPath:(nonnull NSString *)path {

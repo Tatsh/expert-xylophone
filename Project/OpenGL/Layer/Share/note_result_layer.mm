@@ -49,7 +49,6 @@ constexpr int kFrameKindTwo = 5;
 constexpr int kFrameKindOne = 4;
 constexpr int kFrameKindOther = 6;
 
-// In the single-player game type the left side's labels lay out mirrored.
 constexpr int kGameTypeSinglePlayer = 1;
 
 constexpr float kDigitAdvance = 10.0f;

@@ -109,13 +109,13 @@ private:
      */
     NoteGlowLayer();
 
-    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the effect atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the glow sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count this frame.
-    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10
+    int m_nSpriteCount = {};                    // +0x18: reset each frame.
+    int m_nCapacity = {};                       // +0x1c
+    bool m_bLoaded = {};                        // +0x20
     // unsigned char m_aReserved21[3] = {};        // +0x21
-    EffectSlot m_aEffects[kColorCount] = {}; // +0x24: the two per-colour glow slots (stride 8).
-    float m_aScale[2] = {};                  // +0x34: the default scale pair (one, one).
+    EffectSlot m_aEffects[kColorCount] = {}; // +0x24: stride 8.
+    float m_aScale[2] = {};                  // +0x34: defaults to (1, 1).
     // unsigned char m_aReserved3c[4] = {};        // +0x3c: trailing state to the 0x40-byte size.
 };

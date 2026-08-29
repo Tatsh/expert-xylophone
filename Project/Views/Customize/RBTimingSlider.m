@@ -34,8 +34,7 @@ static const CGFloat kTimingSliderBarOriginXWide = 40.0;
 static const CGFloat kTimingSliderBarOriginYWide = 33.0;
 static const CGFloat kTimingSliderBarWidthWide = 315.0;
 
-// "LowTheme" is the classic/limelight group, which shares one readout layout; a theme above
-// colette leaves the readout at the zero origin.
+// "LowTheme" is the classic/limelight group, which shares one readout layout.
 static const CGFloat kTimingSliderReadoutOriginXLowThemeNarrow = 140.0; // 0x1002ec6c0
 static const CGFloat kTimingSliderReadoutOriginXLowThemeWide = 212.0;   // 0x100301850
 static const CGFloat kTimingSliderReadoutOriginYLowThemeNarrow = 10.0;
@@ -111,7 +110,6 @@ enum {
                                   trackHeight);
     }
 
-    // The origin comes from self, but the size comes from the track sprite just laid out above.
     CGRect selfFrame = self.frame;
     CGRect baseFrame = self.baseView.frame;
     self.frame = CGRectMake(selfFrame.origin.x,
@@ -161,8 +159,7 @@ enum {
         }
     }
 
-    // numImageViews[i] is drawn at column (digit - 1 - i), so index 0 is the least significant
-    // place and the sign column lands last at index digit.
+    // numImageViews[0] is the least significant place; the sign column lands last at index digit.
     CGFloat readoutOriginXWithGap = signGlyphSize.width + kTimingSliderDigitGap + readoutOriginX;
     for (int iteration = -1; iteration < digit; ++iteration) {
         int column = digit - 2 - iteration;

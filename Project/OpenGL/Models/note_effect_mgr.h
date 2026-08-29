@@ -305,7 +305,7 @@ private:
     // unsigned char m_aReserved04[4] = {};  // +0x04
     NoteModel **m_ppNotePool = {};   // +0x08
     NoteModel **m_ppActiveList = {}; // +0x10
-    int m_nNoteCount = {};           // +0x18: the bound chart's note count.
+    int m_nNoteCount = {};           // +0x18
     int m_nPoolCapacity = {};        // +0x1c
     int m_nActiveCount = {};         // +0x20
     // unsigned char m_aReserved24[4] = {};  // +0x24

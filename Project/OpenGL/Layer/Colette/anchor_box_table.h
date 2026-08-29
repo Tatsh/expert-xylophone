@@ -15,7 +15,7 @@
  * The 20-byte counterpart of @c PhoneAnchorRecord used by the non-phone position accessor. The
  * leading four floats are the rectangle the accessor copies out (an x/y/w/h box); the trailing int
  * is the viewport-relative anchor mode. The tables are zero-initialised in the binary's @c __common
- * segment and filled at runtime by the result-layout-table initialisers. The trailing @c // +0xNN
+ * segment and filled at runtime by the result-layout-table initialisers. The trailing @c +0xNN
  * comments document the original member offsets for reference only.
  */
 struct AnchorBoxRecord {

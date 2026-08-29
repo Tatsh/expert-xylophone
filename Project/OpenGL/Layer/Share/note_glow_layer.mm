@@ -1,11 +1,3 @@
-//
-//  note_glow_layer.mm
-//  REFLEC BEAT plus
-//
-//  The note-glow effect layer (NoteGlowLayer). Reconstructed from Ghidra project rb458, program
-//  rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "note_glow_layer.h"
 
 #include <cassert>
@@ -18,46 +10,37 @@
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
 
-// The score-gauge burst atlas UV table (a distinct atlas from the shared sprite UV table); the glow
-// bars index it by their colour.
 extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
 
 namespace {
-// The default scale pair the constructor seeds.
 constexpr float kInitialScale = 1.0f;
 
-// The atlas the glow sprites draw from.
 constexpr const char *kAtlasTextureName = "00_texture/gm_parts1";
 
-// The glow sprite batch holds two sprites and draws additively.
 constexpr int kSpriteCapacity = 2;
 constexpr int kAdditiveBlendMode = 1;
 
-// The per-colour atlas UV row for each glow bar (@ghidraAddress 0x30c9a0).
+// @ghidraAddress 0x30c9a0
 constexpr int kGlowUvRow[] = {0x5d, 0x5e};
 
-// The glow bar's fixed anchor and size: a thin, tall bar centred horizontally (@ghidraAddress
-// 0x2ec6b0 = 100.0).
 constexpr float kGlowAnchorX = 0.5f;
+// @ghidraAddress 0x2ec6b0
 constexpr float kGlowBarHeight = 100.0f;
 constexpr float kGlowAnchorWidth = 1.0f;
 
-// The glow lifetime (frames) and the fade divisor, the play-field y half-scale, and the alpha byte
-// scale (@ghidraAddress 0x2feff4 = 500, 0x2feff8 = -500, 0x2eed00 = 255).
+// @ghidraAddress 0x2feff4
 constexpr float kGlowLifetime = 500.0f;
+// @ghidraAddress 0x2feff8
 constexpr float kGlowFadeDivisor = -500.0f;
 constexpr float kHalf = 0.5f;
+// @ghidraAddress 0x2eed00
 constexpr float kAlphaByteScale = 255.0f;
 
-// The glow bar's rotation, indexed by whether the bar is the play colour's. The table is
-// {pi, 0} and the play colour indexes element one, so it is the *other* colour whose bar is
-// flipped a half-turn, not the play colour's. The binary indexes it the same way: it forms the
-// flag with `cset w25,eq` at 0x176c38 and then loads `[x24, w25, uxtw #2]` at 0x176c4c.
-// (@ghidraAddress 0x30c998 = {pi, 0}).
+// The play colour indexes element one (0x176c38, 0x176c4c), so the other colour's bar is flipped.
+// @ghidraAddress 0x30c998
 constexpr float kGlowRotation[] = {3.1415927f, 0.0f};
 } // namespace
 
-// The process-wide note-glow layer, created lazily by shared().
 static NoteGlowLayer *g_pNoteGlowLayer = nullptr; // @ghidraAddress 0x3deb40
 
 /** @ghidraAddress 0x1769a8 */
@@ -70,8 +53,6 @@ NoteGlowLayer *NoteGlowLayer::shared() {
 
 /** @ghidraAddress 0x176964 */
 NoteGlowLayer::NoteGlowLayer() {
-    // The base constructor and member initialisers clear the sprite header and count state; the
-    // default scale pair seeds to one.
     m_aScale[0] = kInitialScale;
     m_aScale[1] = kInitialScale;
 }
@@ -79,7 +60,6 @@ NoteGlowLayer::NoteGlowLayer() {
 /** @ghidraAddress 0x176a84 */
 void NoteGlowLayer::SetTexture() {
     RefreshThema();
-    // The texture only binds once the sprite instancer exists.
     if (m_pSprite != nullptr) {
         m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
         m_pSprite->SetRefCountedMember(m_pTexture);
@@ -150,8 +130,6 @@ void NoteGlowLayer::Process(float flDelta) {
             continue;
         }
 
-        // The glow fades out over its lifetime; the bar is centred horizontally and sits half a
-        // play-field height out, mirrored below for the non-play colour.
         float flFade = slot.flTimer / kGlowFadeDivisor + 1.0f;
         const bool bPlayColour = nColor == nPlayColor;
         const float flPosY = GameSystem::GetGameSystem()->GetSheetPosY() * kHalf;

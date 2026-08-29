@@ -50,8 +50,6 @@ constexpr int kTitleVoiceId = 0;
 constexpr unsigned int kColorMax = 255;
 constexpr float kHalf = 0.5f;
 
-// Mode one draws from the per-device lettered/logo UV atlas; every other mode uses the shared
-// default title-part atlas.
 constexpr int kPartAnchorModeAtlas = 1;
 
 // @ghidraAddress 0x2f8568 X offset, 0x301f94 Y offset, 0x301108 scale
@@ -922,7 +920,6 @@ enum TitleSwipeStep {
     kSwipeStepComplete = 10,
 };
 
-// The binary inlines this at each of the sweep's curve sites.
 inline float SampleCurve(const float *pPairs, int nPairs, int nTime) {
     return CalculateCurveInterpolation(pPairs, nPairs, static_cast<float>(nTime));
 }
@@ -962,7 +959,6 @@ void TitleLimelightScene::ReleaseResources() {
             pTexture = nullptr;
         }
     }
-    // The part instancers are owned by the scene graph, so they are flagged for the scene walker.
     for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
@@ -1073,8 +1069,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
             kPartKindLead, CurveToAlpha(flAlpha), flPosX, flPosY, kUnitScale, flRotation);
     }
 
-    // The binary restages this group's two curve tables on the stack every iteration; being
-    // read-only they are indexed in place here instead.
     if (nTime > kPart2cGate) {
         for (int nPart = 0; nPart < kPart2cCount; ++nPart) {
             const float flPosY = SampleCurve(kPart2cPosYCurve[nPart], kPart2cPosYPairs, nTime);
@@ -1364,7 +1358,6 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
     }
 
     if (nKind == 0) {
-        // Kind zero is the backdrop.
         ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
         const float flScale = pTexture->GetScale();
         const float flPointWidth = static_cast<float>(pTexture->GetImageWidth()) / flScale;
@@ -1402,8 +1395,7 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         pInstancer->SetSpriteUvOrigin(nSlot, S_VECTOR2{uv.flOriginU, uv.flOriginV});
         pInstancer->SetSpriteUvSize(nSlot, S_VECTOR2{uv.flSizeU, uv.flSizeV});
 
-        // The iPad layout is already in screen units barring the Y offset; the default device also
-        // scales about the screen offsets.
+        // The iPad layout is already in screen units barring the Y offset.
         float flPosX;
         float flPosY;
         if (bIsPad) {
@@ -1420,7 +1412,6 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         pInstancer->SetSpriteSize(nSlot, S_VECTOR2{flSizeX, flSizeY});
         pInstancer->SetSpriteScale(nSlot, flSize, flSize);
 
-        // A hit rect is stored as its top-left corner followed by its size.
         const float flRectX = flPosX - flAnchorX;
         const float flRectY = flPosY - flAnchorY;
         switch (nKind) {

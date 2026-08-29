@@ -1,30 +1,17 @@
-//
-//  RBMusicGridLayout.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicGridLayout). The layout
-//  logic in -prepareLayout, -layoutAttributesForElementsInRect:, and -init was recovered from the
-//  arm64 decompile and cross-checked against the disassembly at 0x16d5dc/0x16d7d8/0x16df1c; the
-//  scalar accessors are auto-synthesised from their ivar-backed getters/setters.
-//
-
 #import "RBMusicGridLayout.h"
 
 #import "RBMusicCell.h"
 #import "deviceenvironment.h"
 
-// All items live in a single section.
 static const NSInteger kGridSection = 0;
 
 // The leftover slack on each axis is split so that half a gap sits before the first cell.
 static const NSInteger kGridSlackHalfDivisor = 2;
 
-// Standard (narrow) item metrics used when the large-iPad idiom is off.
 static const CGFloat kItemWidthNarrow = 92.0;
 static const CGFloat kItemHeightNarrow = 114.0;
 static const UIEdgeInsets kPageInsetNarrow = {5.0, 10.0, 0.0, 10.0};
 
-// Large-font (wide) item metrics used when the large-iPad idiom is on.
 static const CGFloat kItemWidthWide = 184.0;
 static const CGFloat kItemHeightWide = 230.0;
 static const CGFloat kSpacingWide = 10.0;
@@ -122,15 +109,10 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
     /** @ghidraAddress 0x16de84 */
-    // The binary builds a fresh attributes object and never gives it a frame, so it answers
-    // CGRectZero for every item. It does pass the caller's index path through: x2 is left untouched
-    // across the tail call at 0x16de9c, so the incoming argument reaches
-    // +layoutAttributesForCellWithIndexPath: unchanged. It then relies on
-    // -layoutAttributesForElementsInRect: to place everything, which held on the iOS this was built
-    // for. Current UIKit also asks per item, and a CGRectZero answer leaves the cell invisible.
+    // The binary returns a frameless attributes object, relying on
+    // -layoutAttributesForElementsInRect:; current UIKit asks per item, so that leaves cells
+    // invisible.
 #ifdef ENABLE_PATCHES
-    // Answer with the prepared attributes, which is what -layoutAttributesForElementsInRect: hands
-    // back for the same index.
     if (indexPath.section == kGridSection && indexPath.item < (NSInteger)self.layouts.count) {
         return self.layouts[indexPath.item];
     }
@@ -158,7 +140,6 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
     /** @ghidraAddress 0x16e0a0 */
-    // The grid always re-lays out on a bounds change so the scrolled item frames stay correct.
     return YES;
 }
 

@@ -1,14 +1,3 @@
-//
-//  ApplilinkNetworkError.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkNetworkError). This is a
-//  plain Objective-C file: every collaborator is reached through ordinary message sends, with no
-//  C++. The class is the Applilink SDK's NSError factory. It caches, on first use, a dictionary
-//  that maps each Applilink error code to a localised message, then builds an NSError whose
-//  userInfo carries that message under NSLocalizedDescriptionKey.
-//
-
 #import "ApplilinkNetworkError.h"
 
 #import "ApplilinkBundle.h"
@@ -16,11 +5,8 @@
 /** @ghidraAddress 0x344791 */
 NSErrorDomain const ApplilinkErrorDomain = @"ApplilinkErrorDomain";
 
-// The name of the localised-strings table looked up inside the reward bundle.
 static NSString *const kApplilinkErrorStringsTable = @"Error";
 
-// The Applilink error codes, in the order the message table is populated. The unexpected-error code
-// doubles as the fallback for any code that is not present in the table.
 enum {
     kApplilinkErrorCodeUnexpected = 1000,
     kApplilinkErrorCodeParameter = 1001,
@@ -64,9 +50,6 @@ enum {
     kApplilinkErrorCodeCannotOpenMultiple = 1039,
 };
 
-// One row of the message table: the Applilink error code, the reward bundle's localisation key, and
-// the built-in English fallback used both as the localisation default value and when the bundle is
-// absent.
 typedef struct {
     NSInteger code;
     __unsafe_unretained NSString *localizationKey;
@@ -172,8 +155,7 @@ static const ApplilinkErrorMessageEntry kApplilinkErrorMessages[] = {
      @"can not open multiple."},
 };
 
-// The cached code-to-message dictionary, built once on the first factory call and reused
-// thereafter. This mirrors the binary's file-scope global at 0x3df628.
+// @ghidraAddress 0x3df628
 static NSMutableDictionary *gApplilinkErrorMessages = nil;
 
 @implementation ApplilinkNetworkError
@@ -200,8 +182,7 @@ static NSMutableDictionary *gApplilinkErrorMessages = nil;
     }
     NSMutableDictionary *mergedUserInfo = [NSMutableDictionary dictionaryWithDictionary:userInfo];
     if (gApplilinkErrorMessages != nil) {
-        // The lookup keys the code as a 32-bit int number and falls back to the unexpected-error
-        // message when the requested code is absent.
+        // The binary keys the dictionary by a 32-bit int number.
         NSString *message = gApplilinkErrorMessages[@((int)code)];
         if (message == nil) {
             message = gApplilinkErrorMessages[@((int)kApplilinkErrorCodeUnexpected)];

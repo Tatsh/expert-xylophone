@@ -112,9 +112,9 @@ public:
 private:
     static constexpr short kNone = -1;
 
-    short m_nPrev = {};                  // +0x00: the previous chain-segment index / head chain id.
-    short m_nNext = {};                  // +0x02: the next chain-segment index (-1 = tail).
-    short m_nPartner = {};               // +0x04: the bound partner index for a long-note head.
-    short m_nMarker = {};                // +0x06: an end marker / resolved tail time delta.
-    unsigned char m_aReserved08[4] = {}; // +0x08: cleared spare space.
+    short m_nPrev = {}; // Doubles as the head-note chain id.
+    short m_nNext = {};
+    short m_nPartner = {};
+    short m_nMarker = {}; // Doubles as the resolved tail time delta.
+    unsigned char m_aReserved08[4] = {};
 };

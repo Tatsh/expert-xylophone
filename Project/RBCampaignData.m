@@ -1,30 +1,12 @@
-//
-//  RBCampaignData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCampaignData). Verified against
-//  the arm64 disassembly (the store colour components travel the soft-float path, so the
-//  decompiler garbles the per-component divide-by-255, and the download completion handlers are
-//  reconstructed from the captured block layout).
-//
-
 #import "RBCampaignData.h"
 
-// Collaborator class reached from the store image download path. Its header is not yet
-// reconstructed in this tree; the import resolves once that class lands, matching the
-// speculative-import style already used by AppDelegate.mm and RBExperienceData.m.
 #import "ImageDownloader.h"
 
-// Top-level campaign descriptor keys.
 static NSString *const kCampaignNameKey = @"Name";
 static NSString *const kCampaignOptionKey = @"Option";
 
-// The campaign name that marks the March 2017 "hinabita" collaboration, also seeded by
-// @c presetHinabitaMode.
 static NSString *const kHinabita201703CampaignName = @"201703hnbt";
 
-// Campaign option keys. The "a01" entry carries the message list; the "cNN" entries carry the
-// store skin colours and images.
 static NSString *const kCampaignMessageListKey = @"a01";
 static NSString *const kStoreBaseColorKey = @"c01";
 static NSString *const kStoreStrapImageKey = @"c02";
@@ -33,19 +15,15 @@ static NSString *const kStoreSampleColorKey = @"c11";
 static NSString *const kStoreColorPackAKey = @"c21";
 static NSString *const kStoreColorPackBKey = @"c22";
 
-// The colour component array index for each channel parsed by @c setColor:key:.
 static const NSUInteger kColorComponentRed = 0;
 static const NSUInteger kColorComponentGreen = 1;
 static const NSUInteger kColorComponentBlue = 2;
 static const NSUInteger kColorComponentAlpha = 3;
 
-// The divisor that maps a 0-255 colour component to the 0-1 range @c UIColor expects.
 static const double kColorComponentScale = 255.0;
 
-// The initial capacity reserved for the keyed table of in-flight store image downloaders.
 static const NSUInteger kImageDownloadersCapacity = 5;
 
-// Whether the store images downloaded here are fetched without a Retina (2x) variant.
 static const BOOL kStoreImageUnUseRetina = NO;
 
 @implementation RBCampaignData
@@ -141,7 +119,6 @@ static const BOOL kStoreImageUnUseRetina = NO;
             [[NSMutableDictionary alloc] initWithCapacity:kImageDownloadersCapacity];
     }
     if ([self.imageDownloaders objectForKey:key] != nil) {
-        // A download for this key is already in flight; if its image is ready, route it now.
         if ([key isEqualToString:kStoreBaseImageKey]) {
             self.storeBaseImage = [[self.imageDownloaders objectForKey:key] getImage];
         }
@@ -158,7 +135,6 @@ static const BOOL kStoreImageUnUseRetina = NO;
         }
         success:^(ImageDownloader *finishedDownloader) {
           /** @ghidraAddress 0x9d070 */
-          // Route the finished image by its key, then cancel and drop the downloader.
           if ([key isEqualToString:kStoreBaseImageKey]) {
               weakSelf.storeBaseImage = [finishedDownloader getImage];
           }

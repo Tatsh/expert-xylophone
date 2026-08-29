@@ -96,7 +96,6 @@ constexpr int kDefaultExprosionItemIds[] = {12, 1, 0};
 constexpr int kDefaultFrameItemIds[] = {14, 7};
 constexpr int kDefaultBackgroundItemIds[] = {13, 6};
 
-// The theme whose presence widens the takeover default items.
 constexpr int kTakeoverPremiumThemaId = 2;
 
 constexpr int kTakeoverPremiumBgmId = 15;
@@ -337,8 +336,8 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 
 - (NSMutableData *)encodePoint:(float)point {
     /** @ghidraAddress 0x1bc554 */
-    // The binary calls the variadic arrayWithObjects:, not arrayWithObject: (the nil terminator is
-    // the str xzr,[sp] at 0x1bc59c).
+    // The binary calls the variadic arrayWithObjects:, not arrayWithObject:.
+    // @ghidraAddress 0x1bc59c
     NSArray *boxed = [NSArray arrayWithObjects:[NSNumber numberWithFloat:point], nil];
     NSData *plist = (__bridge_transfer NSData *)CFPropertyListCreateXMLData(
         kCFAllocatorDefault, (__bridge CFPropertyListRef)boxed);
@@ -808,7 +807,6 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 
 - (void)writeLog:(NSString *)message {
     /** @ghidraAddress 0x1bd0cc */
-    // The shipped build compiles this to an empty stub; the message is discarded.
     (void)message;
 }
 

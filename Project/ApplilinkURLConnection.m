@@ -62,8 +62,7 @@
         if ([delegate respondsToSelector:@selector(finishLoadWithResponse:)]) {
             [delegate finishLoadWithResponse:nil];
         }
-        // Returning nil cancels the redirect so the intercepted load stops here.
-        request = nil;
+        request = nil; // Returning nil cancels the redirect.
     }
     return request;
 }

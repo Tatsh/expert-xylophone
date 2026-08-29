@@ -4,14 +4,10 @@
 
 #include "engineglobals.h"
 
-// The alt-frame marker layout tables, seeded once at load by SeedAltFrameLayoutTable. They are
-// mutable globals (zero-initialised here) rather than constants because their base Y values are
-// derived from the play-field layout centre split at seed time.
 AltFrameMarkerLayout g_aAltFrameMarker4[kAltFrameMarkerCount4] = {}; // @ghidraAddress 0x3dbec8
 AltFrameMarkerLayout g_aAltFrameMarker6[kAltFrameMarkerCount6] = {}; // @ghidraAddress 0x3dbfb8
 AltFrameMarkerLayout g_aAltFrameMarker9[kAltFrameMarkerCount9] = {}; // @ghidraAddress 0x3dc108
 
-// The static sprite-descriptor tables (read-only ROM data), one per difficulty tier.
 const AltFrameSpriteDescriptor g_aAltFrameDescriptor4[kAltFrameDescriptorCount4] = {
     {0, 0.0f, 0.0f, 73.0f, 511.0f, 0},
     {0, 0.0f, 0.0f, 73.0f, 511.0f, 1},
@@ -58,8 +54,6 @@ const AltFrameSpriteDescriptor g_aAltFrameDescriptor9[kAltFrameDescriptorCount9]
     {0, 0.0f, 0.0f, 14.0f, 100.0f, 5},
 }; // @ghidraAddress 0x30cca8
 
-// The alt-frame mesh (batch-0) UV atlases, one per lane-count tier. The first record is the empty
-// zero rectangle (an unused frame). Read-only ROM data.
 const SpriteUvEntry g_aAltFrameMeshUvMid[kAltFrameMeshUvCountMid] = {
     {0.0f, 0.0f, 0.28515625f, 0.9980469f},
     {0.30078125f, 0.0f, 0.28515625f, 0.9980469f},
@@ -85,7 +79,7 @@ const SpriteUvEntry g_aAltFrameMeshUvHigh[kAltFrameMeshUvCountHigh] = {
 
 namespace {
 
-// The marker X columns and the rotation of a sideways marker (@ghidraAddress 0x3fc90fdb = PI/2).
+// @ghidraAddress 0x3fc90fdb
 constexpr float kColLeftEdge = -384.0f;
 constexpr float kColRightEdge = 364.0f;
 constexpr float kColLeftInner = -311.0f;

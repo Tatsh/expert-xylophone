@@ -5,22 +5,15 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The autoresizing mask applied to the root view: flexible width and flexible height.
 static const UIViewAutoresizing kRootViewAutoresizing =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The title label point size.
 static const CGFloat kTitleFontSize = 18.0;
 
-// On the pad, when the view is taller than this the frame is clamped back to it in
-// -viewWillAppear:.
 static const CGFloat kPadFullHeightThreshold = 524.0; // @ghidraAddress 0x2fee00
 
-// The text-field layout: it is inset ten points from the view's left and top, spans the view width
-// less twice that inset, and is g_dLayoutMetricThirtyTwo points tall.
 static const CGFloat kTextFieldInset = 10.0;
 
-// The longest playlist name accepted by the text field.
 static const NSUInteger kMaxPlaylistNameLength = 128;
 
 // The system version at which the navigation bar switched from tintColor to barTintColor.

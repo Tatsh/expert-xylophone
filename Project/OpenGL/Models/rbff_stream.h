@@ -9,7 +9,7 @@
  * A read cursor over an RBFF chart blob: the current position and bounds the parser advances
  * as it consumes records.
  *
- * A 16-byte record; the trailing @c // +0xNN comments document the byte offsets.
+ * A 16-byte record; the trailing @c +0xNN comments document the byte offsets.
  */
 struct RbffStreamCursor {
     int nField0 = {}; /*!< Cursor state (reset to zero on init). +0x00 */

@@ -45,12 +45,12 @@ constexpr float kGradeRevealDurationSingle = 5000.0f;
 constexpr unsigned int kColorMax = 255;
 
 struct FcSpriteDescriptor {
-    int nBatchKind;    // +0x00: the batch-kind selector (indexes the batch-index table).
-    float flAnchorX;   // +0x04: the sprite's anchor X.
-    float flAnchorY;   // +0x08: the sprite's anchor Y.
-    float flSizeX;     // +0x0c: the sprite's pixel width.
-    float flSizeY;     // +0x10: the sprite's pixel height.
-    int nUvFrameIndex; // +0x14: the frame into the shared sprite UV atlas.
+    int nBatchKind; // Indexes the batch-index table.
+    float flAnchorX;
+    float flAnchorY;
+    float flSizeX;
+    float flSizeY;
+    int nUvFrameIndex;
 };
 
 // @ghidraAddress 0x30f494
@@ -975,7 +975,6 @@ void ColetteThemeLayer::EmitFcSprite(float flScaleX,
 
     const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nUvFrameIndex];
 
-    // The play-field half-height, rounded toward zero.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
 

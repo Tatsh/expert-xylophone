@@ -421,7 +421,6 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
         [self.headLayer addAnimation:headPosition forKey:kPastelAnimationKeyHead];
         [self addAnimation:basePosition forKey:kPastelAnimationKeyBase];
     } else {
-        // The animations block is empty, so the delay behaves as a plain wait rather than a tween.
         [UIView animateWithDuration:delay
             delay:0.0
             options:0
@@ -440,7 +439,6 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 
 #pragma mark Teardown
 
-// The binary open-codes this block once per layer.
 static void RBPastelStopAnimationsOnLayer(CALayer *layer) {
     if (layer.animationKeys != nil && layer.animationKeys.count != 0) {
         for (CALayer *sublayer in layer.sublayers) {

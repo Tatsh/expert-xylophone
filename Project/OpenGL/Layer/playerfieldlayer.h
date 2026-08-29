@@ -172,12 +172,12 @@ private:
                               float flRotation,
                               float flScale);
 
-    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the score-number atlas (gm_parts2).
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the score-number sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the instancer's initial sprite count.
-    bool m_bBuilt = {};                         // +0x1c: set once the score sprite is built.
-    int m_nScoreSideFlag = {}; // +0x20: the side/layout flag indexing the score X-alignment table.
-    LinearTween m_fadeChannel; // +0x24: the score display's fade channel.
-    float m_aScorePosition[kSideCount] = {};         // +0x38: each side's score-display position.
-    ScoreDigitField m_aScoreFields[kSideCount] = {}; // +0x40: the per-side score-digit records.
+    ne::C_TEXTURE *m_pTexture = {};                  // +0x08: the gm_parts2 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {};      // +0x10
+    int m_nSpriteCount = {};                         // +0x18
+    bool m_bBuilt = {};                              // +0x1c
+    int m_nScoreSideFlag = {};                       // +0x20: indexes the score X-alignment table.
+    LinearTween m_fadeChannel;                       // +0x24
+    float m_aScorePosition[kSideCount] = {};         // +0x38
+    ScoreDigitField m_aScoreFields[kSideCount] = {}; // +0x40
 };

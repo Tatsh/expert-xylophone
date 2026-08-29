@@ -20,7 +20,7 @@ class C_TEXTURE;
  * A single node draws up to @c m_dwCapacity sprites of one texture in one instanced draw call; the
  * per-sprite position, size, anchor, UV-origin, UV-size, rotation, scale, and colour arrays are
  * uploaded together. It is a @c C_RENDER, so it lives in the scene graph and inherits visibility
- * and transform. The trailing @c // +0xNN comments document the original 32-bit offsets for
+ * and transform. The trailing @c +0xNN comments document the original 32-bit offsets for
  * reference only; state is reached through the accessors, never through those offsets.
  */
 class C_SPRITE_INSTANCING_2D : public C_RENDER {

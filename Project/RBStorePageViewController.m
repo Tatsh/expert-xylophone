@@ -206,7 +206,6 @@ static NSString *const kCurrencyCodeJPY = @"JPY";
 
 static NSString *const kKonamiHelpURLString = @"http://www.konami.jp/";
 
-// The binary uses a local literal here rather than a shared store-message global.
 static NSString *const kStoreDownloadDialogMessage = @"";
 
 @interface RBStorePageViewController () {
@@ -353,7 +352,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [self.view addSubview:self.packTableLabel];
 
     if (self.promotionView == nil) {
-        // The centre's y is re-read from the promotion view's own bounds, not the height constant.
         StorePromotionView *promotion = [[StorePromotionView alloc]
             initWithFrame:CGRectMake(0.0, 10.0, self.view.frame.size.width, kPadPromotionHeight)];
         self.promotionView = promotion;
@@ -800,7 +798,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     if (rightEmpty != nil) {
         drop = m_IsPad ? kEmptyStateDropPad : kEmptyStateDropPhone;
         CGRect rightFrame = rightEmpty.frame;
-        // The right edge comes from the UIView+RB -width getter, not from the table's bounds.
         CGFloat rightX = table.width - rightFrame.size.width - kEmptyStateSideInset;
         rightEmpty.frame = CGRectMake(rightX,
                                       drop + (table.contentSize.height > table.bounds.size.height ?
@@ -952,7 +949,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
                     reuseIdentifier:kStorePromotionSampleLabelCellID];
             }
             [cell.contentView addSubview:self.sampleMusicLabel];
-            // The binary reads the width through the UIView+RB -width getter, not -frame.
             self.sampleMusicLabel.frame = CGRectMake(kSampleLabelInsetLeft,
                                                      0.0,
                                                      cell.width - kSampleLabelInsetRight,
@@ -1020,7 +1016,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
                                                         indexPath:leftIndexPath
                                                  forcingNonRetina:NO];
 
-        // The bound is tested unsigned; the operands are already NSUInteger, so no cast.
         if (((indexPath.row << 1) | 1) < packIDList.count) {
             cell.rightPackView.hidden = NO;
             int rightPackID = packIDList[(indexPath.row << 1) | 1].intValue;
@@ -1052,8 +1047,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 - (UIImage *)artworkImageForPackInfo:(StorePackInfo *)packInfo
                            indexPath:(NSIndexPath *)indexPath
                     forcingNonRetina:(BOOL)forcingNonRetina {
-    // One of the binary's three copies of this lookup boxes the key with -numberWithInteger:
-    // (0x1ea800); the other two use -numberWithInt:, which is the form kept here.
+    // A third copy of this lookup (0x1ea800) boxes the key with -numberWithInteger: instead.
     ImageDownloader *downloader = [self.artworkDownloaders objectForKey:@(packInfo.packID)];
     if (downloader != nil) {
         return [downloader getImage];
@@ -1065,7 +1059,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     newDownloader.imageURL = packInfo.artworkURL;
     newDownloader.indexPathInTableView = indexPath;
     newDownloader.delegate = self;
-    // The phone single-pack path forces non-Retina artwork; the pad two-up path does not.
     if (forcingNonRetina) {
         newDownloader.unUseRetina = YES;
     }
@@ -1081,7 +1074,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         cell.textLabel.shadowColor = [UIColor colorWithWhite:kMoreCellShadowWhite alpha:1.0];
         cell.textLabel.text = g_pLocalizedShowMore;
     } else {
-        // The frame is a square of the shared spinner size, not CGRectZero.
         UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
             initWithFrame:CGRectMake(0.0, 0.0, kSpinnerSize, kSpinnerSize)];
         indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
@@ -1205,7 +1197,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         }
     }
 
-    // The base is the content height while the table can scroll, the bounds height otherwise.
     UIScrollView *table = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
     UIView *funBanner = [table viewWithTag:kTagFunBanner];
     CGFloat funDrop = m_IsPad ? kBannerHeightPad : kBannerHeightPhone;
@@ -1220,7 +1211,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     funFrame.origin.y = funY;
     funBanner.frame = funFrame;
 
-    // Repeats the block above, except it offsets by half the banner's height rather than all of it.
     if (![RBCampaignData sharedInstance].isCampaignHinabita201703) {
         return;
     }
@@ -1315,7 +1305,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 - (void)openDetailAnimStop:(NSString *)animationID
                   finished:(NSNumber *)finished
                    context:(void *)context {
-    // The animation context is the tapped cell, which carries the list index of the pack.
     NSInteger index = [(__bridge StorePackView *)context index];
     int packId = self.currentGenre.packIDList[index].intValue;
     self.packDetailViewPad.packInfo = [self.packListCtrl getPackInfo:packId];
@@ -1632,8 +1621,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 /** @ghidraAddress 0x1e52f8 */
 - (void)detailViewStartPurchase:(StorePackInfo *)packInfo {
 #ifdef ENABLE_PATCHES
-    // A pack the catalogue prices at nothing is granted without StoreKit, ahead of the guard below
-    // because a free pack need not have a StoreKit product at all.
+    // A free pack is granted ahead of the guard below because it need not have a StoreKit product.
     if (RBStorePackIsFreeFromCatalog(packInfo.packID)) {
         self.purchasingPackInfo = packInfo;
         [self purchaseSucceeded:[StoreUtil productIDForPackID:packInfo.packID]];
@@ -1889,7 +1877,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 
 /** @ghidraAddress 0x1e6860 */
 - (BOOL)nextRestorePackInfo {
-    // A snapshot is iterated because the add… helpers mutate the live array, and YES means the
+    // A snapshot is iterated because the add… helpers mutate the live array; YES means the
     // caller must stop and wait for a downloader callback.
     NSArray<NSString *> *productIDs = [NSArray arrayWithArray:self.restoreProductID];
     if (productIDs.count == 0) {
@@ -1898,7 +1886,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     for (NSString *productID in productIDs) {
         int packID = [StoreUtil packIDForProductID:productID];
         if (packID == -1) {
-            // Not a pack; treat it as an extend note.
             StoreExtendNoteInfo *extendInfo = [self.parent.extendNotePageViewCtrl.extendNoteListCtrl
                 getExtendNoteInfoWithProductID:[StoreUtil productIDToPid:productID]];
             if (extendInfo == nil) {
@@ -2285,7 +2272,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 
 /** @ghidraAddress 0x1e8608 */
 - (void)didPresentAlertView:(UIAlertView *)alertView {
-    // -setExclusiveTouchForView: is a UIAlertView class method (a category helper).
     UIView *presentedView =
         [UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController.view;
     [UIAlertView setExclusiveTouchForView:presentedView];
@@ -2296,7 +2282,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 /** @ghidraAddress 0x1eedb0 */
 - (void)storeDetailViewOpenItunesWithURL:(NSURL *)url {
     if (url != nil) {
-        // Forwards to the application's RBViewController, not to self.
         [[AppDelegate appDelegate].viewController openItunesWithURL:url];
     }
 }

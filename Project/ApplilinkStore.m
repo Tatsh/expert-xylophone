@@ -4,8 +4,7 @@
 #import "ApplilinkViewController.h"
 
 // File-scope rather than method-local because +allocWithZone: and +sharedInstance share the
-// instance and each has its own once token, which the binary keeps at one global base:
-// +0x670 for the instance and +0x670+0x18 for the shared token.
+// instance, each with its own once token.
 static ApplilinkStore *sSharedInstance = nil;
 static dispatch_once_t sAllocOnceToken = 0;
 static dispatch_once_t sSharedOnceToken = 0;

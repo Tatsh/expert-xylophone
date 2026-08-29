@@ -1,12 +1,3 @@
-//
-//  cacamixer.mm
-//  REFLEC BEAT plus
-//
-//  The Core Audio voice mixer (the caplayer engine's caCAMixer / CAComponent). Reconstructed from
-//  Ghidra project rb458, program rb458. @ghidraAddress values are relative to the program image
-//  base.
-//
-
 #include "cacamixer.h"
 
 #include <cstring>
@@ -20,9 +11,6 @@ OSStatus RenderVoiceAudioCallback(void *pRefCon,
                                   UInt32 nBusNumber,
                                   UInt32 nFrames,
                                   AudioBufferList *pData) {
-    // The AURenderCallback wired onto each mixer input. The action flags, timestamp, bus, and frame
-    // count are unused: the voice pointer arrives as the reference, and it fills the single output
-    // buffer directly.
     (void)pActionFlags;
     (void)pTimeStamp;
     (void)nBusNumber;
@@ -36,12 +24,8 @@ OSStatus RenderVoiceAudioCallback(void *pRefCon,
     return noErr;
 }
 
-// The number of engine volume levels the gain table covers (a MIDI-style 0 through 127 range).
 constexpr int kVoiceGainLevelCount = 128;
 
-// The mixer's decibel-gain lookup table, indexed by the engine volume level (0 through 127). Entry
-// 0 is silence and entry 127 is unity gain; every other entry is 20*log10(index/127), rounded to
-// three decimals as stored in the binary.
 // @ghidraAddress 0x2eef58
 const float g_aVoiceGainTable[kVoiceGainLevelCount] = {
     -120.0f,  -42.076f, -36.055f, -32.534f, -30.035f, -28.097f, -26.513f, -25.174f, -24.014f,
@@ -63,38 +47,28 @@ const float g_aVoiceGainTable[kVoiceGainLevelCount] = {
 
 namespace {
 
-// The client PCM format the mixer plays: 16-bit signed packed linear PCM, one frame per packet.
 constexpr int kClientBitsPerChannel = 16;
 constexpr int kClientBytesPerChannel = kClientBitsPerChannel / 8;
 
-// The spatial-mixer gain parameter (k3DMixerParam_Gain) and its output scope, and the render-
-// callback property; the mixer's stream-format property is set on the input scope.
 constexpr AudioUnitParameterID kMixerGainParam = 3;
 constexpr AudioUnitScope kMixerGainScope = kAudioUnitScope_Output;
 
-// The play handle packs the voice generation in its low 16 bits and the bus index above.
+// A play handle packs the voice generation in its low 16 bits and the bus index above.
 constexpr int kHandleBusShift = 16;
 
-// The failure sentinel returned when a voice cannot be bound.
 constexpr unsigned int kInvalidHandle = 0xffffffff;
 
-// The largest mixer bus count the graph configuration accepts.
 constexpr int kMaxVoiceCount = 0x1000;
 
-// The gain-table index applied as the default master gain when the graph starts (full volume).
 constexpr int kDefaultMasterGainIndex = 0x7f;
 
-// The output stream format: 32 kHz stereo 16-bit linear PCM. The binary stores the format flags as
-// the literal 0xc2c (signed integer | packed | non-interleaved, with the sample-fraction field the
-// 3D mixer's RemoteIO input expects); it is used verbatim.
+// The binary stores the output format flags as the literal 0xc2c; it is used verbatim.
 constexpr double kOutputSampleRate = 32000.0;
 constexpr int kOutputBitsPerChannel = 16;
 constexpr int kOutputChannels = 2;
 constexpr int kOutputBytesPerFrame = 4;
 constexpr UInt32 kOutputFormatFlags = 0xc2c;
 
-// The per-voice element-count and stream-format AudioUnit properties, and the spatial-mixer gain
-// parameter reset to zero during configuration.
 constexpr AudioUnitPropertyID kElementCountProperty = kAudioUnitProperty_ElementCount;
 constexpr AudioUnitParameterID kMixerGainParamReset = 3;
 
@@ -103,7 +77,6 @@ constexpr AudioUnitParameterID kMixerGainParamReset = 3;
 /** @ghidraAddress 0x4b084 */
 unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVolume) {
     caVoice *pVoice = m_pVoiceArray[nBus];
-    // Reuse the voice only when it is free or has finished playing.
     if (pVoice->GetState() != caVoice::kStateFinished &&
         pVoice->GetState() != caVoice::kStateFree) {
         return kInvalidHandle;
@@ -112,7 +85,6 @@ unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVol
     const unsigned short nGeneration = pVoice->GetGeneration() + 1;
     pVoice->SetGeneration(nGeneration);
 
-    // Build the signed-16-bit LPCM stream format from the source's rate and channel count.
     AudioStreamBasicDescription asbd = {};
     asbd.mSampleRate = pSource->GetSampleRate();
     asbd.mFormatID = kAudioFormatLinearPCM;
@@ -141,7 +113,6 @@ unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVol
 
 /** @ghidraAddress 0x4b238 */
 unsigned int caCAMixer::FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume) {
-    // Bind the sound to the first voice that is free or has finished playing.
     for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
         const int nState = m_pVoiceArray[nBus]->GetState();
         if (nState == caVoice::kStateFree || nState == caVoice::kStateFinished) {
@@ -153,7 +124,6 @@ unsigned int caCAMixer::FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume) 
 
 /** @ghidraAddress 0x4b3b0 */
 void caCAMixer::ClearVoicesUsingBuffer(caSource *pSource) {
-    // Drop the source pointer from every voice that holds it; the voice state is left untouched.
     for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
         if (m_pVoiceArray[nBus]->GetSource() == pSource) {
             m_pVoiceArray[nBus]->SetSource(nullptr);
@@ -188,15 +158,12 @@ bool caCAMixer::ApplyVoicePanParam(int nVolume, int nBus) {
     if (nBus >= m_nVoiceCount) {
         return false;
     }
-    // Parameter 3 on the spatial mixer is the master gain (the "pan" name is a misnomer).
+    // Parameter 3 on the spatial mixer is the master gain, so the "pan" name is a misnomer.
     return AudioUnitSetParameter(
                m_pMixerUnit, kMixerGainParam, kMixerGainScope, 0, g_aVoiceGainTable[nVolume], 0) ==
            noErr;
 }
 
-// Resolves a raw play handle to its live voice, or nullptr when the index is out of range or the
-// generation does not match (a stale handle). The voice index is the handle's high bits and the
-// generation is its low 16 bits.
 caVoice *caCAMixer::ResolveVoice(unsigned int hVoice) {
     const int nBus = static_cast<int>(hVoice >> kHandleBusShift);
     if (nBus >= m_nVoiceCount) {
@@ -261,7 +228,6 @@ unsigned int caCAMixer::StopAndClearVoice(unsigned int hVoice) {
 
 /** @ghidraAddress 0x4acd0 */
 bool caCAMixer::BuildAudioUnitGraph() {
-    // The RemoteIO output unit and the embedded 3D spatial mixer, both Apple components.
     AudioComponentDescription outputDesc = {};
     outputDesc.componentType = kAudioUnitType_Output;
     outputDesc.componentSubType = kAudioUnitSubType_RemoteIO;
@@ -278,7 +244,6 @@ bool caCAMixer::BuildAudioUnitGraph() {
         AUGraphAddNode(m_pAUGraph, &mixerDesc, &m_nMixerNode) != noErr) {
         return false;
     }
-    // Route the mixer output into the output unit's input, then open the graph and fetch the units.
     if (AUGraphConnectNodeInput(m_pAUGraph, m_nMixerNode, 0, m_nOutputNode, 0) != noErr) {
         return false;
     }
@@ -296,7 +261,6 @@ bool caCAMixer::GraphSetup(int nVoiceCount) {
 
 /** @ghidraAddress 0x4affc */
 void caCAMixer::Terminate() {
-    // Stop the graph if it is running, then dispose it; a disposal failure aborts the teardown.
     if (m_bIsRunning && AUGraphStop(m_pAUGraph) == noErr) {
         m_bIsRunning = false;
     }
@@ -306,8 +270,6 @@ void caCAMixer::Terminate() {
     if (m_pVoiceArray == nullptr) {
         return;
     }
-    // Delete each voice slot (clearing its bound source first), re-reading the count and array
-    // after each delete to stay safe against re-entrant teardown, then free the array itself.
     for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
         caVoice *pVoice = m_pVoiceArray[nBus];
         pVoice->SetSource(nullptr);
@@ -323,7 +285,6 @@ bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
         return false;
     }
 
-    // Size the mixer's input element (bus) count.
     UInt32 nElementCount = static_cast<UInt32>(nVoiceCount);
     if (AudioUnitSetProperty(m_pMixerUnit,
                              kElementCountProperty,
@@ -336,7 +297,6 @@ bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
     }
     m_nVoiceCount = nVoiceCount;
 
-    // Allocate the per-bus voice slots, each starting free with no source.
     m_pVoiceArray = new caVoice *[nVoiceCount];
     for (int nBus = 0; nBus < nVoiceCount; ++nBus) {
         auto *pVoice = new caVoice();
@@ -347,7 +307,6 @@ bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
         m_pVoiceArray[nBus] = pVoice;
     }
 
-    // Set the RemoteIO output format to 32 kHz stereo 16-bit LPCM.
     AudioStreamBasicDescription outputAsbd = {};
     outputAsbd.mSampleRate = kOutputSampleRate;
     outputAsbd.mFormatID = kAudioFormatLinearPCM;
@@ -366,7 +325,6 @@ bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
         return false;
     }
 
-    // Reset the spatial-mixer master gain, then update and initialise the graph.
     if (AudioUnitSetParameter(
             m_pMixerUnit, kMixerGainParamReset, kAudioUnitScope_Output, 0, 0, 0) != noErr) {
         return false;
@@ -379,7 +337,6 @@ bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
 
 /** @ghidraAddress 0x4af6c */
 void caCAMixer::Start() {
-    // Start the graph once; then (re)apply the default master gain regardless.
     if (!m_bIsRunning) {
         if (AUGraphStart(m_pAUGraph) != noErr) {
             return;
