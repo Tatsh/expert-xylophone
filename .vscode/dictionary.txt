@@ -136,7 +136,6 @@ endforeach
 enginecrypto
 engineglobals
 engineruntime
-errno
 esbenp
 exprosion
 extern
