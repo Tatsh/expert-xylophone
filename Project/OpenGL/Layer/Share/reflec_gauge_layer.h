@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Reflec gauge layer, @c ReflecGaugeLayer.
+ * The Reflec gauge layer, @c ReflecGaugeLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The Reflec gauge layer (the gauge slider and score/combo digits).
+ * The Reflec gauge layer (the gauge slider and score/combo digits).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and four sprite instancers, drawn beneath the shared background layer, that present the
@@ -26,7 +26,7 @@ class C_SPRITE_INSTANCING_2D;
 class ReflecGaugeLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief Sets the gauge's display brightness from a unit-interval value, mapped by an affine
+     * Sets the gauge's display brightness from a unit-interval value, mapped by an affine
      * transform to @c [0.3, 1.0].
      * @param flValue The brightness input, in the range zero to one.
      * @ghidraAddress 0x18ad0c
@@ -34,7 +34,7 @@ public:
     void SetGaugeDisplayBrightness(float flValue);
 
     /**
-     * @brief Adds a delta to a player colour's Reflec gauge value.
+     * Adds a delta to a player colour's Reflec gauge value.
      * @param flDelta The amount to add.
      * @param pGauge The gauge layer.
      * @param nColor The player colour.
@@ -43,7 +43,7 @@ public:
     static void AddReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nColor);
 
     /**
-     * @brief Subtracts a delta from a player's Reflec gauge value on the matching side.
+     * Subtracts a delta from a player's Reflec gauge value on the matching side.
      * @param flDelta The amount to subtract.
      * @param pGauge The gauge layer.
      * @param nPlayer The player id, compared against the current play side to pick the gauge side.
@@ -51,31 +51,31 @@ public:
      */
     static void SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nPlayer);
 
-    /** @brief The number of gauge/slider sprite instancers the layer builds. */
+    /** The number of gauge/slider sprite instancers the layer builds. */
     static constexpr int kBatchCount = 4;
-    /** @brief The number of part groups whose capacities the constructor accumulates. */
+    /** The number of part groups whose capacities the constructor accumulates. */
     static constexpr int kPartGroupCount = 6;
-    /** @brief The number of player sides the gauge tracks. */
+    /** The number of player sides the gauge tracks. */
     static constexpr int kSideCount = 2;
 
-    /** @brief A gauge sprite descriptor (a 20-byte record): its anchor, its size, and atlas frame.
+    /** A gauge sprite descriptor (a 20-byte record): its anchor, its size, and atlas frame.
      */
     struct GaugeSpriteDescriptor {
         S_VECTOR2 anchor = {}; /*!< The sprite anchor offset. +0x00 */
         S_VECTOR2 size = {};   /*!< The sprite pixel size. +0x08 */
-        /** @brief The atlas-frame number indexing the shared sprite UV table. +0x10 */
+        /** The atlas-frame number indexing the shared sprite UV table. +0x10 */
         int nAtlasFrame = {};
     };
 
     /**
-     * @brief The process-wide Reflec gauge layer, created on first use.
+     * The process-wide Reflec gauge layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x18a88c
      */
     static ReflecGaugeLayer *shared();
 
     /**
-     * @brief Lazily builds the four gauge/slider sprite batches: loads the gm_parts2 atlas and
+     * Lazily builds the four gauge/slider sprite batches: loads the gm_parts2 atlas and
      * creates each instancer (attaching it under the background layer's render object, making it
      * visible, binding the atlas, and clearing its frame index), flagging the third batch's vertex
      * flag.
@@ -86,7 +86,7 @@ public:
     void CreateGaugeSliderSprites();
 
     /**
-     * @brief Advances the gauge bar's fill tween and rebuilds its cell sprites for the frame.
+     * Advances the gauge bar's fill tween and rebuilds its cell sprites for the frame.
      *
      * Eases the fill value toward its target by @p flDelta, deriving the bar's fill ratio between
      * its two endpoints and marking it dirty. It then clears each batch's sprite count and, for
@@ -99,7 +99,7 @@ public:
     void UpdateGaugeBar(float flDelta);
 
     /**
-     * @brief Returns the gauge value for the given player colour.
+     * Returns the gauge value for the given player colour.
      *
      * Maps the colour to a side (matching the current play side) and reads that side's value.
      * @param nColor The player colour (0 or 1).
@@ -108,7 +108,7 @@ public:
      */
     float GetValue(int nColor) const;
     /**
-     * @brief Returns the opposing side's gauge value for the given player colour.
+     * Returns the opposing side's gauge value for the given player colour.
      *
      * Maps the colour to the side that does not match the current play side and reads that side's
      * value.
@@ -118,7 +118,7 @@ public:
      */
     float GetAnotherValue(int nColor) const;
     /**
-     * @brief Sets the gauge value for the given player colour.
+     * Sets the gauge value for the given player colour.
      *
      * Maps the colour to a side and stores the quantised, clamped value there.
      * @param flValue The requested value.
@@ -128,14 +128,14 @@ public:
     void SetValue(float flValue, int nColor);
 
     /**
-     * @brief Reads a side's stored gauge value directly.
+     * Reads a side's stored gauge value directly.
      * @param nSide The player side (0 or 1).
      * @return The side's stored gauge value.
      * @ghidraAddress 0x18ab98
      */
     float GetValueBySide(unsigned int nSide) const;
     /**
-     * @brief Stores a side's gauge value, quantised to the gauge step and clamped to the gauge
+     * Stores a side's gauge value, quantised to the gauge step and clamped to the gauge
      * range (capping at the maximum unless the full-just-reflec flag is set).
      * @param flValue The requested value.
      * @param nSide The player side (0 or 1).
@@ -144,21 +144,21 @@ public:
     void SetValueBySide(float flValue, unsigned int nSide);
 
     /**
-     * @brief Sets the gauge style (the sprite-layout variant), taken from the user's gauge-style
+     * Sets the gauge style (the sprite-layout variant), taken from the user's gauge-style
      * setting.
      * @param nStyle The gauge style.
      * @ghidraAddress 0x18ad2c
      */
     void SetGaugeStyle(int nStyle);
     /**
-     * @brief Sets the mirror/side flag, which drives the gauge sprite's horizontal flip.
+     * Sets the mirror/side flag, which drives the gauge sprite's horizontal flip.
      * @param nSide The mirror/side flag.
      * @ghidraAddress 0x18ad34
      */
     void SetMirrorSide(int nSide);
 
     /**
-     * @brief Begins the gauge fade-in, easing the gauge to fully opaque over @p flDuration
+     * Begins the gauge fade-in, easing the gauge to fully opaque over @p flDuration
      * (snapping to opaque and marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x18ad3c
@@ -166,7 +166,7 @@ public:
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Begins the gauge fade-out, easing the gauge to transparent over @p flDuration
+     * Begins the gauge fade-out, easing the gauge to transparent over @p flDuration
      * (snapping to transparent and marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x18ad6c
@@ -174,14 +174,14 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Resets both sides' gauge state, seeding the value to five in the full-just-reflec
+     * Resets both sides' gauge state, seeding the value to five in the full-just-reflec
      * challenge mode and to zero otherwise.
      * @ghidraAddress 0x18a988
      */
     void ResetSideGauges();
 
     /**
-     * @brief Emits the gauge base/frame sprite (kind 0) into a batch.
+     * Emits the gauge base/frame sprite (kind 0) into a batch.
      *
      * Selects the sprite descriptor and atlas frame by orientation and gauge mode. The batch is
      * always the first one; the caller's argument is the player side.
@@ -192,7 +192,7 @@ public:
     void EmitBaseSprite(unsigned int nSide, int nAlpha);
 
     /**
-     * @brief Emits a gauge label sprite (kind 2) into the label batch.
+     * Emits a gauge label sprite (kind 2) into the label batch.
      * @param nSide The player side.
      * @param nLabelIndex The label index.
      * @param nAlpha The sprite tint alpha.
@@ -201,7 +201,7 @@ public:
     void EmitLabelSprite(unsigned int nSide, int nLabelIndex, int nAlpha);
 
     /**
-     * @brief Emits a gauge icon sprite (batch 3) from the orientation-specific icon table.
+     * Emits a gauge icon sprite (batch 3) from the orientation-specific icon table.
      * @param nSide The player side.
      * @param nIconIndex The icon index into the icon descriptor table.
      * @param nAlpha The sprite tint alpha.
@@ -211,20 +211,21 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
+     * Constructs the layer, chaining the base constructor, seeding its transform scales, and
      * accumulating each batch's per-group capacities.
      * @ghidraAddress 0x18a7d0
      */
     ReflecGaugeLayer();
 
-    /** @brief One player side's gauge state: its target value and its animated display value. */
+    /** One player side's gauge state: its target value and its animated display value. */
     struct SideGauge {
-        float flValue = {};        // +0x00: the side's gauge value (the scoring target).
-        float flDisplayValue = {}; // +0x04: the per-frame animated cell-fill value chasing flValue.
+        float flValue = {}; /*!< The side's gauge value (the scoring target). +0x00 */
+        /** The per-frame animated cell-fill value chasing flValue. +0x04 */
+        float flDisplayValue = {};
     };
 
     /**
-     * @brief Emits one gauge quad into a batch at a side- and mode-selected screen position, with
+     * Emits one gauge quad into a batch at a side- and mode-selected screen position, with
      * an explicit texture rectangle.
      *
      * The caller resolves the quad's texture rectangle (the value renderer scales it to draw a
@@ -246,7 +247,7 @@ private:
                          const S_VECTOR2 &uvSize);
 
     /**
-     * @brief Emits one gauge value/digit quad, scaled to draw a partially-filled digit cell.
+     * Emits one gauge value/digit quad, scaled to draw a partially-filled digit cell.
      *
      * Selects the digit descriptor by orientation, gauge mode, player side (inverted for the non-1P
      * side), and digit index, scales the cell's width and its UV width by @p flScale, and emits it

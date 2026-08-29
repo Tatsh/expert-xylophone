@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The score-history manager for the play-record log.
+ * The score-history manager for the play-record log.
  *
  * This class vends only class-level helpers
  * that fetch, create, validate, hash, delete, and aggregate the Core Data records of the
@@ -16,7 +16,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- * @brief The chart difficulty a history query is filtered by.
+ * The chart difficulty a history query is filtered by.
  */
 typedef NS_ENUM(NSUInteger, HistoryDifficulty) {
     HistoryDifficultyBasic = 0,  /*!< The basic chart. */
@@ -27,14 +27,14 @@ typedef NS_ENUM(NSUInteger, HistoryDifficulty) {
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A stateless manager over the @c History Core Data entity that stores a player's per-play
+ * A stateless manager over the @c History Core Data entity that stores a player's per-play
  * results (hit counts, score, achievement rate, play date, play count, and a tamper-detection
  * hash).
  */
 @interface History : NSObject
 
 /**
- * @brief Fetches the play-history transfer objects for a tune and difficulty, most recent first.
+ * Fetches the play-history transfer objects for a tune and difficulty, most recent first.
  * @param tuneID The tune identifier to look up.
  * @param difficulty The chart difficulty to look up.
  * @param context The managed object context to query.
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     inManagedObjectContext:(NSManagedObjectContext *)context;
 
 /**
- * @brief Fetches the play-history transfer objects recorded after the day before a reference date.
+ * Fetches the play-history transfer objects recorded after the day before a reference date.
  * @param date The reference date; records newer than one day before it are returned.
  * @param context The managed object context to query.
  * @return The matching history transfer objects.
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray *)getScoreData:(NSDate *)date inManagedObjectContext:(NSManagedObjectContext *)context;
 
 /**
- * @brief Fetches the play-history transfer objects recorded within a date range, up to a limit.
+ * Fetches the play-history transfer objects recorded within a date range, up to a limit.
  * @param startDate The inclusive lower bound of the play-date range, or @c nil to disable range
  * filtering.
  * @param endDate The inclusive upper bound of the play-date range, or @c nil to disable range
@@ -71,14 +71,14 @@ NS_ASSUME_NONNULL_BEGIN
                 inManagedObjectContext:(NSManagedObjectContext *)context;
 
 /**
- * @brief Deletes the most recent history records held by a context and saves it.
+ * Deletes the most recent history records held by a context and saves it.
  * @param context The managed object context to delete from and save.
  * @ghidraAddress 0x5b434
  */
 + (void)deleteObject:(NSManagedObjectContext *)context;
 
 /**
- * @brief The number of history records held by a context.
+ * The number of history records held by a context.
  * @param context The managed object context to count.
  * @return The record count, or zero when the count could not be determined.
  * @ghidraAddress 0x5b69c
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (long long)count:(NSManagedObjectContext *)context;
 
 /**
- * @brief Inserts a new history record for a tune and difficulty and resets it to defaults.
+ * Inserts a new history record for a tune and difficulty and resets it to defaults.
  * @param tuneID The tune identifier for the new record; identifiers below the minimum are rejected.
  * @param difficulty The chart difficulty for the new record.
  * @param context The managed object context to insert into.
@@ -98,14 +98,14 @@ NS_ASSUME_NONNULL_BEGIN
          inManagedObjectContext:(NSManagedObjectContext *)context;
 
 /**
- * @brief Resets a record's counts, play date, play count, and tamper hash to their defaults.
+ * Resets a record's counts, play date, play count, and tamper hash to their defaults.
  * @param record The record to reset.
  * @ghidraAddress 0x5b900
  */
 + (void)reset:(id)record;
 
 /**
- * @brief Computes the tamper hash for a set of already unpacked play figures.
+ * Computes the tamper hash for a set of already unpacked play figures.
  * @param tuneID The tune identifier.
  * @param difficulty The chart difficulty.
  * @param score The score.
@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
                     Hash:(unsigned char *)hash;
 
 /**
- * @brief Computes the tamper hash for a record's current play figures.
+ * Computes the tamper hash for a record's current play figures.
  * @param record The record to hash.
  * @return The freshly computed sixteen-byte hash data.
  * @ghidraAddress 0x5bc38
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSData *)hashScore:(id)record;
 
 /**
- * @brief Validates a record by comparing its stored hash against a freshly computed one.
+ * Validates a record by comparing its stored hash against a freshly computed one.
  * @param record The record to check.
  * @return @c YES when the record's stored hash matches the recomputed hash, otherwise @c NO.
  * @ghidraAddress 0x5c01c
@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)checkScore:(id)record;
 
 /**
- * @brief The achievement rate of a record's hit counts.
+ * The achievement rate of a record's hit counts.
  * @param source The record to score, or @c nil for a zero rate.
  * @return The achievement rate as @c (just * 3 + great * 2 + good) / ((just + great + good + miss)
  * * 3).
@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (float)getAR:(nullable id)source;
 
 /**
- * @brief Whether a record represents a full combo, that is, no Miss and every hit accounted for by
+ * Whether a record represents a full combo, that is, no Miss and every hit accounted for by
  * the best combo.
  * @param source The record to test, or @c nil for @c NO.
  * @return @c YES when the record is a full combo, otherwise @c NO.

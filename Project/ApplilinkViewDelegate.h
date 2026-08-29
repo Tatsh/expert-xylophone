@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink SDK's @c ApplilinkViewDelegate protocol.
+ * Reconstructed interface for the Applilink SDK's @c ApplilinkViewDelegate protocol.
  *
  * The advert-list lifecycle delegate: the advert area and web views notify it as the list starts,
  * appears, disappears, or fails to load or link. Every callback is optional and every sender
@@ -12,35 +12,35 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The advert-list lifecycle delegate of the Applilink advert views.
+ * The advert-list lifecycle delegate of the Applilink advert views.
  */
 @protocol ApplilinkViewDelegate <NSObject>
 
 @optional
 
 /**
- * @brief Notify the delegate that the advert list started.
+ * Notify the delegate that the advert list started.
  */
 - (void)appListDidStart;
 
 /**
- * @brief Notify the delegate that the advert list appeared.
+ * Notify the delegate that the advert list appeared.
  */
 - (void)appListDidAppear;
 
 /**
- * @brief Notify the delegate that the advert list disappeared.
+ * Notify the delegate that the advert list disappeared.
  */
 - (void)appListDidDisappear;
 
 /**
- * @brief Report an advert-list load failure to the delegate.
+ * Report an advert-list load failure to the delegate.
  * @param error The load error.
  */
 - (void)appListFailLoadWithError:(NSError *)error;
 
 /**
- * @brief Report an advert-list link failure to the delegate.
+ * Report an advert-list link failure to the delegate.
  * @param error The link error.
  */
 - (void)appListFailLinkWithError:(NSError *)error;

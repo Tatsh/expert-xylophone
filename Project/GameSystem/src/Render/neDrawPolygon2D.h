@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The 2D polygon-mesh draw node, @c ne::C_DRAW_POLYGON_2D.
+ * The 2D polygon-mesh draw node, @c ne::C_DRAW_POLYGON_2D.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ namespace ne {
 class C_TEXTURE;
 
 /**
- * @brief A packed 8-bit-per-channel RGBA colour, in memory order.
+ * A packed 8-bit-per-channel RGBA colour, in memory order.
  */
 struct S_RGBA {
     unsigned char nRed = {};   /*!< The red channel, 0 through 255. +0x00 */
@@ -25,7 +25,7 @@ struct S_RGBA {
 };
 
 /**
- * @brief A 2D polygon-mesh draw node (RTTI @c ne::C_DRAW_POLYGON_2D).
+ * A 2D polygon-mesh draw node (RTTI @c ne::C_DRAW_POLYGON_2D).
  *
  * Draws an indexed 2D triangle mesh: per-vertex position, colour, and UV arrays plus a 16-bit index
  * buffer, uploaded together. It is a @c C_RENDER, so it lives in the scene graph. The trailing
@@ -37,7 +37,7 @@ struct S_RGBA {
 class C_DRAW_POLYGON_2D : public C_RENDER {
 public:
     /**
-     * @brief Constructs a 2D polygon-mesh node with the given draw mode, vertex format, vertex and
+     * Constructs a 2D polygon-mesh node with the given draw mode, vertex format, vertex and
      * index counts, ownership flags, and draw colour.
      *
      * Records the configuration and initialises the per-vertex attribute offsets to their unset
@@ -59,7 +59,7 @@ public:
                       bool bIndexBufferExternal);
 
     /**
-     * @brief Destroys the mesh: releases the bound texture, frees the vertex, colour, index, and
+     * Destroys the mesh: releases the bound texture, frees the vertex, colour, index, and
      * per-bone arrays, deletes the GL vertex and index buffer objects it owns, and chains the base
      * render-node destructor.
      * @ghidraAddress 0x27440
@@ -67,7 +67,7 @@ public:
     ~C_DRAW_POLYGON_2D() override;
 
     /**
-     * @brief Set a mesh vertex's position, if the mesh carries a position attribute.
+     * Set a mesh vertex's position, if the mesh carries a position attribute.
      *
      * The position is taken by value (its two components arrive in the floating-point argument
      * registers), so this is interchangeable with the pointer-taking @c SetPosFromVec wrapper.
@@ -78,7 +78,7 @@ public:
     void SetPos(int nIndex, S_VECTOR2 position);
 
     /**
-     * @brief Set a mesh vertex's position from a vector pointer, forwarding to @c SetPos.
+     * Set a mesh vertex's position from a vector pointer, forwarding to @c SetPos.
      * @param nIndex The vertex index.
      * @param pPosition The vertex position.
      * @ghidraAddress 0x28320
@@ -86,7 +86,7 @@ public:
     void SetPosFromVec(int nIndex, const S_VECTOR2 *pPosition);
 
     /**
-     * @brief Set a mesh vertex's RGBA colour, if the mesh carries a colour attribute.
+     * Set a mesh vertex's RGBA colour, if the mesh carries a colour attribute.
      * @param nIndex The vertex index.
      * @param nRed The red component.
      * @param nGreen The green component.
@@ -101,7 +101,7 @@ public:
                  unsigned char nAlpha);
 
     /**
-     * @brief Set only a mesh vertex's alpha channel, if the mesh carries a colour attribute.
+     * Set only a mesh vertex's alpha channel, if the mesh carries a colour attribute.
      * @param nIndex The vertex index.
      * @param nAlpha The alpha component.
      * @ghidraAddress 0x284f8
@@ -109,7 +109,7 @@ public:
     void SetVertexAlpha(int nIndex, unsigned char nAlpha);
 
     /**
-     * @brief Set a mesh vertex's texture coordinate, if the mesh carries a texcoord attribute.
+     * Set a mesh vertex's texture coordinate, if the mesh carries a texcoord attribute.
      *
      * Encodes @p flU and the vertically-flipped @p flV to the signed 16-bit fixed-point range and
      * writes them into the vertex's texcoord slot, marking the vertex data dirty.
@@ -121,7 +121,7 @@ public:
     void SetUV(int nIndex, float flU, float flV);
 
     /**
-     * @brief Set a mesh vertex's texture coordinate from a vector pointer, forwarding to @c SetUV.
+     * Set a mesh vertex's texture coordinate from a vector pointer, forwarding to @c SetUV.
      * @param nIndex The vertex index.
      * @param pUv The texture coordinate (its x and y are the U and V).
      * @ghidraAddress 0x283ac
@@ -129,7 +129,7 @@ public:
     void SetUVFromVec(int nIndex, const S_VECTOR2 *pUv);
 
     /**
-     * @brief Store a vertex index into the mesh's index buffer and mark it dirty.
+     * Store a vertex index into the mesh's index buffer and mark it dirty.
      * @param nIndex The position in the index buffer.
      * @param wValue The vertex index to store.
      * @ghidraAddress 0x28578
@@ -137,14 +137,14 @@ public:
     void SetIndex(int nIndex, unsigned short wValue);
 
     /**
-     * @brief Bind a texture to the mesh, releasing any previously bound texture and retaining the
+     * Bind a texture to the mesh, releasing any previously bound texture and retaining the
      *        new one.
      * @param pTexture The texture to bind, or null to unbind.
      * @ghidraAddress 0x2824c
      */
     void SetTexture(C_TEXTURE *pTexture);
 
-    /** @brief The vertex-format attribute bits tested before writing a vertex attribute. */
+    /** The vertex-format attribute bits tested before writing a vertex attribute. */
     enum VertexFormatFlag {
         kVertexHasPosition = 1 << 0, /*!< The mesh carries per-vertex positions. */
         kVertexHasTexcoord = 1 << 1, /*!< The mesh carries per-vertex texture coordinates. */
@@ -153,7 +153,7 @@ public:
     };
 
     /**
-     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh)
+     * Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh)
      * the per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
      *
      * Also generates the GL vertex and index buffer objects unless the caller owns them, marking
@@ -163,7 +163,7 @@ public:
     void AllocateBuffers();
 
     /**
-     * @brief Draws the mesh (the @c C_RENDER vtable render slot).
+     * Draws the mesh (the @c C_RENDER vtable render slot).
      *
      * Builds the model matrix from the node's translation, Z rotation, and uniform scale, composes
      * it under the parent's world matrix, then uploads the (possibly colour-premultiplied) vertex
@@ -222,7 +222,7 @@ private:
 };
 
 /**
- * @brief Allocates and initialises a 2D polygon-mesh node ready to be populated and drawn.
+ * Allocates and initialises a 2D polygon-mesh node ready to be populated and drawn.
  * @param nDrawMode The primitive draw mode.
  * @param nVertexCount The number of vertices.
  * @param nVertexFormat The vertex-format attribute bit-set.

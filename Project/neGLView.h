@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The OpenGL ES drawing surface.
+ * The OpenGL ES drawing surface.
  *
  * It is a @c UIView subclass backed by an @c EAGLContext and the
  * engine's GL ES interface: it owns the framebuffer and renderbuffer, reports the front-buffer
@@ -18,7 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Receives layout notifications from a @c neGLView. The view checks each callback with
+ * Receives layout notifications from a @c neGLView. The view checks each callback with
  * @c -respondsToSelector: before invoking it, so conformance is informal.
  */
 @protocol neGLViewDelegate <NSObject>
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 /**
- * @brief Notifies the delegate that the GL view laid out and resized its renderbuffer.
+ * Notifies the delegate that the GL view laid out and resized its renderbuffer.
  * @param glView The view that was laid out.
  * @ghidraAddress 0x8a7e4
  */
@@ -35,15 +35,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief The OpenGL ES drawing surface that hosts the game renderer.
+ * The OpenGL ES drawing surface that hosts the game renderer.
  */
 @interface neGLView : UIView
 
-/** @brief The delegate notified of layout changes. */
+/** The delegate notified of layout changes. */
 @property(nonatomic, weak, nullable) id<neGLViewDelegate> delegate;
 
 /**
- * @brief Returns the most recently created GL view, or @c nil when none exists.
+ * Returns the most recently created GL view, or @c nil when none exists.
  *
  * The view records itself in a file-scope global as its last initialisation step and clears it in
  * @c -dealloc, so at most one instance is live at a time.
@@ -53,40 +53,40 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable instancetype)GetInstance;
 
 /**
- * @brief Returns the current front-buffer width, in pixels.
+ * Returns the current front-buffer width, in pixels.
  * @return The front-buffer width, in pixels.
  * @ghidraAddress 0x3a448
  */
 - (int)GetFrontBufferWidth;
 
 /**
- * @brief Returns the current front-buffer height, in pixels.
+ * Returns the current front-buffer height, in pixels.
  * @return The front-buffer height, in pixels.
  * @ghidraAddress 0x3a458
  */
 - (int)GetFrontBufferHeight;
 
 /**
- * @brief Makes this view's @c EAGLContext current so rendering can begin.
+ * Makes this view's @c EAGLContext current so rendering can begin.
  * @return @c YES when the context was made current.
  * @ghidraAddress 0x3a468
  */
 - (BOOL)BeginRender;
 
 /**
- * @brief Binds the default framebuffer for rendering.
+ * Binds the default framebuffer for rendering.
  * @ghidraAddress 0x3a4d8
  */
 - (void)SetDefaultFrameBuffer;
 
 /**
- * @brief Binds the default colour renderbuffer for rendering.
+ * Binds the default colour renderbuffer for rendering.
  * @ghidraAddress 0x3a4dc
  */
 - (void)SetDefaultColorBuffer;
 
 /**
- * @brief Presents the colour renderbuffer to the screen.
+ * Presents the colour renderbuffer to the screen.
  * @return @c YES when the renderbuffer was presented.
  * @ghidraAddress 0x3a4e0
  */

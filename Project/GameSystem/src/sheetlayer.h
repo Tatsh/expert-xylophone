@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note-sheet-layer geometry helpers, @c SheetLayer.
+ * The note-sheet-layer geometry helpers, @c SheetLayer.
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 class GameSystem;
 
 /**
- * @brief The sheet-layer geometry helpers.
+ * The sheet-layer geometry helpers.
  *
  * Each takes the target GameSystem, so they are modelled as static members of the sheet-layer
  * helper class (its full type is not yet reconstructed).
@@ -16,7 +16,7 @@ class GameSystem;
 class SheetLayer {
 public:
     /**
-     * @brief Stores the sheet-layer margins on @p pGameSystem and recomputes the far corner.
+     * Stores the sheet-layer margins on @p pGameSystem and recomputes the far corner.
      * @param fLeft The left margin.
      * @param fTop The top margin.
      * @param fRight The right margin.

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The horizontal experience-item picker for a single unlock package.
+ * The horizontal experience-item picker for a single unlock package.
  *
  * Each package in the unlock
  * catalogue is rendered as one of these views inside the @c RBUnlockView scroll view; it stacks a
@@ -22,12 +22,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Delegate notified when an item in an @c RBUnlockCollectionView is tapped.
+ * Delegate notified when an item in an @c RBUnlockCollectionView is tapped.
  */
 @protocol RBUnlockCollectionViewDelegate <NSObject>
 
 /**
- * @brief The player tapped an enabled, interactive item cell.
+ * The player tapped an enabled, interactive item cell.
  * @param view The collection view whose item was tapped.
  * @param cell The tapped cell.
  * @ghidraAddress 0x18dedc
@@ -37,13 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief The per-package experience-item picker.
+ * The per-package experience-item picker.
  */
 @interface RBUnlockCollectionView :
     UIView <RBCollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
 
 /**
- * @brief Create the picker for a single unlock package and build its subviews.
+ * Create the picker for a single unlock package and build its subviews.
  * @param frame The view's frame rectangle.
  * @param experiencePackageData The package whose items are laid out.
  * @return The initialised view, or @c nil.
@@ -53,21 +53,21 @@ NS_ASSUME_NONNULL_BEGIN
                  experiencePackageData:(nullable RBUnlockPackageData *)experiencePackageData;
 
 /**
- * @brief Build the framed backdrop, the package title label, the paged collection view, and (on the
+ * Build the framed backdrop, the package title label, the paged collection view, and (on the
  * non-default font) the page control, then reload the item content.
  * @ghidraAddress 0x18bf24
  */
 - (void)setupView;
 
 /**
- * @brief Refresh the title and, on the Limelight theme, its per-package colour, then reload the
+ * Refresh the title and, on the Limelight theme, its per-package colour, then reload the
  * collection view's items.
  * @ghidraAddress 0x18ce6c
  */
 - (void)reloadData;
 
 /**
- * @brief Update the page control's page count and visibility from the collection view's content and
+ * Update the page control's page count and visibility from the collection view's content and
  * frame width.
  * @param collectionView The collection view that finished laying out.
  * @ghidraAddress 0x18d274
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didLayoutSubviews:(RBCollectionView *)collectionView;
 
 /**
- * @brief Bind the cell to its item and update its unlock, badge, and interaction state from
+ * Bind the cell to its item and update its unlock, badge, and interaction state from
  * @c RBExperienceData and @c RBMusicManager.
  * @param cell The cell to reconfigure.
  * @ghidraAddress 0x18d380
@@ -83,37 +83,37 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configureCell:(RBUnlockCollectionCell *)cell;
 
 /**
- * @brief The delegate notified of item taps.
+ * The delegate notified of item taps.
  */
 @property(weak, nonatomic, nullable) id<RBUnlockCollectionViewDelegate> delegate;
 
 /**
- * @brief The framed backdrop behind the title and items.
+ * The framed backdrop behind the title and items.
  */
 @property(strong, nonatomic, nullable) UIImageView *backgroundView;
 
 /**
- * @brief The package title label.
+ * The package title label.
  */
 @property(strong, nonatomic, nullable) UILabel *titleLabel;
 
 /**
- * @brief The paged collection view laying out the item cells.
+ * The paged collection view laying out the item cells.
  */
 @property(strong, nonatomic, nullable) RBCollectionView *collectionView;
 
 /**
- * @brief The page control shown beneath the items on the non-default font.
+ * The page control shown beneath the items on the non-default font.
  */
 @property(strong, nonatomic, nullable) UIPageControl *pageControl;
 
 /**
- * @brief The package whose items this picker lays out.
+ * The package whose items this picker lays out.
  */
 @property(strong, nonatomic, nullable) RBUnlockPackageData *experiencePackageData;
 
 /**
- * @brief The package's item entries, mirrored from @c experiencePackageData for the data source.
+ * The package's item entries, mirrored from @c experiencePackageData for the data source.
  */
 @property(strong, nonatomic, nullable) NSArray *items;
 

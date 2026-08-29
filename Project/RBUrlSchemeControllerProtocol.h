@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The protocol a per-host deep-link handler class must adopt to be dispatched to by
+ * The protocol a per-host deep-link handler class must adopt to be dispatched to by
  * @c RBUrlSchemeManager.
  *
  * Handler classes are named @c RBUrlScheme<Host>Controller and are resolved
@@ -15,12 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Adopted by per-host handlers routed to by @c RBUrlSchemeManager.
+ * Adopted by per-host handlers routed to by @c RBUrlSchemeManager.
  */
 @protocol RBUrlSchemeControllerProtocol <NSObject>
 
 /**
- * @brief Perform the deep-link action for a routed URL.
+ * Perform the deep-link action for a routed URL.
  * @param action The URL's last path component, naming the action to perform.
  * @param query The URL's query string parsed into a key-value dictionary, or @c nil.
  * @return @c YES when the action was handled; @c NO otherwise.

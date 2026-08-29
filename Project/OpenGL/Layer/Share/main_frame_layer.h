@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The play-field main-frame layer, @c MainFrameLayer.
+ * The play-field main-frame layer, @c MainFrameLayer.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class C_DRAW_POLYGON_3D;
 } // namespace ne
 
 /**
- * @brief The play-field main-frame layer (the frame graphics around the note field).
+ * The play-field main-frame layer (the frame graphics around the note field).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * frame's sprite instancers and a fade channel that animates the frame's alpha in and out. The
@@ -29,14 +29,14 @@ class C_DRAW_POLYGON_3D;
 class MainFrameLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide main-frame layer, created on first use.
+     * The process-wide main-frame layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x17b5d4
      */
     static MainFrameLayer *shared();
 
     /**
-     * @brief Begins the frame fade-in, easing the frame alpha to fully opaque (255) over
+     * Begins the frame fade-in, easing the frame alpha to fully opaque (255) over
      * @p flDuration (snapping to opaque and marking the fade done when the duration is
      * non-positive).
      * @param flDuration The fade duration.
@@ -45,7 +45,7 @@ public:
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Begins the frame fade-out, easing the frame alpha to zero over @p flDuration (snapping
+     * Begins the frame fade-out, easing the frame alpha to zero over @p flDuration (snapping
      * to zero and marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x17c6a0
@@ -53,14 +53,14 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Shows or hides the main frame sprite. A no-op when the sprite has not been built.
+     * Shows or hides the main frame sprite. A no-op when the sprite has not been built.
      * @param bEnabled @c true to show the frame, @c false to hide it.
      * @ghidraAddress 0x17c9a8
      */
     void SetMainFrameEnabled(bool bEnabled);
 
     /**
-     * @brief Sets the frame type, rebuilding the frame sprites when it changes.
+     * Sets the frame type, rebuilding the frame sprites when it changes.
      *
      * A no-op when the type is unchanged; otherwise it records the new type, clears the built flag,
      * and rebuilds the frame sprites.
@@ -70,7 +70,7 @@ public:
     void SetFrameType(int nType);
 
     /**
-     * @brief Sets the frame marker and difficulty, refreshing the overlay layout when either
+     * Sets the frame marker and difficulty, refreshing the overlay layout when either
      * changes.
      *
      * Builds the sprites first if they are not yet built, records the new marker and difficulty,
@@ -82,14 +82,14 @@ public:
     void SetMarker(int nMarker, int nDifficulty);
 
     /**
-     * @brief Rebuilds the full frame geometry: the marker/difficulty overlay layout and the 3D
+     * Rebuilds the full frame geometry: the marker/difficulty overlay layout and the 3D
      * frame vertices.
      * @ghidraAddress 0x17c864
      */
     void BuildGeometry();
 
     /**
-     * @brief Binds a texture to the frame mesh's sprite instancer and recomputes the mesh UV
+     * Binds a texture to the frame mesh's sprite instancer and recomputes the mesh UV
      * offsets and scale from the texture's dimensions.
      *
      * With a null texture the mesh is left unchanged (only the instancer's texture is cleared).
@@ -99,7 +99,7 @@ public:
     void SetMainFrameTexture(ne::C_TEXTURE *pTexture);
 
     /**
-     * @brief Selects which of the layer's two sprite instancers @c EmitMainFrameSprite fills.
+     * Selects which of the layer's two sprite instancers @c EmitMainFrameSprite fills.
      */
     enum MainFrameInstancer {
         MainFrameInstancerOverlay = 0, /*!< The marker/difficulty overlay sprite batch. */
@@ -107,7 +107,7 @@ public:
     };
 
     /**
-     * @brief Appends one sprite to one of the layer's two instancers, at the given world position.
+     * Appends one sprite to one of the layer's two instancers, at the given world position.
      *
      * A no-op when the instancer index is out of range, the sprite kind is out of range, or the
      * target instancer is already full. The overlay instancer takes its size, anchor, and UV atlas
@@ -126,7 +126,7 @@ public:
                              float flY);
 
     /**
-     * @brief (Re)builds the frame's meshes and sprite instancers for the current frame type.
+     * (Re)builds the frame's meshes and sprite instancers for the current frame type.
      *
      * Resolves the frame type (substituting the game system's when the layer still holds the
      * default sentinel), releases and reloads the frame and overlay atlases, then creates any of
@@ -140,7 +140,7 @@ public:
     void BuildSprites();
 
     /**
-     * @brief Advances the frame layer by one frame, refreshing its geometry and fade alpha.
+     * Advances the frame layer by one frame, refreshing its geometry and fade alpha.
      *
      * Re-lays-out the overlay and rebuilds the 3D border whenever the viewport has changed size,
      * then advances the fade channel toward its end. On the frame the fade moves — or the frame a
@@ -154,7 +154,7 @@ public:
 
 private:
     /**
-     * @brief Rebuilds the positions of both 3D meshes from the current sheet metrics.
+     * Rebuilds the positions of both 3D meshes from the current sheet metrics.
      *
      * Lays the border mesh out as a picture frame of four quads — a bottom band, a top band, and a
      * left and right strip spanning between them — around the sheet's outer rectangle, then lays
@@ -165,7 +165,7 @@ private:
     void Build3dVertices();
 
     /**
-     * @brief Re-lays-out the frame's border mesh and its marker/difficulty overlay sprites.
+     * Re-lays-out the frame's border mesh and its marker/difficulty overlay sprites.
      *
      * Positions the frame mesh's 24 vertices as two theme-independent horizontal bands (a short
      * centre tab and the full-width bottom strip) sized to the current viewport width, clears both
@@ -177,7 +177,7 @@ private:
     void SetOverlayLayout();
 
     /**
-     * @brief Constructs the layer, chaining the base constructor and seeding its default layout
+     * Constructs the layer, chaining the base constructor and seeding its default layout
      * fields. The binary inlines this into @c shared (0x17b5d4).
      */
     MainFrameLayer();

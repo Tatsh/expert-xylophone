@@ -33,27 +33,27 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBExperienceData ()
 
 /**
- * @brief Encodes a point value into its enciphered on-disk form.
+ * Encodes a point value into its enciphered on-disk form.
  * @ghidraAddress 0x1bc554
  */
 - (NSMutableData *)encodePoint:(float)point;
 /**
- * @brief Decodes a point value from its enciphered on-disk form.
+ * Decodes a point value from its enciphered on-disk form.
  * @ghidraAddress 0x1bc770
  */
 - (float)decodePoint:(nullable NSData *)data;
 /**
- * @brief Encodes the reward mapping into its enciphered on-disk form.
+ * Encodes the reward mapping into its enciphered on-disk form.
  * @ghidraAddress 0x1bc9f4
  */
 - (NSMutableData *)encodeAppliIds:(NSDictionary *)appliIds;
 /**
- * @brief Decodes the reward mapping from its enciphered on-disk form.
+ * Decodes the reward mapping from its enciphered on-disk form.
  * @ghidraAddress 0x1bcbd8
  */
 - (NSMutableDictionary *)decodeAppliIds:(nullable NSData *)data;
 /**
- * @brief Records a diagnostic message. Compiled to an empty stub in the shipped build.
+ * Records a diagnostic message. Compiled to an empty stub in the shipped build.
  * @ghidraAddress 0x1bd0cc
  */
 - (void)writeLog:(NSString *)message;

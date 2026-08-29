@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A single play-history entry: the tune, difficulty, score, judgement tallies, achievement
+ * A single play-history entry: the tune, difficulty, score, judgement tallies, achievement
  * rate, play date, and play count for one recorded play.
  *
  * The class copies its fields from a score-like
@@ -16,91 +16,91 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief One entry in a player's play history, initialised from a score-like source record.
+ * One entry in a player's play history, initialised from a score-like source record.
  */
 @interface HistoryData : NSObject
 
 /**
- * @brief The tamper-detection hash copied from the source record.
+ * The tamper-detection hash copied from the source record.
  * @ghidraAddress 0x18610 (getter)
  * @ghidraAddress 0x18620 (setter)
  */
 @property(nonatomic, strong, nullable) NSData *chksco;
 /**
- * @brief The score achieved.
+ * The score achieved.
  * @ghidraAddress 0x18658 (getter)
  * @ghidraAddress 0x18668 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *score;
 /**
- * @brief The combo count.
+ * The combo count.
  * @ghidraAddress 0x186a0 (getter)
  * @ghidraAddress 0x186b0 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *cntCom;
 /**
- * @brief The Good count.
+ * The Good count.
  * @ghidraAddress 0x186e8 (getter)
  * @ghidraAddress 0x186f8 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *cntGood;
 /**
- * @brief The Great count.
+ * The Great count.
  * @ghidraAddress 0x18730 (getter)
  * @ghidraAddress 0x18740 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *cntGreat;
 /**
- * @brief The Just Reflec count.
+ * The Just Reflec count.
  * @ghidraAddress 0x18778 (getter)
  * @ghidraAddress 0x18788 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *cntJR;
 /**
- * @brief The Just count.
+ * The Just count.
  * @ghidraAddress 0x187c0 (getter)
  * @ghidraAddress 0x187d0 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *cntJust;
 /**
- * @brief The Miss count.
+ * The Miss count.
  * @ghidraAddress 0x18808 (getter)
  * @ghidraAddress 0x18818 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *cntMiss;
 /**
- * @brief The achievement rate, derived from the source record's judgement tallies by @c History.
+ * The achievement rate, derived from the source record's judgement tallies by @c History.
  * @ghidraAddress 0x18850 (getter)
  * @ghidraAddress 0x18860 (setter)
  */
 @property(nonatomic, assign) float ar;
 /**
- * @brief The difficulty the tune was played on.
+ * The difficulty the tune was played on.
  * @ghidraAddress 0x18870 (getter)
  * @ghidraAddress 0x18880 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *diff;
 /**
- * @brief The date the tune was played, shifted into the device's local time zone.
+ * The date the tune was played, shifted into the device's local time zone.
  * @ghidraAddress 0x188b8 (getter)
  * @ghidraAddress 0x188c8 (setter)
  */
 @property(nonatomic, strong, nullable) NSDate *playDate;
 /**
- * @brief The play count.
+ * The play count.
  * @ghidraAddress 0x18900 (getter)
  * @ghidraAddress 0x18910 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *pc;
 /**
- * @brief The tune identifier this history entry belongs to.
+ * The tune identifier this history entry belongs to.
  * @ghidraAddress 0x18948 (getter)
  * @ghidraAddress 0x18958 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *tuneID;
 
 /**
- * @brief Initialises a history entry by copying its fields from a score-like source record.
+ * Initialises a history entry by copying its fields from a score-like source record.
  * @param source The source record whose fields are copied; its judgement tallies drive the
  * achievement rate and its play date is shifted into the local time zone.
  * @return The initialised entry, or an entry with unset fields when @p source is @c nil.
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithData:(nullable id)source;
 
 /**
- * @brief Shifts a date from UTC into the device's local time zone.
+ * Shifts a date from UTC into the device's local time zone.
  * @param date The date to convert.
  * @return A date offset by the local time zone's seconds from GMT, or @c nil when @p date is
  * @c nil.

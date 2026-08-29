@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Shared layout of the eight-word MD5 tamper-hash scramble buffer used by the score and
+ * Shared layout of the eight-word MD5 tamper-hash scramble buffer used by the score and
  * history record integrity checks.
  *
  * Both ScoreData and History fold a tune identifier and a set of per-record figures into this same
@@ -15,7 +15,7 @@
 #define RBSCOREHASH_H
 
 /**
- * @brief The number of 32-bit words folded into a tamper-hash scramble buffer.
+ * The number of 32-bit words folded into a tamper-hash scramble buffer.
  *
  * An enumerator rather than a constant because the C translation units that include this header
  * size a local array with it, and only an enumerator is a constant expression in C.
@@ -23,7 +23,7 @@
 enum { kHashWordCount = 8 };
 
 /**
- * @brief The length in bytes of the MD5 digest a tamper-hash builder produces.
+ * The length in bytes of the MD5 digest a tamper-hash builder produces.
  *
  * An enumerator rather than a constant because the C translation units that include this header
  * size a local array with it, and only an enumerator is a constant expression in C.
@@ -31,7 +31,7 @@ enum { kHashWordCount = 8 };
 enum { kHashDigestLength = 16 };
 
 /**
- * @brief The word-buffer slot each figure occupies in a tamper hash.
+ * The word-buffer slot each figure occupies in a tamper hash.
  *
  * Slot 0 always holds the tune identifier in every builder. The remaining slots hold different
  * figures depending on the builder (per-difficulty score words in ScoreData, per-play statistic

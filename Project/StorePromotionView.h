@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The rotating store promotion banner carousel and the delegate protocol it uses to report
+ * The rotating store promotion banner carousel and the delegate protocol it uses to report
  * a pack tap and the currently previewing sample tune.
  *
  * The view hosts a paging scroll view of banner
@@ -23,7 +23,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Callbacks a @c StorePromotionView sends to its delegate.
+ * Callbacks a @c StorePromotionView sends to its delegate.
  *
  * Both are declared @c \@optional in the binary's protocol.
  */
@@ -32,14 +32,14 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 /**
- * @brief Sent when a promotion banner naming a pack is tapped.
+ * Sent when a promotion banner naming a pack is tapped.
  * @param promotionView The tapped promotion view.
  * @param packId The pack identifier the banner names.
  */
 - (void)storePromotionViewTaped:(StorePromotionView *)promotionView PackID:(int)packId;
 
 /**
- * @brief Sent when the previewing sample tune changes, naming the tune now playing.
+ * Sent when the previewing sample tune changes, naming the tune now playing.
  * @param name The tune name now previewing, or @c nil when preview stops.
  */
 - (void)setPlaySampleName:(nullable NSString *)name;
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief The rotating store promotion banner carousel shown above the pack list.
+ * The rotating store promotion banner carousel shown above the pack list.
  */
 @interface StorePromotionView :
     UIView <UIScrollViewDelegate, ImageDownloaderDelegate, DownloaderDelegate>
@@ -55,60 +55,60 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Properties
 
 /**
- * @brief The paging scroll view that holds the banner tiles.
+ * The paging scroll view that holds the banner tiles.
  */
 @property(nonatomic, strong, nullable) PagingScrollView *scrollView;
 /**
- * @brief The width of a single banner page.
+ * The width of a single banner page.
  */
 @property(nonatomic, assign) CGFloat pageWidth;
 /**
- * @brief The horizontal inset of the paging scroll view from the view's leading edge.
+ * The horizontal inset of the paging scroll view from the view's leading edge.
  */
 @property(nonatomic, assign) CGFloat pageOffsetX;
 /**
- * @brief The banner tile's origin offset within the view.
+ * The banner tile's origin offset within the view.
  */
 @property(nonatomic, assign) CGPoint bannerOffset;
 /**
- * @brief The activity indicator shown until the first banner image loads.
+ * The activity indicator shown until the first banner image loads.
  */
 @property(nonatomic, strong, nullable) UIActivityIndicatorView *indicator;
 /**
- * @brief The timer that advances the carousel to the next page.
+ * The timer that advances the carousel to the next page.
  */
 @property(nonatomic, strong, nullable) NSTimer *timer;
 /**
- * @brief The banner tile views, one per page (with two extra wrap-around copies).
+ * The banner tile views, one per page (with two extra wrap-around copies).
  */
 @property(nonatomic, strong, nullable) NSMutableArray<BannerView *> *bannerViewArray;
 /**
- * @brief The promotion dictionaries backing the banners, keyed by @c ID, @c ImageURL, @c Name,
+ * The promotion dictionaries backing the banners, keyed by @c ID, @c ImageURL, @c Name,
  * @c SampleURL, and @c image.
  */
 @property(nonatomic, strong, nullable) NSMutableArray<NSDictionary *> *promotionDataArray;
 /**
- * @brief The in-flight banner-image downloaders.
+ * The in-flight banner-image downloaders.
  */
 @property(nonatomic, strong, nullable) NSMutableArray<ImageDownloader *> *imageDownloader;
 /**
- * @brief The in-flight sample-tune downloaders, keyed by pack identifier.
+ * The in-flight sample-tune downloaders, keyed by pack identifier.
  */
 @property(nonatomic, strong, nullable)
     NSMutableDictionary<NSString *, Downloader *> *sampleDownloader;
 /**
- * @brief The delegate notified of banner taps and sample-preview changes.
+ * The delegate notified of banner taps and sample-preview changes.
  */
 @property(nonatomic, weak, nullable) id<StorePromotionViewDelegate> delegate;
 /**
- * @brief Whether the view may start sample playback.
+ * Whether the view may start sample playback.
  */
 @property(nonatomic, assign) BOOL isSamplePlayable;
 
 #pragma mark - Setup
 
 /**
- * @brief Initialise the carousel and build its scroll view and downloader collections.
+ * Initialise the carousel and build its scroll view and downloader collections.
  * @param frame The initial frame.
  * @return The initialised view.
  * @ghidraAddress 0xffbbc
@@ -118,21 +118,21 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Image and data
 
 /**
- * @brief Set the banner promotion dictionaries and build the banner tiles and downloaders.
+ * Set the banner promotion dictionaries and build the banner tiles and downloaders.
  * @param imageURLs The promotion dictionaries to display, or @c nil.
  * @ghidraAddress 0x1009e8
  */
 - (void)setImageURLs:(nullable NSArray<NSDictionary *> *)imageURLs;
 
 /**
- * @brief The number of promotion pages.
+ * The number of promotion pages.
  * @return The promotion page count.
  * @ghidraAddress 0x101924
  */
 - (NSUInteger)getImageCount;
 
 /**
- * @brief The pack identifier the currently centred banner names.
+ * The pack identifier the currently centred banner names.
  * @return The pack identifier, or @c -1 when the current page is out of range or unnamed.
  * @ghidraAddress 0x1008cc
  */
@@ -141,17 +141,17 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Animation
 
 /**
- * @brief Start the carousel: preview the current banner's sample and schedule the page timer.
+ * Start the carousel: preview the current banner's sample and schedule the page timer.
  * @ghidraAddress 0x102b04
  */
 - (void)startAnimation;
 /**
- * @brief Stop the carousel by invalidating the page timer.
+ * Stop the carousel by invalidating the page timer.
  * @ghidraAddress 0x103048
  */
 - (void)stopAnimation;
 /**
- * @brief Advance the carousel to the next page, previewing its sample tune.
+ * Advance the carousel to the next page, previewing its sample tune.
  * @ghidraAddress 0x101984
  */
 - (void)setNext;
@@ -159,12 +159,12 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Sample playback
 
 /**
- * @brief Begin sample playback by (re)starting the carousel.
+ * Begin sample playback by (re)starting the carousel.
  * @ghidraAddress 0x102a14
  */
 - (void)startSamplePlay;
 /**
- * @brief Stop sample playback, stopping and popping any pushed preview BGM.
+ * Stop sample playback, stopping and popping any pushed preview BGM.
  * @ghidraAddress 0x102a20
  */
 - (void)stopSamplePlay;
@@ -172,20 +172,20 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Rotation and teardown
 
 /**
- * @brief React to an interface rotation, re-laying the scroll view for the new view width.
+ * React to an interface rotation, re-laying the scroll view for the new view width.
  * @param width The new view width.
  * @ghidraAddress 0x103c6c
  */
 - (void)scrollViewDidRotate:(float)width;
 
 /**
- * @brief Tear down the carousel: cancel every downloader, stop preview, and detach the scroll view.
+ * Tear down the carousel: cancel every downloader, stop preview, and detach the scroll view.
  * @ghidraAddress 0x100138
  */
 - (void)cancel;
 
 /**
- * @brief Resize the banner image view to match a new host size.
+ * Resize the banner image view to match a new host size.
  *
  * An empty stub in the binary: no image-view resize is applied. The hosting
  * @c StorePromotionTableCell sends this from its @c -layoutSubviews.

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The shared GL ES 1.1 render-state backend, @c neGLESRenderer.
+ * The shared GL ES 1.1 render-state backend, @c neGLESRenderer.
  */
 
 #pragma once
@@ -19,7 +19,7 @@
 //
 
 /**
- * @brief The engine render-kind that selects a GL framebuffer attachment point.
+ * The engine render-kind that selects a GL framebuffer attachment point.
  *
  * Passed to @c AttachRenderbufferToFramebuffer; @c neGLESRenderer::RenderKindToGl maps the kind
  * to its GL attachment enum (colour, depth, or stencil).
@@ -34,7 +34,7 @@ enum RenderKind {
 };
 
 /**
- * @brief The engine texture-parameter type that selects a GL sampler parameter name.
+ * The engine texture-parameter type that selects a GL sampler parameter name.
  *
  * @c neGLES::TexParamTypeToGl maps the type to its GL parameter-name enum (the magnification and
  * minification filters and the S and T wrap modes).
@@ -50,7 +50,7 @@ enum TexParamType {
 };
 
 /**
- * @brief Maps a texture-parameter type to its GL sampler parameter-name enum.
+ * Maps a texture-parameter type to its GL sampler parameter-name enum.
  *
  * Asserts the type is in range; the four parameter names are consecutive enums, so the binary
  * computes the result inline as @c GL_TEXTURE_MAG_FILTER @c + @p nType.
@@ -61,7 +61,7 @@ enum TexParamType {
 int TexParamTypeToGl(TexParamType nType);
 
 /**
- * @brief The shared @c ne::neGLES_11 GL ES 1.1 render-state backend.
+ * The shared @c ne::neGLES_11 GL ES 1.1 render-state backend.
  *
  * Only the members the application and render layers call are declared; the state-cache fields the
  * render-state setters touch are modelled, and the rest of the 0x258-byte object is reserved until
@@ -73,7 +73,7 @@ int TexParamTypeToGl(TexParamType nType);
 class neGLESRenderer {
 public:
     /**
-     * @brief Constructs the render state: clears the viewport, matrix-mode, and array-pointer
+     * Constructs the render state: clears the viewport, matrix-mode, and array-pointer
      *        caches, seeds the default blend function, cull mode, current colour, sampler
      *        parameters, and colour-matrix diagonal, and marks every buffer and texture binding
      *        unbound.
@@ -82,13 +82,13 @@ public:
     neGLESRenderer();
 
     /**
-     * @brief Returns the global OpenGL ES renderer, or @c nullptr when it has not been created.
+     * Returns the global OpenGL ES renderer, or @c nullptr when it has not been created.
      * @return The global renderer, or @c nullptr when @c EnsureShared has not run.
      * @ghidraAddress 0x20f50
      */
     static neGLESRenderer *GetShared();
     /**
-     * @brief Lazily constructs the global GL render-state singleton and probes GL capabilities.
+     * Lazily constructs the global GL render-state singleton and probes GL capabilities.
      *
      * On first call it allocates the render state, runs its constructor, stores it in the global,
      * and probes the GL capabilities; subsequent calls are a no-op.
@@ -96,19 +96,19 @@ public:
      */
     static void EnsureShared();
     /**
-     * @brief Returns the @c GL_RENDERBUFFER_OES bind target constant (0x8d41).
+     * Returns the @c GL_RENDERBUFFER_OES bind target constant (0x8d41).
      * @return The @c GL_RENDERBUFFER_OES bind target constant.
      * @ghidraAddress 0x212a4
      */
     static unsigned int GetRenderbufferTarget();
     /**
-     * @brief Returns @c true when the bound framebuffer is complete.
+     * Returns @c true when the bound framebuffer is complete.
      * @return @c true when the bound framebuffer is complete.
      * @ghidraAddress 0x213b4
      */
     static bool IsFramebufferComplete();
     /**
-     * @brief Maps a render kind to its GL framebuffer-attachment enum.
+     * Maps a render kind to its GL framebuffer-attachment enum.
      *
      * Asserts the kind is in range; colour, depth, and stencil map to consecutive attachment enums.
      * @param nKind The render kind.
@@ -118,92 +118,92 @@ public:
     static int RenderKindToGl(RenderKind nKind);
 
     /**
-     * @brief Clears the current GL buffers selected by the GL clear mask.
+     * Clears the current GL buffers selected by the GL clear mask.
      * @param dwMask The GL clear mask selecting the buffers to clear.
      * @ghidraAddress 0x21400
      */
     void ClearBuffers(unsigned int dwMask);
     /**
-     * @brief Deletes the GL texture object @p dwHandle.
+     * Deletes the GL texture object @p dwHandle.
      * @param dwHandle The GL texture object name to delete.
      * @ghidraAddress 0x21a68
      */
     void DeleteTexture(unsigned int dwHandle);
     /**
-     * @brief Generates one GL framebuffer object name into @p pOutFramebuffer.
+     * Generates one GL framebuffer object name into @p pOutFramebuffer.
      * @param pOutFramebuffer Receives the generated framebuffer object name.
      * @ghidraAddress 0x212ac
      */
     void GenFramebuffer(unsigned int *pOutFramebuffer);
     /**
-     * @brief Deletes the GL framebuffer object @p dwFramebuffer.
+     * Deletes the GL framebuffer object @p dwFramebuffer.
      * @param dwFramebuffer The framebuffer object name to delete.
      * @ghidraAddress 0x212b4
      */
     void DeleteFramebuffer(unsigned int dwFramebuffer);
     /**
-     * @brief Binds @p dwFramebuffer as the current @c GL_FRAMEBUFFER_OES draw target.
+     * Binds @p dwFramebuffer as the current @c GL_FRAMEBUFFER_OES draw target.
      * @param dwFramebuffer The framebuffer object name to bind.
      * @ghidraAddress 0x212dc
      */
     void BindFramebuffer(unsigned int dwFramebuffer);
     /**
-     * @brief Generates one GL renderbuffer object name into @p pOutRenderbuffer.
+     * Generates one GL renderbuffer object name into @p pOutRenderbuffer.
      * @param pOutRenderbuffer Receives the generated renderbuffer object name.
      * @ghidraAddress 0x212e4
      */
     void GenRenderbuffer(unsigned int *pOutRenderbuffer);
     /**
-     * @brief Deletes the GL renderbuffer object @p dwRenderbuffer.
+     * Deletes the GL renderbuffer object @p dwRenderbuffer.
      * @param dwRenderbuffer The renderbuffer object name to delete.
      * @ghidraAddress 0x212ec
      */
     void DeleteRenderbuffer(unsigned int dwRenderbuffer);
     /**
-     * @brief Binds @p dwRenderbuffer as the current @c GL_RENDERBUFFER_OES.
+     * Binds @p dwRenderbuffer as the current @c GL_RENDERBUFFER_OES.
      * @param dwRenderbuffer The renderbuffer object name to bind.
      * @ghidraAddress 0x21314
      */
     void BindRenderbuffer(unsigned int dwRenderbuffer);
     /**
-     * @brief Attaches @p dwRenderbuffer to the bound framebuffer at the @p nRenderKind attachment.
+     * Attaches @p dwRenderbuffer to the bound framebuffer at the @p nRenderKind attachment.
      * @param nRenderKind The render kind selecting the attachment point.
      * @param dwRenderbuffer The renderbuffer object name to attach.
      * @ghidraAddress 0x21380
      */
     void AttachRenderbufferToFramebuffer(RenderKind nRenderKind, unsigned int dwRenderbuffer);
     /**
-     * @brief Reads the bound renderbuffer's width into @p pOutWidth.
+     * Reads the bound renderbuffer's width into @p pOutWidth.
      * @param pOutWidth Receives the bound renderbuffer's width in pixels.
      * @ghidraAddress 0x213d8
      */
     void GetRenderbufferWidth(int *pOutWidth);
     /**
-     * @brief Reads the bound renderbuffer's height into @p pOutHeight.
+     * Reads the bound renderbuffer's height into @p pOutHeight.
      * @param pOutHeight Receives the bound renderbuffer's height in pixels.
      * @ghidraAddress 0x213ec
      */
     void GetRenderbufferHeight(int *pOutHeight);
     /**
-     * @brief Generates one GL buffer object name into @p pOutBuffer.
+     * Generates one GL buffer object name into @p pOutBuffer.
      * @param pOutBuffer Receives the generated buffer object name.
      * @ghidraAddress 0x2147c
      */
     void GenBuffer(unsigned int *pOutBuffer);
     /**
-     * @brief Binds @p dwBuffer as the current @c GL_ELEMENT_ARRAY_BUFFER.
+     * Binds @p dwBuffer as the current @c GL_ELEMENT_ARRAY_BUFFER.
      * @param dwBuffer The buffer object name to bind.
      * @ghidraAddress 0x21a14
      */
     void BindIndexBuffer(unsigned int dwBuffer);
     /**
-     * @brief Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.
+     * Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.
      * @param dwBuffer The buffer object name to bind.
      * @ghidraAddress 0x21510
      */
     void BindArrayBuffer(unsigned int dwBuffer);
     /**
-     * @brief Uploads @p nSize bytes of index data to the bound element-array buffer.
+     * Uploads @p nSize bytes of index data to the bound element-array buffer.
      * @param pData The index data to upload.
      * @param nSize The number of bytes to upload.
      * @param nUsage The GL buffer usage hint.
@@ -211,7 +211,7 @@ public:
      */
     void UploadIndexBufferData(const void *pData, unsigned int nSize, int nUsage);
     /**
-     * @brief Uploads @p nSize bytes of vertex data to the bound array buffer.
+     * Uploads @p nSize bytes of vertex data to the bound array buffer.
      * @param pData The vertex data to upload.
      * @param nSize The number of bytes to upload.
      * @param nUsage The GL buffer usage hint.
@@ -219,25 +219,25 @@ public:
      */
     void UploadArrayBufferData(const void *pData, unsigned int nSize, int nUsage);
     /**
-     * @brief Deletes the GL buffer object @p dwBuffer.
+     * Deletes the GL buffer object @p dwBuffer.
      * @param dwBuffer The buffer object name to delete.
      * @ghidraAddress 0x21484
      */
     void DeleteBuffer(unsigned int dwBuffer);
     /**
-     * @brief Generates one GL texture object name into @p pOutHandle.
+     * Generates one GL texture object name into @p pOutHandle.
      * @param pOutHandle Receives the generated texture object name.
      * @ghidraAddress 0x21a60
      */
     void GenTexture(unsigned int *pOutHandle);
     /**
-     * @brief Binds @p dwHandle as the current @c GL_TEXTURE_2D.
+     * Binds @p dwHandle as the current @c GL_TEXTURE_2D.
      * @param dwHandle The texture object name to bind.
      * @ghidraAddress 0x21ab4
      */
     void BindTexture2d(unsigned int dwHandle);
     /**
-     * @brief Sets one texture sampler parameter (@p nParameter: 0 min filter, 1 mag filter, 2 wrap
+     * Sets one texture sampler parameter (@p nParameter: 0 min filter, 1 mag filter, 2 wrap
      *        S, 3 wrap T) to @p nValue on the bound texture.
      * @param nParameter The sampler parameter index.
      * @param nValue The sampler parameter value.
@@ -245,7 +245,7 @@ public:
      */
     void SetTextureParameter(int nParameter, int nValue);
     /**
-     * @brief Uploads @p nWidth by @p nHeight pixels in the given @p nFormat to the bound texture.
+     * Uploads @p nWidth by @p nHeight pixels in the given @p nFormat to the bound texture.
      * @param nFormat The GL pixel format of @p pData.
      * @param nWidth The image width in pixels.
      * @param nHeight The image height in pixels.
@@ -254,7 +254,7 @@ public:
      */
     void UploadTexture2d(int nFormat, int nWidth, int nHeight, const void *pData);
     /**
-     * @brief Draws indexed primitives of the given engine primitive kind from the bound element
+     * Draws indexed primitives of the given engine primitive kind from the bound element
      *        buffer (Ghidra names this @c SetGlParameterByIndex).
      * @param nPrimitive The engine primitive index; an out-of-range value draws points.
      * @param nCount The number of indices to draw.
@@ -263,7 +263,7 @@ public:
      */
     void DrawIndexedPrimitives(int nPrimitive, int nCount, const void *pIndices);
     /**
-     * @brief The maximum number of palette matrices a single instanced draw call may use.
+     * The maximum number of palette matrices a single instanced draw call may use.
      *
      * Read from the renderer's capability block (the GL_OES_matrix_palette limit). The sprite batch
      * flushes a draw once this many per-instance matrices have been queued, and a skinned mesh
@@ -276,7 +276,7 @@ public:
     }
 
     /**
-     * @brief Whether the driver advertises @c GL_OES_matrix_palette.
+     * Whether the driver advertises @c GL_OES_matrix_palette.
      *
      * The binary queries the extension only to decide whether to read the palette size, and every
      * draw path then uses the palette unconditionally. A build running where the extension is
@@ -289,7 +289,7 @@ public:
     }
 
     /**
-     * @brief Probes the live GL ES context for its capabilities and sets the initial GL state.
+     * Probes the live GL ES context for its capabilities and sets the initial GL state.
      *
      * Scans @c GL_EXTENSIONS for @c GL_OES_matrix_palette (recording the flag and, when present,
      * the
@@ -301,7 +301,7 @@ public:
     void QueryCaps();
 
     /**
-     * @brief Enable or disable one engine render capability, skipping the GL call when the cached
+     * Enable or disable one engine render capability, skipping the GL call when the cached
      *        state is already @p bEnable.
      * @param nState The engine enable-state index (0 through @c kEnableStateMax - 1).
      * @param bEnable Whether to enable the capability.
@@ -309,7 +309,7 @@ public:
      */
     void SetGlEnableState(unsigned int nState, bool bEnable);
     /**
-     * @brief Enable or disable one engine vertex-array client state, skipping the GL call when the
+     * Enable or disable one engine vertex-array client state, skipping the GL call when the
      *        cached state is already @p bEnable.
      * @param nState The engine client-state index (0 through @c kClientStateMax - 1).
      * @param bEnable Whether to enable the array.
@@ -317,20 +317,20 @@ public:
      */
     void SetGlClientState(unsigned int nState, bool bEnable);
     /**
-     * @brief Select the current palette matrix, caching it so an unchanged value skips the GL call.
+     * Select the current palette matrix, caching it so an unchanged value skips the GL call.
      * @param nState The palette-matrix index.
      * @ghidraAddress 0x21460
      */
     void SetCurrentPaletteMatrix(int nState);
     /**
-     * @brief Set the GL blend function, caching the factors so an unchanged pair skips the GL call.
+     * Set the GL blend function, caching the factors so an unchanged pair skips the GL call.
      * @param nSrcFactor The engine blend source factor (0 through @c kBlendSrcMax - 1).
      * @param nDstFactor The engine blend destination factor (0 through @c kBlendDestMax - 1).
      * @ghidraAddress 0x21c98
      */
     void SetBlendFunc(int nSrcFactor, int nDstFactor);
     /**
-     * @brief Select the active matrix mode and load @p pMatrix into it; an unchanged mode skips the
+     * Select the active matrix mode and load @p pMatrix into it; an unchanged mode skips the
      *        @c glMatrixMode call but the matrix is always loaded.
      * @param nMode The engine matrix-mode index (1 through 3, else model-view).
      * @param pMatrix The 16-float matrix to load after switching mode.
@@ -338,7 +338,7 @@ public:
      */
     void SetMatrixMode(int nMode, const float *pMatrix);
     /**
-     * @brief Set the GL viewport rectangle, caching it so an unchanged rectangle skips the
+     * Set the GL viewport rectangle, caching it so an unchanged rectangle skips the
      *        @c glViewport call.
      * @param nX The viewport x origin.
      * @param nY The viewport y origin.
@@ -348,7 +348,7 @@ public:
      */
     void SetViewport(int nX, int nY, int nWidth, int nHeight);
     /**
-     * @brief Point the vertex (position) array at client memory, caching the pointer, stride, and
+     * Point the vertex (position) array at client memory, caching the pointer, stride, and
      *        size so an unchanged binding skips the @c glVertexPointer call.
      * @param pData The vertex position data.
      * @param nSize The number of position components per vertex.
@@ -357,7 +357,7 @@ public:
      */
     void SetVertexPointer(const void *pData, int nSize, int nStride);
     /**
-     * @brief Point the colour array at client memory (four unsigned bytes per colour), caching the
+     * Point the colour array at client memory (four unsigned bytes per colour), caching the
      *        pointer and stride so an unchanged binding skips the @c glColorPointer call.
      * @param pData The vertex colour data.
      * @param nStride The byte stride between colours.
@@ -365,7 +365,7 @@ public:
      */
     void SetColorPointer(const void *pData, int nStride);
     /**
-     * @brief Point the active texture unit's coordinate array at client memory (two shorts per
+     * Point the active texture unit's coordinate array at client memory (two shorts per
      *        coordinate), caching the per-unit pointer and stride.
      * @param pData The texture-coordinate data.
      * @param nStride The byte stride between coordinates.
@@ -373,7 +373,7 @@ public:
      */
     void SetTexCoordPointer(const void *pData, int nStride);
     /**
-     * @brief Point the skinning weight array at client memory.
+     * Point the skinning weight array at client memory.
      * @param pData The skinning weight data.
      * @param nSize The number of weight components per vertex.
      * @param nStride The byte stride between vertices.
@@ -381,7 +381,7 @@ public:
      */
     void SetWeightPointer(const void *pData, int nSize, int nStride);
     /**
-     * @brief Point the skinning matrix-index array at client memory.
+     * Point the skinning matrix-index array at client memory.
      * @param pData The matrix-index data.
      * @param nSize The number of matrix-index components per vertex.
      * @param nStride The byte stride between vertices.
@@ -389,7 +389,7 @@ public:
      */
     void SetMatrixIndexPointer(const void *pData, int nSize, int nStride);
     /**
-     * @brief Re-issue the vertex array against the bound array buffer, resetting the cached vertex
+     * Re-issue the vertex array against the bound array buffer, resetting the cached vertex
      *        pointer state when the bound buffer changed.
      * @param nStride The interleaved byte stride between vertices.
      * @param nSize The number of position components per vertex.
@@ -397,7 +397,7 @@ public:
      */
     void ClearVertexPointer(int nStride, int nSize);
     /**
-     * @brief Re-issue the colour array against the bound array buffer, resetting the cached colour
+     * Re-issue the colour array against the bound array buffer, resetting the cached colour
      *        pointer state when the bound buffer changed.
      * @param nStride The interleaved byte stride between vertices.
      * @param nColorOffset The colour's byte offset within a vertex, used as the buffer offset.
@@ -406,7 +406,7 @@ public:
      */
     void ClearColorPointer(int nStride, int nColorOffset, int nBinding);
     /**
-     * @brief Re-issue the active unit's texcoord array against the bound array buffer, resetting
+     * Re-issue the active unit's texcoord array against the bound array buffer, resetting
      * the cached per-unit pointer state when the bound buffer changed.
      * @param nStride The interleaved byte stride between vertices.
      * @param nTexCoordOffset The coordinate's byte offset within a vertex, used as the buffer
@@ -415,7 +415,7 @@ public:
      */
     void ClearTexCoordPointer(int nStride, int nTexCoordOffset);
     /**
-     * @brief Re-issue the skinning weight array against the bound array buffer, resetting its
+     * Re-issue the skinning weight array against the bound array buffer, resetting its
      * cached pointer state when the bound buffer changed.
      * @param nStride The interleaved byte stride between vertices.
      * @param nSize The number of weight components per vertex.
@@ -424,7 +424,7 @@ public:
      */
     void ClearWeightPointer(int nStride, int nSize, int nWeightOffset);
     /**
-     * @brief Re-issue the skinning matrix-index array against the bound array buffer, resetting its
+     * Re-issue the skinning matrix-index array against the bound array buffer, resetting its
      *        cached pointer state when the bound buffer changed.
      * @param nStride The interleaved byte stride between vertices.
      * @param nSize The number of matrix-index components per vertex.

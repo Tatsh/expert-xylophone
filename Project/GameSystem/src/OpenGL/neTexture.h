@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The reference-counted GL texture, @c ne::C_TEXTURE, and the texture cache.
+ * The reference-counted GL texture, @c ne::C_TEXTURE, and the texture cache.
  */
 
 #pragma once
@@ -10,7 +10,7 @@ class neGLESRenderer;
 namespace ne {
 
 /**
- * @brief A reference-counted GL texture (RTTI @c ne::C_TEXTURE).
+ * A reference-counted GL texture (RTTI @c ne::C_TEXTURE).
  *
  * Textures are owned by the global texture cache (an intrusive @c m_pPrev / @c m_pNext list) and
  * shared by reference count: holders retain with @c AddRef and release through @c Release, which
@@ -21,25 +21,25 @@ namespace ne {
  */
 class C_TEXTURE {
 public:
-    /** @brief Constructs an unlinked, unloaded texture with no GL handle and no cache key. */
+    /** Constructs an unlinked, unloaded texture with no GL handle and no cache key. */
     C_TEXTURE();
 
     /**
-     * @brief Splice the texture out of the cache list, free its buffers, and drop its GL handle.
+     * Splice the texture out of the cache list, free its buffers, and drop its GL handle.
      * @ghidraAddress 0x31a24
      * @ghidraAddress 0x31abc (the deleting-destructor thunk)
      */
     virtual ~C_TEXTURE();
 
     /**
-     * @brief Add a reference to the texture.
+     * Add a reference to the texture.
      */
     void AddRef() {
         ++m_nRefCount;
     }
 
     /**
-     * @brief Remove a reference from the texture.
+     * Remove a reference from the texture.
      * @return The reference count after the decrement.
      */
     int ReleaseRef() {
@@ -47,7 +47,7 @@ public:
     }
 
     /**
-     * @brief Release one reference and destroy the texture once the count reaches zero.
+     * Release one reference and destroy the texture once the count reaches zero.
      *
      * The binary dereferences the object before its now-redundant null check, so this must be
      * called on a live texture; destruction runs through the virtual destructor.
@@ -56,7 +56,7 @@ public:
     void Release();
 
     /**
-     * @brief The texture's current reference count.
+     * The texture's current reference count.
      * @return The current reference count.
      */
     int GetRefCount() const {
@@ -64,7 +64,7 @@ public:
     }
 
     /**
-     * @brief The texture's cache key, or @c nullptr when it is not cached.
+     * The texture's cache key, or @c nullptr when it is not cached.
      * @return The cache key, or @c nullptr when the texture is not cached.
      */
     const char *GetKeyName() const {
@@ -72,7 +72,7 @@ public:
     }
 
     /**
-     * @brief The OpenGL texture handle.
+     * The OpenGL texture handle.
      * @return The GL texture handle, or zero when none is live.
      */
     unsigned int GetGLHandle() const {
@@ -80,7 +80,7 @@ public:
     }
 
     /**
-     * @brief The allocated (power-of-two) texture width in texels.
+     * The allocated (power-of-two) texture width in texels.
      * @return The allocated width, in texels.
      */
     int GetAllocWidth() const {
@@ -88,7 +88,7 @@ public:
     }
 
     /**
-     * @brief The allocated (power-of-two) texture height in texels.
+     * The allocated (power-of-two) texture height in texels.
      * @return The allocated height, in texels.
      */
     int GetAllocHeight() const {
@@ -96,7 +96,7 @@ public:
     }
 
     /**
-     * @brief The source image width in pixels (the used region of the allocation).
+     * The source image width in pixels (the used region of the allocation).
      * @return The source image width, in pixels.
      */
     int GetImageWidth() const {
@@ -104,7 +104,7 @@ public:
     }
 
     /**
-     * @brief The source image height in pixels (the used region of the allocation).
+     * The source image height in pixels (the used region of the allocation).
      * @return The source image height, in pixels.
      */
     int GetImageHeight() const {
@@ -112,7 +112,7 @@ public:
     }
 
     /**
-     * @brief The texture's content scale: pixel dimensions divided by it give layout points.
+     * The texture's content scale: pixel dimensions divided by it give layout points.
      * @return The content scale.
      */
     float GetScale() const {
@@ -120,14 +120,14 @@ public:
     }
 
     /**
-     * @brief Store a copy of the source asset path, freeing any path already held.
+     * Store a copy of the source asset path, freeing any path already held.
      * @param pszPath The source asset path to store.
      * @ghidraAddress 0x31b18
      */
     void SetSourcePath(const char *pszPath);
 
     /**
-     * @brief Load this texture's pixels from the named UIImage asset.
+     * Load this texture's pixels from the named UIImage asset.
      * @param pszName The image asset name.
      * @return Non-zero on success, zero when the image could not be loaded.
      * @ghidraAddress 0x31b60
@@ -135,7 +135,7 @@ public:
     int LoadFromUIImage(const char *pszName);
 
     /**
-     * @brief Create the GL texture object from decoded pixel data and store its handle.
+     * Create the GL texture object from decoded pixel data and store its handle.
      * @param nWidth The power-of-two texture width.
      * @param nHeight The power-of-two texture height.
      * @param nFormat The pixel format: 1 for RGBA, 2 for tight 24-bit RGB.
@@ -145,7 +145,7 @@ public:
     void InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *pData);
 
     /**
-     * @brief Record the texture's logical size and scale, track its GPU byte footprint, and upload.
+     * Record the texture's logical size and scale, track its GPU byte footprint, and upload.
      *
      * Stores the source image's logical dimensions and content scale, computes the byte size from
      * the pixel format (RGB is 3 bytes per texel, alpha or luminance is 1, RGBA is 4), adds it to
@@ -169,7 +169,7 @@ public:
                          float flScale);
 
     /**
-     * @brief Store one sampler parameter, skipping the GL call when the cached value is unchanged.
+     * Store one sampler parameter, skipping the GL call when the cached value is unchanged.
      *
      * The texture keeps a shadow of its four current sampler-parameter values; a set only reaches
      * GL when the requested value differs from the shadow, after which the shadow is updated.
@@ -181,7 +181,7 @@ public:
     void SetCachedTextureParameter(neGLESRenderer *pRenderer, int nIndex, int nValue);
 
     /**
-     * @brief Delete this texture's GL handle (context-loss teardown), leaving the entry reloadable.
+     * Delete this texture's GL handle (context-loss teardown), leaving the entry reloadable.
      *
      * Deletes the GL texture and zeroes the handle so the entry can be re-uploaded later from its
      * source path; a no-op when the entry has no source path or no live handle.
@@ -190,7 +190,7 @@ public:
     void ReleaseGLHandle();
 
     /**
-     * @brief Reload this texture's pixels from its stored source-image name.
+     * Reload this texture's pixels from its stored source-image name.
      *
      * Decodes the named image, rounds to a power-of-two RGBA (or tight RGB) buffer, and re-uploads
      * it; used to recover a texture whose GL handle was dropped on a context loss. A no-op when the
@@ -202,19 +202,19 @@ public:
     int ReloadFromSourceName();
 
     /**
-     * @brief Delete the GL handle of every texture in the cache (a context-loss teardown sweep).
+     * Delete the GL handle of every texture in the cache (a context-loss teardown sweep).
      * @ghidraAddress 0x33e1c
      */
     static void ReleaseAllHandles();
 
     /**
-     * @brief Reload every texture in the cache from its source name (context-loss recovery sweep).
+     * Reload every texture in the cache from its source name (context-loss recovery sweep).
      * @ghidraAddress 0x33e5c
      */
     static void ReloadAll();
 
     /**
-     * @brief Build a cached texture directly from decoded pixel data (rather than an image asset).
+     * Build a cached texture directly from decoded pixel data (rather than an image asset).
      *
      * Allocates a texture, uploads the given pixels while tracking their GPU footprint, and, on
      * success, reference-counts the texture and splices it into the head of the live cache list.
@@ -239,7 +239,7 @@ public:
                                      float flScale);
 
     /**
-     * @brief Find a cached texture by key, loading and caching it on a miss.
+     * Find a cached texture by key, loading and caching it on a miss.
      *
      * Walks the cache list for an entry whose key matches @p pszName; on a hit the entry's
      * reference count is incremented and it is returned. On a miss a new entry is allocated,
@@ -252,7 +252,7 @@ public:
     static C_TEXTURE *FindOrLoadCached(const char *pszName);
 
     /**
-     * @brief Lazily create the global texture-cache list.
+     * Lazily create the global texture-cache list.
      *
      * On first call allocates the cache head-holder and its self-linked sentinel entry, so the live
      * list is always a non-empty circular list; a no-op once the list exists.
@@ -261,14 +261,14 @@ public:
     static void EnsureCacheList();
 
     /**
-     * @brief Returns the texture cache's circular-list head-holder (its sentinel node's address).
+     * Returns the texture cache's circular-list head-holder (its sentinel node's address).
      * @return The cache-list head-holder, or @c nullptr before @c EnsureCacheList has run.
      * @ghidraAddress 0x33bf0
      */
     static C_TEXTURE **GetCacheList();
 
     /**
-     * @brief Lazily allocates the texture-cache control singleton, seeding its tag from @p nTag.
+     * Lazily allocates the texture-cache control singleton, seeding its tag from @p nTag.
      *
      * A no-op once the control block exists.
      * @param nTag The tag byte stored in the freshly allocated control block.
@@ -297,7 +297,7 @@ private:
 };
 
 /**
- * @brief The texture cache's circular list, addressed through its sentinel node.
+ * The texture cache's circular list, addressed through its sentinel node.
  *
  * Dereferencing it yields the sentinel @c C_TEXTURE whose @c pNext / @c pPrev links thread the live
  * cache. Created lazily by @c EnsureCacheList.
@@ -306,7 +306,7 @@ private:
 extern C_TEXTURE **g_ppTextureCacheHead;
 
 /**
- * @brief Running total of the bytes held by all live textures, for memory accounting.
+ * Running total of the bytes held by all live textures, for memory accounting.
  * @ghidraAddress 0x3cff28
  */
 extern int g_dwTotalTextureMemory;

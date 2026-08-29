@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The per-difficulty achievement-rate readout hosted by @c RBMusicView on the music-select
+ * The per-difficulty achievement-rate readout hosted by @c RBMusicView on the music-select
  * screen.
  *
  * It renders the achievement rate as a row of image glyphs: a trailing percent sign, one
@@ -25,12 +25,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief An image-glyph achievement-rate percentage display.
+ * An image-glyph achievement-rate percentage display.
  */
 @interface RBMusicARView : UIView
 
 /**
- * @brief Create the readout, sizing the view, building its pool of six reusable glyph image views,
+ * Create the readout, sizing the view, building its pool of six reusable glyph image views,
  * and blanking the display.
  * @param frame The view frame; its width and height are overridden with the fixed readout size.
  * @return The initialised view, or @c nil.
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Rebuild the glyph row for the given achievement rate.
+ * Rebuild the glyph row for the given achievement rate.
  * @param achievementRate The achievement rate; it is scaled by 1000 and split into digits, with the
  * decimal point placed after the first (tenths) digit.
  * @ghidraAddress 0xc1690
@@ -47,14 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)UpdateScore:(float)achievementRate;
 
 /**
- * @brief The pool of six reusable glyph image views, ordered from the least significant glyph.
+ * The pool of six reusable glyph image views, ordered from the least significant glyph.
  * @ghidraAddress 0xc2034 (getter)
  * @ghidraAddress 0xc2044 (setter)
  */
 @property(strong, nonatomic, nullable) NSMutableArray<UIImageView *> *scoreImageArray;
 
 /**
- * @brief The height of the large (integer-digit) glyph style, used to baseline-align the smaller
+ * The height of the large (integer-digit) glyph style, used to baseline-align the smaller
  * glyphs.
  * @ghidraAddress 0xc207c (getter)
  * @ghidraAddress 0xc208c (setter)
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, nonatomic) float numHeightL;
 
 /**
- * @brief The height of the small (fractional-digit, percent, and decimal) glyph style.
+ * The height of the small (fractional-digit, percent, and decimal) glyph style.
  * @ghidraAddress 0xc209c (getter)
  * @ghidraAddress 0xc20ac (setter)
  */

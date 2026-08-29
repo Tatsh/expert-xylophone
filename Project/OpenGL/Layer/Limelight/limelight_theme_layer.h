@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Limelight-theme layer, @c LimelightThemeLayer.
+ * The Limelight-theme layer, @c LimelightThemeLayer.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The Limelight-theme layer.
+ * The Limelight-theme layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * three full-combo atlases and four sprite instancers, drawn beneath the shared background layer,
@@ -28,14 +28,14 @@ class C_SPRITE_INSTANCING_2D;
 class LimelightThemeLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide Limelight-theme layer, created on first use.
+     * The process-wide Limelight-theme layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x1206c8
      */
     static LimelightThemeLayer *shared();
 
     /**
-     * @brief Lazily builds the full-combo layer's textures and sprites: loads the three atlases and
+     * Lazily builds the full-combo layer's textures and sprites: loads the three atlases and
      * creates the four sprite instancers (attaching each under the background layer's render
      * object, making it visible, binding its atlas for the textured slots, seeding its sprite
      * count, and flagging additive blend on the last slot).
@@ -45,20 +45,20 @@ public:
      */
     void InitFullComboLayerTextures();
 
-    /** @brief The number of full-combo sprite instancers the layer builds. */
+    /** The number of full-combo sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 4;
-    /** @brief The number of player sides the result grade display tracks. */
+    /** The number of player sides the result grade display tracks. */
     static constexpr int kSideCount = 2;
 
     /**
-     * @brief Initialises the result grade display: seeds the reveal channel, parks the reveal
+     * Initialises the result grade display: seeds the reveal channel, parks the reveal
      * clock, arms the display, fills the per-side grade values, and picks the reveal duration.
      * @ghidraAddress 0x120844
      */
     void InitializeGradeDisplayState();
 
     /**
-     * @brief Begins animating the grade-gauge reveal channel from its current value down to zero
+     * Begins animating the grade-gauge reveal channel from its current value down to zero
      * over @p flDuration (snapping straight to zero when the duration is non-positive).
      * @param flDuration The animation duration.
      * @ghidraAddress 0x120900
@@ -66,20 +66,20 @@ public:
     void StartGradeAnimation(float flDuration);
 
     /**
-     * @brief Advances the result grade-gauge reveal channel by @p flDeltaTime.
+     * Advances the result grade-gauge reveal channel by @p flDeltaTime.
      * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x120a74
      */
     void AdvanceGradeChannel(float flDeltaTime);
 
     /**
-     * @brief Seeds the per-side grade values from the active score tracker's play records.
+     * Seeds the per-side grade values from the active score tracker's play records.
      * @ghidraAddress 0x1208c4
      */
     void InitializeGradeValuesFromTracker();
 
     /**
-     * @brief Advances and redraws the result grade/achievement-rate display for the frame.
+     * Advances and redraws the result grade/achievement-rate display for the frame.
      *
      * Caches the viewport size, advances the reveal channel, and, when the display is enabled, runs
      * the reveal clock and emits the base grade sprite faded in by the reveal, then per side (the
@@ -92,7 +92,7 @@ public:
     void UpdateGradeDisplay(float flDeltaTime);
 
     /**
-     * @brief Whether the result grade display is drawing (the theme intro has finished animating).
+     * Whether the result grade display is drawing (the theme intro has finished animating).
      * @return @c true once the grade display is visible.
      */
     bool IsGradeVisible() const {
@@ -100,7 +100,7 @@ public:
     }
 
     /**
-     * @brief Sets the side count the grade display runs with.
+     * Sets the side count the grade display runs with.
      * @param nSideCount The side count (one runs the display single-side).
      */
     void SetSideCount(int nSideCount) {
@@ -109,7 +109,7 @@ public:
 
 private:
     /**
-     * @brief Emits one grade-display sprite of kind @p nSpriteKind.
+     * Emits one grade-display sprite of kind @p nSpriteKind.
      *
      * Looks the kind up in the grade sprite-layout table (which supplies the target sprite group,
      * fixed anchor and quad size, and atlas-frame index), resolves the group to an instancer slot
@@ -135,7 +135,7 @@ private:
                              unsigned int nAlpha);
 
     /**
-     * @brief Draws one side's animated achievement-rate meter needle.
+     * Draws one side's animated achievement-rate meter needle.
      *
      * Runs only once the reveal clock passes the meter's start threshold. The first frame past the
      * threshold triggers the achievement-rate fanfare (playing themed sound effect 10 once). It
@@ -148,7 +148,7 @@ private:
     void RenderGradeMeterSprite(unsigned int nSide);
 
     /**
-     * @brief Draws one side's animated achievement-rate digit strip (the rank AA-and-above path).
+     * Draws one side's animated achievement-rate digit strip (the rank AA-and-above path).
      *
      * Once the reveal clock passes the digit reveal threshold it first draws the achievement-rate
      * percentage digits. It then animates each of the seven strip glyphs in with its own scale,
@@ -162,7 +162,7 @@ private:
     void RenderGradeRankGlyphs(int nSide);
 
     /**
-     * @brief Draws one side's animated high-rank badge glyph strip (the rank-below-AA path).
+     * Draws one side's animated high-rank badge glyph strip (the rank-below-AA path).
      *
      * Animates each of the seven badge glyphs in with its own alpha and vertical-position curves
      * sampled at the reveal clock, placing each at a fixed horizontal base relative to the layout
@@ -175,7 +175,7 @@ private:
     void RenderGradeHighRankBadge(int nSide);
 
     /**
-     * @brief Emits one side's achievement-rate meter needle sprite at the given frame UV and alpha.
+     * Emits one side's achievement-rate meter needle sprite at the given frame UV and alpha.
      *
      * Appends into the additive meter batch (dropping the sprite when the batch is full). The
      * needle is placed at a fixed horizontal position relative to the layout origin, at a per-side
@@ -191,7 +191,7 @@ private:
     void EmitGradeMeterSlot(unsigned int nSide, const S_VECTOR2 *pUvOrigin, unsigned int nAlpha);
 
     /**
-     * @brief Draws one side's animated achievement-rate percentage digit strip.
+     * Draws one side's animated achievement-rate percentage digit strip.
      *
      * Animates each of the thirty-five digit-strip glyphs in with its own scale, alpha, and
      * vertical-position curves sampled at the digit clock, placing each at a fixed horizontal base
@@ -206,7 +206,7 @@ private:
     void RenderGradeArDigits(float flClock, unsigned int nSide);
 
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x120630
      */
     LimelightThemeLayer();

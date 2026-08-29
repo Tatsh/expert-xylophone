@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A self-contained OpenAL one-shot sound-effect player.
+ * A self-contained OpenAL one-shot sound-effect player.
  *
  * Each instance owns its own OpenAL device and context, a single buffer, and a single source. On
  * initialisation it decodes an audio file to signed 16-bit PCM through Core Audio (@c ExtAudioFile)
@@ -18,24 +18,24 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A single OpenAL sound source that decodes one audio file and plays it as a one-shot.
+ * A single OpenAL sound source that decodes one audio file and plays it as a one-shot.
  */
 @interface SePlayer : NSObject
 
 /**
- * @brief Decode an audio file to 16-bit PCM and prepare an OpenAL source that plays it.
+ * Decode an audio file to 16-bit PCM and prepare an OpenAL source that plays it.
  * @ghidraAddress 0x176f4
  * @param path The file path of the sound effect to decode and load.
  * @return The initialised player, or @c nil when @c NSObject initialisation fails.
  */
 - (nullable instancetype)initWithPath:(nonnull NSString *)path;
 /**
- * @brief Play the loaded sound effect from the start.
+ * Play the loaded sound effect from the start.
  * @ghidraAddress 0x17a54
  */
 - (void)sePlay;
 /**
- * @brief Stop playback, delete the OpenAL buffer and source, destroy the context and device, and
+ * Stop playback, delete the OpenAL buffer and source, destroy the context and device, and
  *        free the decoded samples.
  * @ghidraAddress 0x17a64
  */

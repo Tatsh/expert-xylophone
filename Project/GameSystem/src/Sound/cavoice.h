@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief One Core Audio mixer playback voice, @c caVoice.
+ * One Core Audio mixer playback voice, @c caVoice.
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 class caSource;
 
 /**
- * @brief One playback voice (mixer bus): the sound bound to it, its ring-read cursors, a rolling
+ * One playback voice (mixer bus): the sound bound to it, its ring-read cursors, a rolling
  * generation counter, and its playback state.
  *
  * The 32-bit offset comments are documentation only.
@@ -16,7 +16,7 @@ class caSource;
  */
 class caVoice {
 public:
-    /** @brief The voice playback states stored in @c m_nState. */
+    /** The voice playback states stored in @c m_nState. */
     enum State {
         kStateFree = -1,    /*!< No sound is bound to the voice. */
         kStatePrepared = 1, /*!< A sound is bound and ready to render. */
@@ -26,7 +26,7 @@ public:
     };
 
     /**
-     * @brief Fills @p nCount bytes at @p pDst with the voice's next PCM span while it is playing,
+     * Fills @p nCount bytes at @p pDst with the voice's next PCM span while it is playing,
      *        marking the voice finished when its source runs dry.
      *
      * A no-op (returns 0) when the voice has no source or is not in the playing state; otherwise it
@@ -39,14 +39,14 @@ public:
     unsigned long FillPcm(void *pDst, int nCount);
 
     /**
-     * @brief The sound bound to this voice, or @c nullptr when free.
+     * The sound bound to this voice, or @c nullptr when free.
      * @return The bound sound, or @c nullptr when the voice is free.
      */
     caSource *GetSource() const {
         return m_pSource;
     }
     /**
-     * @brief Binds (or clears with @c nullptr) the sound this voice plays.
+     * Binds (or clears with @c nullptr) the sound this voice plays.
      * @param pSource The sound to bind, or @c nullptr to free the voice.
      */
     void SetSource(caSource *pSource) {
@@ -54,14 +54,14 @@ public:
     }
 
     /**
-     * @brief Whether the render callback has been installed on this voice.
+     * Whether the render callback has been installed on this voice.
      * @return @c true once the render callback is installed.
      */
     bool IsCallbackBound() const {
         return m_bCallbackBound;
     }
     /**
-     * @brief Records whether the render callback has been installed.
+     * Records whether the render callback has been installed.
      * @param bBound @c true once the render callback is installed.
      */
     void SetCallbackBound(bool bBound) {
@@ -69,14 +69,14 @@ public:
     }
 
     /**
-     * @brief The rolling generation, packed into the play handle's low 16 bits.
+     * The rolling generation, packed into the play handle's low 16 bits.
      * @return The rolling generation.
      */
     unsigned short GetGeneration() const {
         return m_wGeneration;
     }
     /**
-     * @brief Sets the rolling generation.
+     * Sets the rolling generation.
      * @param wGeneration The rolling generation.
      */
     void SetGeneration(unsigned short wGeneration) {
@@ -84,21 +84,21 @@ public:
     }
 
     /**
-     * @brief The voice's current playback state, one of @c State.
+     * The voice's current playback state, one of @c State.
      * @return The voice's playback state.
      */
     int GetState() const {
         return m_nState;
     }
     /**
-     * @brief Sets the voice's playback state.
+     * Sets the voice's playback state.
      * @param nState The playback state, one of @c State.
      */
     void SetState(int nState) {
         m_nState = nState;
     }
 
-    /** @brief Resets both ring-read cursors to the start of the source data. */
+    /** Resets both ring-read cursors to the start of the source data. */
     void ResetReadCursors() {
         m_nBytesRead = 0;
         m_nReadPos = 0;

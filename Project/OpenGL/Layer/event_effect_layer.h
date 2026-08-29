@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The event-notification effect layer, @c EventEffectLayer.
+ * The event-notification effect layer, @c EventEffectLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The event-notification effect layer.
+ * The event-notification effect layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It presents
  * the event-notification effect through a small root sprite instancer and a main instancer nested
@@ -25,14 +25,14 @@ class C_SPRITE_INSTANCING_2D;
 class EventEffectLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide event-notification effect layer, created on first use.
+     * The process-wide event-notification effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x1be49c
      */
     static EventEffectLayer *shared();
 
     /**
-     * @brief Lazily builds the event-effect sprites: loads the gm_event atlas, creates a
+     * Lazily builds the event-effect sprites: loads the gm_event atlas, creates a
      * single-sprite root instancer registered in the global scene tree, and nests a six-sprite main
      * instancer beneath it bound to the atlas.
      *
@@ -41,27 +41,27 @@ public:
      */
     void CreateEventEffectSprites();
 
-    /** @brief The capacity of the root sprite instancer. */
+    /** The capacity of the root sprite instancer. */
     static constexpr unsigned int kRootCapacity = 1;
-    /** @brief The capacity of the main sprite instancer. */
+    /** The capacity of the main sprite instancer. */
     static constexpr unsigned int kMainCapacity = 6;
 
     /**
-     * @brief Starts the event effect: arms the active and sound flags, resets the timer, and
+     * Starts the event effect: arms the active and sound flags, resets the timer, and
      * captures the current pastel-bonus mode from the game system.
      * @ghidraAddress 0x1be594
      */
     void StartEffect();
 
     /**
-     * @brief Finishes the event effect by setting its timer to its full duration.
+     * Finishes the event effect by setting its timer to its full duration.
      * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x1be5cc
      */
     void FinishEffect(float flDuration);
 
     /**
-     * @brief Sets the full-screen background quad's colour and size in the root instancer.
+     * Sets the full-screen background quad's colour and size in the root instancer.
      *
      * Sizes the single background sprite to the current viewport and sets its colour to opaque
      * black scaled by @p nAlpha (packed into the colour's high byte).
@@ -71,7 +71,7 @@ public:
     void SetEventBackgroundQuad(int nAlpha);
 
     /**
-     * @brief Advances the event effect one frame and re-emits its animated sprites.
+     * Advances the event effect one frame and re-emits its animated sprites.
      *
      * Caches the viewport, clears the main instancer, and — while active — advances the effect
      * timer (deactivating and clearing the background once it runs out), plays the banner sound on
@@ -83,7 +83,7 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Appends one event sprite to the main instancer at a world position, at the given scale
+     * Appends one event sprite to the main instancer at a world position, at the given scale
      * and alpha.
      *
      * A no-op when the main instancer is full. The sprite's anchor, size, and atlas frame come from
@@ -104,7 +104,7 @@ public:
                          float flScaleY);
 
     /**
-     * @brief Whether the event effect is currently playing.
+     * Whether the event effect is currently playing.
      * @return @c true while the event effect is playing.
      */
     bool IsEffectActive() const {

@@ -1,17 +1,17 @@
 /**
  * @file
- * @brief The play-field frame texture-name table, indexed by frame type.
+ * The play-field frame texture-name table, indexed by frame type.
  */
 
 #pragma once
 
 /**
- * @brief The number of frame types the table names, one per unlockable frame skin.
+ * The number of frame types the table names, one per unlockable frame skin.
  */
 constexpr int kFrameTextureNameCount = 31;
 
 /**
- * @brief The frame texture-name table, indexed by the frame type.
+ * The frame texture-name table, indexed by the frame type.
  *
  * Read-only ROM data. The three theme families occupy contiguous runs: the classic frames are types
  * zero to six, the limelight frames seven to thirteen, and the colette frames fourteen to thirty.

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A custom popover chrome for the music-select popover.
+ * A custom popover chrome for the music-select popover.
  *
  * It is a @c UIPopoverBackgroundView subclass
  * that draws the game's own arrow-and-body artwork (the @c 01_music_select/sel_popover_* image set)
@@ -21,7 +21,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A music-select popover background drawn with the game's own arrow-and-body artwork.
+ * A music-select popover background drawn with the game's own arrow-and-body artwork.
  *
  * The class adopts no protocols: its class_ro_t baseProtocols list is null. Its superclass is
  * @c UIPopoverBackgroundView.
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBPopoverBackgroundView : UIPopoverBackgroundView
 
 /**
- * @brief The distance the arrow is shifted along its edge from the centre of the popover.
+ * The distance the arrow is shifted along its edge from the centre of the popover.
  *
  * The setter runs the drop-shadow path animation (when the OS does not manage the popover's
  * default appearance) and requests a re-layout.
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign) CGFloat arrowOffset;
 
 /**
- * @brief The edge the arrow points from, as a @c UIPopoverArrowDirection single-bit value.
+ * The edge the arrow points from, as a @c UIPopoverArrowDirection single-bit value.
  *
  * The setter re-applies the drop shadow and requests a re-layout.
  * @ghidraAddress 0xd91c0 (getter)
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign) UIPopoverArrowDirection arrowDirection;
 
 /**
- * @brief The image view that renders the popover's background and arrow artwork.
+ * The image view that renders the popover's background and arrow artwork.
  *
  * Allocated in @c initWithFrame: and added as a subview; @c layoutSubviews sizes, centres, and
  * re-images it each pass.
@@ -58,28 +58,28 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) UIImageView *popoverBackground;
 
 /**
- * @brief The arrow height reserved above the content, in points.
+ * The arrow height reserved above the content, in points.
  * @return A fixed @c 19.0.
  * @ghidraAddress 0xd7c28
  */
 + (CGFloat)arrowHeight;
 
 /**
- * @brief The width of the arrow's base, in points.
+ * The width of the arrow's base, in points.
  * @return A fixed @c 37.0.
  * @ghidraAddress 0xd7c30
  */
 + (CGFloat)arrowBase;
 
 /**
- * @brief The insets from the popover's edges to its content view.
+ * The insets from the popover's edges to its content view.
  * @return A uniform @c 8.0 inset on every edge.
  * @ghidraAddress 0xd7c14
  */
 + (UIEdgeInsets)contentViewInsets;
 
 /**
- * @brief Initialises the view and allocates its background image view.
+ * Initialises the view and allocates its background image view.
  * @param frame The view frame.
  * @return The initialised view.
  * @ghidraAddress 0xd7c68
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Lays out the background image view, recomputing the popover extents, the half-base, and
+ * Lays out the background image view, recomputing the popover extents, the half-base, and
  * the arrow centre, then re-images the background for the current arrow direction.
  * @ghidraAddress 0xd8188
  */

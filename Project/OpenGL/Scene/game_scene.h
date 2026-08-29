@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The gameplay scene, @c rb::GameScene (RTTI @c N2rb9GameSceneE).
+ * The gameplay scene, @c rb::GameScene (RTTI @c N2rb9GameSceneE).
  */
 
 #pragma once
@@ -20,7 +20,7 @@ namespace rb {
 class CMusicSheet2;
 
 /**
- * @brief The gameplay scene: the per-frame state machine that drives a play session from set-up
+ * The gameplay scene: the per-frame state machine that drives a play session from set-up
  * through the notes to the result screen and exit.
  *
  * A process-wide singleton registered in the engine task list at priority 1, cached in the game
@@ -32,21 +32,21 @@ class CMusicSheet2;
 class GameScene : public BaseScene {
 public:
     /**
-     * @brief Returns the scene's current state.
+     * Returns the scene's current state.
      * @return The scene's current state.
      */
     int GetState() const {
         return m_nState;
     }
     /**
-     * @brief Sets the scene's play mode (0 normal, 1 alternate).
+     * Sets the scene's play mode (0 normal, 1 alternate).
      * @param nMode The play mode.
      */
     void SetMode(int nMode) {
         m_nMode = nMode;
     }
     /**
-     * @brief Sets the scene's state and clears its accumulated play time.
+     * Sets the scene's state and clears its accumulated play time.
      * @param nState The scene state to enter.
      */
     void SetState(int nState) {
@@ -55,7 +55,7 @@ public:
     }
 
     /**
-     * @brief Returns the singleton gameplay scene, constructing it (and registering it in the task
+     * Returns the singleton gameplay scene, constructing it (and registering it in the task
      * list at priority 1) on first use.
      * @param ppOut The caller-held slot that holds, and receives, the singleton pointer (the game
      *        system's leading scene pointer).
@@ -64,7 +64,7 @@ public:
     static void GetInstance(GameScene **ppOut);
 
     /**
-     * @brief Fully releases the current music and voice resources.
+     * Fully releases the current music and voice resources.
      *
      * A no-op while the background music is still marked active (it must be stopped first);
      * otherwise it stops and releases the music and releases the audio manager's voices. Takes no
@@ -75,14 +75,14 @@ public:
     static void ReleaseBgmAndVoice();
 
     /**
-     * @brief Initialises the scene for the current play mode: builds every play-field layer, seeds
+     * Initialises the scene for the current play mode: builds every play-field layer, seeds
      * the play state, and binds the chart.
      * @ghidraAddress 0x14a518
      */
     void Init();
 
     /**
-     * @brief Loads the current song's music-name texture and installs it into the active frame
+     * Loads the current song's music-name texture and installs it into the active frame
      * layer.
      *
      * Renders the current song's name into the game system's music-name texture, then binds that
@@ -92,23 +92,23 @@ public:
     void LoadMusicNameAndFrameTexture();
 
     /**
-     * @brief Advances this scene from state 0x11 to 0x12.
+     * Advances this scene from state 0x11 to 0x12.
      * @ghidraAddress 0x14aff8
      */
     void AdvanceGameSceneStateFrom11();
     /**
-     * @brief Sets this scene's state to 0x13.
+     * Sets this scene's state to 0x13.
      * @ghidraAddress 0x14afec
      */
     void SetGameSceneState13();
     /**
-     * @brief Pauses the play timer and background music when this scene is interrupted.
+     * Pauses the play timer and background music when this scene is interrupted.
      * @ghidraAddress 0x14b010
      */
     void PausePlayTimerAndBgm();
 
     /**
-     * @brief Auto-pauses gameplay when notes converge on both incoming buttons (a tilt/obstruction
+     * Auto-pauses gameplay when notes converge on both incoming buttons (a tilt/obstruction
      * heuristic).
      *
      * Skips when already paused. For each active touch, normalises its position by the owning view
@@ -120,14 +120,14 @@ public:
     void CheckAutoPauseByNotePosition();
 
     /**
-     * @brief Scene-mode-enter callback: enters normal play mode and initialises the scene.
+     * Scene-mode-enter callback: enters normal play mode and initialises the scene.
      *
      * Sets the mode to normal, runs @c Init, and advances to state 2.
      * @ghidraAddress 0x14af90
      */
     void EnterModeNormal();
     /**
-     * @brief Scene-mode-enter callback: enters alternate play mode and initialises the scene.
+     * Scene-mode-enter callback: enters alternate play mode and initialises the scene.
      *
      * Sets the mode to alternate, runs @c Init, and advances to state 0x10.
      * @ghidraAddress 0x14afbc
@@ -135,7 +135,7 @@ public:
     void EnterModeAlt();
 
     /**
-     * @brief Resumes the play timer and background music after an interruption.
+     * Resumes the play timer and background music after an interruption.
      *
      * The counterpart to @c PausePlayTimerAndBgm; a no-op unless the game is paused. Acts only on
      * the game-system and play-timer singletons, so it takes no scene.
@@ -143,7 +143,7 @@ public:
      */
     static void ResumePlayTimerAndBgm();
     /**
-     * @brief Re-enters alternate play mode on the current scene when the game system has one
+     * Re-enters alternate play mode on the current scene when the game system has one
      * active.
      *
      * A render-loop resume hook: when the game system holds a current scene, runs the alternate
@@ -153,27 +153,27 @@ public:
      */
     static void ResumeRenderLoopIfActive();
     /**
-     * @brief Resets the scene's state field to zero.
+     * Resets the scene's state field to zero.
      * @ghidraAddress 0x14a510
      */
     void ClearLayerStateField();
 
     /**
-     * @brief Stops the background music and re-enables device auto-rotation, once, when the scene
+     * Stops the background music and re-enables device auto-rotation, once, when the scene
      * is torn down or interrupted.
      * @ghidraAddress 0x14b228
      */
     void StopBgmAndAllowRotation();
 
     /**
-     * @brief Transitions the scene into the pause-exit state: stops the BGM, resumes the play
+     * Transitions the scene into the pause-exit state: stops the BGM, resumes the play
      * timer, starts the fade-in overlay, and advances to state 0xe.
      * @ghidraAddress 0x14b1ec
      */
     void EnterPauseExitState();
 
     /**
-     * @brief Transitions the scene into the music-release state: stops the BGM, releases the music
+     * Transitions the scene into the music-release state: stops the BGM, releases the music
      * and voice resources, resumes the play timer, starts the fade-in overlay, and advances to
      * state 0xd.
      * @ghidraAddress 0x14b2b8
@@ -181,7 +181,7 @@ public:
     void EnterMusicReleaseState();
 
     /**
-     * @brief Ticks the pause gauge and reports whether gameplay is active this frame.
+     * Ticks the pause gauge and reports whether gameplay is active this frame.
      *
      * When the game is not paused, releases any pause-gauge charge and returns true. When paused,
      * charges the gauge (unless it is being held) and returns false.
@@ -191,7 +191,7 @@ public:
     bool RefreshPauseGaugeAndGetActiveFlag();
 
     /**
-     * @brief Computes the result-screen bonuses and awards experience, per active theme.
+     * Computes the result-screen bonuses and awards experience, per active theme.
      *
      * For the Classic theme it advances the player level/experience progression (unlocking new
      * custom items for each level gained) and stores the results on the game system. For the
@@ -203,7 +203,7 @@ public:
     void ComputeResultBonusesAndExperience();
 
     /**
-     * @brief Enters the result-theme display state: initialises the active theme's
+     * Enters the result-theme display state: initialises the active theme's
      * grade/score-gauge display, starts the result-voice cue, plays the clear cue when the play
      * cleared (rate at or above the clear threshold, or a tutorial play), and advances to the
      * result-theme state.
@@ -212,7 +212,7 @@ public:
     void EnterResultThemeState();
 
     /**
-     * @brief Finalises the result screen and submits the score once the player confirms it.
+     * Finalises the result screen and submits the score once the player confirms it.
      *
      * Fires the result voice cue near the one-second mark, then waits until the active theme's
      * result window reports the confirm tap. On confirm (outside an early tutorial) it plays the
@@ -226,7 +226,7 @@ public:
     void FinalizeResultAndSubmitScore(int nDeltaFrames);
 
     /**
-     * @brief Builds the result screen and starts the result music, once the play has settled.
+     * Builds the result screen and starts the result music, once the play has settled.
      *
      * After half a second of play time and once the active theme's intro layer has finished
      * animating, it loads the song artwork and artist-name textures, pushes the played song into
@@ -239,7 +239,7 @@ public:
     void LoadResultScreenAndMusic();
 
     /**
-     * @brief Advances the note-chart preview a frame, looping it when the clock runs past the
+     * Advances the note-chart preview a frame, looping it when the clock runs past the
      * chart.
      *
      * The preview-playing state handler. While the Limelight full-combo effect is not blocking and
@@ -255,7 +255,7 @@ public:
     void AdvancePreviewPlaybackFrame(int nDeltaFrames);
 
     /**
-     * @brief Starts the gameplay presentation once play time has begun: plays the intro-voice cue,
+     * Starts the gameplay presentation once play time has begun: plays the intro-voice cue,
      * runs the active theme's intro layer, and fades in the background, player-field score, and
      * judge-effect layers, then advances to the presenting state.
      * @ghidraAddress 0x14b86c
@@ -263,7 +263,7 @@ public:
     void StartGameplayPresentation();
 
     /**
-     * @brief Waits for the intro delay to elapse, then primes all play-field layers (note-result
+     * Waits for the intro delay to elapse, then primes all play-field layers (note-result
      * layout, frame, thema marker, play-colour gauge grow, and the reflec and clear gauges) and
      * advances to the play-ready state.
      * @ghidraAddress 0x14b734
@@ -271,20 +271,20 @@ public:
     void AdvanceToPlayReadyState();
 
     /**
-     * @brief Resets and hides every play-field render layer (end of song or teardown): fades out
+     * Resets and hides every play-field render layer (end of song or teardown): fades out
      * the shared layers and resets the active theme's full-combo, effect, and result layers.
      * @ghidraAddress 0x14d23c
      */
     void ResetAllPlayFieldLayers();
 
     /**
-     * @brief Loads the selected difficulty's note sheet and music, binding them for playback.
+     * Loads the selected difficulty's note sheet and music, binding them for playback.
      * @ghidraAddress 0x14ab94
      */
     void LoadMusicAndSheet();
 
     /**
-     * @brief Waits for the active theme's intro animation to finish, then starts the background
+     * Waits for the active theme's intro animation to finish, then starts the background
      * music and the play timer, activates the due notes, and (in a tutorial) starts the guide,
      * advancing to the note-play state.
      * @ghidraAddress 0x14b914
@@ -292,13 +292,13 @@ public:
     void BeginMusicPlaybackAndTimer();
 
     /**
-     * @brief Activates every note whose lead-in has been reached for the current play time.
+     * Activates every note whose lead-in has been reached for the current play time.
      * @ghidraAddress 0x14d4d8
      */
     void ActivateDueNotes();
 
     /**
-     * @brief After the exit delay elapses, tears down the play field and returns to the music list:
+     * After the exit delay elapses, tears down the play field and returns to the music list:
      * resets the play-field layers, releases the result textures, resets playback, shows the music
      * list, flushes the texture cache, and advances to the exit state.
      * @ghidraAddress 0x14c5bc
@@ -306,7 +306,7 @@ public:
     void ExitToMusicList();
 
     /**
-     * @brief After the exit delay elapses, reloads the music and sheet for a restart (retry):
+     * After the exit delay elapses, reloads the music and sheet for a restart (retry):
      * resets the play-field layers, shuts down the note-effect system, reseeds the RNG (from the
      * replay when the ghost is enabled), rebinds the chart, and advances to the load state.
      * @ghidraAddress 0x14c690
@@ -314,7 +314,7 @@ public:
     void ReloadMusicForRestart();
 
     /**
-     * @brief Sets up the note-chart preview presentation: applies the note-manager theme, primes
+     * Sets up the note-chart preview presentation: applies the note-manager theme, primes
      * every play-field layer to its shown state, loads the chart (or a synthetic default when no
      * music is selected), starts the play timer and background music, shows the preview, and
      * advances to the playing state.
@@ -323,7 +323,7 @@ public:
     void SetupPreviewPlayback();
 
     /**
-     * @brief Closes the note-chart preview and returns to the music list.
+     * Closes the note-chart preview and returns to the music list.
      *
      * Shuts down the note-effect system, stops the background music and re-enables rotation when a
      * music is selected, resets the play-field layers, fades out and frees the number-effect layer,
@@ -335,14 +335,14 @@ public:
 
 private:
     /**
-     * @brief Constructs the scene: chains the scene-base constructor, installs the play dispatch
+     * Constructs the scene: chains the scene-base constructor, installs the play dispatch
      * table, zero-clears the play state, and seeds the initial mode to 2.
      * @ghidraAddress 0x14a21c
      */
     GameScene();
 
     /**
-     * @brief The play state that waits out the intro ready-delay, then starts the notes.
+     * The play state that waits out the intro ready-delay, then starts the notes.
      *
      * Once the accumulated play time passes the ready-delay threshold, it either advances to the
      * wait state (when no pastel bonus is active) or starts the event effect and advances past it.
@@ -351,14 +351,14 @@ private:
     void WaitForIntroThenStartNotes();
 
     /**
-     * @brief Resumes preview playback after an interruption: advances to the playing state,
+     * Resumes preview playback after an interruption: advances to the playing state,
      * restarts the background music if it was playing, and un-pauses the play timer.
      * @ghidraAddress 0x14cd90
      */
     void ResumePreviewPlayback();
 
     /**
-     * @brief Releases the result-screen textures and clears the frame textures at teardown.
+     * Releases the result-screen textures and clears the frame textures at teardown.
      *
      * Clears the on-screen frame's bound texture (the alternate frame on iPad, the main frame
      * elsewhere), clears the active theme result layer's three text-instancer textures, and
@@ -368,14 +368,14 @@ private:
     void ReleaseResultTexturesAndFrames();
 
     /**
-     * @brief Allocates a default note chart, seeds it from the game system, and binds it as the
+     * Allocates a default note chart, seeds it from the game system, and binds it as the
      * active chart (used for the auto-play preview, when there is no selected music).
      * @ghidraAddress 0x14facc
      */
     void BuildChartReaderFromGameSystem();
 
     /**
-     * @brief Parses a difficulty's note-sheet data into a fresh chart and binds it as the active
+     * Parses a difficulty's note-sheet data into a fresh chart and binds it as the active
      * chart.
      * @param sheetData The sheet @c NSData for the selected difficulty.
      * @ghidraAddress 0x14fb24
@@ -383,7 +383,7 @@ private:
     void LoadNoteSheet(NSData *sheetData);
 
     /**
-     * @brief Binds a parsed chart as the active chart: tears down the previous chart, stores the
+     * Binds a parsed chart as the active chart: tears down the previous chart, stores the
      * new one, hands it to the note-effect manager, seeds the score tracker's note count, and
      * resets playback.
      * @param pMusicSheet The parsed chart to bind (ownership passes to the scene).
@@ -392,7 +392,7 @@ private:
     void BindMusicSheetToNoteMgr(CMusicSheet2 *pMusicSheet);
 
     /**
-     * @brief Stops and reloads the background music with a result-screen (non-looping) track, then
+     * Stops and reloads the background music with a result-screen (non-looping) track, then
      * loads the themed result voice data.
      *
      * The receiver is unused; the method is a member only because the binary threads the scene
@@ -403,14 +403,14 @@ private:
     void LoadResultBgmForMusic(NSData *musicData);
 
     /**
-     * @brief Tears down the active note chart: resets playback, clears the note-effect manager's
+     * Tears down the active note chart: resets playback, clears the note-effect manager's
      * chart, and destroys the owned chart object.
      * @ghidraAddress 0x14ab4c
      */
     void ShutdownNoteEffectSystem();
 
     /**
-     * @brief Resets note-playback state at the start of a (re)play: resets the note models, applies
+     * Resets note-playback state at the start of a (re)play: resets the note models, applies
      * the replay ghost when enabled, reassigns note colours, clears the play cursor, and resets the
      * gauge, score, and full-combo layers.
      * @param bApplyGhost Whether to apply the ghost/replay data.
@@ -419,7 +419,7 @@ private:
     void ResetNotePlaybackState(bool bApplyGhost);
 
     /**
-     * @brief Persists the finished play's score to the Core Data record and writes its replay
+     * Persists the finished play's score to the Core Data record and writes its replay
      * ghost.
      *
      * Fetches (or creates) the current song's @c ScoreData record, tallies the per-lane judgement
@@ -437,7 +437,7 @@ private:
     void PersistScoreAndSaveReplay();
 
     /**
-     * @brief Builds every play-field layer's sprites for the active UI theme.
+     * Builds every play-field layer's sprites for the active UI theme.
      *
      * Refreshes the cached theme from the user settings when it has changed, then walks the shared
      * play-field layers in turn — background, the iPad alt-frame or the phone main frame, player
@@ -452,7 +452,7 @@ private:
     void InitializePlayFieldLayersForTheme();
 
     /**
-     * @brief Advances and renders every play-field layer for one frame.
+     * Advances and renders every play-field layer for one frame.
      *
      * Computes the intro fade level first: fully lit until the chart's first path speed is set,
      * after which it is the fractional part of the note path evaluated at the current scroll line,
@@ -469,7 +469,7 @@ private:
     void RenderAllPlayFieldLayers(int nDeltaFrames);
 
     /**
-     * @brief Runs one frame of the note-play state, and finishes the play once the chart ends.
+     * Runs one frame of the note-play state, and finishes the play once the chart ends.
      *
      * Ticks the play timer, processes the active notes, and activates the notes now due. It returns
      * early while the active theme's full-combo effect is still animating, and again until the play
@@ -485,7 +485,7 @@ private:
     void ExecMain();
 
     /**
-     * @brief Runs one tick of the play state machine.
+     * Runs one tick of the play state machine.
      *
      * Clears the note position cache, checks whether a note has run far enough to auto-pause, and
      * refreshes the pause gauge — while the gauge holds the game paused the applied frame delta is
@@ -529,7 +529,7 @@ private:
 };
 
 /**
- * @brief Ensures the device is generating orientation-change notifications.
+ * Ensures the device is generating orientation-change notifications.
  *
  * A scene-mode-enter callback that turns on @c UIDevice orientation notifications, looping until
  * the device reports they are being generated.
@@ -538,7 +538,7 @@ private:
 void EnsureOrientationNotificationsEnabled(void);
 
 /**
- * @brief Reports the player's total score to the Game Center leaderboard.
+ * Reports the player's total score to the Game Center leaderboard.
  *
  * A no-op when Game Center is disabled or the local player is not authenticated. Otherwise it
  * builds a @c GKScore for the total-score leaderboard, sets it to the stored total score, and

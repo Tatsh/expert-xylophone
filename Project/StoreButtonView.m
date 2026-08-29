@@ -33,7 +33,7 @@ static const int kRGBAComponentCount = 4;
 
 @interface StoreButtonView ()
 /**
- * @brief Blends a straight RGBA colour towards white and returns it as a @c UIColor.
+ * Blends a straight RGBA colour towards white and returns it as a @c UIColor.
  * @param components A four-element RGBA array, each channel in the range [0, 1].
  * @param factor The blend amount towards white; 0 keeps the colour, 1 yields white.
  * @return The blended colour.

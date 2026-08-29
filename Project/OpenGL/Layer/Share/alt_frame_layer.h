@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The alternate play-field frame layer, @c AltFrameLayer.
+ * The alternate play-field frame layer, @c AltFrameLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The alternate-frame layer, drawn in place of the main frame for the alt (event/wide) mode.
+ * The alternate-frame layer, drawn in place of the main frame for the alt (event/wide) mode.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * frame sprite batches and a fade channel. The trailing @c // +0xNN comments document the original
@@ -24,14 +24,14 @@ class C_SPRITE_INSTANCING_2D;
 class AltFrameLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide alternate-frame layer, created on first use.
+     * The process-wide alternate-frame layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x17a4f8
      */
     static AltFrameLayer *shared();
 
     /**
-     * @brief Rebuilds the frame markers, then begins the frame fade-in, easing to opaque (255) over
+     * Rebuilds the frame markers, then begins the frame fade-in, easing to opaque (255) over
      * @p flDuration (snapping and marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x17b054
@@ -39,7 +39,7 @@ public:
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Begins the frame fade-out, easing to transparent over @p flDuration (snapping and
+     * Begins the frame fade-out, easing to transparent over @p flDuration (snapping and
      * marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x17b0ac
@@ -47,7 +47,7 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Sets the frame type, rebuilding the frame sprites when it changes.
+     * Sets the frame type, rebuilding the frame sprites when it changes.
      *
      * A no-op when the type is unchanged; otherwise it records the new type, clears the built flag,
      * and rebuilds the frame sprites.
@@ -57,7 +57,7 @@ public:
     void SetFrameType(int nType);
 
     /**
-     * @brief Advances the frame fade one frame and applies the faded alpha to every sprite slot.
+     * Advances the frame fade one frame and applies the faded alpha to every sprite slot.
      *
      * When ready, advances the fade channel toward its end value, writes the eased alpha to each
      * live slot of the three batches, and keeps the two overlay batches visible.
@@ -67,7 +67,7 @@ public:
     void Process(float flDelta);
 
     /**
-     * @brief Binds a texture to the frame's mesh sprite instancer and recomputes its UV offsets and
+     * Binds a texture to the frame's mesh sprite instancer and recomputes its UV offsets and
      * scale from the texture's dimensions.
      *
      * With a null texture, every slot's UV origin, size, tex-size, and centre are zeroed instead.
@@ -77,7 +77,7 @@ public:
     void SetAltFrameTexture(ne::C_TEXTURE *pTexture);
 
     /**
-     * @brief Records the frame mode and re-emits the active lane's highlight sprite.
+     * Records the frame mode and re-emits the active lane's highlight sprite.
      *
      * Stores @p nMode, then writes the first slot of the highlight's sprite batch: it takes the
      * position, rotation, and scale from the active lane's marker layout (the base Y offset by the
@@ -92,7 +92,7 @@ public:
     void SetFrameMode(int nMode);
 
     /**
-     * @brief (Re)builds the frame sprite batches for the current frame type.
+     * (Re)builds the frame sprite batches for the current frame type.
      *
      * A no-op once the layer is ready. Otherwise it resolves the frame type (substituting the game
      * system's when the layer still holds the default sentinel), picks the active lane and each
@@ -103,12 +103,12 @@ public:
      */
     void BuildSprites();
 
-    /** @brief The number of frame sprite batches the layer builds. */
+    /** The number of frame sprite batches the layer builds. */
     static constexpr int kSpriteSlotCount = 3;
 
 private:
     /**
-     * @brief Re-places every marker sprite for the current frame type.
+     * Re-places every marker sprite for the current frame type.
      *
      * Walks the lane-count tier's marker layout table and rewrites each sprite's position (the base
      * Y offset by the play-field half-height), leaving the anchor, size, atlas rectangle, and tint
@@ -118,7 +118,7 @@ private:
     void RenderMarkers();
 
     /**
-     * @brief Constructs the layer: seeds the default frame type (32) and mode (5), and clears the
+     * Constructs the layer: seeds the default frame type (32) and mode (5), and clears the
      * sprite batches, counts, and fade channel.
      * @ghidraAddress 0x17a4a4
      */

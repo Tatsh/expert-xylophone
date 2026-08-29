@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Limelight-theme background-effect layer, @c LimelightEffectLayer.
+ * The Limelight-theme background-effect layer, @c LimelightEffectLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The Limelight-theme background-effect layer.
+ * The Limelight-theme background-effect layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * two background-effect atlases and the two sprite instancers that draw them under the shared
@@ -26,14 +26,14 @@ class C_SPRITE_INSTANCING_2D;
 class LimelightEffectLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide Limelight effect layer, created on first use.
+     * The process-wide Limelight effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x11ffcc
      */
     static LimelightEffectLayer *shared();
 
     /**
-     * @brief Lazily builds the layer's background sprites: loads the two atlases, creates the two
+     * Lazily builds the layer's background sprites: loads the two atlases, creates the two
      * sprite instancers (attaching each under the background layer's render object, making it
      * visible, binding its texture, seeding its sprite count, and flagging additive blend where the
      * slot table requests it).
@@ -43,24 +43,24 @@ public:
      */
     void InitializeBackgroundSprites();
 
-    /** @brief The number of background sprite instancers the layer builds. */
+    /** The number of background sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 2;
 
     /**
-     * @brief Activates the effect and resets its frame counter.
+     * Activates the effect and resets its frame counter.
      * @ghidraAddress 0x120118
      */
     void SetActiveAndResetCounter();
 
     /**
-     * @brief Deactivates the effect.
+     * Deactivates the effect.
      * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x120128
      */
     void SetInactive(float flDuration);
 
     /**
-     * @brief Whether the effect's intro animation is still active.
+     * Whether the effect's intro animation is still active.
      * @return @c true while the intro animation is running.
      */
     bool IsActive() const {
@@ -68,7 +68,7 @@ public:
     }
 
     /**
-     * @brief Advances and redraws the Limelight full-combo effect for the frame.
+     * Advances and redraws the Limelight full-combo effect for the frame.
      *
      * Caches the viewport size, clears both slot counts, and, while the effect is active, advances
      * its clock (deactivating past the end threshold), then emits the twelve base glyph sprites
@@ -81,7 +81,7 @@ public:
 
 private:
     /**
-     * @brief Emits the twenty-eight curve-animated glyph sprites for the frame.
+     * Emits the twenty-eight curve-animated glyph sprites for the frame.
      *
      * Each slot chains four curve lookups (the output of each threading into the next as the query
      * value) to derive an animated position, then emits that glyph's sprite.
@@ -91,7 +91,7 @@ private:
     void EmitCurveAnimatedSprites(float flClock);
 
     /**
-     * @brief Emits one Limelight effect glyph of kind @p nSpriteKind at @p pPosition.
+     * Emits one Limelight effect glyph of kind @p nSpriteKind at @p pPosition.
      *
      * Looks the kind up in the effect sprite-layout table (which supplies the target sprite group,
      * fixed anchor and quad size, and atlas-frame index), resolves the group to an instancer slot
@@ -115,7 +115,7 @@ private:
                         float flScaleY);
 
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x11ff84
      */
     LimelightEffectLayer();

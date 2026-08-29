@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The engine touch tracker, @c TouchManager.
+ * The engine touch tracker, @c TouchManager.
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "touch_point.h"
 
 /**
- * @brief The global touch manager.
+ * The global touch manager.
  *
  * The application obtains it through @c FetchSharedSingleton and commits each frame through
  * @c CompactTouchList. The Objective-C GL view feeds it raw touch phases through @c AddTouchPoint,
@@ -17,28 +17,28 @@
  */
 class TouchManager {
 public:
-    /** @brief The fixed number of pre-allocated touch slots the manager tracks. */
+    /** The fixed number of pre-allocated touch slots the manager tracks. */
     static constexpr int kSlotCount = 32;
 
     /**
-     * @brief Constructs the manager with an empty active list and @c kSlotCount pre-allocated
+     * Constructs the manager with an empty active list and @c kSlotCount pre-allocated
      * touch slots.
      * @ghidraAddress 0x17c90
      */
     TouchManager();
     /**
-     * @brief Returns the global touch-manager singleton, or @c nullptr when not yet created.
+     * Returns the global touch-manager singleton, or @c nullptr when not yet created.
      * @return The global touch manager, or @c nullptr when it has not been created.
      * @ghidraAddress 0x17c38
      */
     static TouchManager *FetchSharedSingleton();
     /**
-     * @brief Lazily constructs the global touch-manager singleton on first use.
+     * Lazily constructs the global touch-manager singleton on first use.
      * @ghidraAddress 0x17c44
      */
     static void EnsureSingleton();
     /**
-     * @brief Registers a new touch in the next free slot, assigning it the next rolling id and the
+     * Registers a new touch in the next free slot, assigning it the next rolling id and the
      *        owning view's key pair.
      * @param nX The touch x in view coordinates.
      * @param nY The touch y in view coordinates.
@@ -48,7 +48,7 @@ public:
      */
     void AddTouchPoint(int nX, int nY, int nKey1, int nKey2);
     /**
-     * @brief Advances the tracked touch whose current position matches (@p nKey1, @p nKey2) to the
+     * Advances the tracked touch whose current position matches (@p nKey1, @p nKey2) to the
      *        new position, saving the old position as the previous one.
      * @param nX The new touch x.
      * @param nY The new touch y.
@@ -58,7 +58,7 @@ public:
      */
     void UpdateTouchPoint(int nX, int nY, int nKey1, int nKey2);
     /**
-     * @brief Marks the tracked touch at (@p nOldX, @p nOldY) as moved to (@p nNewX, @p nNewY),
+     * Marks the tracked touch at (@p nOldX, @p nOldY) as moved to (@p nNewX, @p nNewY),
      *        preferring an exact old-position match and falling back to the new position.
      * @param nNewX The new touch x.
      * @param nNewY The new touch y.
@@ -68,19 +68,19 @@ public:
      */
     void HandleTouchMoved(int nNewX, int nNewY, int nOldX, int nOldY);
     /**
-     * @brief Marks every tracked touch as moved/ended for this frame (used when all touches end or
+     * Marks every tracked touch as moved/ended for this frame (used when all touches end or
      *        cancel at once).
      * @ghidraAddress 0x17f14
      */
     void MarkAllTouchesEnded();
     /**
-     * @brief Commits the current touch frame and swap-removes the touches that have ended.
+     * Commits the current touch frame and swap-removes the touches that have ended.
      * @ghidraAddress 0x17f50
      */
     void CompactTouchList();
 
     /**
-     * @brief Returns the active touch slot whose id equals @p nTouchId, or @c nullptr when none
+     * Returns the active touch slot whose id equals @p nTouchId, or @c nullptr when none
      *        matches.
      * @param nTouchId The rolling touch id to look up.
      * @return The matching slot, or @c nullptr.
@@ -89,14 +89,14 @@ public:
     TouchPoint *FindTouchById(int nTouchId);
 
     /**
-     * @brief Returns whether any active slot was added this frame (has a fresh touch).
+     * Returns whether any active slot was added this frame (has a fresh touch).
      * @return @c true when any active slot carries a fresh touch.
      * @ghidraAddress 0x17d84
      */
     bool HasActiveTouch() const;
 
     /**
-     * @brief The number of active touch slots at the head of the slot array.
+     * The number of active touch slots at the head of the slot array.
      * @return The number of active touch slots.
      */
     int GetActiveTouchCount() const {
@@ -104,7 +104,7 @@ public:
     }
 
     /**
-     * @brief Returns the active touch slot at @p nIndex (below @c GetActiveTouchCount).
+     * Returns the active touch slot at @p nIndex (below @c GetActiveTouchCount).
      * @param nIndex The slot index, below @c GetActiveTouchCount.
      * @return The active touch slot.
      */
@@ -118,5 +118,5 @@ private:
     int m_nNextId = {};                     // +0x104 the next rolling id to assign
 };
 
-/** @brief The global touch-manager singleton, constructed by @c TouchManager::EnsureSingleton. */
+/** The global touch-manager singleton, constructed by @c TouchManager::EnsureSingleton. */
 extern TouchManager *g_pTouchManager;

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The player-field score layer, @c PlayerFieldLayer.
+ * The player-field score layer, @c PlayerFieldLayer.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief One player side's score-digit roll-up tween: the target value and the animation it plays
+ * One player side's score-digit roll-up tween: the target value and the animation it plays
  * to reach it.
  *
  * The trailing @c // +0xNN comments document the original 32-bit member offsets for reference only.
@@ -30,7 +30,7 @@ struct ScoreDigitField {
     float flDuration = {}; /*!< The animation duration, in seconds. +0x14 */
 
     /**
-     * @brief Rolls the animated value toward the target by @p flDeltaTime, snapping to the end
+     * Rolls the animated value toward the target by @p flDeltaTime, snapping to the end
      * value once the duration is reached.
      * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x18bd58
@@ -39,7 +39,7 @@ struct ScoreDigitField {
 };
 
 /**
- * @brief The play-field layer that draws each side's rolling score digits and lane gauges.
+ * The play-field layer that draws each side's rolling score digits and lane gauges.
  *
  * A process-wide singleton built on first access. The trailing @c // +0xNN comments document the
  * original 32-bit member offsets for reference only; the presentation-transform fields between the
@@ -47,11 +47,11 @@ struct ScoreDigitField {
  */
 class PlayerFieldLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of player sides. */
+    /** The number of player sides. */
     static constexpr int kSideCount = 2;
 
     /**
-     * @brief One score-digit glyph descriptor: its anchor, size, and UV-table index.
+     * One score-digit glyph descriptor: its anchor, size, and UV-table index.
      *
      * The score-number layout tables are arrays of these, one entry per digit glyph; the update
      * reads a glyph's width to lay out the digit string and @c EmitScoreDigitSprite reads its
@@ -66,7 +66,7 @@ public:
     };
 
     /**
-     * @brief A player side's score-digit roll-up record.
+     * A player side's score-digit roll-up record.
      * @param uSide The player side.
      * @return The side's score-digit field.
      */
@@ -75,7 +75,7 @@ public:
     }
 
     /**
-     * @brief Arms a side's score-digit roll-up.
+     * Arms a side's score-digit roll-up.
      *
      * Seeds the side's @c ScoreDigitField so the digits animate from the value currently shown to
      * @p nValue over @p flDuration, restarting the animation clock.
@@ -86,18 +86,18 @@ public:
      */
     void SetScoreDigitTarget(unsigned int uSide, int nValue, float flDuration);
 
-    /** @brief The score-number sprite-instancer capacity the layer builds. */
+    /** The score-number sprite-instancer capacity the layer builds. */
     static constexpr unsigned int kSpriteCapacity = 0x14;
 
     /**
-     * @brief The shared player-field layer, created on first use.
+     * The shared player-field layer, created on first use.
      * @return The shared player-field layer.
      * @ghidraAddress 0x18b668
      */
     static PlayerFieldLayer *shared();
 
     /**
-     * @brief Lazily builds the score-number sprite: loads the gm_parts2 atlas and creates the
+     * Lazily builds the score-number sprite: loads the gm_parts2 atlas and creates the
      * sprite instancer (attaching it under the background layer's render object, making it visible,
      * binding the atlas, and seeding its sprite count).
      *
@@ -107,7 +107,7 @@ public:
     void CreateScoreNumberSpriteBatch();
 
     /**
-     * @brief Begins the score display's fade-in, easing it to fully opaque over @p flDuration
+     * Begins the score display's fade-in, easing it to fully opaque over @p flDuration
      * (snapping to opaque when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x18b784
@@ -115,7 +115,7 @@ public:
     void StartScoreFadeIn(float flDuration);
 
     /**
-     * @brief Begins the score display's fade-out, easing it to transparent over @p flDuration
+     * Begins the score display's fade-out, easing it to transparent over @p flDuration
      * (snapping to transparent when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x18b7ac
@@ -123,14 +123,14 @@ public:
     void StartScoreFadeOut(float flDuration);
 
     /**
-     * @brief Sets the side/layout flag, which indexes the per-side score X-alignment table.
+     * Sets the side/layout flag, which indexes the per-side score X-alignment table.
      * @param nSide The side flag.
      * @ghidraAddress 0x18b7f4
      */
     void SetScoreSideFlag(int nSide);
 
     /**
-     * @brief Sets one side's score-display position.
+     * Sets one side's score-display position.
      * @param flValue The position value.
      * @param nSide The player side (selecting the first or second slot).
      * @ghidraAddress 0x18b7fc
@@ -138,7 +138,7 @@ public:
     void SetScorePosition(float flValue, int nSide);
 
     /**
-     * @brief The per-frame score-display update: advances the fade and rolls each side's
+     * The per-frame score-display update: advances the fade and rolls each side's
      * score-digit counter, then lays out and emits each side's digit string.
      *
      * Advances the layer's fade channel, then for each of the two player sides: rolls the side's
@@ -154,7 +154,7 @@ public:
 
 private:
     /**
-     * @brief Emits one score-digit glyph quad into the score sprite batch.
+     * Emits one score-digit glyph quad into the score sprite batch.
      *
      * Writes the next sprite slot with the caller's position, the glyph descriptor's anchor and
      * size, the UV rectangle resolved from the descriptor's UV index, the caller's rotation and

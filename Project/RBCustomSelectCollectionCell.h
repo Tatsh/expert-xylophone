@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A customize item cell shown in an @c RBCustomSelectCollectionView grid.
+ * A customize item cell shown in an @c RBCustomSelectCollectionView grid.
  *
  * It hosts a single image
  * button whose image is loaded asynchronously, plus a hidden selected-state overlay that flashes
@@ -15,12 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A single customize item cell.
+ * A single customize item cell.
  */
 @interface RBCustomSelectCollectionCell : UICollectionViewCell
 
 /**
- * @brief Build the cell's background view, item button, and hidden selection overlay.
+ * Build the cell's background view, item button, and hidden selection overlay.
  * @param frame The cell's frame rectangle.
  * @return The initialised cell, or @c nil.
  * @ghidraAddress 0x16e320
@@ -28,18 +28,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief The button that shows the item image. User interaction is disabled; the enclosing
+ * The button that shows the item image. User interaction is disabled; the enclosing
  *        collection view handles selection.
  */
 @property(strong, nonatomic, nullable) UIButton *itemButton;
 
 /**
- * @brief The overlay shown over the selected item; hidden unless the cell is selected.
+ * The overlay shown over the selected item; hidden unless the cell is selected.
  */
 @property(strong, nonatomic, nullable) UIImageView *selectedImageView;
 
 /**
- * @brief Whether this cell's item is the current selection. Setting it shows or hides
+ * Whether this cell's item is the current selection. Setting it shows or hides
  *        @c selectedImageView and starts or clears its flash effect. The binary's accessors are
  *        @c isSelected and @c setIsSelected:, distinct from @c UICollectionViewCell's own
  *        @c selected pair.

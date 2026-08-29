@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The arcade-locator map screen.
+ * The arcade-locator map screen.
  *
  * It is an @c RBBaseViewController subclass that hosts an
  * @c RBSearchMapView (the treasure-map view) full-screen. It installs a custom navigation bar with
@@ -21,39 +21,39 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Full-screen view controller that hosts the search map and its navigation-bar controls.
+ * Full-screen view controller that hosts the search map and its navigation-bar controls.
  */
 @interface RBSearchMapViewController : RBBaseViewController <SearchMapViewDelegate>
 
 /**
- * @brief Build the custom navigation-bar title view and the back and current-location buttons.
+ * Build the custom navigation-bar title view and the back and current-location buttons.
  * @return The initialised controller.
  * @ghidraAddress 0xe5748
  */
 - (instancetype)init;
 
 /**
- * @brief Navigation-bar action that plays the cancel sound and pops back to the previous screen.
+ * Navigation-bar action that plays the cancel sound and pops back to the previous screen.
  * @param sender The bar button that sent the action.
  * @ghidraAddress 0xe6238
  */
 - (void)pushBarBtnBack:(nullable id)sender;
 
 /**
- * @brief Navigation-bar action that toggles the hosted map's user-tracking mode.
+ * Navigation-bar action that toggles the hosted map's user-tracking mode.
  * @param sender The bar button that sent the action.
  * @ghidraAddress 0xe6300
  */
 - (void)pushCurrent:(nullable id)sender;
 
 /**
- * @brief Pop back to the previous screen without animation, restoring the navigation bar.
+ * Pop back to the previous screen without animation, restoring the navigation bar.
  * @ghidraAddress 0xe63a0
  */
 - (void)forceClose;
 
 /**
- * @brief The current-location toggle button shown on the right of the navigation bar.
+ * The current-location toggle button shown on the right of the navigation bar.
  * @ghidraAddress 0xe64b0 (getter)
  * @ghidraAddress 0xe64c0 (setter)
  */

@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The slide-note sprite-type layout table.
+ * The slide-note sprite-type layout table.
  */
 
 #pragma once
 
 /**
- * @brief One slide-note sprite-type layout entry: the batch it draws into, its anchor and size, and
+ * One slide-note sprite-type layout entry: the batch it draws into, its anchor and size, and
  * the UV-table index it samples.
  *
  * A 24-byte read-only record indexed by the sprite type (0 through 15). The trailing @c // +0xNN
@@ -22,17 +22,17 @@ struct SlideNoteSpriteType {
     unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x14 */
 };
 
-/** @brief The number of slide-note sprite types. */
+/** The number of slide-note sprite types. */
 constexpr int kSlideNoteSpriteTypeCount = 16;
 
 /**
- * @brief The type index at or above which the caller-supplied height and unit y-scale are used
+ * The type index at or above which the caller-supplied height and unit y-scale are used
  * instead of the table's height.
  */
 constexpr int kSlideNoteGlowTypeBase = 0xf;
 
 /**
- * @brief The slide-note sprite-type layout table.
+ * The slide-note sprite-type layout table.
  *
  * Read-only ROM data.
  * @ghidraAddress 0x2fee38

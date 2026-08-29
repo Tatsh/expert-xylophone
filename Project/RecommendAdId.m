@@ -84,7 +84,7 @@ enum {
 }
 
 /**
- * @brief Rebuild a caller-facing record dictionary by locally decrypting a stored pasteboard
+ * Rebuild a caller-facing record dictionary by locally decrypting a stored pasteboard
  * record.
  * @param data The archived record read from the local device pasteboard.
  * @return The decrypted record dictionary.
@@ -93,7 +93,7 @@ enum {
 - (nullable NSDictionary *)convertToData:(nullable NSDictionary *)data;
 
 /**
- * @brief Read the record for a udid, country code, and category id through the pasteboard web API.
+ * Read the record for a udid, country code, and category id through the pasteboard web API.
  * @param udid The hashed advertising udid.
  * @param countryCode The country code.
  * @param categoryId The advert category identifier.
@@ -107,7 +107,7 @@ enum {
                                            error:(NSError *_Nullable *_Nullable)error;
 
 /**
- * @brief Store the record for a udid through the pasteboard web API.
+ * Store the record for a udid through the pasteboard web API.
  * @param udid The hashed advertising udid.
  * @param countryCode The country code.
  * @param categoryId The advert category identifier.
@@ -124,7 +124,7 @@ enum {
                         error:(NSError *_Nullable *_Nullable)error;
 
 /**
- * @brief Delete the record for a udid through the pasteboard web API.
+ * Delete the record for a udid through the pasteboard web API.
  * @param udid The hashed advertising udid.
  * @param countryCode The country code.
  * @param categoryId The advert category identifier.

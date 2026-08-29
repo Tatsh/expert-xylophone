@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The embedded treasure-map view.
+ * The embedded treasure-map view.
  *
  * It is a @c UIView subclass wrapping an @c MKMapView that
  * @c RBSearchView hosts inside the search popup. It owns its own @c CLLocationManager, tracks the
@@ -24,12 +24,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Delegate protocol through which @c RBSearchMapView reports user-tracking changes.
+ * Delegate protocol through which @c RBSearchMapView reports user-tracking changes.
  */
 @protocol SearchMapViewDelegate <NSObject>
 
 /**
- * @brief Called when the map's user-tracking state changes.
+ * Called when the map's user-tracking state changes.
  * @param tracking Whether the map is now tracking the user's position.
  * @ghidraAddress 0xe6f94 (RBSearchView implementation)
  */
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief A map view that tracks the user's location and shows searchable spots for the search
+ * A map view that tracks the user's location and shows searchable spots for the search
  * popup.
  */
 @interface RBSearchMapView :
@@ -49,14 +49,14 @@ NS_ASSUME_NONNULL_BEGIN
             UIAlertViewDelegate>
 
 /**
- * @brief Whether location services are enabled and the app is authorised to use them.
+ * Whether location services are enabled and the app is authorised to use them.
  * @return @c YES when location services are enabled and authorised.
  * @ghidraAddress 0xdf6c4
  */
 + (BOOL)currentLocationEnabled;
 
 /**
- * @brief The diagonal magnitude of a coordinate region's latitude span (used as a search radius).
+ * The diagonal magnitude of a coordinate region's latitude span (used as a search radius).
  *
  * The binary derives this from the latitude delta alone: it is @c sqrt(2)·|latitudeDelta| and does
  * not read the longitude delta.
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (double)rangeOfRegion:(MKCoordinateRegion)region;
 
 /**
- * @brief Convert a coordinate region into an axis-aligned map rectangle, widened by a fixed factor.
+ * Convert a coordinate region into an axis-aligned map rectangle, widened by a fixed factor.
  * @param region The coordinate region to convert.
  * @return The axis-aligned map rectangle covering the region.
  * @ghidraAddress 0xdf644
@@ -75,188 +75,188 @@ NS_ASSUME_NONNULL_BEGIN
 + (MKMapRect)mapRectForCoordinateRegion:(MKCoordinateRegion)region;
 
 /**
- * @brief Build the map, indicator, message label, information overlay, and error label.
+ * Build the map, indicator, message label, information overlay, and error label.
  * @ghidraAddress 0xdf768
  */
 - (void)setupView;
 
 /**
- * @brief Reset the map to its initial region (Tokyo Station) and fetch the campaign master.
+ * Reset the map to its initial region (Tokyo Station) and fetch the campaign master.
  * @ghidraAddress 0xe496c
  */
 - (void)initialView;
 
 /**
- * @brief Fetch the campaign master over HTTP, replacing any in-flight request.
+ * Fetch the campaign master over HTTP, replacing any in-flight request.
  * @ghidraAddress 0xe4a18
  */
 - (void)getMaster;
 
 /**
- * @brief Toggle the map's user-tracking mode, prompting for location authorisation when required.
+ * Toggle the map's user-tracking mode, prompting for location authorisation when required.
  * @ghidraAddress 0xe1430
  */
 - (void)toggleTrackingMode;
 
 /**
- * @brief Centre the map on the user's current position when location is available.
+ * Centre the map on the user's current position when location is available.
  * @ghidraAddress 0xe0f4c
  */
 - (void)pushCurrent;
 
 /**
- * @brief Request the list of nearby spots for the given map region.
+ * Request the list of nearby spots for the given map region.
  * @param region The region whose spots are requested.
  * @ghidraAddress 0xe0cd4
  */
 - (void)requestList:(MKCoordinateRegion)region;
 
 /**
- * @brief Display an error message in the error label, fading it in when it was hidden.
+ * Display an error message in the error label, fading it in when it was hidden.
  * @param message The error text to show.
  * @ghidraAddress 0xe0aa4
  */
 - (void)showError:(nullable NSString *)message;
 
 /**
- * @brief Increment the pending-request counter, starting the activity indicator on the first one.
+ * Increment the pending-request counter, starting the activity indicator on the first one.
  * @ghidraAddress 0xe503c
  */
 - (void)addIndicator;
 
 /**
- * @brief Decrement the pending-request counter, stopping the activity indicator on the last one.
+ * Decrement the pending-request counter, stopping the activity indicator on the last one.
  * @ghidraAddress 0xe50b4
  */
 - (void)subIndicator;
 
 /**
- * @brief Hide the spot-information overlay and request the spot list for the current region.
+ * Hide the spot-information overlay and request the spot list for the current region.
  * @param sender The control that sent the action.
  * @ghidraAddress 0xe4848
  */
 - (void)selectHideInfo:(nullable id)sender;
 
 /**
- * @brief Tear down the map when the search popup disappears.
+ * Tear down the map when the search popup disappears.
  * @ghidraAddress 0xe4ba4
  */
 - (void)viewDidDisappear;
 
 /**
- * @brief The wrapped map view.
+ * The wrapped map view.
  * @ghidraAddress 0xe5160 (getter)
  * @ghidraAddress 0xe5170 (setter)
  */
 @property(strong, nonatomic, nullable) MKMapView *mapView;
 
 /**
- * @brief The spinner shown while requests are in flight.
+ * The spinner shown while requests are in flight.
  * @ghidraAddress 0xe51a8 (getter)
  * @ghidraAddress 0xe51b8 (setter)
  */
 @property(strong, nonatomic, nullable) UIActivityIndicatorView *indicator;
 
 /**
- * @brief The loading-status message label centred over the map.
+ * The loading-status message label centred over the map.
  * @ghidraAddress 0xe51f0 (getter)
  * @ghidraAddress 0xe5200 (setter)
  */
 @property(strong, nonatomic, nullable) UILabel *messageLabel;
 
 /**
- * @brief The error label shown along the bottom of the map.
+ * The error label shown along the bottom of the map.
  * @ghidraAddress 0xe5238 (getter)
  * @ghidraAddress 0xe5248 (setter)
  */
 @property(strong, nonatomic, nullable) UILabel *errorLabel;
 
 /**
- * @brief The dimmed backdrop behind the spot-information overlay.
+ * The dimmed backdrop behind the spot-information overlay.
  * @ghidraAddress 0xe5280 (getter)
  * @ghidraAddress 0xe5290 (setter)
  */
 @property(strong, nonatomic, nullable) UIView *infomationBaseView;
 
 /**
- * @brief The spot-information overlay panel.
+ * The spot-information overlay panel.
  * @ghidraAddress 0xe52c8 (getter)
  * @ghidraAddress 0xe52d8 (setter)
  */
 @property(strong, nonatomic, nullable) UIView *infomationView;
 
 /**
- * @brief The image shown inside the spot-information overlay.
+ * The image shown inside the spot-information overlay.
  * @ghidraAddress 0xe5310 (getter)
  * @ghidraAddress 0xe5320 (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *infomationImage;
 
 /**
- * @brief The location manager owned by the view, used to request authorisation.
+ * The location manager owned by the view, used to request authorisation.
  * @ghidraAddress 0xe5358 (getter)
  * @ghidraAddress 0xe5368 (setter)
  */
 @property(strong, nonatomic, nullable) CLLocationManager *locationManager;
 
 /**
- * @brief The in-flight campaign-master download.
+ * The in-flight campaign-master download.
  * @ghidraAddress 0xe53a0 (getter)
  * @ghidraAddress 0xe53b0 (setter)
  */
 @property(strong, nonatomic, nullable) Downloader *masterDownloader;
 
 /**
- * @brief The in-flight spot-list download.
+ * The in-flight spot-list download.
  * @ghidraAddress 0xe53e8 (getter)
  * @ghidraAddress 0xe53f8 (setter)
  */
 @property(strong, nonatomic, nullable) Downloader *listDownloader;
 
 /**
- * @brief The in-flight campaign-image download.
+ * The in-flight campaign-image download.
  * @ghidraAddress 0xe5430 (getter)
  * @ghidraAddress 0xe5440 (setter)
  */
 @property(strong, nonatomic, nullable) ImageDownloader *imageDownloader;
 
 /**
- * @brief Cached annotations keyed by spot identifier, so a spot is not dropped twice.
+ * Cached annotations keyed by spot identifier, so a spot is not dropped twice.
  * @ghidraAddress 0xe5478 (getter)
  * @ghidraAddress 0xe5488 (setter)
  */
 @property(strong, nonatomic, nullable) NSMutableDictionary *dictSpot;
 
 /**
- * @brief The Maps-app URL for the currently selected spot.
+ * The Maps-app URL for the currently selected spot.
  * @ghidraAddress 0xe54c0 (getter)
  * @ghidraAddress 0xe54d0 (setter)
  */
 @property(strong, nonatomic, nullable) NSString *mapURL;
 
 /**
- * @brief The parsed campaign-master information dictionary.
+ * The parsed campaign-master information dictionary.
  * @ghidraAddress 0xe5508 (getter)
  * @ghidraAddress 0xe5518 (setter)
  */
 @property(strong, nonatomic, nullable) NSMutableDictionary *info;
 
 /**
- * @brief The parsed campaign model list.
+ * The parsed campaign model list.
  * @ghidraAddress 0xe5550 (getter)
  * @ghidraAddress 0xe5560 (setter)
  */
 @property(strong, nonatomic, nullable) NSMutableArray *models;
 
 /**
- * @brief A map from spot model name to its index in @c models.
+ * A map from spot model name to its index in @c models.
  * @ghidraAddress 0xe5598 (getter)
  * @ghidraAddress 0xe55a8 (setter)
  */
 @property(strong, nonatomic, nullable) NSMutableDictionary *modelNameForArrayIndex;
 
 /**
- * @brief The tracking-change delegate, held weakly.
+ * The tracking-change delegate, held weakly.
  * @ghidraAddress 0xe512c (getter)
  * @ghidraAddress 0xe514c (setter)
  */

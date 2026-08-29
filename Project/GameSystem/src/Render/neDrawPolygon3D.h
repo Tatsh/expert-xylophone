@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The 3D polygon-mesh draw node, @c ne::C_DRAW_POLYGON_3D.
+ * The 3D polygon-mesh draw node, @c ne::C_DRAW_POLYGON_3D.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ namespace ne {
 class C_TEXTURE;
 
 /**
- * @brief A 3D polygon-mesh draw node (RTTI @c ne::C_DRAW_POLYGON_3D).
+ * A 3D polygon-mesh draw node (RTTI @c ne::C_DRAW_POLYGON_3D).
  *
  * Draws an indexed 3D triangle mesh: per-vertex position, colour, and UV arrays plus a 16-bit index
  * buffer. It is a @c C_RENDER, so it lives in the scene graph. The trailing @c // +0xNN comments
@@ -28,7 +28,7 @@ class C_TEXTURE;
 class C_DRAW_POLYGON_3D : public C_RENDER {
 public:
     /**
-     * @brief Constructs a 3D polygon-mesh node with the given draw mode, vertex format, vertex and
+     * Constructs a 3D polygon-mesh node with the given draw mode, vertex format, vertex and
      * index counts, ownership flags, and draw colour.
      *
      * Records the configuration and initialises the per-vertex attribute offsets to their unset
@@ -49,7 +49,7 @@ public:
                       bool bIndexBufferExternal);
 
     /**
-     * @brief Destroys the mesh: releases the bound texture, frees the vertex, colour, index, and
+     * Destroys the mesh: releases the bound texture, frees the vertex, colour, index, and
      * per-bone arrays, deletes the GL vertex and index buffer objects it owns, and chains the base
      * render-node destructor.
      * @ghidraAddress 0x286c0
@@ -57,7 +57,7 @@ public:
     ~C_DRAW_POLYGON_3D() override;
 
     /**
-     * @brief Set a mesh vertex's 3D position, if the mesh carries a position attribute.
+     * Set a mesh vertex's 3D position, if the mesh carries a position attribute.
      *
      * The position is taken by value (its three components arrive in the floating-point argument
      * registers).
@@ -68,7 +68,7 @@ public:
     void SetPos(int nIndex, S_VECTOR3 position);
 
     /**
-     * @brief Set a mesh vertex's RGBA colour, if the mesh carries a colour attribute.
+     * Set a mesh vertex's RGBA colour, if the mesh carries a colour attribute.
      * @param nIndex The vertex index.
      * @param nRed The red component.
      * @param nGreen The green component.
@@ -83,7 +83,7 @@ public:
                  unsigned char nAlpha);
 
     /**
-     * @brief Set only the alpha of a mesh vertex's colour, if the mesh carries a colour attribute.
+     * Set only the alpha of a mesh vertex's colour, if the mesh carries a colour attribute.
      * @param nIndex The vertex index.
      * @param nAlpha The alpha component.
      * @ghidraAddress 0x29810
@@ -91,7 +91,7 @@ public:
     void SetAlpha(int nIndex, unsigned char nAlpha);
 
     /**
-     * @brief Set a mesh vertex's UV coordinates, if the mesh carries a texcoord attribute.
+     * Set a mesh vertex's UV coordinates, if the mesh carries a texcoord attribute.
      *
      * The U and V are stored as 16-bit fixed point, with V flipped (1 - v), at the vertex's UV
      * offset within the interleaved buffer.
@@ -103,7 +103,7 @@ public:
     void SetUV(int nIndex, float flU, float flV);
 
     /**
-     * @brief Set a mesh vertex's UV coordinates from a vector pointer, forwarding to @c SetUV.
+     * Set a mesh vertex's UV coordinates from a vector pointer, forwarding to @c SetUV.
      * @param nIndex The vertex index.
      * @param pUv The UV coordinates.
      * @ghidraAddress 0x296c4
@@ -111,7 +111,7 @@ public:
     void SetUvFromVec(int nIndex, const S_VECTOR2 *pUv);
 
     /**
-     * @brief Assign the mesh's texture, updating reference counts.
+     * Assign the mesh's texture, updating reference counts.
      *
      * Releases the previously held texture and retains @p pTexture.
      * @param pTexture The texture to assign, or @c nullptr to clear it.
@@ -120,7 +120,7 @@ public:
     void SetTexture(C_TEXTURE *pTexture);
 
     /**
-     * @brief Store one texture-environment parameter.
+     * Store one texture-environment parameter.
      * @param nIndex The parameter slot.
      * @param nValue The parameter value.
      * @ghidraAddress 0x2959c
@@ -128,14 +128,14 @@ public:
     void SetTexEnvParam(int nIndex, int nValue);
 
     /**
-     * @brief Store a vertex index into the mesh's index buffer and mark it dirty.
+     * Store a vertex index into the mesh's index buffer and mark it dirty.
      * @param nIndex The position in the index buffer.
      * @param wValue The vertex index to store.
      * @ghidraAddress 0x29890
      */
     void SetIndex(int nIndex, unsigned short wValue);
 
-    /** @brief The vertex-format attribute bits tested before writing a vertex attribute. */
+    /** The vertex-format attribute bits tested before writing a vertex attribute. */
     enum VertexFormatFlag {
         kVertexHasPosition = 1 << 0, /*!< The mesh carries per-vertex positions. */
         kVertexHasTexcoord = 1 << 1, /*!< The mesh carries per-vertex texture coordinates. */
@@ -144,7 +144,7 @@ public:
     };
 
     /**
-     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh)
+     * Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh)
      * the per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
      *
      * Also generates the GL vertex and index buffer objects unless the caller owns them, marking
@@ -154,7 +154,7 @@ public:
     void AllocateBuffers();
 
     /**
-     * @brief Draws the mesh (the @c C_RENDER vtable render slot).
+     * Draws the mesh (the @c C_RENDER vtable render slot).
      *
      * Builds the model matrix from the node's translation, Z rotation, and uniform scale, composes
      * it under the parent's world matrix and then the current model node's view matrix (the step
@@ -218,7 +218,7 @@ private:
 };
 
 /**
- * @brief Allocates and initialises a 3D polygon-mesh node ready to be populated and drawn.
+ * Allocates and initialises a 3D polygon-mesh node ready to be populated and drawn.
  * @param nDrawMode The primitive draw mode.
  * @param nVertexCount The number of vertices.
  * @param nVertexFormat The vertex-format attribute bit-set.

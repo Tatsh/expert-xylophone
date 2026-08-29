@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A low-level sound-effect mixer manager singleton.
+ * A low-level sound-effect mixer manager singleton.
  *
  * Unlike @c AudioManager (which drives the
  * engine's cached voice player and streamed bus mixer), this manager owns a small @c AUGraph of
@@ -25,7 +25,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A self-contained @c AUGraph sound-effect mixer that plays pooled @c SoundData assets
+ * A self-contained @c AUGraph sound-effect mixer that plays pooled @c SoundData assets
  * through a bank of @c SoundPlayer voices.
  */
 @interface SoundManager : NSObject
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Singleton
 
 /**
- * @brief The shared sound manager, created on first use.
+ * The shared sound manager, created on first use.
  * @ghidraAddress 0x34bb0
  * @return The shared @c SoundManager.
  */
@@ -42,12 +42,12 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Graph lifecycle
 
 /**
- * @brief Start the mixer graph if it has been initialised and is not already running.
+ * Start the mixer graph if it has been initialised and is not already running.
  * @ghidraAddress 0x35380
  */
 - (void)startSystem;
 /**
- * @brief Stop the mixer graph if it has been initialised and is running.
+ * Stop the mixer graph if it has been initialised and is running.
  * @ghidraAddress 0x353d4
  */
 - (void)stopSystem;
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Asset pool
 
 /**
- * @brief Load a sound file into the asset pool, reusing an existing slot when the file is already
+ * Load a sound file into the asset pool, reusing an existing slot when the file is already
  *        loaded.
  * @ghidraAddress 0x34eec
  * @param fileName The base name of the sound file to load.
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (int)loadFile:(NSString *)fileName Stream:(BOOL)stream;
 /**
- * @brief Release the pooled asset at a given index.
+ * Release the pooled asset at a given index.
  * @ghidraAddress 0x35038
  * @param index The asset's pool index.
  * @return @c YES when a loaded asset was released.
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Playback
 
 /**
- * @brief Play the pooled asset at a given index on the first free voice.
+ * Play the pooled asset at a given index on the first free voice.
  * @ghidraAddress 0x35074
  * @param index The asset's pool index.
  * @param loop Whether the voice should loop the asset. Reserved; the original build ignores it.
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (int)play:(int)index Loop:(BOOL)loop;
 /**
- * @brief Stop the voice at a given index if it is playing.
+ * Stop the voice at a given index if it is playing.
  * @ghidraAddress 0x35198
  * @param index The voice index.
  * @return Always @c YES.

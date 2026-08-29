@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The delayed linear value tween, @c FloatTween.
+ * The delayed linear value tween, @c FloatTween.
  */
 
 #pragma once
 
 /**
- * @brief A delayed linear interpolation between two values.
+ * A delayed linear interpolation between two values.
  *
  * After a lead-in delay elapses, the current value ramps linearly from a start to an end value over
  * the ramp duration; @c Advance steps the ramp by one frame and caches the result. The trailing
@@ -17,7 +17,7 @@
 class FloatTween {
 public:
     /**
-     * @brief Advances the tween by @p flDeltaTime and returns its current value.
+     * Advances the tween by @p flDeltaTime and returns its current value.
      *
      * Before the delay elapses the cached value is returned unchanged; afterwards the accumulator
      * is advanced (clamped not to overshoot), the normalised ramp position is computed, and the
@@ -35,7 +35,7 @@ public:
     float Advance(float flDeltaTime);
 
     /**
-     * @brief The last computed value.
+     * The last computed value.
      * @return The last computed value.
      */
     float GetCurrent() const {
@@ -43,7 +43,7 @@ public:
     }
 
     /**
-     * @brief Sets the ramp's start value.
+     * Sets the ramp's start value.
      * @param flFrom The ramp's start value.
      */
     void SetFrom(float flFrom) {
@@ -51,7 +51,7 @@ public:
     }
 
     /**
-     * @brief Sets the ramp's end value.
+     * Sets the ramp's end value.
      * @param flTo The ramp's end value.
      */
     void SetTo(float flTo) {
@@ -59,7 +59,7 @@ public:
     }
 
     /**
-     * @brief Sets the ramp duration applied after the delay elapses.
+     * Sets the ramp duration applied after the delay elapses.
      * @param flDuration The ramp duration.
      */
     void SetDuration(float flDuration) {
@@ -67,7 +67,7 @@ public:
     }
 
     /**
-     * @brief Sets the lead-in delay subtracted from the accumulator.
+     * Sets the lead-in delay subtracted from the accumulator.
      * @param flDelay The lead-in delay.
      */
     void SetDelay(float flDelay) {
@@ -75,7 +75,7 @@ public:
     }
 
     /**
-     * @brief Sets the accumulated time.
+     * Sets the accumulated time.
      * @param flElapsed The accumulated time.
      */
     void SetElapsed(float flElapsed) {
@@ -83,7 +83,7 @@ public:
     }
 
     /**
-     * @brief Sets the last computed value.
+     * Sets the last computed value.
      * @param flCurrent The last computed value.
      */
     void SetCurrent(float flCurrent) {

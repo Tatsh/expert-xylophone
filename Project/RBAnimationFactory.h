@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A stateless factory of Core Animation builders for the app's user-interface effects.
+ * A stateless factory of Core Animation builders for the app's user-interface effects.
  *
  * Every entry
  * point is a class method that assembles and returns a keyframe animation (or a grouped pair of
@@ -19,12 +19,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Builds the Core Animation animations that drive the interface effects.
+ * Builds the Core Animation animations that drive the interface effects.
  */
 @interface RBAnimationFactory : NSObject
 
 /**
- * @brief Build a two-keyframe animation on @p keyPath that eases from @p fromValue to @p toValue.
+ * Build a two-keyframe animation on @p keyPath that eases from @p fromValue to @p toValue.
  *
  * The animation begins at @p delay, runs for @p duration, holds both endpoints with ease-in
  * timing, and keeps its final value on screen.
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       duration:(double)duration;
 
 /**
- * @brief Build an opacity fade from @p fromValue to @p toValue with linear timing.
+ * Build an opacity fade from @p fromValue to @p toValue with linear timing.
  * @param fromValue The starting opacity at key time 0.
  * @param toValue The ending opacity at key time 1.
  * @param delay The animation's begin time, in seconds.
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             duration:(double)duration;
 
 /**
- * @brief Build a horizontal-position animation from @p fromValue to @p toValue.
+ * Build a horizontal-position animation from @p fromValue to @p toValue.
  * @param fromValue The starting @c position.x at key time 0.
  * @param toValue The ending @c position.x at key time 1.
  * @param delay The animation's begin time, in seconds.
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  duration:(double)duration;
 
 /**
- * @brief Build a vertical-position animation from @p fromValue to @p toValue.
+ * Build a vertical-position animation from @p fromValue to @p toValue.
  * @note The shipped binary animates the @c position.x key path here rather than @c position.y;
  * this is preserved faithfully.
  * @param fromValue The starting value at key time 0.
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  duration:(double)duration;
 
 /**
- * @brief Build a grouped animation that moves a layer from @p fromValue to @p toValue.
+ * Build a grouped animation that moves a layer from @p fromValue to @p toValue.
  *
  * The result is a @c CAAnimationGroup wrapping a @c position.x and a @c position.y animation.
  * @param fromValue The starting position.
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              duration:(double)duration;
 
 /**
- * @brief Build a scale animation from @p fromValue to @p toValue along the selected axes.
+ * Build a scale animation from @p fromValue to @p toValue along the selected axes.
  *
  * When both @p X and @p Y are set the animation targets @c transform.scale; when only one is set it
  * targets @c transform.scale.x or @c transform.scale.y; when neither is set it returns @c nil.
@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       duration:(double)duration;
 
 /**
- * @brief Build a stay-in-place bob on @c position.y that overshoots and settles.
+ * Build a stay-in-place bob on @c position.y that overshoots and settles.
  *
  * The value keyframes rise from @p Y by a fixed offset, return to @p Y, then rise again, with
  * ease-out timing throughout, repeating @p repeatCount times.
@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         repeatCount:(int)repeatCount;
 
 /**
- * @brief Build a five-keyframe bounce on the selected scale axes.
+ * Build a five-keyframe bounce on the selected scale axes.
  *
  * The value keyframes overshoot above and dip below unit scale before settling, giving a springy
  * "bound" effect. The axis selection matches @c
@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
                                               duration:(double)duration;
 
 /**
- * @brief Remove every running animation from @p layer and each of its sublayers.
+ * Remove every running animation from @p layer and each of its sublayers.
  *
  * Does nothing when @p layer has no animation keys.
  * @param layer The layer to clear.

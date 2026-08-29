@@ -16,7 +16,7 @@ extern "C" CGRect g_pTutorialClipRect[34];
 CGRect g_pTutorialClipRect[34] = {};
 
 /**
- * @brief Seeds the tutorial artwork atlas clip-rectangle table with each texture type's source
+ * Seeds the tutorial artwork atlas clip-rectangle table with each texture type's source
  * rectangle (origin and size, in atlas pixels).
  *
  * A load-time constructor (registered in the module init-function list).

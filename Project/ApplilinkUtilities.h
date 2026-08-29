@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkUtilities helper.
+ * Reconstructed interface for the Applilink advert SDK's @c ApplilinkUtilities helper.
  *
  * @c ApplilinkUtilities is the SDK's stateless utilities class: it builds the user-agent parameter
  * dictionary, resolves the device model name, locale, and country code, serialises parameter
@@ -14,12 +14,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Applilink SDK string, device, and request-parameter utilities.
+ * Applilink SDK string, device, and request-parameter utilities.
  */
 @interface ApplilinkUtilities : NSObject
 
 /**
- * @brief Merge two dictionaries into a new mutable dictionary.
+ * Merge two dictionaries into a new mutable dictionary.
  *
  * Entries from @p joinDictionary are added first, then entries from @p withDictionary, so the
  * latter wins on any duplicate key.
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
                            withDictionary:(nullable NSDictionary *)withDictionary;
 
 /**
- * @brief Merge the given dictionary with the standard user-agent parameters.
+ * Merge the given dictionary with the standard user-agent parameters.
  * @param userAgentParametersJoinDictionary The caller's parameters to merge in.
  * @return A new dictionary combining @p userAgentParametersJoinDictionary and the user-agent
  * parameters, with the caller's entries taking precedence.
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     (nullable NSDictionary *)userAgentParametersJoinDictionary;
 
 /**
- * @brief Build the standard Applilink user-agent parameter dictionary.
+ * Build the standard Applilink user-agent parameter dictionary.
  *
  * The dictionary carries the application identifier, the URL-encoded device name, operating-system
  * name and version, SDK identifier, application version, preferred language, and country code. Each
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSDictionary *)userAgentParameters;
 
 /**
- * @brief The hardware model name of the current device.
+ * The hardware model name of the current device.
  *
  * The name is read once from the @c hw.machine sysctl and cached for the lifetime of the process.
  * @return The device model name, for example @c "iPhone9,1".
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)deviceName;
 
 /**
- * @brief Append a parameter dictionary to a URL as a query string.
+ * Append a parameter dictionary to a URL as a query string.
  *
  * Each value is percent-joined into a @c key=value pair; an array value expands into repeated
  * @c key[]=value pairs. The pairs are joined with @c & and appended after a @c ? or @c &, depending
@@ -76,21 +76,21 @@ NS_ASSUME_NONNULL_BEGIN
                                   parameters:(nullable NSDictionary *)parameters;
 
 /**
- * @brief The user's preferred language code.
+ * The user's preferred language code.
  * @return The first preferred language, or @c "ja" when none is available.
  * @ghidraAddress 0x20cefc
  */
 + (nullable NSString *)localeString;
 
 /**
- * @brief The device's country code.
+ * The device's country code.
  * @return The current locale's country code, or @c "JP" when it is unavailable.
  * @ghidraAddress 0x20cf90
  */
 + (nullable NSString *)countryCodeString;
 
 /**
- * @brief Whether a responder is attached to a presentable view hierarchy.
+ * Whether a responder is attached to a presentable view hierarchy.
  *
  * A window, application, or view controller is treated as attached directly; a view is attached
  * when it can reach one of those through its responder chain.
@@ -101,14 +101,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)hasParentViewController:(nullable UIResponder *)hasParentViewController;
 
 /**
- * @brief Generate a random 64-character impression identifier.
+ * Generate a random 64-character impression identifier.
  * @return A 64-character string of random alphanumeric characters.
  * @ghidraAddress 0x20d160
  */
 + (nullable NSString *)getImpressionId;
 
 /**
- * @brief Filter a list to the objects whose key matches a value.
+ * Filter a list to the objects whose key matches a value.
  *
  * The list is filtered with a `"%K MATCHES %@"` predicate, treating @p forKey as the key path and
  * @p object as the pattern.
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     forKey:(nullable NSString *)forKey;
 
 /**
- * @brief The file-name portion of a path.
+ * The file-name portion of a path.
  *
  * The path is scanned backwards for the last @c "/" separator; the substring from that separator is
  * returned, or the whole path when there is no separator.
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)geFileNameFromPath:(nullable NSString *)geFileNameFromPath;
 
 /**
- * @brief Emit a debug log message.
+ * Emit a debug log message.
  *
  * This is an empty stub in the shipped build; the call does nothing.
  * @ghidraAddress 0x20d418

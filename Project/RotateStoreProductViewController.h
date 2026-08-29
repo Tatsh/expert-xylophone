@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c
+ * Reconstructed interface for the Applilink advert SDK's @c
  * RotateStoreProductViewController.
  *
  * @c RotateStoreProductViewController is a thin @c SKStoreProductViewController subclass that the
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A rotation-forcing @c SKStoreProductViewController subclass used to host the store sheet.
+ * A rotation-forcing @c SKStoreProductViewController subclass used to host the store sheet.
  */
 @interface RotateStoreProductViewController : SKStoreProductViewController
 

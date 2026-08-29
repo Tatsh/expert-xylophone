@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The unlock-confirmation popup presented over the customize screen when the player taps a
+ * The unlock-confirmation popup presented over the customize screen when the player taps a
  * locked item in the unlock picker.
  *
  * It dims the whole screen and floats a rounded, framed panel showing
@@ -20,7 +20,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The unlock-confirmation popup shown over the customize screen.
+ * The unlock-confirmation popup shown over the customize screen.
  *
  * A @c UIControl whose whole-screen frame dims the customize screen behind a centred, rounded
  * panel. The owning @c RBUnlockView wires the yes/no button actions, sets @c itemData (which lays
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBCustomInfoPopupView : UIControl
 
 /**
- * @brief Create the popup with the given frame.
+ * Create the popup with the given frame.
  *
  * Records the iPad idiom as @c isPad, builds the panel through @c setupView, and marks the control
  * as exclusively touched.
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the popup chrome: the centred base panel, its clear background, the rounded clipped
+ * Build the popup chrome: the centred base panel, its clear background, the rounded clipped
  * content view, the item artwork and frame image views, the cost label, and the yes/no buttons.
  *
  * The button and label geometry depends on the iPad idiom (@c isPad) and the current player theme.
@@ -50,84 +50,84 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupView;
 
 /**
- * @brief Fade the popup in, playing the popup-open sound effect and marking it animating for the
+ * Fade the popup in, playing the popup-open sound effect and marking it animating for the
  * duration of the transition.
  * @ghidraAddress 0x19ded8
  */
 - (void)showAnimation;
 
 /**
- * @brief Fade the popup out, then remove it from its superview.
+ * Fade the popup out, then remove it from its superview.
  * @ghidraAddress 0x19e058
  */
 - (void)hideAnimation;
 
 /**
- * @brief Touch-up handler that dismisses the popup.
+ * Touch-up handler that dismisses the popup.
  * @param sender The control that sent the action.
  * @ghidraAddress 0x19e1dc
  */
 - (void)tap:(nullable id)sender;
 
 /**
- * @brief The item being confirmed. Assigning it lays out the artwork, sizes it by theme and font
+ * The item being confirmed. Assigning it lays out the artwork, sizes it by theme and font
  * variant, sets the cost label, and, for a music item, downloads and overlays the frame image.
  * @ghidraAddress 0x19e1f8
  */
 @property(strong, nonatomic, nullable) RBUnlockPackageItemData *itemData;
 
 /**
- * @brief The base panel that hosts the background, content view, artwork, and buttons.
+ * The base panel that hosts the background, content view, artwork, and buttons.
  */
 @property(strong, nonatomic, nullable) UIView *baseView;
 
 /**
- * @brief The rounded, clipped content view that holds the cost label and buttons.
+ * The rounded, clipped content view that holds the cost label and buttons.
  */
 @property(strong, nonatomic, nullable) UIView *contentView;
 
 /**
- * @brief The item artwork image view.
+ * The item artwork image view.
  */
 @property(strong, nonatomic, nullable) UIImageView *imageView;
 
 /**
- * @brief The frame image view overlaid around the artwork for a music item.
+ * The frame image view overlaid around the artwork for a music item.
  */
 @property(strong, nonatomic, nullable) UIImageView *frameImageView;
 
 /**
- * @brief The label showing the item's lime-point cost.
+ * The label showing the item's lime-point cost.
  */
 @property(strong, nonatomic, nullable) RBNumberLabel *usePointLabel;
 
 /**
- * @brief The label showing the player's current lime-point balance.
+ * The label showing the player's current lime-point balance.
  */
 @property(strong, nonatomic, nullable) RBNumberLabel *pointLabel;
 
 /**
- * @brief The confirm button.
+ * The confirm button.
  */
 @property(strong, nonatomic, nullable) UIButton *yesButton;
 
 /**
- * @brief The cancel button.
+ * The cancel button.
  */
 @property(strong, nonatomic, nullable) UIButton *noButton;
 
 /**
- * @brief The image downloader that fetches the music-item frame image.
+ * The image downloader that fetches the music-item frame image.
  */
 @property(strong, nonatomic, nullable) ImageDownloader *imageDownloader;
 
 /**
- * @brief Whether the layout uses the wide (iPad) iPad idiom.
+ * Whether the layout uses the wide (iPad) iPad idiom.
  */
 @property(assign, nonatomic) BOOL isPad;
 
 /**
- * @brief Whether a show or hide animation is currently running.
+ * Whether a show or hide animation is currently running.
  */
 @property(assign, nonatomic) BOOL animating;
 

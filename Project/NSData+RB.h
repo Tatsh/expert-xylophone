@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c NSData property-list deserialisation helpers.
+ * @c NSData property-list deserialisation helpers.
  *
  * Decode an XML property-list payload held in an
  * @c NSData into an @c NSDictionary or a mutable @c NSArray, selecting the Core Foundation parser
@@ -18,12 +18,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Property-list deserialisation helpers layered on @c NSData.
+ * Property-list deserialisation helpers layered on @c NSData.
  */
 @interface NSData (RB)
 
 /**
- * @brief Deserialise the receiver's XML property-list bytes into a dictionary.
+ * Deserialise the receiver's XML property-list bytes into a dictionary.
  * @return A defensive copy of the parsed dictionary, or @c nil when the payload does not decode to
  * an @c NSDictionary.
  * @ghidraAddress 0x1a4470
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSDictionary *)dictionary;
 
 /**
- * @brief Deserialise the receiver's XML property-list bytes into a mutable array.
+ * Deserialise the receiver's XML property-list bytes into a mutable array.
  * @return A mutable copy of the parsed array, or @c nil when the payload does not decode to an
  * @c NSArray.
  * @ghidraAddress 0x1a45f8

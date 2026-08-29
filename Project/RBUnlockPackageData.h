@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief One unlock package within the unlock catalogue: an identifier, a display order, a title,
+ * One unlock package within the unlock catalogue: an identifier, a display order, a title,
  * and the list of item entries it grants.
  *
  * Parsed from a catalogue dictionary by @c RBUnlockData.
@@ -16,37 +16,37 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief An unlock package: its metadata and the item entries it contains.
+ * An unlock package: its metadata and the item entries it contains.
  */
 @interface RBUnlockPackageData : NSObject
 
 /**
- * @brief The package identifier.
+ * The package identifier.
  * @ghidraAddress 0x19a980 (getter)
  * @ghidraAddress 0x19a990 (setter)
  */
 @property(nonatomic, assign) int identity;
 /**
- * @brief The package's display order within the catalogue.
+ * The package's display order within the catalogue.
  * @ghidraAddress 0x19a9a0 (getter)
  * @ghidraAddress 0x19a9b0 (setter)
  */
 @property(nonatomic, assign) int order;
 /**
- * @brief The package title.
+ * The package title.
  * @ghidraAddress 0x19a9c0 (getter)
  * @ghidraAddress 0x19a9d0 (setter)
  */
 @property(copy, nonatomic, nullable) NSString *title;
 /**
- * @brief The package's item entries, ordered by descending point value.
+ * The package's item entries, ordered by descending point value.
  * @ghidraAddress 0x19a9dc (getter)
  * @ghidraAddress 0x19a9ec (setter)
  */
 @property(nonatomic, strong) NSArray<RBUnlockPackageItemData *> *data;
 
 /**
- * @brief Populate the package from a catalogue dictionary (@c ID, @c Order, @c Title, and @c Data
+ * Populate the package from a catalogue dictionary (@c ID, @c Order, @c Title, and @c Data
  * entries).
  * @param dictionary The package dictionary to read.
  * @ghidraAddress 0x19a548

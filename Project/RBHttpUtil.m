@@ -301,7 +301,7 @@ static void RBLogRequest(NSURLRequest *request) {
 #pragma mark - Task creation
 
 /**
- * @brief Create and resume an in-memory data task for the current request.
+ * Create and resume an in-memory data task for the current request.
  * @ghidraAddress 0x379e8
  */
 - (NSURLSessionDataTask *)startDataTask {
@@ -317,7 +317,7 @@ static void RBLogRequest(NSURLRequest *request) {
 }
 
 /**
- * @brief Create and resume a download-to-file task for the current request.
+ * Create and resume a download-to-file task for the current request.
  * @ghidraAddress 0x37c20
  */
 - (NSURLSessionDownloadTask *)startDownloadTask {
@@ -459,7 +459,7 @@ static void RBLogRequest(NSURLRequest *request) {
 }
 
 /**
- * @brief Report download progress to the proceed block, or failing that to the delegate.
+ * Report download progress to the proceed block, or failing that to the delegate.
  * @ghidraAddress 0x38fc0
  */
 - (void)URLSession:(NSURLSession *)session
@@ -541,7 +541,7 @@ static void RBLogRequest(NSURLRequest *request) {
 #pragma mark - Reset / deallocation
 
 /**
- * @brief Cancel any in-flight task and restore every field to its initial state.
+ * Cancel any in-flight task and restore every field to its initial state.
  * @ghidraAddress 0x39538
  */
 - (void)reset {

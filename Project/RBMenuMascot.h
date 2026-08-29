@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The animated mascot character that wanders across the music-menu screen.
+ * The animated mascot character that wanders across the music-menu screen.
  *
  * It is a @c UIView subclass that plays a sprite-frame animation on an inner @c UIImageView (a
  * random normal or, on
@@ -20,68 +20,68 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The animated, tappable mascot shown wandering across the music-menu screen.
+ * The animated, tappable mascot shown wandering across the music-menu screen.
  */
 @interface RBMenuMascot : UIView
 
 /**
- * @brief The frame sets for the normal mascot animation.
+ * The frame sets for the normal mascot animation.
  *
  * Each element is a @c NSMutableArray of @c UIImage frames for one animation clip.
  */
 @property(nonatomic, strong) NSMutableArray *normalImageArray;
-/** @brief The per-clip frame counts for @c normalImageArray. */
+/** The per-clip frame counts for @c normalImageArray. */
 @property(nonatomic, strong) NSMutableArray *normalFrameCountArray;
-/** @brief The frame sets for the rare (campaign) mascot animation. */
+/** The frame sets for the rare (campaign) mascot animation. */
 @property(nonatomic, strong) NSMutableArray *rareImageArray;
-/** @brief The per-clip frame counts for @c rareImageArray. */
+/** The per-clip frame counts for @c rareImageArray. */
 @property(nonatomic, strong) NSMutableArray *rareFrameCountArray;
 
-/** @brief The inner image view that runs the mascot sprite animation. */
+/** The inner image view that runs the mascot sprite animation. */
 @property(nonatomic, strong, nullable) UIImageView *mascotView;
-/** @brief The container view holding the campaign message bubble. */
+/** The container view holding the campaign message bubble. */
 @property(nonatomic, strong, nullable) UIView *messageView;
-/** @brief The resizable speech-bubble background behind the campaign message. */
+/** The resizable speech-bubble background behind the campaign message. */
 @property(nonatomic, strong, nullable) UIImageView *messageBgView;
-/** @brief The label that renders the current campaign message text. */
+/** The label that renders the current campaign message text. */
 @property(nonatomic, strong, nullable) UILabel *messageLabel;
-/** @brief The campaign message list, taken from @c RBCampaignData. */
+/** The campaign message list, taken from @c RBCampaignData. */
 @property(nonatomic, strong, nullable) NSArray *messageList;
 
-/** @brief The mascot type identifier passed to @c setup:. */
+/** The mascot type identifier passed to @c setup:. */
 @property(nonatomic, assign) int type;
-/** @brief The index of the campaign message currently shown. */
+/** The index of the campaign message currently shown. */
 @property(nonatomic, assign) int currentMessageIndex;
-/** @brief The index of the campaign message to show next. */
+/** The index of the campaign message to show next. */
 @property(nonatomic, assign) int nextMessageIndex;
 
-/** @brief Whether the mascot is running in campaign (message-ticker) mode. */
+/** Whether the mascot is running in campaign (message-ticker) mode. */
 @property(nonatomic, assign) BOOL isCampaignMode;
-/** @brief Whether the wander animation is currently running. */
+/** Whether the wander animation is currently running. */
 @property(nonatomic, assign) BOOL isAnimation;
-/** @brief Whether a message-ticker fade or slide animation is in flight. */
+/** Whether a message-ticker fade or slide animation is in flight. */
 @property(nonatomic, assign) BOOL messageViewAnimating;
 
-/** @brief The horizontal drift speed, in points per frame. */
+/** The horizontal drift speed, in points per frame. */
 @property(nonatomic, assign) float speedX;
-/** @brief The vertical speed, in points per frame. */
+/** The vertical speed, in points per frame. */
 @property(nonatomic, assign) float speedY;
-/** @brief The vertical acceleration (gravity) applied per frame. */
+/** The vertical acceleration (gravity) applied per frame. */
 @property(nonatomic, assign) float accellY;
-/** @brief The mascot render scale. */
+/** The mascot render scale. */
 @property(nonatomic, assign) float scale;
-/** @brief The resting vertical position the mascot settles to. */
+/** The resting vertical position the mascot settles to. */
 @property(nonatomic, assign) float baseY;
-/** @brief The right-edge bounce limit, in points. */
+/** The right-edge bounce limit, in points. */
 @property(atomic, assign) float limitX;
-/** @brief The bottom-edge bounce limit, in points. */
+/** The bottom-edge bounce limit, in points. */
 @property(atomic, assign) float limitY;
 
-/** @brief The delegate notified when a linked campaign message is tapped. */
+/** The delegate notified when a linked campaign message is tapped. */
 @property(nonatomic, weak, nullable) id<RBMenuMascotDelegate> delegate;
 
 /**
- * @brief Builds the mascot: loads the sprite frames, the inner image view, the tap recogniser, and
+ * Builds the mascot: loads the sprite frames, the inner image view, the tap recogniser, and
  * the campaign message bubble, then seeds the campaign message list.
  * @param type The mascot type identifier.
  * @ghidraAddress 0x2b774
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setup:(int)type;
 
 /**
- * @brief Starts the wander animation: picks a random clip, positions the mascot at a random resting
+ * Starts the wander animation: picks a random clip, positions the mascot at a random resting
  * height, applies the scale transform, and begins ticking.
  * @param sender The animation trigger (unused).
  * @ghidraAddress 0x2c850
@@ -97,20 +97,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startAnimation:(nullable id)sender;
 
 /**
- * @brief Stops the wander animation and clears the sprite frames.
+ * Stops the wander animation and clears the sprite frames.
  * @ghidraAddress 0x2d478
  */
 - (void)stopAnimation;
 
 /**
- * @brief Advances the campaign message ticker: fades the current bubble out and slides the next
+ * Advances the campaign message ticker: fades the current bubble out and slides the next
  * message in.
  * @ghidraAddress 0x2d54c
  */
 - (void)updateMessage;
 
 /**
- * @brief Runs one wander step: integrates the vertical gravity, bounces off the screen edges,
+ * Runs one wander step: integrates the vertical gravity, bounces off the screen edges,
  * flipping the mascot, and returns the mascot's new frame origin.
  * @return The mascot's new frame origin, in points.
  * @ghidraAddress 0x2ebe4
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGPoint)getMovePoint;
 
 /**
- * @brief Measures a campaign message string constrained to the message-bubble width for the current
+ * Measures a campaign message string constrained to the message-bubble width for the current
  * iPad idiom.
  * @param text The message text to measure.
  * @return The size the text occupies.
@@ -127,14 +127,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)generateCGSize:(NSString *)text;
 
 /**
- * @brief Drives the per-frame move animation on the Colette theme (repositions the mascot and, when
+ * Drives the per-frame move animation on the Colette theme (repositions the mascot and, when
  * finished, advances the ticker).
  * @ghidraAddress 0x2e6c4
  */
 - (void)update;
 
 /**
- * @brief Handles a tap: hops the mascot upward off-campaign, or advances or follows the campaign
+ * Handles a tap: hops the mascot upward off-campaign, or advances or follows the campaign
  * message ticker on-campaign.
  * @param sender The tap gesture recogniser.
  * @ghidraAddress 0x2e8c8
@@ -144,11 +144,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief The delegate protocol the mascot uses to surface a tapped campaign-message link.
+ * The delegate protocol the mascot uses to surface a tapped campaign-message link.
  */
 @protocol RBMenuMascotDelegate <NSObject>
 @optional
-/** @brief Requests that the host present the campaign notification page. */
+/** Requests that the host present the campaign notification page. */
 - (void)showNotificationPageView;
 @end
 

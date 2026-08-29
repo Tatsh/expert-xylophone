@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c SKStoreProductViewController status-bar preference.
+ * @c SKStoreProductViewController status-bar preference.
  *
  * The application presents the App Store
  * product sheet full screen, so the category overrides the controller's status-bar preference to
@@ -19,7 +19,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Status-bar preference override for the App Store product sheet.
+ * Status-bar preference override for the App Store product sheet.
  *
  * The category adds no state and overrides a single @c UIViewController preference, so it takes
  * effect on every @c SKStoreProductViewController the application presents.
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SKStoreProductViewController (RB)
 
 /**
- * @brief Whether the presented product sheet hides the status bar.
+ * Whether the presented product sheet hides the status bar.
  * @return Always @c YES.
  * @ghidraAddress 0x88fb8
  */

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The background sprite manager, @c BackgroundSpriteManager.
+ * The background sprite manager, @c BackgroundSpriteManager.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The background sprite manager: three sprite instancers drawn beneath the shared background
+ * The background sprite manager: three sprite instancers drawn beneath the shared background
  * layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns a
@@ -27,14 +27,14 @@ class C_SPRITE_INSTANCING_2D;
 class BackgroundSpriteManager : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide background sprite manager, created on first use.
+     * The process-wide background sprite manager, created on first use.
      * @return The shared manager.
      * @ghidraAddress 0x10a81c
      */
     static BackgroundSpriteManager *shared();
 
     /**
-     * @brief Lazily builds the three background sprite instancers: loads the atlas and creates each
+     * Lazily builds the three background sprite instancers: loads the atlas and creates each
      * instancer (attaching it under the background layer's render object, making it visible,
      * binding the atlas, seeding its sprite count, and flagging additive blend on the outer two
      * slots).
@@ -44,24 +44,24 @@ public:
      */
     void BuildBackgroundSpriteNodes();
 
-    /** @brief The number of background sprite instancers the manager builds. */
+    /** The number of background sprite instancers the manager builds. */
     static constexpr int kSpriteSlotCount = 3;
 
     /**
-     * @brief Activates the manager's animation and resets its frame counter.
+     * Activates the manager's animation and resets its frame counter.
      * @ghidraAddress 0x10a938
      */
     void SetActiveAndResetCounter();
 
     /**
-     * @brief Deactivates the manager's animation.
+     * Deactivates the manager's animation.
      * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x10a948
      */
     void SetInactive(float flDuration);
 
     /**
-     * @brief Whether the manager's intro animation is still active.
+     * Whether the manager's intro animation is still active.
      * @return @c true while the intro animation is running.
      */
     bool IsActive() const {
@@ -69,7 +69,7 @@ public:
     }
 
     /**
-     * @brief Advances the play-field zoom animation by one frame and emits its background sprite
+     * Advances the play-field zoom animation by one frame and emits its background sprite
      * instances.
      *
      * Clears the three instancers, then (while active) advances the effect clock, retiring the
@@ -84,7 +84,7 @@ public:
 
 private:
     /**
-     * @brief Appends one zoom-effect sprite to one of the manager's instancers, if capacity
+     * Appends one zoom-effect sprite to one of the manager's instancers, if capacity
      * remains.
      *
      * Looks up one of the manager's sprite instancers by @p nSlotIndex; if it still has a free
@@ -108,7 +108,7 @@ private:
                                 int nAlpha);
 
     /**
-     * @brief Constructs the manager, chaining the base constructor and zero-clearing its own state.
+     * Constructs the manager, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x10a7d8
      */
     BackgroundSpriteManager();

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c UIImageView flash-effect helpers used by the menu and music-select buttons.
+ * @c UIImageView flash-effect helpers used by the menu and music-select buttons.
  *
  * A flash effect
  * adds a forever-repeating, auto-reversing opacity pulse to the receiver's layer (under the
@@ -22,12 +22,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Flash-effect helpers layered on @c UIImageView.
+ * Flash-effect helpers layered on @c UIImageView.
  */
 @interface UIImageView (RB)
 
 /**
- * @brief Start the fast repeating flash pulse on the receiver.
+ * Start the fast repeating flash pulse on the receiver.
  *
  * Convenience that starts the opacity pulse with the shorter "fast" period; equivalent to
  * @c SetFlashEffectDuration:Start:End: with the fast duration and the standard full-to-dim opacity
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetFlashEffectFast;
 
 /**
- * @brief Start the default repeating flash pulse on the receiver.
+ * Start the default repeating flash pulse on the receiver.
  *
  * Convenience that starts the opacity pulse with the standard period; equivalent to
  * @c SetFlashEffectDuration:Start:End: with the default duration, a start opacity of @c 1.0, and a
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)StartDefaultFlashEffect;
 
 /**
- * @brief Add a forever-repeating, auto-reversing opacity pulse to the receiver's layer.
+ * Add a forever-repeating, auto-reversing opacity pulse to the receiver's layer.
  *
  * Installs a @c CABasicAnimation on the @c opacity key path under the @c "FLUSH_ANIM" key that
  * eases between @p start and @p end and holds its final value. The pulse auto-reverses and repeats
@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetFlashEffectDuration:(CGFloat)duration Start:(CGFloat)start End:(CGFloat)end;
 
 /**
- * @brief Stop the flash pulse on the receiver.
+ * Stop the flash pulse on the receiver.
  *
  * Removes the @c "FLUSH_ANIM" animation from the receiver's layer.
  * @ghidraAddress 0x1a3760

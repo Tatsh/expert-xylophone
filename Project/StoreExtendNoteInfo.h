@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A store extend-note model describing one purchasable extend-note pack item: the numeric
+ * A store extend-note model describing one purchasable extend-note pack item: the numeric
  * extend-note and pack identifiers, its price, its comment, its download URLs, and the StoreKit
  * product backing it. It is a specialisation of @c StoreMusicInfo — the tune metadata (identifier,
  * name, artist, artwork, sample, iTunes URLs, and per-difficulty levels) is inherited — and adds
@@ -22,7 +22,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The action the store pack cell's button performs for an extend-note item.
+ * The action the store pack cell's button performs for an extend-note item.
  * @ghidraAddress 0x1793cc
  */
 typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
@@ -41,109 +41,109 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 };
 
 /**
- * @brief A store model for a single purchasable extend-note pack item.
+ * A store model for a single purchasable extend-note pack item.
  */
 @interface StoreExtendNoteInfo : StoreMusicInfo
 
 /**
- * @brief The extend-note item's App Store product identifier.
+ * The extend-note item's App Store product identifier.
  * @ghidraAddress 0x1798f8 (getter)
  * @ghidraAddress 0x179908 (setter)
  */
 @property(nonatomic, assign) int pid;
 /**
- * @brief The extend-note chart identifier of the associated tune.
+ * The extend-note chart identifier of the associated tune.
  * @ghidraAddress 0x179918 (getter)
  * @ghidraAddress 0x179928 (setter)
  */
 @property(nonatomic, assign) int extMusicID;
 /**
- * @brief The identifier of the pack that contains this extend note.
+ * The identifier of the pack that contains this extend note.
  * @ghidraAddress 0x179938 (getter)
  * @ghidraAddress 0x179948 (setter)
  */
 @property(nonatomic, assign) int packID;
 /**
- * @brief The containing pack's display name.
+ * The containing pack's display name.
  * @ghidraAddress 0x179958 (getter)
  * @ghidraAddress 0x179968 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *packName;
 /**
- * @brief The extend-note item's comment text.
+ * The extend-note item's comment text.
  * @ghidraAddress 0x1799a0 (getter)
  * @ghidraAddress 0x1799b0 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *comment;
 /**
- * @brief The extend-note item's price in the catalogue currency.
+ * The extend-note item's price in the catalogue currency.
  * @ghidraAddress 0x1799e8 (getter)
  * @ghidraAddress 0x1799f8 (setter)
  */
 @property(nonatomic, assign) int price;
 /**
- * @brief The extend note's chart difficulty level.
+ * The extend note's chart difficulty level.
  * @ghidraAddress 0x179a08 (getter)
  * @ghidraAddress 0x179a18 (setter)
  */
 @property(nonatomic, assign) int difficulty;
 /**
- * @brief The download URL for the extend-note file.
+ * The download URL for the extend-note file.
  * @ghidraAddress 0x179a28 (getter)
  * @ghidraAddress 0x179a38 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *extendNoteURL;
 /**
- * @brief The download URL for the tune archive that hosts the extend note.
+ * The download URL for the tune archive that hosts the extend note.
  * @ghidraAddress 0x179a70 (getter)
  * @ghidraAddress 0x179a80 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *extendURL;
 /**
- * @brief Whether the extend-note item is flagged as new in the catalogue.
+ * Whether the extend-note item is flagged as new in the catalogue.
  * @ghidraAddress 0x179ab8 (getter)
  * @ghidraAddress 0x179ac8 (setter)
  */
 @property(nonatomic, assign) BOOL isNew;
 /**
- * @brief An informational deep link associated with the item, when present.
+ * An informational deep link associated with the item, when present.
  * @ghidraAddress 0x179ad8 (getter)
  */
 @property(nonatomic, readonly, strong, nullable) NSString *linkURL;
 /**
- * @brief The StoreKit product backing the extend-note item, once loaded.
+ * The StoreKit product backing the extend-note item, once loaded.
  * @ghidraAddress 0x179ae8 (getter)
  * @ghidraAddress 0x179af8 (setter)
  */
 @property(nonatomic, strong, nullable) SKProduct *product;
 
 /**
- * @brief Whether the extend-note item's containing pack has been purchased.
+ * Whether the extend-note item's containing pack has been purchased.
  * @return @c YES when the pack identifier is positive and its product is recorded as purchased.
  * @ghidraAddress 0x1794d8
  */
 @property(nonatomic, readonly) BOOL purchasedPack;
 /**
- * @brief Whether the extend-note item itself has been purchased.
+ * Whether the extend-note item itself has been purchased.
  * @return @c YES when the item identifier is positive and its product is recorded as purchased.
  * @ghidraAddress 0x1795c0
  */
 @property(nonatomic, readonly) BOOL purchasedNote;
 /**
- * @brief Whether the tune archive that hosts the extend note is already downloaded.
+ * Whether the tune archive that hosts the extend note is already downloaded.
  * @return @c YES when the tune is a purchased tune and its archive is present on disk.
  * @ghidraAddress 0x1796a8
  */
 @property(nonatomic, readonly) BOOL alreadyDownloadBin;
 /**
- * @brief Whether the extend-note file is already downloaded.
+ * Whether the extend-note file is already downloaded.
  * @return @c YES when the extend note is purchased and its file is present on disk.
  * @ghidraAddress 0x1797e8
  */
 @property(nonatomic, readonly) BOOL alreadyDownloadNote;
 
 /**
- * @brief Build an extend-note item from a server catalogue dictionary.
+ * Build an extend-note item from a server catalogue dictionary.
  *
  * The dictionary's @c Music sub-dictionary is handed to @c StoreMusicInfo to populate the inherited
  * tune metadata, then the top-level @c PID, @c ExtID, @c PackID, @c PackName, @c Comment, @c Price,
@@ -156,7 +156,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 - (nullable instancetype)initWithDictionary:(nullable NSDictionary *)dictionary;
 
 /**
- * @brief Build an extend-note item from a flat catalogue dictionary.
+ * Build an extend-note item from a flat catalogue dictionary.
  *
  * Reads the top-level @c PID, @c ExtID, @c PackID, @c PackName, @c Comment, @c Price, @c ExtLevel,
  * @c ExtURL, @c ExtURL2, and @c IsNew entries; unlike @c initWithDictionary: it does not read a
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 - (nullable instancetype)initWithExtendDictionary:(nullable NSDictionary *)dictionary;
 
 /**
- * @brief Build an extend-note item from a StoreKit product.
+ * Build an extend-note item from a StoreKit product.
  *
  * The product is stored and the item identifier is derived from its product identifier through
  * @c StoreUtil.
@@ -180,7 +180,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 - (nullable instancetype)initWithProduct:(nullable SKProduct *)product;
 
 /**
- * @brief Build an extend-note item from a bare extend-note identifier.
+ * Build an extend-note item from a bare extend-note identifier.
  * @param extendNoteID The extend-note item identifier to store as the product identifier.
  * @return The initialised item, or @c nil when the superclass initialiser fails.
  * @ghidraAddress 0x1786d8
@@ -188,7 +188,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 - (nullable instancetype)initWithExtendNoteID:(int)extendNoteID;
 
 /**
- * @brief Populate the extend-note fields from a server catalogue dictionary.
+ * Populate the extend-note fields from a server catalogue dictionary.
  *
  * The entry is ignored unless its @c PID matches the item's own identifier. When it matches, the
  * @c PackID, @c ExtID, @c PackName, @c Comment, @c Price, @c ExtLevel, @c ExtURL, @c ExtURL2, and
@@ -203,14 +203,14 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 - (BOOL)setDictionary:(nullable NSDictionary *)dictionary;
 
 /**
- * @brief Whether the extend-note file is already present on disk.
+ * Whether the extend-note file is already present on disk.
  * @return @c YES when the extend note's purchased file exists.
  * @ghidraAddress 0x178ff0
  */
 - (BOOL)extFileExist;
 
 /**
- * @brief The tint colour for the pack cell's action button.
+ * The tint colour for the pack cell's action button.
  * @return A dark-blue colour for a not-purchased pack, purple for a purchased pack whose note is
  * not purchased, blue while the item is downloading, and grey once it is installed or in error.
  * @ghidraAddress 0x179078
@@ -218,7 +218,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 - (nullable UIColor *)getButtonColor;
 
 /**
- * @brief The title text for the pack cell's action button.
+ * The title text for the pack cell's action button.
  * @return The more-info label for a not-purchased pack, a formatted "buy for the price" title for a
  * purchased pack whose note is not purchased, the download label while downloading, the installed
  * label once complete, and the error label otherwise.
@@ -227,7 +227,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 - (nullable NSString *)getButtonName;
 
 /**
- * @brief The action the pack cell's button should perform for the item.
+ * The action the pack cell's button should perform for the item.
  * @return The current button state.
  * @ghidraAddress 0x1793cc
  */
@@ -240,7 +240,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 extern "C" {
 #endif
 /**
- * @brief Whether the catalogue priced this extend note at nothing.
+ * Whether the catalogue priced this extend note at nothing.
  *
  * Present only in a patched build. A free function rather than a method, because the shipped class
  * carries no such selector. The @c price property cannot answer this on its own: it is read with a
@@ -253,7 +253,7 @@ extern "C" {
 BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID);
 
 /**
- * @brief The price to draw for an extend note, falling back to the catalogue when StoreKit has no
+ * The price to draw for an extend note, falling back to the catalogue when StoreKit has no
  * product for it.
  *
  * Present only in a patched build, where no note has a StoreKit product and the localised price

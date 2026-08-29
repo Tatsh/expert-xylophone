@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A @c UICollectionView subclass that brackets its layout pass with callbacks to an
+ * A @c UICollectionView subclass that brackets its layout pass with callbacks to an
  * auxiliary delegate.
  *
  * Just before it lays its subviews out it sends @c -willLayoutSubviews:, then it runs the
@@ -19,7 +19,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Auxiliary delegate notified around an @c RBCollectionView's layout pass.
+ * Auxiliary delegate notified around an @c RBCollectionView's layout pass.
  *
  * Both callbacks are optional; @c RBCollectionView guards each with @c -respondsToSelector: before
  * sending it.
@@ -29,21 +29,21 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 /**
- * @brief Sent just before the collection view runs the inherited layout pass.
+ * Sent just before the collection view runs the inherited layout pass.
  * @param collectionView The collection view about to lay out.
  * @ghidraAddress 0x9d5d8
  */
 - (void)willLayoutSubviews:(RBCollectionView *)collectionView;
 
 /**
- * @brief Sent just after the collection view has run the inherited layout pass.
+ * Sent just after the collection view has run the inherited layout pass.
  * @param collectionView The collection view that finished laying out.
  * @ghidraAddress 0x9d5d8
  */
 - (void)didLayoutSubviews:(RBCollectionView *)collectionView;
 
 /**
- * @brief Forwarded from the collection view's @c -touchesBegan:withEvent: after the inherited pass.
+ * Forwarded from the collection view's @c -touchesBegan:withEvent: after the inherited pass.
  * @param touches The touches that began.
  * @param event The owning event.
  * @ghidraAddress 0x9d730
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)touchesBeganFromRBCollectionView:(NSSet *)touches withEvent:(nullable UIEvent *)event;
 
 /**
- * @brief Forwarded from the collection view's @c -touchesEnded:withEvent: after the inherited pass.
+ * Forwarded from the collection view's @c -touchesEnded:withEvent: after the inherited pass.
  * @param touches The touches that ended.
  * @param event The owning event.
  * @ghidraAddress 0x9d874
@@ -61,12 +61,12 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief A collection view that brackets its layout pass with delegate callbacks.
+ * A collection view that brackets its layout pass with delegate callbacks.
  */
 @interface RBCollectionView : UICollectionView
 
 /**
- * @brief The auxiliary delegate notified around each layout pass, held weakly.
+ * The auxiliary delegate notified around each layout pass, held weakly.
  * @ghidraAddress 0x9d9b8 (getter)
  * @ghidraAddress 0x9d9d8 (setter)
  */

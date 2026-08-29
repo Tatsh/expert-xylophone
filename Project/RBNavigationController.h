@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The application's root navigation controller.
+ * The application's root navigation controller.
  *
  * It is a thin @c UINavigationController subclass
  * that keeps the navigation bar opaque and hidden, forces the status bar hidden, and forwards its
@@ -13,12 +13,12 @@
 #import <UIKit/UIKit.h>
 
 /**
- * @brief Root navigation controller that defers rotation to its visible view controller.
+ * Root navigation controller that defers rotation to its visible view controller.
  */
 @interface RBNavigationController : UINavigationController
 
 /**
- * @brief Configure the navigation bar after the view loads.
+ * Configure the navigation bar after the view loads.
  *
  * Calls through to @c super and then makes the navigation bar opaque by clearing its
  * @c translucent flag.
@@ -27,21 +27,21 @@
 - (void)viewDidLoad;
 
 /**
- * @brief Keep the status bar hidden while this navigation controller is on screen.
+ * Keep the status bar hidden while this navigation controller is on screen.
  * @return Always @c YES.
  * @ghidraAddress 0x1c988c
  */
 - (BOOL)prefersStatusBarHidden;
 
 /**
- * @brief Defer the autorotation decision to the currently visible view controller.
+ * Defer the autorotation decision to the currently visible view controller.
  * @return The value returned by the visible view controller's @c -shouldAutorotate.
  * @ghidraAddress 0x1c9894
  */
 - (BOOL)shouldAutorotate;
 
 /**
- * @brief Defer the supported orientations to the currently visible view controller.
+ * Defer the supported orientations to the currently visible view controller.
  * @return The orientation mask returned by the visible view controller's
  * @c -supportedInterfaceOrientations.
  * @ghidraAddress 0x1c98f4

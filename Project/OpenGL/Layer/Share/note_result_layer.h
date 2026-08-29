@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note-result effect layer, @c NoteResultLayer.
+ * The note-result effect layer, @c NoteResultLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief One sprite descriptor in a star-glyph layout table (a 20-byte record).
+ * One sprite descriptor in a star-glyph layout table (a 20-byte record).
  *
  * Describes one drawable sprite (a star animation frame or a single digit glyph): its anchor
  * offset, its pixel size, and the atlas-frame number that indexes the shared sprite UV table. The
@@ -28,7 +28,7 @@ struct StarSpriteDescriptor {
 };
 
 /**
- * @brief The pad star-glyph layout table.
+ * The pad star-glyph layout table.
  *
  * One record per star frame (0 through 6) then one per digit glyph (0 through 9); the device
  * selects between this table and @c g_aStarGlyphTablePhone. Read-only data embedded in the binary.
@@ -37,7 +37,7 @@ struct StarSpriteDescriptor {
 extern const StarSpriteDescriptor g_aStarGlyphTablePad[];
 
 /**
- * @brief The phone star-glyph layout table.
+ * The phone star-glyph layout table.
  *
  * One record per star frame (0 through 6) then one per digit glyph (0 through 9); the device
  * selects between this table and @c g_aStarGlyphTablePad. Read-only data embedded in the binary.
@@ -46,7 +46,7 @@ extern const StarSpriteDescriptor g_aStarGlyphTablePad[];
 extern const StarSpriteDescriptor g_aStarGlyphTablePhone[];
 
 /**
- * @brief The note-result effect layer.
+ * The note-result effect layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It animates
  * up to twelve result "star" quads, each with a numeric label, through one sprite instancer,
@@ -56,20 +56,20 @@ extern const StarSpriteDescriptor g_aStarGlyphTablePhone[];
  */
 class NoteResultLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of result-quad positions. */
+    /** The number of result-quad positions. */
     static constexpr int kPositionCount = 12;
-    /** @brief The number of judgement types a result quad can show. */
+    /** The number of judgement types a result quad can show. */
     static constexpr int kJudgeTypeCount = 4;
 
     /**
-     * @brief The process-wide note-result effect layer, created on first use.
+     * The process-wide note-result effect layer, created on first use.
      * @return The shared note-result effect layer.
      * @ghidraAddress 0x1892fc
      */
     static NoteResultLayer *shared();
 
     /**
-     * @brief Activates the result quad at @p nPos with a judgement and numeric label.
+     * Activates the result quad at @p nPos with a judgement and numeric label.
      * @param nPos The result position (0 through 11).
      * @param nJudge The judgement type (0 through 3).
      * @param nNumber The numeric label to draw.
@@ -78,7 +78,7 @@ public:
     void Create(unsigned int nPos, int nJudge, int nNumber);
 
     /**
-     * @brief Sets one of the two quad-group scales.
+     * Sets one of the two quad-group scales.
      * @param flValue The scale value.
      * @param nWhich The group (0 = the first six quads, non-zero = the last six).
      * @ghidraAddress 0x1895d4
@@ -86,7 +86,7 @@ public:
     void SetScale(float flValue, int nWhich);
 
     /**
-     * @brief Recomputes the twelve result-quad screen positions for the current game resolution.
+     * Recomputes the twelve result-quad screen positions for the current game resolution.
      *
      * Lays the quads out in four vertical rows, each x taken from a fixed normalised column
      * (@c -0.5, @c 0, @c 0.5) scaled by half the sheet width, and each y from the row's base offset
@@ -96,7 +96,7 @@ public:
     void BuildQuadPositions();
 
     /**
-     * @brief Lazily builds the layer's sprite instancer.
+     * Lazily builds the layer's sprite instancer.
      *
      * Seeds the base sprite size (halved on the phone), rebuilds the quad positions, loads the
      * @c gm_parts2 atlas, and creates and attaches the instancer under the background layer.
@@ -106,7 +106,7 @@ public:
     void CreateSpriteInstancer();
 
     /**
-     * @brief Advances every active result quad by one frame and emits its star and digit sprites.
+     * Advances every active result quad by one frame and emits its star and digit sprites.
      *
      * Each of the twelve quads advances its timer, deactivates once past its lifetime, and
      * otherwise projects its world position to the screen, picks its star animation frame from its
@@ -120,14 +120,14 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer: clears the quad positions and records and seeds the default
+     * Constructs the layer: clears the quad positions and records and seeds the default
      * scale.
      * @ghidraAddress 0x189294
      */
     NoteResultLayer();
 
     /**
-     * @brief Emits one sprite slot (a star frame or a digit glyph) into the instancer.
+     * Emits one sprite slot (a star frame or a digit glyph) into the instancer.
      *
      * Writes the vertex position, copies the descriptor's anchor and size, looks up the atlas UV by
      * the descriptor's frame number, applies the flip rotation, sets the uniform scale to @p
@@ -145,13 +145,13 @@ private:
                         unsigned int nAlpha,
                         const StarSpriteDescriptor &descriptor);
 
-    /** @brief One animated result quad: its activity, judgement kind, timer, and numeric label. */
+    /** One animated result quad: its activity, judgement kind, timer, and numeric label. */
     struct ResultQuad {
-        bool bActive = {}; // +0x00: whether the quad is animating.
+        bool bActive = {}; /*!< Whether the quad is animating. +0x00 */
         // unsigned char m_aPad01[3] = {}; // +0x01
-        int nJudge = {};    // +0x04: the judgement kind, selecting its animation frame.
-        float flTimer = {}; // +0x08: the quad's elapsed animation time.
-        int nNumber = {};   // +0x0c: the numeric label drawn beside the quad.
+        int nJudge = {};    /*!< The judgement kind, selecting its animation frame. +0x04 */
+        float flTimer = {}; /*!< The quad's elapsed animation time. +0x08 */
+        int nNumber = {};   /*!< The numeric label drawn beside the quad. +0x0c */
     };
 
     ne::C_TEXTURE *m_pTexture = {};              // +0x08: the gm_parts2 atlas.

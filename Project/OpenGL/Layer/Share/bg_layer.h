@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The engine's shared background layer.
+ * The engine's shared background layer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief The engine's shared background layer.
+ * The engine's shared background layer.
  *
  * A single @c BgLayer owns a small scene-graph subtree that draws the play-field background: a root
  * container node, a background-image batch beneath it, and, for the theme modes that use one, a
@@ -27,14 +27,14 @@ class C_TEXTURE;
 class BgLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide background layer, created on first use.
+     * The process-wide background layer, created on first use.
      * @return The shared background layer.
      * @ghidraAddress 0x17203c
      */
     static BgLayer *GetBackgroundLayer();
 
     /**
-     * @brief The root scene-graph node background sprites are attached to, building the layer on
+     * The root scene-graph node background sprites are attached to, building the layer on
      * first access.
      * @return The background layer's root render node.
      * @ghidraAddress 0x17278c
@@ -42,7 +42,7 @@ public:
     ne::C_RENDER *GetBackgroundRenderObject();
 
     /**
-     * @brief Build the background layer's root node and content.
+     * Build the background layer's root node and content.
      *
      * Loads the selected background texture (and the clear-effect overlay texture for the theme
      * modes that use one), builds the root container node and the background batches, and sizes
@@ -52,7 +52,7 @@ public:
     void InitializeBackgroundLayer();
 
     /**
-     * @brief Selects the background type, rebuilding the layer when it changes.
+     * Selects the background type, rebuilding the layer when it changes.
      *
      * A no-op when @p nBackgroundId already matches; otherwise stores the new id, clears the built
      * guard, and rebuilds the layer.
@@ -62,7 +62,7 @@ public:
     void SetBackgroundType(int nBackgroundId);
 
     /**
-     * @brief Begin fading the background in towards full opacity.
+     * Begin fading the background in towards full opacity.
      *
      * Re-centres the background batches, then seeds the main fade tween from the current value
      * towards 1. A non-positive duration snaps to full opacity immediately.
@@ -72,7 +72,7 @@ public:
     void StartBackgroundFadeIn(float flDuration);
 
     /**
-     * @brief Begin fading the background out towards fully transparent.
+     * Begin fading the background out towards fully transparent.
      *
      * Seeds the main fade tween from the current value towards 0. A non-positive duration snaps to
      * transparent immediately.
@@ -82,21 +82,21 @@ public:
     void StartBackgroundFadeOut(float flDuration);
 
     /**
-     * @brief Set the background brightness and mark its colours for re-application.
+     * Set the background brightness and mark its colours for re-application.
      * @param flBrightness The brightness applied to the background sprite colours.
      * @ghidraAddress 0x17293c
      */
     void SetBackgroundBrightness(float flBrightness);
 
     /**
-     * @brief Advance the background layer's fades for the frame and apply the sprite colours.
+     * Advance the background layer's fades for the frame and apply the sprite colours.
      * @param flFrameDelta The elapsed frame time, in frames.
      * @ghidraAddress 0x17294c
      */
     void ProcessBackgroundLayer(float flFrameDelta);
 
     /**
-     * @brief Sets whether the clear-effect overlay is active: when the state changes, starts the
+     * Sets whether the clear-effect overlay is active: when the state changes, starts the
      * clear-effect fade and records the new state.
      * @param bActive Whether the gauge has reached the clear threshold.
      */

@@ -75,7 +75,7 @@ static const CGFloat kNonRetinaScale = 1.0;
 }
 
 /**
- * @brief Overrides @c UIImageView to clear the foreground artwork instead of showing @p image.
+ * Overrides @c UIImageView to clear the foreground artwork instead of showing @p image.
  *
  * The @p image argument is deliberately discarded: the binary always resets the foreground view to
  * an empty, transparent state, which is how a consumer clears the artwork before a fresh download.

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The play-field bounds effect layer, @c BoundsEffectLayer.
+ * The play-field bounds effect layer, @c BoundsEffectLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The play-field bounds (edge) effect layer.
+ * The play-field bounds (edge) effect layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
  * carries no RTTI, so the name is inferred from its @c GetBoundsEffectLayer / @c SetBoundsEffect*
@@ -27,20 +27,20 @@ class C_SPRITE_INSTANCING_2D;
  */
 class BoundsEffectLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of player-colour effect banks. */
+    /** The number of player-colour effect banks. */
     static constexpr int kBankCount = 2;
-    /** @brief The number of effect records per bank. */
+    /** The number of effect records per bank. */
     static constexpr int kRecordsPerBank = 23;
 
     /**
-     * @brief The process-wide bounds-effect layer, created on first use.
+     * The process-wide bounds-effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x17528c
      */
     static BoundsEffectLayer *shared();
 
     /**
-     * @brief Builds the effect sprite batch and binds the style's atlas on first use.
+     * Builds the effect sprite batch and binds the style's atlas on first use.
      *
      * Reads the user's bounds-effect style, loads the matching atlas, creates the 0x5c-capacity
      * world sprite batch, attaches it under the background layer, makes it visible, and flags
@@ -50,13 +50,13 @@ public:
     void InitializeSprites();
 
     /**
-     * @brief Refreshes the theme, re-reads the bounds-effect style, and rebinds the matching atlas.
+     * Refreshes the theme, re-reads the bounds-effect style, and rebinds the matching atlas.
      * @ghidraAddress 0x1753e4
      */
     void SetStyle();
 
     /**
-     * @brief Spawns a bounds effect for a colour bank at a screen position.
+     * Spawns a bounds effect for a colour bank at a screen position.
      *
      * Builds the sprite batch on first use, then claims the first inactive record in the colour's
      * bank and fills its reset timer and position. A full bank drops the effect.
@@ -68,7 +68,7 @@ public:
     void CreateBoundsEffect(unsigned int nColor, float flPosX, float flPosY);
 
     /**
-     * @brief Advances every live bounds effect one frame and re-emits the batch's sprites.
+     * Advances every live bounds effect one frame and re-emits the batch's sprites.
      *
      * Clears the batch's sprite count, then for each colour bank walks its records: a live record
      * advances its timer by @p flDelta and deactivates once the timer passes its lifetime;
@@ -82,14 +82,14 @@ public:
     void Process(float flDelta);
 
     /**
-     * @brief Sets the effect size from the user's bounds-effect-size setting.
+     * Sets the effect size from the user's bounds-effect-size setting.
      * @param flSize The effect size.
      * @ghidraAddress 0x1754c4
      */
     void SetEffectSize(float flSize);
 
     /**
-     * @brief Sets one lane's bounds-light alpha byte (the flash intensity for that lane's edge).
+     * Sets one lane's bounds-light alpha byte (the flash intensity for that lane's edge).
      * @param flValue The alpha value, truncated to a byte (callers pass the on/off endpoints).
      * @param nLane The lane: 1 selects the first lane's alpha, anything else the second.
      * @ghidraAddress 0x1754a8
@@ -98,7 +98,7 @@ public:
 
 private:
     /**
-     * @brief Appends one bounds-effect sprite to the batch.
+     * Appends one bounds-effect sprite to the batch.
      *
      * Writes the next sprite slot with a fixed 84-point anchor and 168-point size, the caller's
      * position and animation-frame UV origin, the fixed bounds cell UV size, the layer's current
@@ -113,19 +113,19 @@ private:
     void SetBoundsEffectSprite(const S_VECTOR2 *pPosition, const S_VECTOR2 *pUvOrigin, int nAlpha);
 
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the per-lane effect state,
+     * Constructs the layer: chains the base constructor, clears the per-lane effect state,
      * and seeds both lane-light alphas fully on (0xff) and the effect size to one.
      * @ghidraAddress 0x175210
      */
     BoundsEffectLayer();
 
-    /** @brief One pooled bounds-effect record (16 bytes): its active flag, timer, and position. */
+    /** One pooled bounds-effect record (16 bytes): its active flag, timer, and position. */
     struct EffectRecord {
-        bool bActive = {}; // +0x00: whether the record holds a live effect.
+        bool bActive = {}; /*!< Whether the record holds a live effect. +0x00 */
         // unsigned char aReserved01[3] = {}; // +0x01
-        float flTimer = {}; // +0x04: the effect's animation timer, in frame-time.
-        float flPosX = {};  // +0x08: the effect's screen x.
-        float flPosY = {};  // +0x0c: the effect's screen y.
+        float flTimer = {}; /*!< The effect's animation timer, in frame-time. +0x04 */
+        float flPosX = {};  /*!< The effect's screen x. +0x08 */
+        float flPosY = {};  /*!< The effect's screen y. +0x0c */
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the bound effect atlas.

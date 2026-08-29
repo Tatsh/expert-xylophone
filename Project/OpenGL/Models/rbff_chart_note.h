@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The on-disk RBFF chart-note record, @c RbffChartNote.
+ * The on-disk RBFF chart-note record, @c RbffChartNote.
  */
 
 #pragma once
 
 /**
- * @brief One note as it is stored in the RBFF chart stream: a 40-byte little-endian record the
+ * One note as it is stored in the RBFF chart stream: a 40-byte little-endian record the
  * parser deserialises into the richer in-memory @c RbffNoteRecord.
  *
  * The fields are read in stream order by @c DeserializeNoteRecord. The trailing @c // +0xNN
@@ -30,15 +30,15 @@ struct RbffChartNote {
 };
 
 /**
- * @brief A note path-point staging record used while parsing (28 bytes), zeroed before use.
+ * A note path-point staging record used while parsing (28 bytes), zeroed before use.
  */
 struct RbffPathPoint {
-    /** @brief The path-point fields, cleared to zero before the reader fills them. */
+    /** The path-point fields, cleared to zero before the reader fills them. */
     unsigned char aData[28] = {};
 };
 
 /**
- * @brief The parser-local staging record @c ReadRbffNoteRecord fills before its fields are unpacked
+ * The parser-local staging record @c ReadRbffNoteRecord fills before its fields are unpacked
  * into the pooled @c RbffNoteRecord.
  *
  * A tightly packed ~64-byte layout distinct from the 184-byte in-memory record. The trailing
@@ -56,7 +56,7 @@ struct RbffNoteReadRecord {
     signed char nSide = {};     /*!< The play side. +0x19 */
     signed char nHoldKind = {}; /*!< The hold-note kind. +0x1a */
     /**
-     * @brief The note type; an on-disk 2 (a long-note head) is remapped to 3. +0x1b
+     * The note type; an on-disk 2 (a long-note head) is remapped to 3. +0x1b
      *
      * The parser unpacks this byte out of the same 32-bit word as the three fields above, which is
      * why it sits here rather than beside the other trailing fields.
@@ -64,13 +64,13 @@ struct RbffNoteReadRecord {
     signed char nType = {};
     short aTargetCoords[4] = {}; /*!< The four target coordinates. +0x1c */
     unsigned int nFlags = {};    /*!< The note flag bits; bit 3 heads a long note. +0x24 */
-    /** @brief Read from the stream but never unpacked into the note record. +0x28 */
+    /** Read from the stream but never unpacked into the note record. +0x28 */
     signed char nField28 = {};
-    /** @brief Read from the stream but never unpacked into the note record. +0x29 */
+    /** Read from the stream but never unpacked into the note record. +0x29 */
     signed char nField29 = {};
-    /** @brief Read from the stream but never unpacked into the note record. +0x2a */
+    /** Read from the stream but never unpacked into the note record. +0x2a */
     short nField2a = {};
-    /** @brief Read from the stream but never unpacked into the note record. +0x2c */
+    /** Read from the stream but never unpacked into the note record. +0x2c */
     int nField2c = {};
     short nChainLink = {};    /*!< Chain-link sentinel (0xffff when unset). +0x30 */
     short nChainPartner = {}; /*!< Chain-partner sentinel (0xffff when unset). +0x32 */
@@ -79,29 +79,29 @@ struct RbffNoteReadRecord {
 };
 
 /**
- * @brief One RBFF tempo/speed-change event as stored in the chart stream (36 bytes).
+ * One RBFF tempo/speed-change event as stored in the chart stream (36 bytes).
  */
 struct RbffTempoEvent {
-    /** @brief The raw 36-byte event payload, copied verbatim by the reader. */
+    /** The raw 36-byte event payload, copied verbatim by the reader. */
     unsigned char aData[36] = {};
 };
 
 /**
- * @brief One RBFF chart sub-record (a slide/header entry) read from the stream: three shorts, two
+ * One RBFF chart sub-record (a slide/header entry) read from the stream: three shorts, two
  * reserved bytes, then two ints — sixteen bytes in all.
  */
 struct RbffChartHeaderRecord {
     unsigned short nField0 = {}; /*!< The first of the record's three leading shorts. +0x00 */
     unsigned short nField2 = {}; /*!< The second of the record's three leading shorts. +0x02 */
     unsigned short nField4 = {}; /*!< The third of the record's three leading shorts. +0x04 */
-    /** @brief Two bytes of padding before the first int. +0x06 */
+    /** Two bytes of padding before the first int. +0x06 */
     unsigned short reserved6 = {};
     int nValueA = {}; /*!< The first of the record's two trailing ints. +0x08 */
     int nValueB = {}; /*!< The second of the record's two trailing ints. +0x0c */
 };
 
 /**
- * @brief Deserialises one @c RbffChartNote from a little-endian byte stream, advancing the cursor.
+ * Deserialises one @c RbffChartNote from a little-endian byte stream, advancing the cursor.
  * @param pRecord The destination chart-note record.
  * @param ppCursor The stream cursor, advanced past the record on return.
  * @return Always 1.
@@ -110,21 +110,21 @@ struct RbffChartHeaderRecord {
 int DeserializeNoteRecord(RbffChartNote *pRecord, const unsigned char **ppCursor);
 
 /**
- * @brief Zeroes a note path-point staging record before the reader fills it.
+ * Zeroes a note path-point staging record before the reader fills it.
  * @param pPoint The path-point record to clear.
  * @ghidraAddress 0x12ea68
  */
 void InitPathPoint(RbffPathPoint *pPoint);
 
 /**
- * @brief Zeroes a note staging record and sets its chain-link sentinels to the unset value.
+ * Zeroes a note staging record and sets its chain-link sentinels to the unset value.
  * @param pRecord The staging record to initialise.
  * @ghidraAddress 0x12ea78
  */
 void InitNoteChainData(RbffNoteReadRecord *pRecord);
 
 /**
- * @brief Frees a note staging record's path-point array, clearing the pointer.
+ * Frees a note staging record's path-point array, clearing the pointer.
  * @param pRecord The staging record whose path array is freed.
  * @return The staging record.
  * @ghidraAddress 0x12eaac
@@ -132,7 +132,7 @@ void InitNoteChainData(RbffNoteReadRecord *pRecord);
 RbffNoteReadRecord *FreeNotePathArray(RbffNoteReadRecord *pRecord);
 
 /**
- * @brief Reads one note record from an RBFF stream into a staging record, allocating its path
+ * Reads one note record from an RBFF stream into a staging record, allocating its path
  * array.
  * @param pOut The destination staging record.
  * @param ppCursor The stream cursor, advanced past the record on return.
@@ -142,21 +142,21 @@ RbffNoteReadRecord *FreeNotePathArray(RbffNoteReadRecord *pRecord);
 int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor);
 
 /**
- * @brief Zeroes a tempo-event record before it is read.
+ * Zeroes a tempo-event record before it is read.
  * @param pEvent The tempo event to clear.
  * @ghidraAddress 0x12eb10
  */
 void ClearNoteChartHeader(RbffTempoEvent *pEvent);
 
 /**
- * @brief Zeroes a chart sub-record before it is read.
+ * Zeroes a chart sub-record before it is read.
  * @param pRecord The sub-record to clear.
  * @ghidraAddress 0x12eb20
  */
 void ClearNotePair(RbffChartHeaderRecord *pRecord);
 
 /**
- * @brief Reads one 36-byte RBFF tempo event from the stream, advancing the cursor.
+ * Reads one 36-byte RBFF tempo event from the stream, advancing the cursor.
  * @param pOut The destination tempo event.
  * @param ppCursor The stream cursor, advanced past the event on return.
  * @return Always 1.
@@ -165,7 +165,7 @@ void ClearNotePair(RbffChartHeaderRecord *pRecord);
 int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor);
 
 /**
- * @brief Deserialises one RBFF chart sub-record (three shorts, two reserved bytes, two ints),
+ * Deserialises one RBFF chart sub-record (three shorts, two reserved bytes, two ints),
  * advancing the cursor.
  * @param pRecord The destination sub-record.
  * @param ppCursor The stream cursor, advanced past the record on return.

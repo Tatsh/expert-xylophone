@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The phone-layout terms-of-use detail view controller.
+ * The phone-layout terms-of-use detail view controller.
  *
  * It is an @c RBBaseViewController subclass
  * pushed onto the navigation stack by @c RBTermPhoneViewController when a term with a body (rather
@@ -23,7 +23,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The phone-layout terms-of-use detail view controller presented on the navigation stack,
+ * The phone-layout terms-of-use detail view controller presented on the navigation stack,
  * showing a single downloaded term's body.
  */
 @interface RBTermDetailPhoneViewController : RBBaseViewController <UIAlertViewDelegate>
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Lifecycle
 
 /**
- * @brief Create the detail controller: store the term identifier, allocate the term-body cache,
+ * Create the detail controller: store the term identifier, allocate the term-body cache,
  * select the agreement view type, and build the navigation-bar title label and custom "back" left
  * bar-button item.
  * @param termID The identifier of the term whose body is shown.
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithID:(nullable NSString *)termID title:(nullable NSString *)title;
 
 /**
- * @brief Save the last-read terms timestamp, and build the content (dimming overlay, loading
+ * Save the last-read terms timestamp, and build the content (dimming overlay, loading
  * spinner, term-body container, and the body text view).
  * @ghidraAddress 0x488d0
  */
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Configuration
 
 /**
- * @brief Configure the controller for the store terms viewer (sets @c viewType to the store value).
+ * Configure the controller for the store terms viewer (sets @c viewType to the store value).
  * @ghidraAddress 0x4888c
  */
 - (void)setViewTypeStore;
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Networking
 
 /**
- * @brief Start the loading spinner and download the selected term's body for the current region,
+ * Start the loading spinner and download the selected term's body for the current region,
  * caching the parsed JSON response and presenting it.
  * @ghidraAddress 0x492e8
  */
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Presentation
 
 /**
- * @brief Show the fetched term body: set the body text and font from the cached response, then fade
+ * Show the fetched term body: set the body text and font from the cached response, then fade
  * the body container in.
  * @ghidraAddress 0x49ac4
  */
@@ -77,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Loading animation
 
 /**
- * @brief Show the dimming overlay (when enabled) and start the loading spinner.
+ * Show the dimming overlay (when enabled) and start the loading spinner.
  * @ghidraAddress 0x49f7c
  */
 - (void)startLoadAnimation;
 
 /**
- * @brief Hide the dimming overlay (when enabled) and stop the loading spinner.
+ * Hide the dimming overlay (when enabled) and stop the loading spinner.
  * @ghidraAddress 0x4a07c
  */
 - (void)endLoadAnimation;
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Navigation
 
 /**
- * @brief Handle the custom "back" bar-button tap: hide the navigation bar for the agreement view
+ * Handle the custom "back" bar-button tap: hide the navigation bar for the agreement view
  * type and pop the controller.
  * @param sender The tapped bar-button item.
  * @ghidraAddress 0x4a130
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)pushBarBtnBack:(nullable id)sender;
 
 /**
- * @brief Dismiss the controller without animation, hiding the navigation bar for the agreement view
+ * Dismiss the controller without animation, hiding the navigation bar for the agreement view
  * type first.
  * @ghidraAddress 0x4a200
  */
@@ -107,32 +107,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Properties
 
-/** @brief Whether this is the first terms request, gating the alert-driven dismiss. */
+/** Whether this is the first terms request, gating the alert-driven dismiss. */
 @property(assign, nonatomic) BOOL isFirstRequest;
-/** @brief Whether a show or hide animation is currently running. */
+/** Whether a show or hide animation is currently running. */
 @property(assign, nonatomic) BOOL isAnimating;
-/** @brief Whether the dimming overlay is shown while loading. */
+/** Whether the dimming overlay is shown while loading. */
 @property(assign, nonatomic) BOOL isUseGrayView;
-/** @brief The view type: the agreement overlay (0) or the store terms viewer (1). */
+/** The view type: the agreement overlay (0) or the store terms viewer (1). */
 @property(assign, nonatomic) int viewType;
-/** @brief The reusable pool of term buttons. */
+/** The reusable pool of term buttons. */
 @property(strong, nonatomic, nullable) NSMutableArray *buttons;
 /**
- * @brief The identifier of the term whose body is shown.
+ * The identifier of the term whose body is shown.
  * @ghidraAddress 0x4a3d4 (getter)
  */
 @property(strong, nonatomic, nullable) NSString *ID;
-/** @brief The container view for the term's body. */
+/** The container view for the term's body. */
 @property(assign, nonatomic, nullable) UIView *termView;
-/** @brief The text view rendering the term's body. */
+/** The text view rendering the term's body. */
 @property(assign, nonatomic, nullable) UITextView *termTextView;
-/** @brief The parsed per-term body cache, keyed by the term id string. */
+/** The parsed per-term body cache, keyed by the term id string. */
 @property(strong, nonatomic, nullable) NSMutableDictionary *terms;
-/** @brief The in-flight term-body download. */
+/** The in-flight term-body download. */
 @property(strong, nonatomic, nullable) Downloader *downloader;
-/** @brief The dimming overlay covering the content while loading. */
+/** The dimming overlay covering the content while loading. */
 @property(assign, nonatomic, nullable) UIView *grayView;
-/** @brief The loading spinner shown during network activity. */
+/** The loading spinner shown during network activity. */
 @property(assign, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
 
 @end

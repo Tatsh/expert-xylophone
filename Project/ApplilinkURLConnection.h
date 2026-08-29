@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the KONAMI Applilink SDK's @c ApplilinkURLConnection HTTP
+ * Reconstructed interface for the KONAMI Applilink SDK's @c ApplilinkURLConnection HTTP
  * request wrapper.
  *
  * @c ApplilinkURLConnection is a thin asynchronous @c NSURLConnection wrapper used throughout the
@@ -17,7 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Outcome callbacks for an @c ApplilinkURLConnection request.
+ * Outcome callbacks for an @c ApplilinkURLConnection request.
  *
  * Every method is optional: the connection sends each one only after confirming the delegate
  * responds to it.
@@ -27,19 +27,19 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 /**
- * @brief Sent when the request finished loading, delivering the response body decoded as UTF-8.
+ * Sent when the request finished loading, delivering the response body decoded as UTF-8.
  * @param response The response body decoded as a UTF-8 string.
  */
 - (void)finishLoadWithResponse:(nullable NSString *)response;
 
 /**
- * @brief Sent when the request failed.
+ * Sent when the request failed.
  * @param error The failure error reported by the underlying connection.
  */
 - (void)failLoadWithError:(nullable NSError *)error;
 
 /**
- * @brief Sent when the connection is about to follow a redirect.
+ * Sent when the connection is about to follow a redirect.
  * @param request The redirect request the connection is about to send.
  * @return @c YES to intercept the redirect and finish the load without following it, @c NO to let
  * the redirect proceed.
@@ -49,35 +49,35 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief Asynchronous @c NSURLConnection wrapper that accumulates a response body and forwards the
+ * Asynchronous @c NSURLConnection wrapper that accumulates a response body and forwards the
  * outcome to an @c ApplilinkURLConnectionDelegate.
  */
 @interface ApplilinkURLConnection : NSObject <NSURLConnectionDataDelegate>
 
 /**
- * @brief The delegate that receives the request outcome. Held weakly to avoid a retain cycle.
+ * The delegate that receives the request outcome. Held weakly to avoid a retain cycle.
  */
 @property(weak, nonatomic, nullable) id<ApplilinkURLConnectionDelegate> connectionDelegate;
 
 /**
- * @brief The response body accumulated so far.
+ * The response body accumulated so far.
  */
 @property(strong, nonatomic, nullable) NSMutableData *receivedData;
 
 /**
- * @brief The most recent response received for the request.
+ * The most recent response received for the request.
  */
 @property(strong, nonatomic, nullable) NSURLResponse *responseData;
 
 /**
- * @brief Initialise the connection wrapper.
+ * Initialise the connection wrapper.
  * @return The initialised instance.
  * @ghidraAddress 0x207150
  */
 - (instancetype)init;
 
 /**
- * @brief Start the given request, forwarding its outcome to the delegate.
+ * Start the given request, forwarding its outcome to the delegate.
  *
  * The delegate is stored weakly, a new @c NSURLConnection is created and started immediately, and a
  * fresh @c receivedData buffer is allocated when the connection is created successfully.

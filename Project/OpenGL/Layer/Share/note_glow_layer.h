@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note-glow (combo/aura) effect layer, @c NoteGlowLayer.
+ * The note-glow (combo/aura) effect layer, @c NoteGlowLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The small note-glow effect layer (the combo/aura glow shown at note-render time).
+ * The small note-glow effect layer (the combo/aura glow shown at note-render time).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
  * carries no RTTI, so the name is inferred from its @c GetNoteGlowLayer accessor and render-time
@@ -27,14 +27,14 @@ class C_SPRITE_INSTANCING_2D;
 class NoteGlowLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide note-glow layer, created on first use.
+     * The process-wide note-glow layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x1769a8
      */
     static NoteGlowLayer *shared();
 
     /**
-     * @brief Refreshes the theme and rebinds the @c gm_parts1 atlas to the sprite instancer.
+     * Refreshes the theme and rebinds the @c gm_parts1 atlas to the sprite instancer.
      *
      * A no-op until the sprite instancer has been built.
      * @ghidraAddress 0x176a84
@@ -42,7 +42,7 @@ public:
     void SetTexture();
 
     /**
-     * @brief Builds the glow sprite batch and binds its atlas on first use.
+     * Builds the glow sprite batch and binds its atlas on first use.
      *
      * Loads the @c gm_parts1 atlas, creates a two-sprite world batch attached under the background
      * layer, makes it visible, and flags additive blend. Guarded so it runs only once.
@@ -51,7 +51,7 @@ public:
     void InitializeSprites();
 
     /**
-     * @brief Triggers the glow effect for one player colour.
+     * Triggers the glow effect for one player colour.
      *
      * Builds the sprite batch on first use, then activates the colour's effect slot and resets its
      * timer.
@@ -61,7 +61,7 @@ public:
     void CreateEffect(unsigned int nColor);
 
     /**
-     * @brief Advances and redraws each active per-colour glow for the frame.
+     * Advances and redraws each active per-colour glow for the frame.
      *
      * Resets the sprite count, then for each colour advances its animation timer; a glow past its
      * lifetime is deactivated, otherwise its bar sprite is emitted centred on the play field,
@@ -72,12 +72,12 @@ public:
      */
     void Process(float flDelta);
 
-    /** @brief The number of player colours the glow tracks. */
+    /** The number of player colours the glow tracks. */
     static constexpr int kColorCount = 2;
 
 private:
     /**
-     * @brief Emits one glow bar sprite for a colour into the batch.
+     * Emits one glow bar sprite for a colour into the batch.
      *
      * Resolves the colour's atlas UV, writes the next sprite with a fixed anchor and bar size, the
      * caller's position, the given horizontal scale and rotation, and opaque white modulated by the
@@ -95,15 +95,15 @@ private:
                         float flScale,
                         float flRotation);
 
-    /** @brief One per-colour glow effect slot: its active flag and animation timer. */
+    /** One per-colour glow effect slot: its active flag and animation timer. */
     struct EffectSlot {
-        bool bActive = {}; // +0x00: whether the colour's glow is animating.
+        bool bActive = {}; /*!< Whether the colour's glow is animating. +0x00 */
         // unsigned char aReserved01[3] = {}; // +0x01
-        float flTimer = {}; // +0x04: the glow's animation timer, in frames.
+        float flTimer = {}; /*!< The glow's animation timer, in frames. +0x04 */
     };
 
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the sprite header and count
+     * Constructs the layer: chains the base constructor, clears the sprite header and count
      * state, and seeds the default scale pair to one.
      * @ghidraAddress 0x176964
      */

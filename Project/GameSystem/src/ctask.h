@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The engine's global priority-sorted listener list and its intrusive node, @c ne::C_TASK.
+ * The engine's global priority-sorted listener list and its intrusive node, @c ne::C_TASK.
  */
 
 #pragma once
@@ -21,7 +21,7 @@
 namespace ne {
 
 /**
- * @brief One intrusive node in the engine's priority-sorted listener list.
+ * One intrusive node in the engine's priority-sorted listener list.
  *
  * A polymorphic base: the compiler emits its vtable at offset 0, whose slots are the per-frame
  * callback @c OnFrame (slot 0) and the two destructor variants the compiler generates for
@@ -35,7 +35,7 @@ namespace ne {
 class C_TASK {
 public:
     /**
-     * @brief Constructs an unlinked node: self-links the node (its prev and next point to itself),
+     * Constructs an unlinked node: self-links the node (its prev and next point to itself),
      * seeds the idle priority, and clears the owned buffer and dead flag. Every concrete listener
      * runs this base constructor before setting up its own state.
      * @ghidraAddress 0x36558
@@ -43,7 +43,7 @@ public:
     C_TASK();
 
     /**
-     * @brief Unlinks the node from its list and frees its owned buffer.
+     * Unlinks the node from its list and frees its owned buffer.
      *
      * The compiler emits this destructor as three bodies — the complete-object variant at
      * @c 0x36580, the deleting variant at @c 0x365d0, and the out-of-line deleting thunks at
@@ -56,47 +56,47 @@ public:
     virtual ~C_TASK();
 
     /**
-     * @brief The node's per-frame callback (vtable slot 0). The base does nothing; concrete
+     * The node's per-frame callback (vtable slot 0). The base does nothing; concrete
      * listeners override it.
      * @param nElapsedMs The frame delta, in milliseconds, passed by the dispatcher.
      */
     virtual void OnFrame(int nElapsedMs);
 
     /**
-     * @brief The previous node in the list.
+     * The previous node in the list.
      * @return The previous node, or this node itself while unlinked.
      */
     C_TASK *GetPrev() const {
         return m_pPrev;
     }
     /**
-     * @brief The next node in the list.
+     * The next node in the list.
      * @return The next node, or this node itself while unlinked.
      */
     C_TASK *GetNext() const {
         return m_pNext;
     }
     /**
-     * @brief The node's priority (the list is kept ascending by this key).
+     * The node's priority (the list is kept ascending by this key).
      * @return The node's sort priority.
      */
     int GetPriority() const {
         return m_nPriority;
     }
     /**
-     * @brief Whether the node has been flagged dead (to be destroyed on the next dispatch).
+     * Whether the node has been flagged dead (to be destroyed on the next dispatch).
      * @return @c true once the node has been flagged dead.
      */
     bool IsDead() const {
         return m_bDead;
     }
-    /** @brief Flags the node dead, so the next dispatch destroys it. */
+    /** Flags the node dead, so the next dispatch destroys it. */
     void MarkDead() {
         m_bDead = true;
     }
 
     /**
-     * @brief Inserts (or re-positions) this node in the global listener list, ascending by
+     * Inserts (or re-positions) this node in the global listener list, ascending by
      * @p nPriority: unlinks it from its current position, then splices it before the first node
      * whose priority is not below @p nPriority.
      * @param nPriority The node's sort priority.
@@ -105,7 +105,7 @@ public:
     void InsertSorted(int nPriority);
 
     /**
-     * @brief Seeds the global listener-list sentinel into an empty self-linked list at the sentinel
+     * Seeds the global listener-list sentinel into an empty self-linked list at the sentinel
      * priority and registers its teardown with @c atexit. Run once at startup.
      * @ghidraAddress 0x366ac
      */
@@ -113,7 +113,7 @@ public:
 
 protected:
     /**
-     * @brief Unlinks the node from its circular list.
+     * Unlinks the node from its circular list.
      *
      * Shared by the destructor and re-insertion.
      */

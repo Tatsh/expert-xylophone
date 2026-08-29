@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkParameters request
+ * Reconstructed interface for the Applilink advert SDK's @c ApplilinkParameters request
  * object.
  *
  * @c ApplilinkParameters is the request-parameters model KONAMI's Applilink advert SDK passes
@@ -14,27 +14,27 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief An Applilink advert request descriptor.
+ * An Applilink advert request descriptor.
  */
 @interface ApplilinkParameters : NSObject
 
 /**
- * @brief The advert-model identifier for the request.
+ * The advert-model identifier for the request.
  */
 @property(nonatomic, assign) int adModel;
 
 /**
- * @brief The advert-location identifier for the request.
+ * The advert-location identifier for the request.
  */
 @property(nonatomic, strong, nullable) NSString *adLocation;
 
 /**
- * @brief The vertical alignment for the request.
+ * The vertical alignment for the request.
  */
 @property(nonatomic, assign) int verticalAlign;
 
 /**
- * @brief The caller's request code for the request.
+ * The caller's request code for the request.
  *
  * The runtime metadata types this as an untyped object and the synthesised accessor copies it, so
  * it is modelled as an untyped @c copy property.
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) id requestCode;
 
 /**
- * @brief Populate the request with its advert model, location, and request code.
+ * Populate the request with its advert model, location, and request code.
  * @param adModel The advert-model identifier.
  * @param adLocation The advert-location identifier.
  * @param requestCode The caller's request code.
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
                   requestCode:(nullable id)requestCode;
 
 /**
- * @brief Populate the request with its advert model, location, vertical alignment, and request
+ * Populate the request with its advert model, location, vertical alignment, and request
  * code.
  * @param adModel The advert-model identifier.
  * @param adLocation The advert-location identifier.

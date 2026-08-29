@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The world-space batched sprite draw node, @c ne::C_SPRITE_INSTANCING_3D.
+ * The world-space batched sprite draw node, @c ne::C_SPRITE_INSTANCING_3D.
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 namespace ne {
 
 /**
- * @brief A world-space batched sprite draw node (RTTI @c ne::C_SPRITE_INSTANCING_3D).
+ * A world-space batched sprite draw node (RTTI @c ne::C_SPRITE_INSTANCING_3D).
  *
  * The binary builds this from its own constructor (@c 0x3097c, the one
  * @c CreateWorldSpriteBatch calls) and installs a second vtable at @c 0x3594a0 whose render slot is
@@ -38,14 +38,14 @@ namespace ne {
 class C_SPRITE_INSTANCING_3D : public C_SPRITE_INSTANCING_2D {
 public:
     /**
-     * @brief Constructs a world-space sprite batch that can draw up to @p nCapacity sprites.
+     * Constructs a world-space sprite batch that can draw up to @p nCapacity sprites.
      * @param nCapacity The maximum number of sprites the batch can draw.
      * @ghidraAddress 0x3097c
      */
     explicit C_SPRITE_INSTANCING_3D(unsigned int nCapacity);
 
     /**
-     * @brief Draws every live sprite composed under the current model node's camera matrix.
+     * Draws every live sprite composed under the current model node's camera matrix.
      *
      * Every live sprite carries its own transform matrix through the palette-matrix slot, each
      * composed with the shared world*camera matrix (the current model node's view matrix times the

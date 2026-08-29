@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Deep-link handler for the @c store host of the game's custom URL scheme.
+ * Deep-link handler for the @c store host of the game's custom URL scheme.
  *
  * It is one of the
  * per-host handler classes resolved by name and dispatched to by @c RBUrlSchemeManager, and it
@@ -20,12 +20,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Handles @c store deep links routed by @c RBUrlSchemeManager.
+ * Handles @c store deep links routed by @c RBUrlSchemeManager.
  */
 @interface RBUrlSchemeStoreController : NSObject <RBUrlSchemeControllerProtocol>
 
 /**
- * @brief Dispatch a routed action to its matching @c \<action\>RbAction: handler method.
+ * Dispatch a routed action to its matching @c \<action\>RbAction: handler method.
  *
  * The action name is turned into a selector of the form @c \<action\>RbAction: (for example
  * @c packRbAction: for the @c pack action). When the receiver responds to that selector, it is
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)action:(NSString *)action query:(nullable NSDictionary *)query;
 
 /**
- * @brief Store the pack identifier from a @c pack deep link on the app delegate.
+ * Store the pack identifier from a @c pack deep link on the app delegate.
  *
  * Reads the @c id entry of the query dictionary; when it is present and its integer value is at
  * least one, it is set as the app delegate's pack identifier for opening the store.
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)packRbAction:(nullable NSDictionary *)query;
 
 /**
- * @brief Store the campaign identifier from a @c campaign deep link on the app delegate.
+ * Store the campaign identifier from a @c campaign deep link on the app delegate.
  *
  * Reads the @c id entry of the query dictionary; when it is present and its integer value is at
  * least one, it is set as the app delegate's campaign identifier for opening the store.
@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)campaignRbAction:(nullable NSDictionary *)query;
 
 /**
- * @brief Store the extended-note pack identifier from a @c seq deep link on the app delegate.
+ * Store the extended-note pack identifier from a @c seq deep link on the app delegate.
  *
  * Reads the @c id entry of the query dictionary; when it is present and its integer value is at
  * least one, it is set as the app delegate's extended-note pack identifier for opening the store.

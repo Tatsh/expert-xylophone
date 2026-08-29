@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Blowfish-in-CBC codec used to encipher and decipher the game's on-disk save and music
+ * Blowfish-in-CBC codec used to encipher and decipher the game's on-disk save and music
  * data.
  *
  * This is textbook Blowfish with a single deviation in the round function (see @c BFCodec.m) run in
@@ -15,7 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Blowfish-CBC codec that enciphers and deciphers @c NSMutableData buffers in place.
+ * Blowfish-CBC codec that enciphers and deciphers @c NSMutableData buffers in place.
  *
  * Usage is always: allocate, seed the key with @c -cipherInit: (or @c -cipherInit:keyLength:), then
  * call @c -encipher: or @c -decipher: on a mutable buffer.
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BFCodec : NSObject
 
 /**
- * @brief Seed the cipher from an @c NSData key.
+ * Seed the cipher from an @c NSData key.
  *
  * Convenience overload that forwards the key's raw bytes and byte length to
  * @c -cipherInit:keyLength:. Does nothing when @p key is nil.
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cipherInit:(nullable NSData *)key;
 
 /**
- * @brief Seed the cipher from a raw key buffer.
+ * Seed the cipher from a raw key buffer.
  *
  * Wipes the Blowfish context, copies the fixed default CBC IV into the @c _iv ivar, then runs the
  * Blowfish key schedule over @p key.
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cipherInit:(const char *)key keyLength:(NSUInteger)length;
 
 /**
- * @brief Encipher a mutable buffer in place with Blowfish-CBC.
+ * Encipher a mutable buffer in place with Blowfish-CBC.
  *
  * Grows @p data to hold the padded ciphertext plus an 8-byte length trailer, then enciphers it in
  * place. The trailer records the original and padded lengths so @c -decipher: can validate and
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (unsigned long long)encipher:(NSMutableData *)data;
 
 /**
- * @brief Decipher a mutable buffer in place with Blowfish-CBC.
+ * Decipher a mutable buffer in place with Blowfish-CBC.
  *
  * Validates the length trailer, deciphers the body, then trims @p data back to the original
  * plaintext length.

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A @c UIWebView subclass used to present remote HTML content (news, store, and campaign
+ * A @c UIWebView subclass used to present remote HTML content (news, store, and campaign
  * pages) inside the game.
  *
  * It owns a translucent "gray" cover view and a centred activity indicator that
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A self-delegating @c UIWebView that shows a loading cover and indicator and filters
+ * A self-delegating @c UIWebView that shows a loading cover and indicator and filters
  * navigations.
  *
  * On construction the view builds a translucent @c grayView cover and a scaled, centred
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBWebView : UIWebView <UIWebViewDelegate>
 
 /**
- * @brief Create the web view with the given frame and parent view.
+ * Create the web view with the given frame and parent view.
  *
  * Calls through to @c super, then builds the loading cover and indicator, configures the web-view
  * delegate and content settings, records @p superView as the (weak) @c parentView, and seeds the
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithFrame:(CGRect)frame superView:(nullable id)superView;
 
 /**
- * @brief Enable or disable the translucent loading cover.
+ * Enable or disable the translucent loading cover.
  *
  * Convenience forwarder to @c setIsUseGrayView:.
  * @param useGrayView @c YES to show @c grayView while a page loads.
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUseGrayView:(BOOL)useGrayView;
 
 /**
- * @brief Stamp the outgoing request with the device description as its @c User-Agent header.
+ * Stamp the outgoing request with the device description as its @c User-Agent header.
  *
  * A @c WebResourceLoadDelegate hook: returns @p willSendRequest after setting the @c User-Agent
  * HTTP header field to the shared device description string.
@@ -72,27 +72,27 @@ NS_ASSUME_NONNULL_BEGIN
           fromDataSource:(nullable id)fromDataSource;
 
 /**
- * @brief The view notified of load completion and failure, held weakly.
+ * The view notified of load completion and failure, held weakly.
  */
 @property(weak, nonatomic, nullable) id parentView;
 
 /**
- * @brief The translucent cover shown over the content while a page loads.
+ * The translucent cover shown over the content while a page loads.
  */
 @property(strong, nonatomic, nullable) UIView *grayView;
 
 /**
- * @brief The centred activity indicator animated while a page loads.
+ * The centred activity indicator animated while a page loads.
  */
 @property(strong, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
 
 /**
- * @brief Whether @c grayView is revealed while a page loads.
+ * Whether @c grayView is revealed while a page loads.
  */
 @property(nonatomic, getter=isUseGrayView) BOOL isUseGrayView;
 
 /**
- * @brief The recognised @c reflecbeat scheme host keywords, in priority order
+ * The recognised @c reflecbeat scheme host keywords, in priority order
  * (@c link, @c store, @c openurl, and @c twitter).
  */
 @property(copy, nonatomic, nullable) NSMutableArray *urlList;

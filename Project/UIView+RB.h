@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c UIView flash-effect machinery and frame-geometry conveniences used across the menu and
+ * @c UIView flash-effect machinery and frame-geometry conveniences used across the menu and
  * music-select screens.
  *
  * The flash machinery drives the forever-repeating, auto-reversing @c opacity
@@ -26,12 +26,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Flash-effect, alpha-transition, bounce, and frame-geometry helpers layered on @c UIView.
+ * Flash-effect, alpha-transition, bounce, and frame-geometry helpers layered on @c UIView.
  */
 @interface UIView (RB)
 
 /**
- * @brief Install the @c "FLUSH_ANIM" flash animation on a view's layer.
+ * Install the @c "FLUSH_ANIM" flash animation on a view's layer.
  *
  * Removes any existing flash overlay first, then adds one of two animations under the
  * @c "FLUSH_ANIM" key. When @p rotate is @c NO it adds a single auto-reversing, forever-repeating
@@ -53,14 +53,14 @@ NS_ASSUME_NONNULL_BEGIN
                     Rotate:(BOOL)rotate;
 
 /**
- * @brief Remove the @c "FLUSH_ANIM" flash animation from a view's layer.
+ * Remove the @c "FLUSH_ANIM" flash animation from a view's layer.
  * @param view The view whose layer's flash animation is removed.
  * @ghidraAddress 0x1a3ecc
  */
 + (void)removeFlashEffectView:(UIView *)view;
 
 /**
- * @brief Start a plain (non-rotating) flash pulse on the receiver.
+ * Start a plain (non-rotating) flash pulse on the receiver.
  *
  * Forwards to @c setFlashEffectView:Duration:Start:End:Rotate: with the receiver, @p rotate set to
  * @c NO, and the given endpoints.
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetFlashEffectDuration:(float)duration Start:(float)start End:(float)end;
 
 /**
- * @brief Stop the flash effect on the receiver by removing its flash overlay.
+ * Stop the flash effect on the receiver by removing its flash overlay.
  *
  * Forwards to @c setFlashEffectView: with the receiver.
  * @ghidraAddress 0x1a36f4
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)RemoveFlashEffect;
 
 /**
- * @brief Start the default flash pulse on the receiver.
+ * Start the default flash pulse on the receiver.
  *
  * Convenience for @c SetFlashEffectDuration:Start:End: with the default duration, a start opacity
  * of
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetFlashEffectFast;
 
 /**
- * @brief Start the rotating (multi-pulse plus full-turn) flash effect on the receiver.
+ * Start the rotating (multi-pulse plus full-turn) flash effect on the receiver.
  *
  * Convenience for @c setFlashEffectView:Duration:Start:End:Rotate: with the receiver, a four-second
  * duration, a start opacity of @c 1.0, the dimmed end opacity, and @p rotate set to @c YES.
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetFlashEffectFastWithRotate;
 
 /**
- * @brief Stop the flash effect on the receiver.
+ * Stop the flash effect on the receiver.
  *
  * Forwards to @c RemoveFlashEffect on the receiver.
  * @ghidraAddress 0x1a3760
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetFlashEffectSlow;
 
 /**
- * @brief Add an @c "ALPHA_ANIM" opacity transition to the receiver's layer and set the final
+ * Add an @c "ALPHA_ANIM" opacity transition to the receiver's layer and set the final
  * opacity.
  *
  * Captures the layer's current opacity, sets the layer opacity to @p end, then installs a
@@ -120,13 +120,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetAlphaAnimationDuration:(float)duration End:(float)end;
 
 /**
- * @brief Remove the @c "ALPHA_ANIM" animation from the receiver's layer.
+ * Remove the @c "ALPHA_ANIM" animation from the receiver's layer.
  * @ghidraAddress 0x1a40d8
  */
 - (void)RemoveAlphaAnimation;
 
 /**
- * @brief Add a @c "PopAnim" bounce keyframe animation to the receiver's layer.
+ * Add a @c "PopAnim" bounce keyframe animation to the receiver's layer.
  *
  * Builds a @c position keyframe path anchored at (@p baseX, @p baseY) that overshoots upward then
  * settles back to the anchor, and installs it under the @c "PopAnim" key as a forever-repeating
@@ -138,55 +138,55 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetJumpEffectBaseX:(float)baseX BaseY:(float)baseY;
 
 /**
- * @brief Remove the @c "PopAnim" animation from the receiver's layer.
+ * Remove the @c "PopAnim" animation from the receiver's layer.
  * @ghidraAddress 0x1a4414
  */
 - (void)RemoveJumpEffect;
 
 /**
- * @brief The receiver's frame origin x-coordinate.
+ * The receiver's frame origin x-coordinate.
  * @return The frame origin x-coordinate, in points.
  * @ghidraAddress 0x1a3668
  */
 - (CGFloat)x;
 
 /**
- * @brief The receiver's frame origin y-coordinate.
+ * The receiver's frame origin y-coordinate.
  * @return The frame origin y-coordinate, in points.
  * @ghidraAddress 0x1a3674
  */
 - (CGFloat)y;
 
 /**
- * @brief The receiver's frame width.
+ * The receiver's frame width.
  * @return The frame width, in points.
  * @ghidraAddress 0x1a3694
  */
 - (CGFloat)width;
 
 /**
- * @brief The receiver's frame height.
+ * The receiver's frame height.
  * @return The frame height, in points.
  * @ghidraAddress 0x1a36b4
  */
 - (CGFloat)height;
 
 /**
- * @brief The receiver's frame minimum x-coordinate (the left edge, @c frame.origin.x).
+ * The receiver's frame minimum x-coordinate (the left edge, @c frame.origin.x).
  * @return The frame's left edge, in points.
  * @ghidraAddress 0x1a35ac
  */
 - (CGFloat)left;
 
 /**
- * @brief The receiver's frame minimum y-coordinate (the top edge, @c frame.origin.y).
+ * The receiver's frame minimum y-coordinate (the top edge, @c frame.origin.y).
  * @return The frame's top edge, in points.
  * @ghidraAddress 0x1a35b8
  */
 - (CGFloat)top;
 
 /**
- * @brief The receiver's frame maximum x-coordinate (the right edge,
+ * The receiver's frame maximum x-coordinate (the right edge,
  * @c frame.origin.x + frame.size.width).
  * @return The frame's right edge, in points.
  * @ghidraAddress 0x1a35d8
@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)right;
 
 /**
- * @brief The receiver's frame maximum y-coordinate (the bottom edge,
+ * The receiver's frame maximum y-coordinate (the bottom edge,
  * @c frame.origin.y + frame.size.height).
  * @return The frame's bottom edge, in points.
  * @ghidraAddress 0x1a3620

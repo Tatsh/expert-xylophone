@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The theme-marker layer, @c ThemaMarkerLayer.
+ * The theme-marker layer, @c ThemaMarkerLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The theme-marker layer (the row of marker graphics along the play field).
+ * The theme-marker layer (the row of marker graphics along the play field).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and two sprite instancers (a 2D and a 3D batch) beneath the shared background layer, laying
@@ -25,20 +25,20 @@ class C_SPRITE_INSTANCING_2D;
  */
 class ThemaMarkerLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of sprite instancers the layer owns (a 2D batch and a 3D batch). */
+    /** The number of sprite instancers the layer owns (a 2D batch and a 3D batch). */
     static constexpr int kBatchCount = 2;
-    /** @brief The number of marker-group layout entries in the shared tables. */
+    /** The number of marker-group layout entries in the shared tables. */
     static constexpr int kMarkerLayoutCount = 6;
 
     /**
-     * @brief The process-wide theme-marker layer, created on first use.
+     * The process-wide theme-marker layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x17fccc
      */
     static ThemaMarkerLayer *shared();
 
     /**
-     * @brief Lazily builds the theme-marker sprites: picks the marker count from the theme, loads
+     * Lazily builds the theme-marker sprites: picks the marker count from the theme, loads
      * the gm_parts1 atlas, creates the two sprite instancers (attaching each under the background
      * layer's render object, making it visible, and binding the atlas), and emits each marker
      * group's sprites from the shared layout and UV tables.
@@ -49,7 +49,7 @@ public:
     void LoadThemaMarkerSprites();
 
     /**
-     * @brief Re-applies the current theme to the already-built markers: refreshes the theme,
+     * Re-applies the current theme to the already-built markers: refreshes the theme,
      * reselects the marker count, reloads and re-binds the atlas to both batches, and re-emits
      * every marker group's geometry.
      *
@@ -60,7 +60,7 @@ public:
     void SetupMarkers();
 
     /**
-     * @brief Begins the marker fade-out: resets the active marker index and eases the markers to
+     * Begins the marker fade-out: resets the active marker index and eases the markers to
      * transparent over @p flDuration (snapping to transparent and marking the colour dirty when the
      * duration is non-positive).
      * @param flDuration The fade duration.
@@ -69,7 +69,7 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Begins the marker fade-in, selecting the active marker value: eases the markers to
+     * Begins the marker fade-in, selecting the active marker value: eases the markers to
      * opaque over @p flDuration (snapping to opaque and marking the colour dirty when the duration
      * is non-positive) and resets the effect timer.
      * @param flDuration The fade duration.
@@ -79,7 +79,7 @@ public:
     void StartFadeIn(float flDuration, float flMarker);
 
     /**
-     * @brief Sets the low-gauge danger/warning intensity (clamped to @c [0, 1] and mapped to the
+     * Sets the low-gauge danger/warning intensity (clamped to @c [0, 1] and mapped to the
      * warning brightness range), marking the colour dirty.
      * @param flLevel The normalised danger level.
      * @ghidraAddress 0x180464
@@ -87,7 +87,7 @@ public:
     void SetDangerLevel(float flLevel);
 
     /**
-     * @brief Advances the marker fade by one frame and, when the fade colour has changed,
+     * Advances the marker fade by one frame and, when the fade colour has changed,
      * recomputes every marker slot's alpha.
      *
      * Eases the fade tween from its start to its end over its duration — offsetting the elapsed
@@ -99,21 +99,21 @@ public:
     void RefreshMarkerAlpha(float flDelta);
 
     /**
-     * @brief Rebuilds and emits the marker frame's sprites for the current active marker.
+     * Rebuilds and emits the marker frame's sprites for the current active marker.
      * @ghidraAddress 0x1801d4
      */
     void RenderThemaMarkerFrame();
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor, seeding its scales, and computing
+     * Constructs the layer, chaining the base constructor, seeding its scales, and computing
      * each batch's capacity and each marker group's base sprite index from the shared tables.
      * @ghidraAddress 0x17fc00
      */
     ThemaMarkerLayer();
 
     /**
-     * @brief Advances the danger ramp and wobble clocks and writes the animated marker sprites.
+     * Advances the danger ramp and wobble clocks and writes the animated marker sprites.
      * @param flDelta The frame time step, in milliseconds.
      * @ghidraAddress 0x18066c
      */

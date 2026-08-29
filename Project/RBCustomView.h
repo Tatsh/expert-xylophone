@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The customize popup view.
+ * The customize popup view.
  *
  * It is an @c RBMusicMenuPopupView configured with the customize popup
  * type, hosting the customize item picker (@c RBCustomSelectView) and, on the themed layouts, the
@@ -24,7 +24,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Popup view that hosts the customize picker, the experience/unlock picker, the set/unlock
+ * Popup view that hosts the customize picker, the experience/unlock picker, the set/unlock
  * mode toggle, and the reward list over the settings screen.
  *
  * The customize picker always fills the content view; the experience picker, the mode-toggle
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBCustomView : RBMusicMenuPopupView
 
 /**
- * @brief Create the customize popup with the given frame.
+ * Create the customize popup with the given frame.
  *
  * Calls through to @c super, selects the customize popup type, and builds the view.
  * @param frame The view's frame rectangle.
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the customize content: the customize picker and, on the themed layouts, the
+ * Build the customize content: the customize picker and, on the themed layouts, the
  * experience picker, the mode-toggle buttons, the gradient frame, the effect overlay, and the
  * reward list.
  *
@@ -56,19 +56,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupView;
 
 /**
- * @brief Fade the popup in, then persist the user settings.
+ * Fade the popup in, then persist the user settings.
  * @ghidraAddress 0x987b0
  */
 - (void)showAnimation;
 
 /**
- * @brief Hide the reward list, persist the user settings, then fade the popup out.
+ * Hide the reward list, persist the user settings, then fade the popup out.
  * @ghidraAddress 0x99a6c
  */
 - (void)hideAnimation;
 
 /**
- * @brief Switch to the customize picker: slide the experience picker out and the customize picker
+ * Switch to the customize picker: slide the experience picker out and the customize picker
  * in, and launch the experience tutorial on completion when it is pending.
  *
  * Ignored while a transition is already running.
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)toCustomize:(nullable id)sender;
 
 /**
- * @brief Switch to the experience/unlock picker: request its data, slide the customize picker out
+ * Switch to the experience/unlock picker: request its data, slide the customize picker out
  * and the experience picker in, and launch the customize tutorial on completion when it is
  * pending.
  *
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)toUnlock:(nullable id)sender;
 
 /**
- * @brief Reveal the reward list over the picker: hide the title and gradation, fade the list in,
+ * Reveal the reward list over the picker: hide the title and gradation, fade the list in,
  * and start loading its contents on completion.
  *
  * Ignored while a transition is already running.
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)toRewardList:(nullable id)sender;
 
 /**
- * @brief Hide the reward list and restore the title and gradation.
+ * Hide the reward list and restore the title and gradation.
  *
  * Ignored while a transition is already running.
  * @ghidraAddress 0x997a0
@@ -107,74 +107,74 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideRewardList;
 
 /**
- * @brief The unlock-mode toggle button, exposed for the tutorial highlight.
+ * The unlock-mode toggle button, exposed for the tutorial highlight.
  * @return The experience unlock button.
  * @ghidraAddress 0x99b30
  */
 - (nullable UIButton *)getUnlockButtonView;
 
 /**
- * @brief The set-mode (customize) toggle button, exposed for the tutorial highlight.
+ * The set-mode (customize) toggle button, exposed for the tutorial highlight.
  * @return The experience set button.
  * @ghidraAddress 0x99b3c
  */
 - (nullable UIButton *)getCustomButtonView;
 
 /**
- * @brief The customize picker, exposed for the tutorial highlight.
+ * The customize picker, exposed for the tutorial highlight.
  * @return The customize item view.
  * @ghidraAddress 0x99b48
  */
 - (nullable RBCustomSelectView *)getCustomizeItemView;
 
 /**
- * @brief The settings view that owns and presents this customize popup.
+ * The settings view that owns and presents this customize popup.
  */
 @property(weak, nonatomic, nullable) RBSettingView *settingView;
 
 /**
- * @brief The customize item picker filling the content view.
+ * The customize item picker filling the content view.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectView *customizeItemView;
 
 /**
- * @brief The experience/unlock item picker, built only on the themed layouts.
+ * The experience/unlock item picker, built only on the themed layouts.
  */
 @property(strong, nonatomic, nullable) RBUnlockView *experienceItemView;
 
 /**
- * @brief A legacy experience button. Declared by the binary but not built by @c setupView.
+ * A legacy experience button. Declared by the binary but not built by @c setupView.
  */
 @property(strong, nonatomic, nullable) UIButton *experienceButton;
 
 /**
- * @brief The set-mode toggle button that switches to the customize picker.
+ * The set-mode toggle button that switches to the customize picker.
  */
 @property(strong, nonatomic, nullable) UIButton *experienceSetButton;
 
 /**
- * @brief The unlock-mode toggle button that switches to the experience picker.
+ * The unlock-mode toggle button that switches to the experience picker.
  */
 @property(strong, nonatomic, nullable) UIButton *experienceUnlockButton;
 
 /**
- * @brief The flashing overlay drawn under the currently selected mode-toggle button.
+ * The flashing overlay drawn under the currently selected mode-toggle button.
  */
 @property(strong, nonatomic, nullable) UIImageView *experienceButtonEffectView;
 
 /**
- * @brief The gradient frame drawn behind the mode-toggle buttons at the bottom of the content
+ * The gradient frame drawn behind the mode-toggle buttons at the bottom of the content
  * view.
  */
 @property(strong, nonatomic, nullable) UIImageView *experienceButtonFrameView;
 
 /**
- * @brief The reward list that slides in over the picker.
+ * The reward list that slides in over the picker.
  */
 @property(strong, nonatomic, nullable) RBRewardListView *rewardListView;
 
 /**
- * @brief Whether this is the first time the popup is shown.
+ * Whether this is the first time the popup is shown.
  */
 @property(assign, nonatomic) BOOL firstInfo;
 

@@ -101,7 +101,7 @@ const float kRotSideways = static_cast<float>(M_PI_2);
 } // namespace
 
 /**
- * @brief Seeds the three alt-frame marker layout tables (low/mid/high lane counts) with each
+ * Seeds the three alt-frame marker layout tables (low/mid/high lane counts) with each
  * marker's sprite-kind, base position, rotation, and scale.
  *
  * A load-time constructor: the base Y values are relative to the play-field layout centre split as

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The parts-based title-screen scene layer, @c TitleLimelightScene.
+ * The parts-based title-screen scene layer, @c TitleLimelightScene.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ class C_SPRITE_INSTANCING_2D;
 namespace rb {
 
 /**
- * @brief The parts-based title-screen scene layer used for the themes other than 0 (Classic) and 2
+ * The parts-based title-screen scene layer used for the themes other than 0 (Classic) and 2
  * (Colette).
  *
  * A @c rb::BaseScene-derived per-frame task created by @c CreateTitleLayerForTheme's fall-through
@@ -31,14 +31,14 @@ namespace rb {
  */
 class TitleLimelightScene : public BaseScene {
 public:
-    /** @brief The number of cached title textures the layer builds. */
+    /** The number of cached title textures the layer builds. */
     static constexpr int kTextureCount = 3;
-    /** @brief The number of part sprite instancers the layer builds. */
+    /** The number of part sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 0x53;
-    /** @brief The number of interactive-part touch hit-rectangles the part emitter records. */
+    /** The number of interactive-part touch hit-rectangles the part emitter records. */
     static constexpr int kHitRectCount = 5;
 
-    /** @brief One interactive part's touch hit-rectangle, in screen space. */
+    /** One interactive part's touch hit-rectangle, in screen space. */
     struct HitRect {
         float x = {};      /*!< The rectangle's left edge. +0x00 */
         float y = {};      /*!< The rectangle's top edge. +0x04 */
@@ -47,7 +47,7 @@ public:
     };
 
     /**
-     * @brief Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
+     * Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
      * zero-clears the presentation state (seeding the fade value to 1.0 and the trailing index to
      * -1).
      * @ghidraAddress 0x152de8
@@ -55,7 +55,7 @@ public:
     TitleLimelightScene();
 
     /**
-     * @brief Destroys the layer: releases its cached textures and part sprite instancers, then runs
+     * Destroys the layer: releases its cached textures and part sprite instancers, then runs
      * the task-node base destructor.
      *
      * The binary emits a non-deleting destructor body (@c 0x152e90) and a deleting variant
@@ -66,7 +66,7 @@ public:
     ~TitleLimelightScene() override;
 
     /**
-     * @brief The per-frame task callback: dispatches on the layer state.
+     * The per-frame task callback: dispatches on the layer state.
      *
      * State 0 loads the title resources and starts the BGM, state 1 waits for the start music,
      * state 2 renders and animates the title parts, and state 3 finishes and opens the music list.
@@ -77,7 +77,7 @@ public:
 
 private:
     /**
-     * @brief Emits one title part sprite into its instancer slot, positioned and sized by kind.
+     * Emits one title part sprite into its instancer slot, positioned and sized by kind.
      *
      * A no-op for an out-of-range kind or a full instancer. Kind 0 is the background: it binds the
      * instancer's texture and fills a full-texture quad. Every other kind reads the per-kind part
@@ -103,7 +103,7 @@ private:
                             float flRotation);
 
     /**
-     * @brief Emits the title screen's star-field particle burst for the given animation time.
+     * Emits the title screen's star-field particle burst for the given animation time.
      *
      * For each of the 35 burst particles it samples the particle's Y-position, alpha, and scale
      * animation curves at @p flTime, doubles the scale while the hidden-code flag is set, and emits
@@ -115,26 +115,26 @@ private:
     void RenderParticleBurst(float flTime);
 
     /**
-     * @brief Releases the cached textures and flags each owned part sprite instancer for the scene
+     * Releases the cached textures and flags each owned part sprite instancer for the scene
      * walker to delete.
      * @ghidraAddress 0x152edc
      */
     void ReleaseResources();
 
     /**
-     * @brief State 0: loads the title textures and part sprite instancers and starts the title BGM.
+     * State 0: loads the title textures and part sprite instancers and starts the title BGM.
      * @ghidraAddress 0x152fc8
      */
     void LoadResources();
 
     /**
-     * @brief State 1: waits for the start music, then advances to the render state.
+     * State 1: waits for the start music, then advances to the render state.
      * @ghidraAddress 0x153190
      */
     void StartMusic();
 
     /**
-     * @brief State 2: renders and animates the title parts for the frame, and reads the touches.
+     * State 2: renders and animates the title parts for the frame, and reads the touches.
      *
      * Advances the animation clock (wrapping it back to the end of the intro), clears every part
      * instancer, and emits the whole title in program order: the backdrop, the rotated lead part,
@@ -150,13 +150,13 @@ private:
     void RenderFrame(int nElapsedMs);
 
     /**
-     * @brief State 3: finishes the title screen and opens the music list.
+     * State 3: finishes the title screen and opens the music list.
      * @ghidraAddress 0x154288
      */
     void FinishAndOpenList();
 
     /**
-     * @brief Advances the fade curve one frame toward its target value.
+     * Advances the fade curve one frame toward its target value.
      *
      * While the elapsed time is below the duration, accumulates the frame delta and, once past the
      * start delay, sets the fade value by linearly interpolating from the start to the end value
@@ -167,7 +167,7 @@ private:
     void AdvanceFadeValue(int nDeltaFrames);
 
     /**
-     * @brief Advances the title screen's hidden-code input sequence by one flick or button.
+     * Advances the title screen's hidden-code input sequence by one flick or button.
      *
      * The sequence is the Konami code -- up, up, down, down, left, right, left, right, B, A -- and
      * each input only advances the state when it is the one the sequence expects next; anything

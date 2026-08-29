@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Applilink ad SDK's URL percent-encoding helper class.
+ * The Applilink ad SDK's URL percent-encoding helper class.
  *
  * Despite the name, this is a standalone
  * @c NSObject subclass (not a category on @c NSString) that exposes two class methods wrapping the
@@ -15,12 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The Applilink SDK's URL percent-encoding helper.
+ * The Applilink SDK's URL percent-encoding helper.
  */
 @interface NSStringURLEncoding : NSObject
 
 /**
- * @brief Percent-encode a string for use in a URL query component.
+ * Percent-encode a string for use in a URL query component.
  * @param string The string to encode.
  * @return The percent-encoded string, or @c nil.
  * @ghidraAddress 0x20c1f4
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)URLEncodedString:(nullable NSString *)string;
 
 /**
- * @brief Percent-decode a URL-encoded string.
+ * Percent-decode a URL-encoded string.
  * @param string The percent-encoded string to decode.
  * @return The decoded string, or @c nil.
  * @ghidraAddress 0x20c24c

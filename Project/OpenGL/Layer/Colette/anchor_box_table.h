@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The non-phone anchor-box record type and its runtime-filled tables.
+ * The non-phone anchor-box record type and its runtime-filled tables.
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include "s_vector2.h"
 
 /**
- * @brief One non-phone anchor-box record: a base rectangle and the anchor mode that offsets it
+ * One non-phone anchor-box record: a base rectangle and the anchor mode that offsets it
  * relative to the play-field viewport.
  *
  * The 20-byte counterpart of @c PhoneAnchorRecord used by the non-phone position accessor. The
@@ -26,11 +26,11 @@ struct AnchorBoxRecord {
     int nAnchorMode = {}; /*!< The viewport-relative anchor mode (0 through 8). +0x10 */
 };
 
-/** @brief The number of records in each non-phone anchor-box table. */
+/** The number of records in each non-phone anchor-box table. */
 constexpr int kAnchorBoxRecordCount = 4;
 
 /**
- * @brief The non-phone anchor-box table used on the pad.
+ * The non-phone anchor-box table used on the pad.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime by
  * @c InitializeResultLayoutTables. The pad flag selects this table; otherwise the orientation flag
@@ -41,7 +41,7 @@ constexpr int kAnchorBoxRecordCount = 4;
 extern AnchorBoxRecord g_aAnchorBoxPad[kAnchorBoxRecordCount];
 
 /**
- * @brief The non-phone anchor-box table used off the pad in portrait orientation.
+ * The non-phone anchor-box table used off the pad in portrait orientation.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime by
  * @c InitializeResultLayoutTables. The orientation flag selects it once the pad flag is clear.
@@ -51,7 +51,7 @@ extern AnchorBoxRecord g_aAnchorBoxPad[kAnchorBoxRecordCount];
 extern AnchorBoxRecord g_aAnchorBoxPortrait[kAnchorBoxRecordCount];
 
 /**
- * @brief The default non-phone anchor-box table, used off the pad outside portrait orientation.
+ * The default non-phone anchor-box table, used off the pad outside portrait orientation.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime by
  * @c InitializeResultLayoutTables. It is the fallback once the pad flag and the orientation flag
@@ -61,11 +61,11 @@ extern AnchorBoxRecord g_aAnchorBoxPortrait[kAnchorBoxRecordCount];
  */
 extern AnchorBoxRecord g_aAnchorBoxDefault[kAnchorBoxRecordCount];
 
-/** @brief The number of records in each Colette phone-layout separator table. */
+/** The number of records in each Colette phone-layout separator table. */
 constexpr int kColetteSeparatorRecordCount = 52;
 
 /**
- * @brief The Colette phone-layout separator table used in the default orientation.
+ * The Colette phone-layout separator table used in the default orientation.
  *
  * A 0x14-stride @c PhoneLayoutRecord table, zero-initialised in the binary's @c __common segment
  * and filled at runtime; the orientation flag selects between it and
@@ -77,7 +77,7 @@ constexpr int kColetteSeparatorRecordCount = 52;
 extern PhoneLayoutRecord g_aColetteSeparatorPhoneDefault[kColetteSeparatorRecordCount];
 
 /**
- * @brief The Colette phone-layout separator table used in portrait orientation.
+ * The Colette phone-layout separator table used in portrait orientation.
  *
  * A 0x14-stride @c PhoneLayoutRecord table, zero-initialised in the binary's @c __common segment
  * and filled at runtime; the orientation flag selects between it and
@@ -89,7 +89,7 @@ extern PhoneLayoutRecord g_aColetteSeparatorPhoneDefault[kColetteSeparatorRecord
 extern PhoneLayoutRecord g_aColetteSeparatorPhonePortrait[kColetteSeparatorRecordCount];
 
 /**
- * @brief The number of points in the Colette colour-marker outline array.
+ * The number of points in the Colette colour-marker outline array.
  *
  * Four rounded-corner outline paths of nineteen points each on a twenty-point stride, so indices
  * 19, 39, and 59 are never written. Each path takes eighteen points from a run of 16-byte pool
@@ -99,7 +99,7 @@ extern PhoneLayoutRecord g_aColetteSeparatorPhonePortrait[kColetteSeparatorRecor
 constexpr int kColetteColorMarkerPointCount = 78;
 
 /**
- * @brief The Colette colour-marker outline points.
+ * The Colette colour-marker outline points.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime. The same shape as
  * the Limelight pair.
@@ -109,7 +109,7 @@ constexpr int kColetteColorMarkerPointCount = 78;
 extern S_VECTOR2 g_aColetteColorMarkerPoints[kColetteColorMarkerPointCount];
 
 /**
- * @brief The origin of the Colette colour marker.
+ * The origin of the Colette colour marker.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime, in the slot directly
  * after the outline points. The same shape as the Limelight pair.

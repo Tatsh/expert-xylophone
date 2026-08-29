@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The base scene-graph render node, @c ne::C_RENDER, and its scene-tree links.
+ * The base scene-graph render node, @c ne::C_RENDER, and its scene-tree links.
  */
 
 #pragma once
 
 /**
- * @brief The engine namespace: the renderer, its scene-graph nodes, and the per-frame task base.
+ * The engine namespace: the renderer, its scene-graph nodes, and the per-frame task base.
  *
  * Its members carry the binary's own RTTI names, which is why they keep the engine's uppercase
  * @c C_ and @c S_ prefixes rather than the project's usual CamelCase.
@@ -14,7 +14,7 @@
 namespace ne {
 
 /**
- * @brief Base scene-graph render node (RTTI @c ne::C_RENDER).
+ * Base scene-graph render node (RTTI @c ne::C_RENDER).
  *
  * Every drawable in the engine is a @c C_RENDER: nodes form a parent/child/sibling tree that is
  * walked to compose local and world transforms and to emit draw calls. Concrete leaves such as
@@ -28,13 +28,13 @@ namespace ne {
 class C_RENDER {
 public:
     /**
-     * @brief Constructs an unparented node: identity local and world transforms, visible, with both
+     * Constructs an unparented node: identity local and world transforms, visible, with both
      * intrusive rings empty (self-linked).
      * @ghidraAddress 0x29b3c
      */
     C_RENDER();
     /**
-     * @brief Render this node.
+     * Render this node.
      *
      * The base node is not drawable and does nothing; drawable subclasses such as
      * @c C_SPRITE_INSTANCING_2D override this to emit their draw calls. Invoked by the scene-tree
@@ -43,7 +43,7 @@ public:
      */
     virtual void Render();
     /**
-     * @brief Destroys the node: unlinks it from the render-list ring, detaches it from its parent
+     * Destroys the node: unlinks it from the render-list ring, detaches it from its parent
      * and detaches all of its children, then frees its buffer.
      * @ghidraAddress 0x29c10
      * @ghidraAddress 0x29ce0 (the deleting-destructor thunk)
@@ -51,7 +51,7 @@ public:
     virtual ~C_RENDER();
 
     /**
-     * @brief Whether this node (and its subtree) is drawn.
+     * Whether this node (and its subtree) is drawn.
      * @return @c true when the node and its subtree are drawn.
      */
     bool IsVisible() const {
@@ -59,7 +59,7 @@ public:
     }
 
     /**
-     * @brief Show or hide this node.
+     * Show or hide this node.
      * @param bVisible @c true to draw the node, @c false to skip it.
      */
     void SetVisible(bool bVisible) {
@@ -67,7 +67,7 @@ public:
     }
 
     /**
-     * @brief Whether the node is flagged for deferred deletion by the scene walker.
+     * Whether the node is flagged for deferred deletion by the scene walker.
      * @return @c true once the node is flagged for deferred deletion.
      */
     bool IsDeleteRequested() const {
@@ -75,14 +75,14 @@ public:
     }
 
     /**
-     * @brief Flags the node for deferred deletion by the scene walker on its next pass.
+     * Flags the node for deferred deletion by the scene walker on its next pass.
      */
     void RequestDelete() {
         m_bDeleteRequest = true;
     }
 
     /**
-     * @brief The node's parent in the scene graph, or @c nullptr when it is a root.
+     * The node's parent in the scene graph, or @c nullptr when it is a root.
      * @return The parent node, or @c nullptr when this node is a root.
      */
     C_RENDER *GetParent() const {
@@ -90,7 +90,7 @@ public:
     }
 
     /**
-     * @brief The node's composed world transform (a column-major 4x4 matrix).
+     * The node's composed world transform (a column-major 4x4 matrix).
      *
      * A render node copies its parent's world matrix into its own and composes each sprite's
      * transform against it before drawing, so the matrix is exposed mutably.
@@ -101,7 +101,7 @@ public:
     }
 
     /**
-     * @brief The node's local transform (a column-major 4x4 matrix).
+     * The node's local transform (a column-major 4x4 matrix).
      *
      * Reset to identity at the start of a draw before the world matrix is composed.
      * @return The node's sixteen-float local matrix.
@@ -111,7 +111,7 @@ public:
     }
 
     /**
-     * @brief Attach @p pChild as a child of this node.
+     * Attach @p pChild as a child of this node.
      *
      * @p pChild is first detached from any current parent, then linked into this node's child list.
      * @param pChild The node to attach.
@@ -120,7 +120,7 @@ public:
     void AttachChild(C_RENDER *pChild);
 
     /**
-     * @brief Unlink this node from its parent's child list.
+     * Unlink this node from its parent's child list.
      *
      * Advances the parent's child-list head past this node if it was the head, splices the node out
      * of its sibling ring, then clears its parent link and resets its sibling links to itself.
@@ -129,7 +129,7 @@ public:
     void Detach();
 
     /**
-     * @brief Register this node in the global scene tree so it is drawn each frame.
+     * Register this node in the global scene tree so it is drawn each frame.
      *
      * Attaches the node as a child of the process-wide scene root, @c g_globalSceneRoot, whose
      * children @c RenderGlobalSceneTree traverses.
@@ -138,7 +138,7 @@ public:
     void RegisterGlobal();
 
     /**
-     * @brief Traverse this node's children for the frame.
+     * Traverse this node's children for the frame.
      *
      * Draws each visible child (via @c Render) and recurses into its subtree, and destroys each
      * child flagged for deletion. The child list is an intrusive circular ring, so deletions that
@@ -172,7 +172,7 @@ private:
 };
 
 /**
- * @brief The process-wide scene-graph root.
+ * The process-wide scene-graph root.
  *
  * Nodes registered with @c C_RENDER::RegisterGlobal become its children and are traversed for
  * drawing each frame by @c RenderGlobalSceneTree. It is a namespace-scope @c C_RENDER, so the
@@ -185,8 +185,8 @@ extern C_RENDER g_globalSceneRoot;
 } // namespace ne
 
 #if RBPDBG
-/** @brief Frames drawn so far; diagnostics use it to capture exactly one of them. */
+/** Frames drawn so far; diagnostics use it to capture exactly one of them. */
 extern int g_nDebugFrameCounter;
-/** @brief The frame the sprite snapshot dumps on; zero until a layer arms it. */
+/** The frame the sprite snapshot dumps on; zero until a layer arms it. */
 extern int g_nDebugSnapshotFrame;
 #endif

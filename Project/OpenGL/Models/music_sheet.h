@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note-chart reader/parser, @c CMusicSheet2.
+ * The note-chart reader/parser, @c CMusicSheet2.
  */
 
 #pragma once
@@ -12,7 +12,7 @@ struct RbffSlideRecord;
 class GameSystem;
 
 /**
- * @brief One sheet path node: a speed/scroll value and the chart time it takes effect.
+ * One sheet path node: a speed/scroll value and the chart time it takes effect.
  *
  * A speed-change node has the same two-int layout as a @c NotePathPoint, so the reader stores the
  * nodes in its growable path-point array: @c nSpeed occupies the @c x slot and @c nTime the @c y.
@@ -22,7 +22,7 @@ using SheetPathNode = NotePathPoint;
 namespace rb {
 
 /**
- * @brief The note-chart reader: parses an RBFF chart blob into a pool of note records and holds the
+ * The note-chart reader: parses an RBFF chart blob into a pool of note records and holds the
  * per-chart timing, lane, and free-note state the play field reads.
  *
  * A polymorphic engine object of 152 bytes. The field layout is taken from the Ghidra data type;
@@ -32,14 +32,14 @@ namespace rb {
 class CMusicSheet2 {
 public:
     /**
-     * @brief Constructs an empty note-chart reader: marks the version unread, allocates a one-node
+     * Constructs an empty note-chart reader: marks the version unread, allocates a one-node
      * path buffer, and clears every count, timing, and buffer pointer.
      * @ghidraAddress 0x12f828
      */
     CMusicSheet2();
 
     /**
-     * @brief Frees every buffer the chart owns: the two note-index arrays, the note-record pool
+     * Frees every buffer the chart owns: the two note-index arrays, the note-record pool
      * (each record's path-point sub-buffer first), the slide-record array, and the path nodes; then
      * clears the path-point count and capacity.
      *
@@ -52,7 +52,7 @@ public:
     virtual ~CMusicSheet2();
 
     /**
-     * @brief Returns the note record at @p nIndex, or null when the index is out of range.
+     * Returns the note record at @p nIndex, or null when the index is out of range.
      * @param nIndex The note-record index.
      * @return The note record, or null.
      * @ghidraAddress 0x13183c
@@ -60,7 +60,7 @@ public:
     RbffNoteRecord *GetNoteRecordByIndex(int nIndex);
 
     /**
-     * @brief Builds a default twelve-note free chart when no real chart is loaded.
+     * Builds a default twelve-note free chart when no real chart is loaded.
      *
      * Only when the reader is empty: allocates twelve note records spaced at a regular time
      * interval, each a free (target -1) note of fixed duration, seeds the chart header counts, and
@@ -72,7 +72,7 @@ public:
     unsigned long BuildDefaultNoteChart(GameSystem *pGameSystem);
 
     /**
-     * @brief Parses an RBFF note-chart blob into the reader and installs its runtime state.
+     * Parses an RBFF note-chart blob into the reader and installs its runtime state.
      *
      * Bails if a chart is already loaded, checks the @c 'RBFF' magic, reads the format version
      * (rejecting versions above 13), dispatches to the version-appropriate parser (versions 10 to
@@ -86,7 +86,7 @@ public:
     int ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem);
 
     /**
-     * @brief The number of note records in the chart's pool.
+     * The number of note records in the chart's pool.
      * @return The number of note records.
      */
     int GetNoteCount() const {
@@ -94,7 +94,7 @@ public:
     }
 
     /**
-     * @brief One side's playable-note count, which also selects the scroll-speed / density tier.
+     * One side's playable-note count, which also selects the scroll-speed / density tier.
      * @param nSide The player side.
      * @return The side's playable-note count.
      */
@@ -103,7 +103,7 @@ public:
     }
 
     /**
-     * @brief The chart's just-reflec quota: the number of just-reflec opportunities it grants, and
+     * The chart's just-reflec quota: the number of just-reflec opportunities it grants, and
      * the term the maximum achievable score weights by @c kScoreJustReflec.
      * @return The chart's just-reflec quota.
      */
@@ -112,7 +112,7 @@ public:
     }
 
     /**
-     * @brief One side's side-object note count.
+     * One side's side-object note count.
      * @param nSide The player side.
      * @return The side's side-object note count.
      */
@@ -121,7 +121,7 @@ public:
     }
 
     /**
-     * @brief The just-reflec quota taken over the note count less side zero's late notes.
+     * The just-reflec quota taken over the note count less side zero's late notes.
      * @return The remaining just-reflec quota.
      */
     int GetJustReflecQuotaRemain() const {
@@ -129,7 +129,7 @@ public:
     }
 
     /**
-     * @brief Returns the speed-change path node at @p nIndex.
+     * Returns the speed-change path node at @p nIndex.
      *
      * Asserts the index is within the path-node count.
      * @param nIndex The path-node index.
@@ -139,7 +139,7 @@ public:
     SheetPathNode *GetSheetPathNode(int nIndex);
 
     /**
-     * @brief The number of speed-change path nodes in the chart.
+     * The number of speed-change path nodes in the chart.
      * @return The number of speed-change path nodes.
      */
     int GetSheetPathNodeCount() const {
@@ -147,7 +147,7 @@ public:
     }
 
     /**
-     * @brief The chart's end time, in unscaled chart units.
+     * The chart's end time, in unscaled chart units.
      * @return The chart's end time, in unscaled chart units.
      */
     int GetChartEndTime() const {
@@ -155,14 +155,14 @@ public:
     }
 
     /**
-     * @brief Returns the first path node's speed value, or a default when there are no path nodes.
+     * Returns the first path node's speed value, or a default when there are no path nodes.
      * @return The first node's speed as a float, or the default speed.
      * @ghidraAddress 0x1316b4
      */
     float GetFirstPathSpeed();
 
     /**
-     * @brief Counts the chart's late notes per side and computes its scroll timing.
+     * Counts the chart's late notes per side and computes its scroll timing.
      *
      * Walks the note records to find each side's side-object end time, counts the notes (and slide
      * records) whose end time is past it into the per-side counters, then selects a scroll-speed
@@ -173,7 +173,7 @@ public:
     int CalculateChartTiming();
 
     /**
-     * @brief Resolves each note's start and end scroll speed against the speed-change path nodes.
+     * Resolves each note's start and end scroll speed against the speed-change path nodes.
      *
      * For every note record, seeds the start and end scroll speeds from the first path node, then
      * walks the path nodes advancing the start speed while a node's time is at or before the note's
@@ -184,7 +184,7 @@ public:
     void ResolveNoteScrollSpeeds();
 
     /**
-     * @brief Reports whether any note on a target lane falls within two ticks of a query time.
+     * Reports whether any note on a target lane falls within two ticks of a query time.
      *
      * Scans the note records for one on @p nTarget whose end time (and, for a hold note, its tail)
      * is within tolerance of @p nTime, stopping once past the query time; failing that, scans the
@@ -197,7 +197,7 @@ public:
     bool CheckNoteNearTime(int nTime, int nTarget);
 
     /**
-     * @brief Finds a note on @p nLane whose active span overlaps the time range, from @p
+     * Finds a note on @p nLane whose active span overlaps the time range, from @p
      * nStartIndex.
      * @param nLane The lane to search.
      * @param nTimeStart The start of the time range.
@@ -209,7 +209,7 @@ public:
     RbffNoteRecord *FindNoteInTimeRange(int nLane, int nTimeStart, int nTimeEnd, int nStartIndex);
 
     /**
-     * @brief Finds the nearest chain-eligible note on @p nLane whose timing selector matches
+     * Finds the nearest chain-eligible note on @p nLane whose timing selector matches
      * @p nField, from @p nStartIndex.
      * @param nLane The lane to search.
      * @param nTime The reference time the nearest note is measured against.
@@ -221,14 +221,14 @@ public:
     RbffNoteRecord *FindChainNote(int nLane, int nTime, int nField, int nStartIndex);
 
     /**
-     * @brief Clears each eligible note's green-target availability bitmap of the slots blocked by
+     * Clears each eligible note's green-target availability bitmap of the slots blocked by
      * overlapping or chained notes, so a green note only offers reachable targets.
      * @ghidraAddress 0x131450
      */
     void AssignGreenTargets();
 
     /**
-     * @brief Assigns every note its play-field display lane and resolves each free note's colour.
+     * Assigns every note its play-field display lane and resolves each free note's colour.
      *
      * Builds a lane tracker seeded from the game system, then for each note inherits the chain
      * head's lane, reserves a hold note's fixed lane, spreads a side note across its blocked lanes,
@@ -240,7 +240,7 @@ public:
     void AssignChartLanes(GameSystem *pGameSystem);
 
     /**
-     * @brief Returns the last note of the chain @p pNote belongs to.
+     * Returns the last note of the chain @p pNote belongs to.
      *
      * Asserts @p pNote is a chain note that is not already the tail, then follows the chain's
      * next-segment links until a note with no next segment is reached.
@@ -250,22 +250,22 @@ public:
      */
     RbffNoteRecord *GetChainLastNote(const RbffNoteRecord *pNote);
 
-    /** @brief The byte stride between note records in the pool (@c sizeof(RbffNoteRecord)). */
+    /** The byte stride between note records in the pool (@c sizeof(RbffNoteRecord)). */
     static constexpr int kNoteRecordStride = 0xb8;
 
-    /** @brief The number of play sides the timing counters track. */
+    /** The number of play sides the timing counters track. */
     static constexpr int kSideCount = 2;
 
 private:
     /**
-     * @brief Initialises the path-node region: reserves a one-node path buffer and zeroes the parse
+     * Initialises the path-node region: reserves a one-node path buffer and zeroes the parse
      * counter/timing block. Called by the constructor.
      * @ghidraAddress 0x12f6f4
      */
     void InitPathNodeRegion();
 
     /**
-     * @brief Parses a legacy (version 6 and 7) note-chart word stream into the record pool and
+     * Parses a legacy (version 6 and 7) note-chart word stream into the record pool and
      * links long notes.
      *
      * Reads the note count and chart end time from the header, allocates and default-constructs the
@@ -280,7 +280,7 @@ private:
     int ParseNoteChartData(const unsigned int *pStream);
 
     /**
-     * @brief Converts the parsed note records into runtime play state.
+     * Converts the parsed note records into runtime play state.
      *
      * BPM-scales each note's times into its runtime hit time and window, resolves its owning side
      * against the game system's play colour, derives its shot/route value, counts the notes per
@@ -294,7 +294,7 @@ private:
     unsigned long InstallParsedNotes(GameSystem *pGameSystem);
 
     /**
-     * @brief Parses a version 10-to-14 note-chart stream into the record pool, tempo events, and
+     * Parses a version 10-to-14 note-chart stream into the record pool, tempo events, and
      * slide records.
      *
      * Reads the header counts, allocates and default-constructs the record pool, and per note

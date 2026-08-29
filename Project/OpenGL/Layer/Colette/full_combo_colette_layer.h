@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Colette-theme full-combo layer, @c FullComboColetteLayer.
+ * The Colette-theme full-combo layer, @c FullComboColetteLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The Colette-theme full-combo layer.
+ * The Colette-theme full-combo layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns
  * three sprite instancers, drawn beneath the shared background layer, that present the Colette
@@ -27,21 +27,21 @@ class C_SPRITE_INSTANCING_2D;
 class FullComboColetteLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide Colette full-combo layer, created on first use.
+     * The process-wide Colette full-combo layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x9b18c
      */
     static FullComboColetteLayer *shared();
 
     /**
-     * @brief Constructs the layer: chains the base-layer constructor and seeds the layout size,
+     * Constructs the layer: chains the base-layer constructor and seeds the layout size,
      * leaving the texture, sprite, count, and effect state zero-cleared.
      * @ghidraAddress 0x9b118
      */
     FullComboColetteLayer();
 
     /**
-     * @brief Lazily builds the layer's textures and sprites: loads the atlas into each of the three
+     * Lazily builds the layer's textures and sprites: loads the atlas into each of the three
      * texture fields and creates the three sprite instancers (attaching each under the background
      * layer's render object, making it visible, binding its atlas, clearing its sprite count,
      * flagging additive blend on the middle slot, and enabling its two texture-environment
@@ -53,14 +53,14 @@ public:
     void InitializeBackgroundSpriteLayers();
 
     /**
-     * @brief Activates the full-combo effect for a player colour.
+     * Activates the full-combo effect for a player colour.
      * @param nColor The player colour (0 or 1).
      * @ghidraAddress 0x9b2e4
      */
     void CreateFullComboColette(unsigned int nColor);
 
     /**
-     * @brief Emits one full-combo sprite of the given type into its batch group.
+     * Emits one full-combo sprite of the given type into its batch group.
      *
      * Looks up the sprite type's batch group, anchor, size, and UV-table index from the descriptor
      * table, and (while the group's batch has free capacity) appends a sprite at @p pPosition with
@@ -82,7 +82,7 @@ public:
                       float flRotation);
 
     /**
-     * @brief Clears every player colour's full-combo effect active flag.
+     * Clears every player colour's full-combo effect active flag.
      *
      * The binary reuses this on the Classic and Limelight full-combo layers too, whose
      * effect-record arrays share this layout.
@@ -91,14 +91,14 @@ public:
     void ClearEffectFlags();
 
     /**
-     * @brief Whether any player colour's full-combo effect is currently active.
+     * Whether any player colour's full-combo effect is currently active.
      * @return @c true when at least one effect record's active flag is set.
      * @ghidraAddress 0x9b378
      */
     bool IsAnyEffectActive() const;
 
     /**
-     * @brief Advances every active full-combo effect by one frame and emits its sprites.
+     * Advances every active full-combo effect by one frame and emits its sprites.
      *
      * Returns early, clearing the instancers outright, when no effect is playing. Otherwise, for
      * every active player colour, advances the effect clock, fires the themed voice cue inside its
@@ -109,18 +109,18 @@ public:
      */
     void Update(float flDelta);
 
-    /** @brief The number of full-combo sprite instancers the layer builds. */
+    /** The number of full-combo sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 3;
-    /** @brief The number of player colours with a full-combo effect record. */
+    /** The number of player colours with a full-combo effect record. */
     static constexpr int kColorCount = 2;
 
 private:
     // A per-colour full-combo effect record.
     struct EffectRecord {
-        bool m_bActive = {}; // +0x00: whether the effect is playing.
+        bool m_bActive = {}; /*!< Whether the effect is playing. +0x00 */
         // unsigned char m_aPad1[3]; // +0x01 (alignment padding, compiler-inserted)
-        float m_flTimer = {};    // +0x04: the effect animation clock, in milliseconds.
-        bool m_bVoiceFired = {}; // +0x08: set once the effect has fired its themed voice cue.
+        float m_flTimer = {};    /*!< The effect animation clock, in milliseconds. +0x04 */
+        bool m_bVoiceFired = {}; /*!< Set once the effect has fired its themed voice cue. +0x08 */
         // unsigned char m_aPad9[3]; // +0x09 (alignment padding, compiler-inserted)
     };
 

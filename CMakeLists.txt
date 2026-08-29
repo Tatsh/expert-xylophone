@@ -40,6 +40,8 @@ endif()
 if(BUILD_DOCS OR BUILD_DOCS_ONLY)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
     set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
+    set(DOXYGEN_QT_AUTOBRIEF YES)
     set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
     set(DOXYGEN_ALIASES [[ghidraAddress="\par Ghidra address:^^"]])
     set(DOXYGEN_ENABLE_PREPROCESSING YES)
@@ -49,8 +51,6 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
         "NS_ENUM(type,name)=enum name : type"
         "NS_OPTIONS(type,name)=enum name : type"
         "NS_CLOSED_ENUM(type,name)=enum name : type")
-    # A .m's @interface Foo () extension is a class in Doxygen's model, indexed beside the real
-    # Foo as "Foo()" with an empty description. Nothing public is declared in one.
     set(DOXYGEN_EXTRACT_LOCAL_CLASSES NO)
     set(DOXYGEN_EXCLUDE "${CMAKE_SOURCE_DIR}/Project/bf_init_bytes.inc")
     find_package(Doxygen REQUIRED)

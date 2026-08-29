@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink recommend advert SDK's
+ * Reconstructed interface for the Applilink recommend advert SDK's
  * @c RecommendFullScreenController.
  *
  * @c RecommendFullScreenController is the full-screen (interstitial) advert view controller the
@@ -22,18 +22,18 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The Applilink recommend full-screen (interstitial) advert view controller.
+ * The Applilink recommend full-screen (interstitial) advert view controller.
  * @ghidraAddress 0x3bdef8
  */
 @interface RecommendFullScreenController : UIViewController
 
 /**
- * @brief Whether the interstitial advert is currently on screen.
+ * Whether the interstitial advert is currently on screen.
  */
 @property(nonatomic, assign) BOOL isVisible;
 
 /**
- * @brief Open the full-screen advert view.
+ * Open the full-screen advert view.
  * @param adModel The advert-model identifier.
  * @param adLocation The advert-location identifier.
  * @param verticalAlign The vertical-alignment identifier.

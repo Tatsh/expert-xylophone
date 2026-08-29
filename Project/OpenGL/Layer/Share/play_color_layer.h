@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The play-colour gauge-parts layer, @c PlayColorLayer.
+ * The play-colour gauge-parts layer, @c PlayColorLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The play-colour gauge-parts layer.
+ * The play-colour gauge-parts layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and two sprite instancers, drawn beneath the shared background layer, that present the
@@ -24,24 +24,24 @@ class C_SPRITE_INSTANCING_2D;
  */
 class PlayColorLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of gauge-part sprite instancers the layer builds. */
+    /** The number of gauge-part sprite instancers the layer builds. */
     static constexpr int kBatchCount = 2;
-    /** @brief The number of part groups whose sprites the layer emits. */
+    /** The number of part groups whose sprites the layer emits. */
     static constexpr int kPartGroupCount = 10;
-    /** @brief The number of across-field gauge X positions. */
+    /** The number of across-field gauge X positions. */
     static constexpr int kGaugeLaneXCount = 3;
-    /** @brief The number of toward-edge gauge Y positions. */
+    /** The number of toward-edge gauge Y positions. */
     static constexpr int kGaugeLaneYCount = 2;
 
     /**
-     * @brief The process-wide play-colour layer, created on first use.
+     * The process-wide play-colour layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x8350c
      */
     static PlayColorLayer *shared();
 
     /**
-     * @brief Begins the gauge shrink/empty animation, easing the gauge to empty over @p flDuration
+     * Begins the gauge shrink/empty animation, easing the gauge to empty over @p flDuration
      * (snapping to empty and marking the colour dirty when the duration is non-positive).
      * @param flDuration The animation duration.
      * @ghidraAddress 0x8394c
@@ -49,7 +49,7 @@ public:
     void StartShrinkAnimation(float flDuration);
 
     /**
-     * @brief Begins the gauge grow/fill animation, easing the gauge to full over @p flDuration from
+     * Begins the gauge grow/fill animation, easing the gauge to full over @p flDuration from
      * @p flFromValue (snapping to full and marking the colour dirty when the duration is
      * non-positive). Shares the shrink channel and its from-value scratch.
      * @param flDuration The animation duration.
@@ -59,7 +59,7 @@ public:
     void StartGaugeGrowAnimation(float flDuration, float flFromValue);
 
     /**
-     * @brief Sets the gauge fill/brightness directly (clamped to @c [0, 1] and mapped to the fill
+     * Sets the gauge fill/brightness directly (clamped to @c [0, 1] and mapped to the fill
      * brightness range), marking the colour dirty.
      * @param flLevel The normalised fill level.
      * @ghidraAddress 0x83978
@@ -67,7 +67,7 @@ public:
     void SetGaugeFillLevel(float flLevel);
 
     /**
-     * @brief Lazily builds the two gauge-part sprite batches and populates them with the gm_parts1
+     * Lazily builds the two gauge-part sprite batches and populates them with the gm_parts1
      * part sprites (attaching each batch under the background layer's render object, making it
      * visible, binding the atlas, sizing it to its part count, and flagging additive blend), then
      * emitting each part group's sprites.
@@ -78,7 +78,7 @@ public:
     void BuildGaugePartsSpriteBatches();
 
     /**
-     * @brief Emit one gauge-part sprite into a batch slot: writes its position, source rect, UV
+     * Emit one gauge-part sprite into a batch slot: writes its position, source rect, UV
      * rect, scale, rotation, and colour from the part tables and advances the batch's used count.
      *
      * Drops the sprite when the batch's slot pool is full.
@@ -102,14 +102,14 @@ public:
                              unsigned int nAlpha);
 
     /**
-     * @brief Sets the play-colour value (a theme-indexed colour selector).
+     * Sets the play-colour value (a theme-indexed colour selector).
      * @param nValue The colour value.
      * @ghidraAddress 0x83c90
      */
     void SetPlayColorValue(int nValue);
 
     /**
-     * @brief Resyncs the gauge part positions from the current game-system sheet layout.
+     * Resyncs the gauge part positions from the current game-system sheet layout.
      *
      * Scales the sheet-inset half-width into the three across-field gauge X positions and the
      * sheet-inset half-height by the far-lane slopes into the two toward-edge gauge Y positions.
@@ -118,7 +118,7 @@ public:
     void SyncGaugeValuesFromGameSystem();
 
     /**
-     * @brief Advances the gauge animation and emits every gauge-part sprite for the frame.
+     * Advances the gauge animation and emits every gauge-part sprite for the frame.
      *
      * Advances the fill tween and the glow-pulse clock, resets both batches' sprite counts, then
      * for each play side emits the layered base-fill, highlight, and glow part sprites at each lane
@@ -130,7 +130,7 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
+     * Constructs the layer, chaining the base constructor, seeding its transform scales, and
      * accumulating each batch's per-group capacities.
      * @ghidraAddress 0x83460
      */

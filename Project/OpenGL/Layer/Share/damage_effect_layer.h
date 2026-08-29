@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The bounds-damage effect layer, @c DamageEffectLayer.
+ * The bounds-damage effect layer, @c DamageEffectLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The play-field damage/bounds effect layer: a pool of per-hit effect records plus the
+ * The play-field damage/bounds effect layer: a pool of per-hit effect records plus the
  * per-lane display values and the user's effect-size setting.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
@@ -26,20 +26,20 @@ class C_SPRITE_INSTANCING_2D;
  */
 class DamageEffectLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of pooled effect records. */
+    /** The number of pooled effect records. */
     static constexpr int kEffectRecordCount = 32;
-    /** @brief The number of player lanes. */
+    /** The number of player lanes. */
     static constexpr int kLaneCount = 2;
 
     /**
-     * @brief The process-wide damage-effect layer, created on first use.
+     * The process-wide damage-effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x173f7c
      */
     static DamageEffectLayer *shared();
 
     /**
-     * @brief Builds the effect sprite batch and binds the style's atlas on first use.
+     * Builds the effect sprite batch and binds the style's atlas on first use.
      *
      * Reads the user's bounds-effect style, loads the matching atlas (default / limelight /
      * colette), creates the world sprite batch sized to the layer's capacity, attaches it under the
@@ -49,7 +49,7 @@ public:
     void InitializeSprites();
 
     /**
-     * @brief Spawns a bounds-damage effect for a player colour at a screen position.
+     * Spawns a bounds-damage effect for a player colour at a screen position.
      *
      * Claims the first inactive pooled record and fills its colour, position, and reset timer. A
      * full pool drops the effect.
@@ -61,7 +61,7 @@ public:
     void CreateBoundsDamage(int nColor, float flPosX, float flPosY);
 
     /**
-     * @brief Sets one lane's damage-effect display value.
+     * Sets one lane's damage-effect display value.
      * @param nLane The player lane (0 or 1).
      * @param flValue The display value.
      * @ghidraAddress 0x174224
@@ -69,21 +69,21 @@ public:
     void SetLaneValue(int nLane, float flValue);
 
     /**
-     * @brief Sets the effect size from the user's damage-effect-size setting.
+     * Sets the effect size from the user's damage-effect-size setting.
      * @param flSize The effect size.
      * @ghidraAddress 0x174238
      */
     void SetEffectSize(float flSize);
 
     /**
-     * @brief Refreshes the theme, reads the user's bounds-effect style, and binds the matching
+     * Refreshes the theme, reads the user's bounds-effect style, and binds the matching
      * effect atlas (default / limelight / colette) to the sprite instancer.
      * @ghidraAddress 0x1740cc
      */
     void SetBoundsDamageStyle();
 
     /**
-     * @brief Advances and redraws every live damage effect for the frame.
+     * Advances and redraws every live damage effect for the frame.
      *
      * Resets the sprite count, then for each pooled record advances its animation timer; an effect
      * past its lifetime is deactivated, otherwise its current animation frame's UV is selected (by
@@ -96,7 +96,7 @@ public:
 
 private:
     /**
-     * @brief Emits one bounds-damage sprite instance into the batch.
+     * Emits one bounds-damage sprite instance into the batch.
      *
      * Writes the next sprite slot with a fixed anchor and quad size, the animation-frame UV, the
      * layer's effect scale, and opaque white modulated by the lane's alpha. On the Colette theme
@@ -110,7 +110,7 @@ private:
     void EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VECTOR2 *pPosition);
 
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the sprite/texture header
+     * Constructs the layer: chains the base constructor, clears the sprite/texture header
      * and the pooled effect records, and seeds the two lane values and the effect size to one.
      * @ghidraAddress 0x173f10
      */
@@ -118,12 +118,12 @@ private:
 
     // One pooled per-hit effect record (20 bytes): an active flag, colour, position, and timer.
     struct EffectRecord {
-        bool bActive = {}; // +0x00: whether the record holds a live effect.
+        bool bActive = {}; /*!< Whether the record holds a live effect. +0x00 */
         // unsigned char aReserved01[3] = {}; // +0x01
-        int nColor = {};    // +0x04: the effect's player colour.
-        float flPosX = {};  // +0x08: the effect's screen x.
-        float flPosY = {};  // +0x0c: the effect's screen y.
-        float flTimer = {}; // +0x10: the effect's animation timer, in frames.
+        int nColor = {};    /*!< The effect's player colour. +0x04 */
+        float flPosX = {};  /*!< The effect's screen x. +0x08 */
+        float flPosY = {};  /*!< The effect's screen y. +0x0c */
+        float flTimer = {}; /*!< The effect's animation timer, in frames. +0x10 */
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the bound effect atlas.

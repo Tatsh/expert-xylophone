@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c NSArray property-list deserialisation helper.
+ * @c NSArray property-list deserialisation helper.
  *
  * Decode an XML property-list payload held in an
  * @c NSData into an immutable @c NSArray, selecting the Core Foundation parser that matches the
@@ -19,12 +19,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Property-list deserialisation helper layered on @c NSArray.
+ * Property-list deserialisation helper layered on @c NSArray.
  */
 @interface NSArray (RB)
 
 /**
- * @brief Deserialise XML property-list bytes into an immutable array.
+ * Deserialise XML property-list bytes into an immutable array.
  * @param data The serialised property-list payload.
  * @return A copy of the parsed array, or @c nil when the payload does not decode to an @c NSArray.
  * @ghidraAddress 0x12f410

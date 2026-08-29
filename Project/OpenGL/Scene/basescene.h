@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The scene base, @c rb::BaseScene (RTTI @c N2rb9BaseSceneE).
+ * The scene base, @c rb::BaseScene (RTTI @c N2rb9BaseSceneE).
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "ctask.h"
 
 /**
- * @brief The game namespace: the scenes and play-field layers built on top of the @c ne engine.
+ * The game namespace: the scenes and play-field layers built on top of the @c ne engine.
  *
  * Its members carry the binary's own RTTI names, so a mangled name such as @c N2rb9BaseSceneE
  * resolves directly to the class documented here.
@@ -16,7 +16,7 @@
 namespace rb {
 
 /**
- * @brief The base of the per-frame scenes and game UI layers (the clear gauge, score gauge, pause
+ * The base of the per-frame scenes and game UI layers (the clear gauge, score gauge, pause
  * gauge, title scenes, and the play scene).
  *
  * It derives from the engine's task node (@c ne::C_TASK, the priority-sorted per-frame
@@ -28,7 +28,7 @@ namespace rb {
 class BaseScene : public ne::C_TASK {
 public:
     /**
-     * @brief Whether the device is an iPad (cached from @c IsPad at construction).
+     * Whether the device is an iPad (cached from @c IsPad at construction).
      * @return @c true on an iPad-idiom device.
      */
     bool IsPad() const {
@@ -36,7 +36,7 @@ public:
     }
 
     /**
-     * @brief Whether the device is the older type-9 hardware.
+     * Whether the device is the older type-9 hardware.
      * @return @c true on the older type-9 hardware.
      */
     bool IsHardwareType9() const {
@@ -45,7 +45,7 @@ public:
 
 protected:
     /**
-     * @brief Constructs the scene base: chains the task-node base constructor and caches the is-pad
+     * Constructs the scene base: chains the task-node base constructor and caches the is-pad
      * and hardware-type flags. (The compiler installs the vtable.)
      * @ghidraAddress 0x18bd9c
      */

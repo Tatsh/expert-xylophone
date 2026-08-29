@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink recommend SDK's @c ApplilinkNetworkError
+ * Reconstructed interface for the Applilink recommend SDK's @c ApplilinkNetworkError
  * factory.
  *
  * @c ApplilinkNetworkError is the SDK's @c NSError factory: it owns the Applilink error domain and
@@ -15,18 +15,18 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The error domain of every @c NSError produced by @c ApplilinkNetworkError.
+ * The error domain of every @c NSError produced by @c ApplilinkNetworkError.
  * @ghidraAddress 0x344791
  */
 extern NSErrorDomain const ApplilinkErrorDomain;
 
 /**
- * @brief Localised-error factory for the Applilink SDK.
+ * Localised-error factory for the Applilink SDK.
  */
 @interface ApplilinkNetworkError : NSObject
 
 /**
- * @brief Build a localised @c NSError for an Applilink error code.
+ * Build a localised @c NSError for an Applilink error code.
  *
  * Equivalent to calling @c localizedApplilinkErrorWithCode:userInfo: with a @c nil user-info
  * dictionary.
@@ -38,7 +38,7 @@ extern NSErrorDomain const ApplilinkErrorDomain;
 + (NSError *)localizedApplilinkErrorWithCode:(NSInteger)code;
 
 /**
- * @brief Build a localised @c NSError for an Applilink error code, merging caller-supplied
+ * Build a localised @c NSError for an Applilink error code, merging caller-supplied
  * user-info entries.
  *
  * The returned error's @c userInfo is @c userInfo with the localised description for @c code added

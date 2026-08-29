@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The chart lane-assignment tracker, @c NoteLaneTracker.
+ * The chart lane-assignment tracker, @c NoteLaneTracker.
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 class Random;
 
 /**
- * @brief Tracks per-lane occupancy while the chart parser assigns each note a play-field lane.
+ * Tracks per-lane occupancy while the chart parser assigns each note a play-field lane.
  *
  * Holds a lane slot for each of the two players' seven lanes and an attached @c Random used to pick
  * lanes. Built by the chart parser's lane pass and destroyed at its end. The class name is inferred
@@ -19,20 +19,20 @@ class Random;
  */
 class NoteLaneTracker {
 public:
-    /** @brief The number of players. */
+    /** The number of players. */
     static constexpr int kPlayerCount = 2;
-    /** @brief The number of lanes each player has. */
+    /** The number of lanes each player has. */
     static constexpr int kLaneCount = 7;
-    /** @brief The total number of lane slots, one per player per lane. */
+    /** The total number of lane slots, one per player per lane. */
     static constexpr int kSlotCount = kPlayerCount * kLaneCount;
 
     /**
-     * @brief Constructs the tracker: marks every lane slot free.
+     * Constructs the tracker: marks every lane slot free.
      * @ghidraAddress 0x148c78
      */
     NoteLaneTracker();
     /**
-     * @brief Destroys the tracker, releasing its attached note-data generator.
+     * Destroys the tracker, releasing its attached note-data generator.
      *
      * The class is polymorphic (the compiler emits its vtable at offset 0), so the destructor is
      * virtual. The vtable holds the two Itanium destructor thunks — the complete-object variant
@@ -48,14 +48,14 @@ public:
     virtual ~NoteLaneTracker();
 
     /**
-     * @brief Attaches a fresh lane-picking generator seeded with @p dwSeed.
+     * Attaches a fresh lane-picking generator seeded with @p dwSeed.
      * @param dwSeed The seed (the game system's random seed).
      * @ghidraAddress 0x148d78
      */
     void SetNoteData(unsigned int dwSeed);
 
     /**
-     * @brief Reserves a lane (and optionally its neighbours) for a note's time span.
+     * Reserves a lane (and optionally its neighbours) for a note's time span.
      *
      * Extends the lane slot's occupied start/end range to cover @c [nTimeStart, nTimeStart +
      * nDuration]; when @p bSpread is set, the adjacent lanes are extended likewise. Only the first
@@ -70,7 +70,7 @@ public:
     void ReserveNoteLane(int nTimeStart, int nDuration, int nPlayer, int nLane, bool bSpread);
 
     /**
-     * @brief Assigns a note to the least-conflicting lane for its time span.
+     * Assigns a note to the least-conflicting lane for its time span.
      *
      * Expires lane slots whose span has passed, buckets the seven lanes by the highest assignment
      * pair that overlaps the note's span, and within the least-occupied bucket shuffles the
@@ -93,7 +93,7 @@ public:
 
 private:
     /**
-     * @brief Fisher-Yates shuffle of an int array, used to break lane-assignment ties randomly.
+     * Fisher-Yates shuffle of an int array, used to break lane-assignment ties randomly.
      *
      * Ties are broken with the C library @c rand rather than the engine generator. (The binary
      * takes an ignored leading register argument, dropped here.)

@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The themed sound-effect manager, @c SoundEffectManager.
+ * The themed sound-effect manager, @c SoundEffectManager.
  */
 
 #pragma once
 
 /**
- * @brief The themed sound-effect manager.
+ * The themed sound-effect manager.
  *
  * It holds three theme banks of twenty slots plus thirty-six shared slots, keyed by the current
  * theme; the application plays a slot through @c PlayThemedSoundEffect. The 32-bit offset comments
@@ -16,14 +16,14 @@
 class SoundEffectManager {
 public:
     /**
-     * @brief Returns the shared themed sound-effect manager, constructing it on first use.
+     * Returns the shared themed sound-effect manager, constructing it on first use.
      * @return The shared themed sound-effect manager.
      * @ghidraAddress 0x1cc514
      */
     static SoundEffectManager *GetInstance();
 
     /**
-     * @brief Loads every themed and shared sound effect into the manager.
+     * Loads every themed and shared sound effect into the manager.
      *
      * Preloads all three themes' twenty slots plus the thirty-six shared slots from the bundle.
      * @ghidraAddress 0x1cc75c
@@ -31,7 +31,7 @@ public:
     void LoadAll();
 
     /**
-     * @brief Plays the sound effect in the given slot for the current theme, returning its play
+     * Plays the sound effect in the given slot for the current theme, returning its play
      *        handle, or @c 0xffffffff when the slot is not loaded.
      * @param slotID The themed sound-effect slot to play.
      * @return The play handle, or @c 0xffffffff when the slot is not loaded.
@@ -39,13 +39,13 @@ public:
      */
     unsigned int PlayThemedSoundEffect(int slotID);
     /**
-     * @brief Plays the shared sound effect selected by the current game state (the BGM type).
+     * Plays the shared sound effect selected by the current game state (the BGM type).
      * @return The play handle, or @c 0xffffffff when the selected shared slot is not loaded.
      * @ghidraAddress 0x1ccb08
      */
     unsigned int PlayGameStateSoundEffect();
     /**
-     * @brief Plays the shared sound effect selected by the current theme.
+     * Plays the shared sound effect selected by the current theme.
      *
      * Maps the current theme to a shared slot (the Colette theme to slot 15, the Limelight theme to
      * slot 1, and the Classic theme to slot 0) and plays it.
@@ -54,7 +54,7 @@ public:
      */
     unsigned int PlaySharedSoundEffect();
     /**
-     * @brief Plays the current theme's loaded voice for @p voiceID, when the requested state
+     * Plays the current theme's loaded voice for @p voiceID, when the requested state
      * matches (or is the always-play state).
      * @param voiceID The themed voice identifier.
      * @return @c true when a voice was played.
@@ -62,7 +62,7 @@ public:
      */
     bool PlayThemedVoice(int voiceID);
     /**
-     * @brief Loads the themed voice for the given identifier and immediately plays it.
+     * Loads the themed voice for the given identifier and immediately plays it.
      *
      * A thin wrapper that loads the voice data through @c LoadThemedVoiceData and then plays it
      * through @c PlayThemedVoice.
@@ -71,7 +71,7 @@ public:
      */
     void LoadAndSetThemedVoice(int voiceID);
     /**
-     * @brief Loads the current theme's voice (CV) file for @p voiceID into the audio manager and
+     * Loads the current theme's voice (CV) file for @p voiceID into the audio manager and
      *        records the requested voice state.
      * @param voiceID The themed voice identifier (also stored as the current voice state).
      * @return Always @c true.
@@ -79,7 +79,7 @@ public:
      */
     bool LoadThemedVoiceData(int voiceID);
     /**
-     * @brief Reports whether the sound effect with the given play handle is still playing.
+     * Reports whether the sound effect with the given play handle is still playing.
      *
      * The manager receiver is unused; the query is forwarded to
      * @c -[AudioManager isPlayingSe:]. It is modelled as a member because the binary passes the
@@ -90,11 +90,11 @@ public:
      */
     bool IsPlaying(unsigned int playHandle);
 
-    /** @brief The number of theme banks. */
+    /** The number of theme banks. */
     static constexpr int kThemeCount = 3;
-    /** @brief The number of sound-effect slots per theme bank. */
+    /** The number of sound-effect slots per theme bank. */
     static constexpr int kThemedSlotCount = 20;
-    /** @brief The number of shared (theme-independent) sound-effect slots. */
+    /** The number of shared (theme-independent) sound-effect slots. */
     static constexpr int kSharedSlotCount = 36;
 
 private:

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The music-catalogue manager singleton.
+ * The music-catalogue manager singleton.
  *
  * It owns the three lists that together make up the tune
  * catalogue: the fixed set of preinstalled music identifiers, the array of purchased-music
@@ -27,14 +27,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The catalogue-manager singleton.
+ * The catalogue-manager singleton.
  */
 @interface RBMusicManager : NSObject
 
 #pragma mark Singleton
 
 /**
- * @brief The shared catalogue-manager instance, created on first use.
+ * The shared catalogue-manager instance, created on first use.
  * @ghidraAddress 0x6a990
  * @return The shared @c RBMusicManager.
  */
@@ -43,28 +43,28 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Asset paths
 
 /**
- * @brief The bare @c "%09d.rb" archive filename for a tune identifier.
+ * The bare @c "%09d.rb" archive filename for a tune identifier.
  * @ghidraAddress 0x6a9e8
  * @param musicID The tune identifier.
  * @return The archive filename.
  */
 + (NSString *)getMusicDataFilename:(int)musicID;
 /**
- * @brief The bundled archive path for a tune, or @c nil when the bundle holds no such resource.
+ * The bundled archive path for a tune, or @c nil when the bundle holds no such resource.
  * @ghidraAddress 0x6aa1c
  * @param musicID The tune identifier.
  * @return The bundle resource path, or @c nil.
  */
 + (nullable NSString *)getPathFromBundle:(int)musicID;
 /**
- * @brief The private Documents path a purchased tune's archive is stored at.
+ * The private Documents path a purchased tune's archive is stored at.
  * @ghidraAddress 0x6aad8
  * @param musicID The tune identifier.
  * @return The archive path under the private Documents directory.
  */
 + (NSString *)getPathFromPurchesed:(int)musicID;
 /**
- * @brief The legacy Caches path a purchased tune's archive was previously stored at.
+ * The legacy Caches path a purchased tune's archive was previously stored at.
  * @ghidraAddress 0x6ab88
  * @param musicID The tune identifier.
  * @return The archive path under the Caches directory.
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getPathFromPurchesedOldDirectory:(int)musicID;
 #ifdef ENABLE_PATCHES
 /**
- * @brief The directories a drop-in archive may be placed in, in search order.
+ * The directories a drop-in archive may be placed in, in search order.
  *
  * Present only in a patched build. The writable locations come first, so an archive placed in one
  * of them overrides a file of the same name shipped in the bundle, and the bundle is searched last
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSArray<NSString *> *)archiveSearchDirectories;
 /**
- * @brief Where the archive with this identifier actually lives.
+ * Where the archive with this identifier actually lives.
  *
  * Present only in a patched build. Songs and extend notes share the @c %09d.rb naming, so this
  * resolves either kind.
@@ -96,31 +96,31 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Purchased music
 
 /**
- * @brief Load the purchased-music dictionaries from the persisted @c mulist file, allocating an
+ * Load the purchased-music dictionaries from the persisted @c mulist file, allocating an
  *        empty list when the file is absent or unreadable.
  * @ghidraAddress 0x6b020
  */
 - (void)loadPurchasedMusics;
 /**
- * @brief Encipher and write the purchased-music dictionaries to the @c mulist file.
+ * Encipher and write the purchased-music dictionaries to the @c mulist file.
  * @ghidraAddress 0x6b39c
  */
 - (void)savePurchasedMusics;
 /**
- * @brief The purchased-music dictionary whose @c ID matches @p musicID, or @c nil.
+ * The purchased-music dictionary whose @c ID matches @p musicID, or @c nil.
  * @ghidraAddress 0x6b610
  * @param musicID The tune identifier.
  * @return The matching dictionary, or @c nil.
  */
 - (nullable NSDictionary *)getPurchasedMusicDictionary:(int)musicID;
 /**
- * @brief The full array of purchased-music dictionaries.
+ * The full array of purchased-music dictionaries.
  * @ghidraAddress 0x6b7c4
  * @return The purchased-music dictionary array.
  */
 - (nullable NSMutableArray *)getPurchasedMusicDictionaris;
 /**
- * @brief Record a purchase described by @p storeMusicInfo, updating an existing entry in place or
+ * Record a purchase described by @p storeMusicInfo, updating an existing entry in place or
  *        appending a new one, and mark the catalogue dirty.
  * @ghidraAddress 0x6b7d0
  * @param storeMusicInfo The purchased tune's store information.
@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)addPurchasedMusic:(StoreMusicInfo *)storeMusicInfo;
 /**
- * @brief Delete a purchased tune's archive from both the current and legacy directories, then mark
+ * Delete a purchased tune's archive from both the current and legacy directories, then mark
  *        the catalogue dirty.
  * @ghidraAddress 0x6ac38
  * @param musicID The tune identifier.
@@ -139,35 +139,35 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Catalogue
 
 /**
- * @brief Mark the cached @c MusicData array as stale so the next fetch rebuilds it.
+ * Mark the cached @c MusicData array as stale so the next fetch rebuilds it.
  * @ghidraAddress 0x6c6a8
  */
 - (void)setMusicDataArrayDirty;
 /**
- * @brief Rebuild the cached @c MusicData catalogue array from the current data sources.
+ * Rebuild the cached @c MusicData catalogue array from the current data sources.
  * @ghidraAddress 0x6c18c
  */
 - (void)createMusicDataArray;
 /**
- * @brief The cached @c MusicData array, rebuilt first when absent or marked dirty.
+ * The cached @c MusicData array, rebuilt first when absent or marked dirty.
  * @ghidraAddress 0x6c6b8
  * @return The catalogue-entry array.
  */
 - (NSMutableArray *)getMusicDataArray;
 /**
- * @brief The catalogue entry whose @c MusicID matches @p musicID, or @c nil.
+ * The catalogue entry whose @c MusicID matches @p musicID, or @c nil.
  * @ghidraAddress 0x6c754
  * @param musicID The tune identifier.
  * @return The matching catalogue entry, or @c nil.
  */
 - (nullable MusicData *)getMusicData:(int)musicID;
 /**
- * @brief Release the cached artwork of every catalogue entry.
+ * Release the cached artwork of every catalogue entry.
  * @ghidraAddress 0x6c8b4
  */
 - (void)releaseChacheMusicData;
 /**
- * @brief The identifiers of every preinstalled and purchased tune.
+ * The identifiers of every preinstalled and purchased tune.
  * @ghidraAddress 0x6c9e4
  * @return An array of @c NSNumber tune identifiers.
  */
@@ -176,19 +176,19 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Client music list
 
 /**
- * @brief Reset the paged client-music list.
+ * Reset the paged client-music list.
  * @ghidraAddress 0x6cc80
  */
 - (void)releaseClientMusic;
 /**
- * @brief Append a page of client music and decrement the remaining page count.
+ * Append a page of client music and decrement the remaining page count.
  * @ghidraAddress 0x6cd2c
  * @param clientMusic The page of client-music entries.
  * @return The number of pages still outstanding.
  */
 - (int)setClientMusic:(NSArray *)clientMusic;
 /**
- * @brief The local catalogue entries that match the accumulated client-music list, in client order.
+ * The local catalogue entries that match the accumulated client-music list, in client order.
  * @ghidraAddress 0x6cdf8
  * @return An array of matching @c MusicData entries.
  */
@@ -197,38 +197,38 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Properties
 
 /**
- * @brief The number of client-music pages still outstanding. Setting it resets the accumulated
+ * The number of client-music pages still outstanding. Setting it resets the accumulated
  *        list and reserves space for the requested pages.
  * @ghidraAddress 0x6d0a8 (getter)
  * @ghidraAddress 0x6cc90 (setter)
  */
 @property(nonatomic, assign) int clientMusicPageNum;
 /**
- * @brief The accumulated client-music entries across the fetched pages.
+ * The accumulated client-music entries across the fetched pages.
  * @ghidraAddress 0x6d0b8 (getter)
  * @ghidraAddress 0x6d0c8 (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *clientMusics;
 /**
- * @brief The preinstalled tune identifiers, as @c NSNumber values.
+ * The preinstalled tune identifiers, as @c NSNumber values.
  * @ghidraAddress 0x6d100 (getter)
  * @ghidraAddress 0x6d110 (setter)
  */
 @property(nonatomic, strong) NSMutableArray *preinstallMusicIDs;
 /**
- * @brief The purchased-music dictionaries decoded from the @c mulist file.
+ * The purchased-music dictionaries decoded from the @c mulist file.
  * @ghidraAddress 0x6d148 (getter)
  * @ghidraAddress 0x6d158 (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *purchasedMusicDictionaries;
 /**
- * @brief The cached catalogue-entry array.
+ * The cached catalogue-entry array.
  * @ghidraAddress 0x6d190 (getter)
  * @ghidraAddress 0x6d1a0 (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *musicDataArray;
 /**
- * @brief Whether the cached catalogue-entry array is stale and must be rebuilt.
+ * Whether the cached catalogue-entry array is stale and must be rebuilt.
  * @ghidraAddress 0x6d1d8 (getter)
  * @ghidraAddress 0x6d1e8 (setter)
  */

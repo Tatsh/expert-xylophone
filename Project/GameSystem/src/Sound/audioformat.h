@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Shared audio-format descriptor builders for the sound engine.
+ * Shared audio-format descriptor builders for the sound engine.
  */
 
 #ifndef AUDIOFORMAT_H
@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Fill an @c AudioStreamBasicDescription for the AudioUnit canonical 32-bit sample format.
+ * Fill an @c AudioStreamBasicDescription for the AudioUnit canonical 32-bit sample format.
  *
  * Produces the non-interleaved 8.24 fixed-point ("type 4", four bytes per frame) format the mixer
  * output unit is configured with, at the given sample rate and channel count.
@@ -27,7 +27,7 @@ void InitFloatPcmFormatDescriptor(AudioStreamBasicDescription *pAsbd,
                                   int nChannelCount);
 
 /**
- * @brief Fill an @c AudioStreamBasicDescription for signed 16-bit interleaved linear PCM.
+ * Fill an @c AudioStreamBasicDescription for signed 16-bit interleaved linear PCM.
  * @param pAsbd The descriptor to fill.
  * @param dSampleRate The sample rate, in hertz.
  * @param nChannelCount The number of channels.

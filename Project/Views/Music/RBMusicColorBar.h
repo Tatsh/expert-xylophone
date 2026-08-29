@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The rival-alpha slider bar hosted by @c RBMusicColorView on its alpha page.
+ * The rival-alpha slider bar hosted by @c RBMusicColorView on its alpha page.
  *
  * It draws a
  * horizontal track (the base view) with a draggable grip image, and reports the grip's position
@@ -19,7 +19,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The rival-alpha slider bar of the music-select colour selector.
+ * The rival-alpha slider bar of the music-select colour selector.
  *
  * The binary's class_ro_t lists no adopted protocols (its @c baseProtocols pointer is null), so
  * this class adopts none.
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Lifecycle
 
 /**
- * @brief Create the slider bar for the given hosting colour view and build its track and grip.
+ * Create the slider bar for the given hosting colour view and build its track and grip.
  * @param frame The bar's frame rectangle.
  * @param MusicSelectedColor The hosting colour selector view, held weakly.
  * @return The initialised bar, or @c nil.
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark View construction
 
 /**
- * @brief Build the background image, tap and pan gesture recognisers, the track base view, and the
+ * Build the background image, tap and pan gesture recognisers, the track base view, and the
  * grip image view.
  * @ghidraAddress 0xc21b8
  */
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Slider value
 
 /**
- * @brief Move the grip to the given normalised position, store it, and push it to the hosting
+ * Move the grip to the given normalised position, store it, and push it to the hosting
  * colour view's rival alpha.
  *
  * The value is clamped to the unit interval before it is applied.
@@ -60,20 +60,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetBar:(float)SetBar;
 
 /**
- * @brief The current slider value as a single-precision number, an alias for @c sliderValue.
+ * The current slider value as a single-precision number, an alias for @c sliderValue.
  * @ghidraAddress 0xc2974
  */
 @property(assign, nonatomic) float alphaValue;
 
 #pragma mark Properties
 
-/** @brief The track base view the grip slides along. */
+/** The track base view the grip slides along. */
 @property(strong, nonatomic, nullable) UIView *baseView;
-/** @brief The draggable grip image view. */
+/** The draggable grip image view. */
 @property(strong, nonatomic, nullable) UIImageView *gripView;
-/** @brief The current grip position along the track, normalised to the unit interval. */
+/** The current grip position along the track, normalised to the unit interval. */
 @property(assign, nonatomic) double sliderValue;
-/** @brief The hosting colour selector view, held weakly. */
+/** The hosting colour selector view, held weakly. */
 @property(weak, nonatomic, nullable) RBMusicColorView *musicSelectedColor;
 
 @end

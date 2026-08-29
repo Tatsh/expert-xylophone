@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The delegate protocol adopted by the store page to receive pack-list load results from
+ * The delegate protocol adopted by the store page to receive pack-list load results from
  * its @c RBStorePackList model.
  *
  * This is a minimal stub declaring only the surface @c RBStorePageViewController relies on; the
@@ -17,20 +17,20 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Pack-list load-result callbacks delivered to the store page.
+ * Pack-list load-result callbacks delivered to the store page.
  */
 @protocol StorePackListDelegate <NSObject>
 
 @required
 
 /**
- * @brief Sent when a pack list finished loading successfully.
+ * Sent when a pack list finished loading successfully.
  * @param packList The pack list that finished loading.
  */
 - (void)packListDownloadSuccess:(RBStorePackList *)packList;
 
 /**
- * @brief Sent when a pack list failed to load.
+ * Sent when a pack list failed to load.
  * @param packList The pack list that failed.
  * @param errorMessage The failure message, or @c nil for the default.
  */
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                  errorMessage:(nullable NSString *)errorMessage;
 
 /**
- * @brief Sent when a pack list returned no packs.
+ * Sent when a pack list returned no packs.
  * @param packList The empty pack list.
  */
 - (void)packListDownloadNothing:(RBStorePackList *)packList;

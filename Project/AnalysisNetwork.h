@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c AnalysisNetwork.
+ * Reconstructed interface for the Applilink advert SDK's @c AnalysisNetwork.
  *
  * @c AnalysisNetwork is the SDK-gated front door to the advert-analytics layer: a stateless class
  * (no ivars, a single class method) that guards the underlying @c AnalysisNetworkCore request
@@ -14,14 +14,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The SDK-availability gate in front of the Applilink advert-analytics core.
+ * The SDK-availability gate in front of the Applilink advert-analytics core.
  *
  * The class holds no state of its own; its single member is a class method.
  */
 @interface AnalysisNetwork : NSObject
 
 /**
- * @brief Post a result registration, first gating on Applilink SDK availability.
+ * Post a result registration, first gating on Applilink SDK availability.
  *
  * When @c ApplilinkConsts @c canUseApplilinkSdk is @c NO the callback is invoked immediately with a
  * localised @c 1025 (SDK version not supported) error. Otherwise the request is delegated to

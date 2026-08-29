@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A rounded store action button with a configurable gradient fill and a distinct disabled
+ * A rounded store action button with a configurable gradient fill and a distinct disabled
  * colour.
  *
  * Shared across the store user interface (the campaign detail and extend-note detail pages hold
@@ -13,7 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A rounded @c UIButton subclass that paints its own gradient fill, disabled fill, and a
+ * A rounded @c UIButton subclass that paints its own gradient fill, disabled fill, and a
  *        grey inner-shadow border.
  *
  * The control redraws itself whenever its fill colour, disabled colour, corner radius, highlighted
@@ -22,19 +22,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface StoreButtonView : UIButton
 
 /**
- * @brief The enabled fill colour, used as the basis for the drawn gradient.
+ * The enabled fill colour, used as the basis for the drawn gradient.
  *
  * Lazily defaults to @c +[UIColor blueColor] when it has never been set.
  */
 @property(nonatomic, strong, null_resettable) UIColor *buttonColor;
 /**
- * @brief The fill colour used while the control is disabled.
+ * The fill colour used while the control is disabled.
  *
  * Lazily defaults to @c +[UIColor grayColor] when it has never been set.
  */
 @property(nonatomic, strong, null_resettable) UIColor *disabledColor;
 /**
- * @brief The corner radius of the rounded fill, in points.
+ * The corner radius of the rounded fill, in points.
  */
 @property(nonatomic) CGFloat cornerRadius;
 

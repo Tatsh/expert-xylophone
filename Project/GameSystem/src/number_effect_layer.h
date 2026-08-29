@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The number-effect play-field layer, @c NumberEffectLayer.
+ * The number-effect play-field layer, @c NumberEffectLayer.
  *
  * A @c PlayFieldLayerBase-derived singleton layer that draws the play-field number glyphs through
  * four gm_parts2 sprite instancers, fading them through a @c LinearTween channel and driving the
@@ -27,34 +27,34 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief The number-effect layer: a @c PlayFieldLayerBase-derived layer that draws the play-field
+ * The number-effect layer: a @c PlayFieldLayerBase-derived layer that draws the play-field
  * number glyphs through four gm_parts2 sprite instancers, with a fade channel and a brightness.
  * Reconstructed type @c NumberEffectLayer: engine layer, 0x78 bytes.
  */
 class NumberEffectLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of sprite instancers the layer builds. */
+    /** The number of sprite instancers the layer builds. */
     static constexpr int kBatchCount = 4;
-    /** @brief The number of words in the side-dependent transform block. */
+    /** The number of words in the side-dependent transform block. */
     static constexpr int kTransformWordCount = 4;
-    /** @brief The number of brightness-slider touch targets (the track and the knob). */
+    /** The number of brightness-slider touch targets (the track and the knob). */
     static constexpr int kSliderTargetCount = 2;
 
     /**
-     * @brief The process-wide number-effect layer, created on first use.
+     * The process-wide number-effect layer, created on first use.
      * @return The shared number-effect layer.
      * @ghidraAddress 0x189ce0
      */
     static NumberEffectLayer *shared();
 
     /**
-     * @brief Destroys and frees the process-wide number-effect layer, if it exists.
+     * Destroys and frees the process-wide number-effect layer, if it exists.
      * @ghidraAddress 0x189d50
      */
     static void FreeInstance();
 
     /**
-     * @brief Lazily builds the four gm_parts2 sprite instancers.
+     * Lazily builds the four gm_parts2 sprite instancers.
      *
      * Seeds the side-dependent transform block (mirrored on the left side), loads the atlas,
      * creates and registers each instancer under the background layer, and sets the wide-screen
@@ -64,14 +64,14 @@ public:
     void CreateSpriteInstancers();
 
     /**
-     * @brief Advances the fade channel by @p flDeltaTime and raises the active flag.
+     * Advances the fade channel by @p flDeltaTime and raises the active flag.
      * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x189ef0
      */
     void AdvanceFadeInterp(float flDeltaTime);
 
     /**
-     * @brief Starts a fade-in of the layer alpha to fully opaque over @p flDuration.
+     * Starts a fade-in of the layer alpha to fully opaque over @p flDuration.
      *
      * The fade channel eases from the current alpha to 255; a non-positive duration snaps to opaque
      * and marks the fade done immediately.
@@ -81,7 +81,7 @@ public:
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Starts a fade-out of the layer alpha to fully transparent over @p flDuration.
+     * Starts a fade-out of the layer alpha to fully transparent over @p flDuration.
      *
      * The fade channel eases from the current alpha to 0; a non-positive duration snaps to
      * transparent and marks the fade done immediately.
@@ -91,14 +91,14 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Sets the layer brightness, clamped to the range [0, 1].
+     * Sets the layer brightness, clamped to the range [0, 1].
      * @param flValue The brightness value.
      * @ghidraAddress 0x18a7a8
      */
     void SetBrightness(float flValue);
 
     /**
-     * @brief Computes an element's screen-space anchor position for the current device layout.
+     * Computes an element's screen-space anchor position for the current device layout.
      *
      * The portrait (pad) layout uses its own base-offset table; the landscape (phone) layout picks
      * the wide-variant row. It copies the element's base offset, then applies a per-element
@@ -110,7 +110,7 @@ public:
     void ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const;
 
     /**
-     * @brief The per-frame update: re-anchors on a viewport change, advances the fade, processes
+     * The per-frame update: re-anchors on a viewport change, advances the fade, processes
      * the brightness-slider touch, and emits the track, knob, and brightness-fill sprites.
      *
      * On the landscape layout it emits the track element (and its wide-variant extension), then the
@@ -123,7 +123,7 @@ public:
 
 private:
     /**
-     * @brief Emits one number-glyph sprite into a batch.
+     * Emits one number-glyph sprite into a batch.
      *
      * Selects the element descriptor from the portrait or landscape layout table by the inherited
      * is-pad flag, looks up its atlas UV rectangle, and writes the next free slot of batch
@@ -141,7 +141,7 @@ private:
         float flX, float flY, unsigned int nBatch, unsigned int nDescIndex, unsigned int nColour);
 
     /**
-     * @brief Handles the brightness-slider touch for the frame.
+     * Handles the brightness-slider touch for the frame.
      * @ghidraAddress 0x189f40
      */
     void ProcessBrightnessSliderTouch();
@@ -151,7 +151,7 @@ private:
     NumberEffectLayer() = default;
 
     /**
-     * @brief Destroys the layer: releases the atlas and requests deletion of the four instancers.
+     * Destroys the layer: releases the atlas and requests deletion of the four instancers.
      * @ghidraAddress 0x189c70
      */
     ~NumberEffectLayer();

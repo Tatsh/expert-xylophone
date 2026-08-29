@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A small @c NSCoding-conforming data model wrapping a single push-notification payload
+ * A small @c NSCoding-conforming data model wrapping a single push-notification payload
  * dictionary.
  *
  * Instances are archived and unarchived under the coder key @c notificationList and
@@ -15,12 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief An archivable wrapper around a single push-notification payload dictionary.
+ * An archivable wrapper around a single push-notification payload dictionary.
  */
 @interface RBNotificationData : NSObject <NSCoding>
 
 /**
- * @brief The wrapped push-notification payload dictionary.
+ * The wrapped push-notification payload dictionary.
  * @ghidraAddress 0x39db4 (getter)
  * @ghidraAddress 0x39dc4 (setter)
  */

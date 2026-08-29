@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c AnalysisNetworkCore.
+ * Reconstructed interface for the Applilink advert SDK's @c AnalysisNetworkCore.
  *
  * @c AnalysisNetworkCore is the advert-analytics core of the Applilink SDK: a stateless class
  * (no ivars, only class methods) that posts analytics events to the Applilink server. It handles
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The Applilink advert SDK's advert-analytics core.
+ * The Applilink advert SDK's advert-analytics core.
  *
  * All members are class methods; the class holds no state of its own and persists its markers to
  * @c NSUserDefaults.
@@ -24,14 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AnalysisNetworkCore : NSObject
 
 /**
- * @brief Whether the analytics-initialisation marker has been persisted.
+ * Whether the analytics-initialisation marker has been persisted.
  * @return @c YES when the @c ApplilinkAnalysis.initialize key exists in @c NSUserDefaults.
  * @ghidraAddress 0x20f5c4
  */
 + (BOOL)getInitalizeFlg;
 
 /**
- * @brief Whether daily-active-user measurement has already been sent today.
+ * Whether daily-active-user measurement has already been sent today.
  * @return @c YES when the persisted @c ApplilinkAnalysis.dauMeasurementDate is the same calendar
  * day as now.
  * @ghidraAddress 0x20f640
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)getSendDauFlg;
 
 /**
- * @brief Post a generic analytics action to the server.
+ * Post a generic analytics action to the server.
  *
  * Builds the request parameters (action type, optional result and user identifiers, and the UDID
  * source), merges the user-agent parameters, and posts them to @c /analysis/regist.php. The method
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                               callback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Post the install/initialisation registration if it has not yet succeeded.
+ * Post the install/initialisation registration if it has not yet succeeded.
  *
  * When @c getInitalizeFlg is already set, the callback is invoked immediately with @c nil.
  * Otherwise an initialisation action (type @c 1) is posted, capturing the current date; on success
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)postInitalizeWithCallback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Post the daily-active-user measurement if it has not yet been sent today.
+ * Post the daily-active-user measurement if it has not yet been sent today.
  *
  * When @c getSendDauFlg is already set, the callback is invoked immediately with @c nil. Otherwise
  * a DAU action (type @c 2) is posted for the current @c ApplilinkConsts userId, capturing the
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)postDAUWithCallback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Post a result registration for the given result identifier.
+ * Post a result registration for the given result identifier.
  *
  * When @p resultId is @c nil, the callback is invoked with error code @c 1001. Otherwise a result
  * action (type @c 3) is posted for the current @c ApplilinkConsts userId.
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
                             callback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Post the user-ID registration.
+ * Post the user-ID registration.
  *
  * When @c ApplilinkConsts userId is @c nil, the callback is invoked with error code @c 1001.
  * Otherwise a user-ID action (type @c 14) is posted.
@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)postSetUserIDWithCallback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Register an impression list for the displayed adverts.
+ * Register an impression list for the displayed adverts.
  *
  * Posts to @c /analysis/list/regist.php. When @p adLocation or @p impressionId is @c nil the
  * callback is invoked with error code @c 1001. The four list parameters are only sent when all of
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 callback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Register a click for a displayed advert.
+ * Register a click for a displayed advert.
  *
  * Posts to @c /analysis/click/regist.php. When any of @p adLocation, @p impressionId, @p appliIdTo,
  * @p creativeId, @p displayNumber, @p incentiveType, or @p installFlg is @c nil the callback is
@@ -164,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  callback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Post the queued advert-analysis data to the analytics server.
+ * Post the queued advert-analysis data to the analytics server.
  *
  * Runs the install/initialisation registration and then the daily-active-user measurement in
  * sequence. The callback receives the initialisation error when one occurred, otherwise the DAU
@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)postAnalysisDataWithCallback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Clear the persisted analytics-initialisation marker.
+ * Clear the persisted analytics-initialisation marker.
  *
  * Removes the @c ApplilinkAnalysis.initialize key from @c NSUserDefaults and synchronises. The
  * method name preserves the binary's misspelling.
@@ -184,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearInitalize;
 
 /**
- * @brief Clear the persisted daily-active-user measurement date.
+ * Clear the persisted daily-active-user measurement date.
  *
  * Removes the @c ApplilinkAnalysis.dauMeasurementDate key from @c NSUserDefaults and synchronises.
  * @ghidraAddress 0x20fa84

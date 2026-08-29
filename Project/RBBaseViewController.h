@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Shared base class for the application's full-screen view controllers.
+ * Shared base class for the application's full-screen view controllers.
  *
  * It is a thin
  * @c UIViewController subclass that hides the status bar and drives every autorotation decision
@@ -17,20 +17,20 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Full-screen view controller base that hides the status bar and locks rotation while music
+ * Full-screen view controller base that hides the status bar and locks rotation while music
  * plays.
  */
 @interface RBBaseViewController : UIViewController
 
 /**
- * @brief Keep the status bar hidden while this view controller is on screen.
+ * Keep the status bar hidden while this view controller is on screen.
  * @return Always @c YES.
  * @ghidraAddress 0x202740
  */
 - (BOOL)prefersStatusBarHidden;
 
 /**
- * @brief Decide whether the view controller may autorotate.
+ * Decide whether the view controller may autorotate.
  * @return @c NO only when the iPad (wide) layout is active and background music is playing;
  * otherwise @c YES.
  * @ghidraAddress 0x202748
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldAutorotate;
 
 /**
- * @brief Report the interface orientations this view controller supports.
+ * Report the interface orientations this view controller supports.
  * @return @c UIInterfaceOrientationMaskAll when the phone (standard) layout is active; otherwise
  * both portrait orientations, narrowed to whichever one is current while music is playing.
  * @ghidraAddress 0x202778
@@ -46,14 +46,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations;
 
 /**
- * @brief Report the preferred orientation for a modal presentation.
+ * Report the preferred orientation for a modal presentation.
  * @return Always @c UIInterfaceOrientationPortrait.
  * @ghidraAddress 0x2027d4
  */
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation;
 
 /**
- * @brief Legacy (pre-iOS 6) autorotation predicate for a specific interface orientation.
+ * Legacy (pre-iOS 6) autorotation predicate for a specific interface orientation.
  * @param interfaceOrientation The candidate interface orientation.
  * @return @c YES for the phone (standard) layout; for the wide variant, @c YES only for the
  * portrait orientations while no music is playing.

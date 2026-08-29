@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief One archived note event within a replay: its lane index, kind, judgement, and the
+ * One archived note event within a replay: its lane index, kind, judgement, and the
  * long/slide sub-results.
  *
  * Encoded and decoded as part of a ReplayData ghost.
@@ -14,42 +14,42 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A single archivable replay note event.
+ * A single archivable replay note event.
  */
 @interface ReplayNote : NSObject <NSCoding>
 
 /**
- * @brief The note's index within the chart.
+ * The note's index within the chart.
  * @ghidraAddress 0x106e4c (getter)
  * @ghidraAddress 0x106e5c (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *index;
 /**
- * @brief The note kind.
+ * The note kind.
  * @ghidraAddress 0x106e94 (getter)
  * @ghidraAddress 0x106ea4 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *type;
 /**
- * @brief The judgement result recorded for the note.
+ * The judgement result recorded for the note.
  * @ghidraAddress 0x106edc (getter)
  * @ghidraAddress 0x106eec (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *judge;
 /**
- * @brief The Just Reflec sub-result.
+ * The Just Reflec sub-result.
  * @ghidraAddress 0x106f24 (getter)
  * @ghidraAddress 0x106f34 (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *jr;
 /**
- * @brief The long-note completion rate.
+ * The long-note completion rate.
  * @ghidraAddress 0x106f6c (getter)
  * @ghidraAddress 0x106f7c (setter)
  */
 @property(nonatomic, strong, nullable) NSNumber *longrate;
 /**
- * @brief The slide note's per-point sub-results, one nested @c ReplayNote per slide point
+ * The slide note's per-point sub-results, one nested @c ReplayNote per slide point
  * (optional; omitted from the archive when nil).
  * @ghidraAddress 0x106fb4 (getter)
  * @ghidraAddress 0x106fc4 (setter)

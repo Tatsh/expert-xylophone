@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The catalogue entry for a purchased extend (special) note pack.
+ * The catalogue entry for a purchased extend (special) note pack.
  *
  * A @c MusicDataExtend instance
  * pairs a base tune identifier with the extend audio archive it draws its special chart from: it
@@ -23,55 +23,55 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A catalogue entry pairing a base tune with a purchased extend (special) note pack.
+ * A catalogue entry pairing a base tune with a purchased extend (special) note pack.
  */
 @interface MusicDataExtend : NSObject
 
 /**
- * @brief The extend archive's own tune identifier, used to load its note sheets.
+ * The extend archive's own tune identifier, used to load its note sheets.
  * @ghidraAddress 0x5a624 (getter)
  * @ghidraAddress 0x5a634 (setter)
  */
 @property(nonatomic, assign) int ExtMusicID;
 /**
- * @brief The base tune identifier this extend pack augments.
+ * The base tune identifier this extend pack augments.
  * @ghidraAddress 0x5a644 (getter)
  * @ghidraAddress 0x5a654 (setter)
  */
 @property(nonatomic, assign) int MusicID;
 /**
- * @brief The special-chart level.
+ * The special-chart level.
  * @ghidraAddress 0x5a664 (getter)
  * @ghidraAddress 0x5a674 (setter)
  */
 @property(nonatomic, assign) int difficulty;
 /**
- * @brief The pack comment.
+ * The pack comment.
  * @ghidraAddress 0x5a684 (getter)
  * @ghidraAddress 0x5a694 (setter)
  */
 @property(nonatomic, strong) NSString *comment;
 /**
- * @brief The path of the packaged extend archive backing the special chart.
+ * The path of the packaged extend archive backing the special chart.
  * @ghidraAddress 0x5a6cc (getter)
  * @ghidraAddress 0x5a6dc (setter)
  */
 @property(nonatomic, strong) NSString *dataPath;
 /**
- * @brief The archive-member decode-type selector passed to the extend archive reader.
+ * The archive-member decode-type selector passed to the extend archive reader.
  * @ghidraAddress 0x5a75c (getter)
  * @ghidraAddress 0x5a76c (setter)
  */
 @property(nonatomic, assign) int decodeType;
 /**
- * @brief The path of the extend note-sheet file within the archive.
+ * The path of the extend note-sheet file within the archive.
  * @ghidraAddress 0x5a714 (getter)
  * @ghidraAddress 0x5a724 (setter)
  */
 @property(nonatomic, strong) NSString *extFilePath;
 
 /**
- * @brief Build an extend-pack entry from @p path and a purchased-extend-note dictionary.
+ * Build an extend-pack entry from @p path and a purchased-extend-note dictionary.
  * @param path The packaged extend archive path.
  * @param dictionary The purchased-extend-note dictionary, providing the @c ExtID, @c ID,
  *        @c ExtLevel, and @c Comment entries.
@@ -81,27 +81,27 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)dataWithPath:(NSString *)path dictionary:(NSDictionary *)dictionary;
 
 /**
- * @brief The special note sheet, read as the extend archive's basic note sheet.
+ * The special note sheet, read as the extend archive's basic note sheet.
  * @return The decrypted note-sheet data, or @c nil if the extend archive is missing.
  * @ghidraAddress 0x5a428
  */
 - (nullable NSMutableData *)sheetSpecial;
 /**
- * @brief The special-light note sheet, read as the extend archive's basic-light note sheet.
+ * The special-light note sheet, read as the extend archive's basic-light note sheet.
  * @return The decrypted note-sheet data, or @c nil if the extend archive is missing.
  * @ghidraAddress 0x5a4fc
  */
 - (nullable NSMutableData *)sheetSpecialLight;
 
 /**
- * @brief An unused hook that would set the extend note sheet directly; the binary leaves it empty.
+ * An unused hook that would set the extend note sheet directly; the binary leaves it empty.
  * @param extendSheetWithPath The extend sheet path (ignored).
  * @param musicID The extend tune identifier (ignored).
  * @ghidraAddress 0x5a22c
  */
 - (void)setExtendSheetWithPath:(NSString *)extendSheetWithPath ID:(int)musicID;
 /**
- * @brief An unused hook that would read a member from the extend archive; the binary returns
+ * An unused hook that would read a member from the extend archive; the binary returns
  *        @c nil.
  * @param entryName The archive member name (ignored).
  * @param zipPath The archive path (ignored).
@@ -113,24 +113,24 @@ NS_ASSUME_NONNULL_BEGIN
                                         Path:(NSString *)zipPath
                                   DecodeType:(int)decodeType;
 /**
- * @brief An unused hook mirroring @c MusicData's archive reader; the binary returns @c nil.
+ * An unused hook mirroring @c MusicData's archive reader; the binary returns @c nil.
  * @param entryName The archive member name (ignored).
  * @return @c nil.
  * @ghidraAddress 0x5a60c
  */
 - (nullable NSMutableData *)getZipData:(NSString *)entryName;
 /**
- * @brief An unused artwork-cache hook mirroring @c MusicData; the binary leaves it empty.
+ * An unused artwork-cache hook mirroring @c MusicData; the binary leaves it empty.
  * @ghidraAddress 0x5a614
  */
 - (void)createCache;
 /**
- * @brief An unused artwork-cache hook mirroring @c MusicData; the binary leaves it empty.
+ * An unused artwork-cache hook mirroring @c MusicData; the binary leaves it empty.
  * @ghidraAddress 0x5a618
  */
 - (void)releaseCache;
 /**
- * @brief Whether the artwork image is cached; the binary always returns @c NO.
+ * Whether the artwork image is cached; the binary always returns @c NO.
  * @return @c NO.
  * @ghidraAddress 0x5a61c
  */

@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The shot (tap) sound sub-manager, @c ShotSoundManager.
+ * The shot (tap) sound sub-manager, @c ShotSoundManager.
  */
 
 #pragma once
 
 /**
- * @brief The shot (tap) sound sub-manager.
+ * The shot (tap) sound sub-manager.
  *
  * It holds thirty-three shot slots, each with four judgement variants, keyed by resource id and a
  * shared loaded flag; the application preloads the whole bank through @c LoadAll before a picker
@@ -17,34 +17,34 @@
 class ShotSoundManager {
 public:
     /**
-     * @brief Returns the shared shot-sound manager, constructing and clearing its slots on first
+     * Returns the shared shot-sound manager, constructing and clearing its slots on first
      *        use.
      * @return The shared shot-sound manager.
      * @ghidraAddress 0x1ccf30
      */
     static ShotSoundManager *GetInstance();
     /**
-     * @brief Loads the four judgement variants of one shot slot from the bundle (unless already
+     * Loads the four judgement variants of one shot slot from the bundle (unless already
      *        loaded).
      * @param slot The shot slot index.
      * @ghidraAddress 0x1ccfac
      */
     void LoadSlotVariants(int slot);
     /**
-     * @brief Loads every shot sound slot (variant zero) from the bundle, a no-op once the shared
+     * Loads every shot sound slot (variant zero) from the bundle, a no-op once the shared
      *        loaded flag is set.
      * @ghidraAddress 0x1cd190
      */
     void LoadAll();
     /**
-     * @brief Stores the shot sound group volume (clamped to the unit interval) and applies it to
+     * Stores the shot sound group volume (clamped to the unit interval) and applies it to
      * the audio manager's shot bus.
      * @param flVolume The requested volume, clamped to the range zero to one.
      * @ghidraAddress 0x1cd4a4
      */
     void SetVolume(float flVolume);
     /**
-     * @brief Auditions a shot sound slot on a channel, stopping any prior sound on that channel and
+     * Auditions a shot sound slot on a channel, stopping any prior sound on that channel and
      *        applying the current volume, returning its play handle.
      * @param uChannel The mixer channel to play on.
      * @param iSlot The shot slot to play.
@@ -55,7 +55,7 @@ public:
     unsigned int PlaySlot(unsigned long uChannel, int iSlot, int iVariant);
 
     /**
-     * @brief Records the highest-priority (lowest value) pending shot retrigger for this frame.
+     * Records the highest-priority (lowest value) pending shot retrigger for this frame.
      *
      * Keeps the request whose priority is below the current pending priority, storing its slot and
      * priority for the frame's timer update to play.
@@ -66,7 +66,7 @@ public:
     void SetPendingRetrigger(int nSlot, int nPriority);
 
     /**
-     * @brief Advances the shot retrigger cooldown and fires the pending shot when it elapses.
+     * Advances the shot retrigger cooldown and fires the pending shot when it elapses.
      *
      * While the cooldown timer is positive it is clamped to one frame and decremented; once it
      * reaches zero, and unless the pending state is already idle, the pending slot is played on
@@ -76,11 +76,11 @@ public:
      */
     void UpdateRetriggerTimer(float flDeltaTime);
 
-    /** @brief The number of shot slots. */
+    /** The number of shot slots. */
     static constexpr int kSlotCount = 33;
-    /** @brief The number of judgement variants per slot. */
+    /** The number of judgement variants per slot. */
     static constexpr int kVariantCount = 4;
-    /** @brief The number of audition channels. */
+    /** The number of audition channels. */
     static constexpr int kChannelCount = 2;
 
 private:

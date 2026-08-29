@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A store music metadata model describing a single purchasable tune: its identifier, display
+ * A store music metadata model describing a single purchasable tune: its identifier, display
  * name, artist, the item, artwork, sample, and iTunes URLs, the three per-difficulty levels, and
  * the list of associated extend-note identifiers. Instances are built from a store catalogue entry
  * dictionary and are handed to @c RBMusicManager to record a purchase.
@@ -14,79 +14,79 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A store metadata model for a single purchasable tune.
+ * A store metadata model for a single purchasable tune.
  */
 @interface StoreMusicInfo : NSObject
 
 /**
- * @brief The tune identifier.
+ * The tune identifier.
  * @ghidraAddress 0x68508 (getter)
  * @ghidraAddress 0x68518 (setter)
  */
 @property(nonatomic, assign) int musicID;
 /**
- * @brief The tune display name.
+ * The tune display name.
  * @ghidraAddress 0x68528 (getter)
  * @ghidraAddress 0x68538 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *name;
 /**
- * @brief The tune artist.
+ * The tune artist.
  * @ghidraAddress 0x68570 (getter)
  * @ghidraAddress 0x68580 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *artist;
 /**
- * @brief The store item URL for the tune's archive.
+ * The store item URL for the tune's archive.
  * @ghidraAddress 0x685b8 (getter)
  * @ghidraAddress 0x685c8 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *itemURL;
 /**
- * @brief The tune artwork URL.
+ * The tune artwork URL.
  * @ghidraAddress 0x68600 (getter)
  * @ghidraAddress 0x68610 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *artworkURL;
 /**
- * @brief The tune audio sample URL.
+ * The tune audio sample URL.
  * @ghidraAddress 0x68648 (getter)
  * @ghidraAddress 0x68658 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *sampleURL;
 /**
- * @brief The iTunes store URL, only stored when it passes @c StoreUtil validation.
+ * The iTunes store URL, only stored when it passes @c StoreUtil validation.
  * @ghidraAddress 0x68690 (getter)
  * @ghidraAddress 0x686a0 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *itunesURL;
 /**
- * @brief The basic-difficulty level, clamped to the range one to fifteen inclusive.
+ * The basic-difficulty level, clamped to the range one to fifteen inclusive.
  * @ghidraAddress 0x686d8 (getter)
  * @ghidraAddress 0x686e8 (setter)
  */
 @property(nonatomic, assign) int lvBasic;
 /**
- * @brief The medium-difficulty level, clamped to the range one to fifteen inclusive.
+ * The medium-difficulty level, clamped to the range one to fifteen inclusive.
  * @ghidraAddress 0x686f8 (getter)
  * @ghidraAddress 0x68708 (setter)
  */
 @property(nonatomic, assign) int lvMedium;
 /**
- * @brief The hard-difficulty level, clamped to the range one to fifteen inclusive.
+ * The hard-difficulty level, clamped to the range one to fifteen inclusive.
  * @ghidraAddress 0x68718 (getter)
  * @ghidraAddress 0x68728 (setter)
  */
 @property(nonatomic, assign) int lvHard;
 /**
- * @brief The identifiers of the extend-note charts associated with the tune, if any.
+ * The identifiers of the extend-note charts associated with the tune, if any.
  * @ghidraAddress 0x68738 (getter)
  * @ghidraAddress 0x68748 (setter)
  */
 @property(nonatomic, strong, nullable) NSArray *extIDList;
 
 /**
- * @brief Build a store music info from a catalogue entry dictionary.
+ * Build a store music info from a catalogue entry dictionary.
  *
  * The dictionary provides the @c ID, @c Name, @c Artist, @c ItemURL, @c SampleURL, @c ArtworkURL,
  * @c iTunesURL, @c Level, and @c PID entries. A non-positive identifier yields @c nil. The
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
 /**
- * @brief Whether the tune's archive is already present on disk.
+ * Whether the tune's archive is already present on disk.
  *
  * Checks the current purchased-music directory first and then the legacy caches directory.
  * @return @c YES when the archive exists in either location.

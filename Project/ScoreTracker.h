@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The per-play score and judgement tracker, @c ScoreTracker.
+ * The per-play score and judgement tracker, @c ScoreTracker.
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "playerfieldlayer.h"
 
 /**
- * @brief One player side's play record: the per-grade judgement counters plus the derived rate,
+ * One player side's play record: the per-grade judgement counters plus the derived rate,
  * rank, and a trailing field.
  *
  * The eleven 32-bit slots are addressed both by index (through @c ScoreTracker::GetPlayRecordCell)
@@ -23,7 +23,7 @@ struct PlayRecord {
 };
 
 /**
- * @brief The process-wide per-play score and judgement tracker.
+ * The process-wide per-play score and judgement tracker.
  *
  * Holds one @c PlayRecord for each of the two player sides, behind a leading state field. Created
  * on first use by @c GetScoreTracker. The trailing @c // +0xNN comments document the original
@@ -31,11 +31,11 @@ struct PlayRecord {
  */
 class ScoreTracker {
 public:
-    /** @brief The number of player sides tracked. */
+    /** The number of player sides tracked. */
     static constexpr int kSideCount = 2;
 
     /**
-     * @brief A judgement cell of a side's play record, indexed 0 through 10.
+     * A judgement cell of a side's play record, indexed 0 through 10.
      *
      * Indices 0 through 7 are the per-grade counters; index 8 is the rate slot, 9 the rank, and 10
      * the trailing field. An index of 10 reads one slot past the named fields, which for a side
@@ -50,7 +50,7 @@ public:
     }
 
     /**
-     * @brief A side's clear rate.
+     * A side's clear rate.
      * @param nSide The player side.
      * @return The clear rate.
      * @ghidraAddress 0x1499c4
@@ -60,7 +60,7 @@ public:
     }
 
     /**
-     * @brief A side's play rank.
+     * A side's play rank.
      * @param nSide The player side.
      * @return The rank.
      * @ghidraAddress 0x1499b0
@@ -70,7 +70,7 @@ public:
     }
 
     /**
-     * @brief A side's trailing play-record field (judgement cell index 10).
+     * A side's trailing play-record field (judgement cell index 10).
      * @param nSide The player side.
      * @return The field value.
      * @ghidraAddress 0x14999c
@@ -80,7 +80,7 @@ public:
     }
 
     /**
-     * @brief Recomputes each side's clear rate and grade tier from its judgement counts and records
+     * Recomputes each side's clear rate and grade tier from its judgement counts and records
      * which side leads.
      *
      * Compares the two sides' first counter to pick the leading side (0, 1, or 2 for a tie),
@@ -92,13 +92,13 @@ public:
     void ComputeLaneClearRateAndGrade();
 
     /**
-     * @brief Resets every side's play record and repaints the score fields and lane gauges.
+     * Resets every side's play record and repaints the score fields and lane gauges.
      * @ghidraAddress 0x149268
      */
     void ResetLaneGaugeState();
 
     /**
-     * @brief The per-frame gauge-state tick: does nothing.
+     * The per-frame gauge-state tick: does nothing.
      *
      * The per-frame render pass calls this on the shared tracker; the body is empty in the binary.
      * @ghidraAddress 0x149320
@@ -107,7 +107,7 @@ public:
     }
 
     /**
-     * @brief Stores a side's lane gauge value and repaints its background band, arming the
+     * Stores a side's lane gauge value and repaints its background band, arming the
      * low-gauge warning on the 2P side when the danger state changes.
      * @param flValue The gauge value.
      * @param uSide The player side.
@@ -116,7 +116,7 @@ public:
     void ApplyLaneGaugeValueAndBackground(float flValue, unsigned int uSide);
 
     /**
-     * @brief Applies one note's judgement to a player's record and fires the score effects.
+     * Applies one note's judgement to a player's record and fires the score effects.
      *
      * The binary qualifies this @c ScoreManager::AddScore (in @c score_manager.mm), but it takes
      * the tracker as its object, so it is modelled as a tracker method. It adds the per-grade delta
@@ -136,7 +136,7 @@ public:
     void AddScore(int nPlayer, int nPosX, int nPosY, int nJudge, int nBonusFlag, int nMode);
 
     /**
-     * @brief Adjusts a player's running score by a signed delta and refreshes its field display.
+     * Adjusts a player's running score by a signed delta and refreshes its field display.
      *
      * The delta is added to the side's score cell, clamped at zero; the player-field score digits
      * are then retargeted to the new value with no animation. The hit-position arguments mirror
@@ -150,7 +150,7 @@ public:
     void AddScoreDelta(int nPlayer, int nPosX, int nPosY, int nDelta);
 
     /**
-     * @brief Applies a shot-note judgement to a player's lane and fires its score/judge effects.
+     * Applies a shot-note judgement to a player's lane and fires its score/judge effects.
      *
      * Maps the player side to a lane slot, then: on the no-score path (judge flag bit 0) only bumps
      * the lane's hit counter; otherwise adds ten to the lane's score, bumps the hit counter,
@@ -162,26 +162,26 @@ public:
     void AddLaneJudgeResult(int nPlayerSide, unsigned int nJudgeFlags);
 
     /**
-     * @brief Adds the full-combo bonus to a side's score and fires its judge popup (grade 0).
+     * Adds the full-combo bonus to a side's score and fires its judge popup (grade 0).
      * @param nSide The player side.
      * @ghidraAddress 0x149710
      */
     void SetJudgeScore0(unsigned int nSide);
     /**
-     * @brief Adds the grade-2 bonus to a side's score and fires its judge popup.
+     * Adds the grade-2 bonus to a side's score and fires its judge popup.
      * @param nSide The player side.
      * @ghidraAddress 0x14976c
      */
     void SetJudgeScore2(unsigned int nSide);
     /**
-     * @brief Adds the grade-3 bonus to a side's score and fires its judge popup.
+     * Adds the grade-3 bonus to a side's score and fires its judge popup.
      * @param nSide The player side.
      * @ghidraAddress 0x1497c8
      */
     void SetJudgeScore3(unsigned int nSide);
 
     /**
-     * @brief Whether every note on a side has been judged.
+     * Whether every note on a side has been judged.
      *
      * Sums the side's three main judgement counters (cells 4, 5, and 6) and compares the total
      * against the chart's note count.
@@ -192,7 +192,7 @@ public:
     bool IsSideAllNotesJudged(unsigned int nSide) const;
 
     /**
-     * @brief Sets the chart's total note count (the clear-rate denominator).
+     * Sets the chart's total note count (the clear-rate denominator).
      * @param nTotalNotes The total note count.
      */
     void SetTotalNotes(int nTotalNotes) {
@@ -200,7 +200,7 @@ public:
     }
 
     /**
-     * @brief The chart's total note count (the clear-rate denominator).
+     * The chart's total note count (the clear-rate denominator).
      * @return The total note count.
      */
     int GetTotalNotes() const {
@@ -208,7 +208,7 @@ public:
     }
 
     /**
-     * @brief The process-wide score tracker, created on first use.
+     * The process-wide score tracker, created on first use.
      * @return The shared score tracker.
      * @ghidraAddress 0x1492cc
      */

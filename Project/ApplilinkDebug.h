@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink recommend SDK's @c ApplilinkDebug.
+ * Reconstructed interface for the Applilink recommend SDK's @c ApplilinkDebug.
  *
  * @c ApplilinkDebug is the Applilink advert-SDK debug console's facade. It is a stateless utility
  * class: every member is a class method and the class holds no instance state. Each method is a
@@ -21,84 +21,84 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The Applilink advert-SDK debug console's facade.
+ * The Applilink advert-SDK debug console's facade.
  */
 @interface ApplilinkDebug : NSObject
 
 /**
- * @brief The configured country code.
+ * The configured country code.
  * @return The @c ApplilinkConsts country code, or @c nil when none is set.
  * @ghidraAddress 0x220e5c
  */
 + (nullable NSString *)countryCode;
 
 /**
- * @brief The configured category identifier.
+ * The configured category identifier.
  * @return The @c ApplilinkConsts category identifier, or @c nil when none is set.
  * @ghidraAddress 0x220e74
  */
 + (nullable NSString *)categoryId;
 
 /**
- * @brief The cached device UDID.
+ * The cached device UDID.
  * @return The @c ApplilinkCore cached UDID, or @c nil when none is cached.
  * @ghidraAddress 0x220e8c
  */
 + (nullable NSString *)udid;
 
 /**
- * @brief The cached advertising UDID.
+ * The cached advertising UDID.
  * @return The @c ApplilinkCore cached advertising UDID, or @c nil when none is cached.
  * @ghidraAddress 0x220ea4
  */
 + (nullable NSString *)ad_udid;
 
 /**
- * @brief The cached previous UDID.
+ * The cached previous UDID.
  * @return The @c ApplilinkCore cached old UDID, or @c nil when none is cached.
  * @ghidraAddress 0x220ebc
  */
 + (nullable NSString *)old_udid;
 
 /**
- * @brief Clear the stored device UDID.
+ * Clear the stored device UDID.
  * @ghidraAddress 0x220ed4
  */
 + (void)clearUDID;
 
 /**
- * @brief Clear the stored previous UDID held in the key chain.
+ * Clear the stored previous UDID held in the key chain.
  * @ghidraAddress 0x220eec
  */
 + (void)clearKeyChainOldUDID;
 
 /**
- * @brief Clear the stored advertising UDID.
+ * Clear the stored advertising UDID.
  * @ghidraAddress 0x220f04
  */
 + (void)clearAdUDID;
 
 /**
- * @brief The Applilink SDK version string.
+ * The Applilink SDK version string.
  * @return The fixed SDK version, @c "2.2.2.5".
  * @ghidraAddress 0x220f1c
  */
 + (NSString *)versionDev;
 
 /**
- * @brief Clear the reward and recommend session state.
+ * Clear the reward and recommend session state.
  * @ghidraAddress 0x220f68
  */
 + (void)clearSession;
 
 /**
- * @brief Clear the reward and recommend advert status.
+ * Clear the reward and recommend advert status.
  * @ghidraAddress 0x220ff4
  */
 + (void)clearAdStatus;
 
 /**
- * @brief Clear the persisted analytics-initialisation marker.
+ * Clear the persisted analytics-initialisation marker.
  *
  * The method name preserves the binary's misspelling.
  * @ghidraAddress 0x221080
@@ -106,40 +106,40 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearInitalize;
 
 /**
- * @brief Clear the persisted daily-active-user measurement date.
+ * Clear the persisted daily-active-user measurement date.
  * @ghidraAddress 0x221098
  */
 + (void)clearDAU;
 
 /**
- * @brief Persist the debug-mode override flag.
+ * Persist the debug-mode override flag.
  * @param debugMode The debug-mode flag object, or @c nil to clear it.
  * @ghidraAddress 0x2210b0
  */
 + (void)debugMode:(nullable id)debugMode;
 
 /**
- * @brief The persisted debug-mode override flag.
+ * The persisted debug-mode override flag.
  * @return The stored debug-mode object, or @c nil when debug mode is not active.
  * @ghidraAddress 0x2210c8
  */
 + (nullable id)getDebugMode;
 
 /**
- * @brief Clear all cached recommend banner images.
+ * Clear all cached recommend banner images.
  * @ghidraAddress 0x2210e0
  */
 + (void)allClearCacheBannerImage;
 
 /**
- * @brief The recorded interstitial-frequency state.
+ * The recorded interstitial-frequency state.
  * @return A dictionary describing the interstitial-frequency state.
  * @ghidraAddress 0x2210f8
  */
 + (NSMutableDictionary *)getFrequencyStatus;
 
 /**
- * @brief The recorded interstitial display-specification state.
+ * The recorded interstitial display-specification state.
  * @return A dictionary describing the interstitial display-specification state.
  * @ghidraAddress 0x221110
  */

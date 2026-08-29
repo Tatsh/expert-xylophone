@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The "pastel" tutorial-popup manager singleton.
+ * The "pastel" tutorial-popup manager singleton.
  *
  * It owns a single small piece of state: a four-slot
  * show-list of flags that records which stages of the pastel tutorial sequence have already been
@@ -17,14 +17,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The pastel tutorial-popup manager singleton.
+ * The pastel tutorial-popup manager singleton.
  */
 @interface RBPastelManager : NSObject
 
 #pragma mark Singleton
 
 /**
- * @brief The shared pastel-manager instance, created on first use.
+ * The shared pastel-manager instance, created on first use.
  * @ghidraAddress 0x20a30
  * @return The shared @c RBPastelManager.
  */
@@ -33,12 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Show sequence
 
 /**
- * @brief Reset the show-list so every stage is once again marked as not yet shown.
+ * Reset the show-list so every stage is once again marked as not yet shown.
  * @ghidraAddress 0x20afc
  */
 - (void)allReset;
 /**
- * @brief Attempt to show the pastel stage at @p tryShow, gating it on the earlier stages.
+ * Attempt to show the pastel stage at @p tryShow, gating it on the earlier stages.
  *
  * When @p tryShow is zero the leading stage is forced shown and the remaining stages are cleared.
  * Otherwise the request is refused (returns @c NO) if any earlier stage @c [0, tryShow) has not yet
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Properties
 
 /**
- * @brief The current pastel type.
+ * The current pastel type.
  * @ghidraAddress 0x20ba0 (getter)
  * @ghidraAddress 0x20bb0 (setter)
  */

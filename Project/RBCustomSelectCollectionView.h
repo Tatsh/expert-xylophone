@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A single customize category's item grid, hosted by @c RBCustomSelectView.
+ * A single customize category's item grid, hosted by @c RBCustomSelectView.
  *
  * Each instance shows one customization category (theme background music, tap shot, explosion,
  * frame, background, note,
@@ -20,7 +20,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The customization category a @c RBCustomSelectCollectionView presents.
+ * The customization category a @c RBCustomSelectCollectionView presents.
  *
  * The value is passed to @c -initWithFrame:customizeType: and stored in the backing @c
  * customizeType ivar. It drives which catalogue of items the grid loads and which control layout it
@@ -40,7 +40,7 @@ typedef NS_ENUM(int, RBCustomizeItemType) {
 };
 
 /**
- * @brief A single customize category's item grid.
+ * A single customize category's item grid.
  *
  * The class conforms to the collection view data source and delegate protocols for the categories
  * that host an @c RBCollectionView, and to @c RBCollectionView's own custom delegate for the paged
@@ -50,7 +50,7 @@ typedef NS_ENUM(int, RBCustomizeItemType) {
     UIView <UICollectionViewDelegate, UICollectionViewDataSource, RBCollectionViewDelegate>
 
 /**
- * @brief Create the grid with the given frame and customization category.
+ * Create the grid with the given frame and customization category.
  * @param frame The grid's frame rectangle.
  * @param customizeType The category the grid presents.
  * @return The initialised grid, or @c nil.
@@ -60,20 +60,20 @@ typedef NS_ENUM(int, RBCustomizeItemType) {
                          customizeType:(RBCustomizeItemType)customizeType;
 
 /**
- * @brief Build the framed background and the category's controls (collection view, page control,
+ * Build the framed background and the category's controls (collection view, page control,
  *        buttons, or slider).
  * @ghidraAddress 0x155670
  */
 - (void)setupView;
 
 /**
- * @brief Rebuild the item catalogue for the current theme and reload the collection view.
+ * Rebuild the item catalogue for the current theme and reload the collection view.
  * @ghidraAddress 0x157bec
  */
 - (void)reloadData;
 
 /**
- * @brief Action for a note-size button: commit the tapped note type and refresh the button
+ * Action for a note-size button: commit the tapped note type and refresh the button
  *        highlights.
  * @param sender The tapped note-size button.
  * @ghidraAddress 0x1574f8
@@ -81,7 +81,7 @@ typedef NS_ENUM(int, RBCustomizeItemType) {
 - (void)noteSizeTap:(nullable id)sender;
 
 /**
- * @brief Action for a gauge-style button: commit the tapped gauge style and refresh the button
+ * Action for a gauge-style button: commit the tapped gauge style and refresh the button
  *        highlights.
  * @param sender The tapped gauge-style button.
  * @ghidraAddress 0x15720c
@@ -89,7 +89,7 @@ typedef NS_ENUM(int, RBCustomizeItemType) {
 - (void)gaugeStyleTap:(nullable id)sender;
 
 /**
- * @brief Action for a slider control: commit the shot volume, effect size, or judge-timing value
+ * Action for a slider control: commit the shot volume, effect size, or judge-timing value
  *        keyed by the slider's tag.
  * @param sender The slider that changed, tagged with its @c RBCustomizeItemType.
  * @ghidraAddress 0x1577e4
@@ -97,22 +97,22 @@ typedef NS_ENUM(int, RBCustomizeItemType) {
 - (void)sliderChanged:(nullable id)sender;
 
 /**
- * @brief The framed background image behind the category's controls.
+ * The framed background image behind the category's controls.
  */
 @property(strong, nonatomic, nullable) UIImageView *backgroundView;
 
 /**
- * @brief The paged collection view for the categories that present a scrolling item grid.
+ * The paged collection view for the categories that present a scrolling item grid.
  */
 @property(strong, nonatomic, nullable) RBCollectionView *collectionView;
 
 /**
- * @brief The page indicator shown below the collection view.
+ * The page indicator shown below the collection view.
  */
 @property(strong, nonatomic, nullable) UIPageControl *pageControl;
 
 /**
- * @brief The item identifiers currently offered, boxed as @c NSNumber values.
+ * The item identifiers currently offered, boxed as @c NSNumber values.
  */
 @property(strong, nonatomic, nullable) NSMutableArray<NSNumber *> *items;
 

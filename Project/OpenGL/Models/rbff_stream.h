@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The RBFF chart-stream cursor and its header helpers.
+ * The RBFF chart-stream cursor and its header helpers.
  */
 
 #pragma once
 
 /**
- * @brief A read cursor over an RBFF chart blob: the current position and bounds the parser advances
+ * A read cursor over an RBFF chart blob: the current position and bounds the parser advances
  * as it consumes records.
  *
  * A 16-byte record; the trailing @c // +0xNN comments document the byte offsets.
@@ -19,14 +19,14 @@ struct RbffStreamCursor {
 };
 
 /**
- * @brief Zeroes an RBFF stream cursor to its initial state.
+ * Zeroes an RBFF stream cursor to its initial state.
  * @param pCursor The cursor to reset.
  * @ghidraAddress 0x12e918
  */
 void InitRbffStreamCursor(RbffStreamCursor *pCursor);
 
 /**
- * @brief Checks the four-byte @c 'RBFF' magic at the start of a chart blob.
+ * Checks the four-byte @c 'RBFF' magic at the start of a chart blob.
  * @param pData The chart bytes.
  * @return @c true when the magic matches.
  * @ghidraAddress 0x12e92c

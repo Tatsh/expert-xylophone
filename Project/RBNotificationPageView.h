@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The in-game news / information page overlay presented over the music menu on the pad
+ * The in-game news / information page overlay presented over the music menu on the pad
  * build.
  *
  * It is an @c RBMusicMenuPopupView subclass (popup type @c RBMusicMenuPopupViewTypeInformation)
@@ -26,14 +26,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The news / information overlay popup that hosts an @c RBWebView over the music menu.
+ * The news / information overlay popup that hosts an @c RBWebView over the music menu.
  */
 @interface RBNotificationPageView : RBMusicMenuPopupView <UIWebViewDelegate, UIAlertViewDelegate>
 
 #pragma mark Lifecycle
 
 /**
- * @brief Create the notification page popup, select the information popup type, build its content,
+ * Create the notification page popup, select the information popup type, build its content,
  * and mark it as the first request.
  * @param frame The view's frame rectangle.
  * @return The initialised view, or @c nil.
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the notification page content: consume the pending news web-info URL and the
+ * Build the notification page content: consume the pending news web-info URL and the
  * last-update time (recording the read time and clearing them), then add a full-width @c RBWebView
  * loading that URL (or the pre-release fallback) into the base popup's content view.
  * @ghidraAddress 0x19335c
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupView;
 
 /**
- * @brief Fade the popup out unless a transition is already running.
+ * Fade the popup out unless a transition is already running.
  * @ghidraAddress 0x193a68
  */
 - (void)hideAnimation;
@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Store navigation
 
 /**
- * @brief Handle a store deep link: stamp the pack identifier for the store, ask the owning menu to
+ * Handle a store deep link: stamp the pack identifier for the store, ask the owning menu to
  * open the store, and dismiss the popup.
  * @param packID The pack identifier to open in the store; ignored when @c nil or non-positive.
  * @ghidraAddress 0x193918
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Orientation
 
 /**
- * @brief Whether the receiver may rotate to @p interfaceOrientation; permits the two portrait
+ * Whether the receiver may rotate to @p interfaceOrientation; permits the two portrait
  * orientations only.
  * @param interfaceOrientation The candidate interface orientation.
  * @return @c YES for either portrait orientation.
@@ -77,14 +77,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 /**
- * @brief The interface orientations the receiver supports: the two landscape orientations.
+ * The interface orientations the receiver supports: the two landscape orientations.
  * @return The supported orientation mask.
  * @ghidraAddress 0x194148
  */
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations;
 
 /**
- * @brief Whether the receiver should autorotate; always @c YES.
+ * Whether the receiver should autorotate; always @c YES.
  * @return Always @c YES.
  * @ghidraAddress 0x194150
  */
@@ -92,13 +92,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Properties
 
-/** @brief The web view rendering the news / information page. */
+/** The web view rendering the news / information page. */
 @property(assign, nonatomic, nullable) RBWebView *notificationPage;
-/** @brief Whether this is the first request, gating the alert-driven dismiss. */
+/** Whether this is the first request, gating the alert-driven dismiss. */
 @property(assign, nonatomic) BOOL isFirstRequest;
-/** @brief The pending news web-info URL consumed by @c setupView. */
+/** The pending news web-info URL consumed by @c setupView. */
 @property(strong, nonatomic, nullable) NSURL *requestURL;
-/** @brief The settings view that owns and presents this popup, held weakly. */
+/** The settings view that owns and presents this popup, held weakly. */
 @property(weak, nonatomic, nullable) RBSettingView *settingView;
 
 @end

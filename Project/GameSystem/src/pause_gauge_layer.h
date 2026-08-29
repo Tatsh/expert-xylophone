@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The pause-gauge play-field layer, @c PauseGaugeLayer.
+ * The pause-gauge play-field layer, @c PauseGaugeLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief One pause-gauge rectangle size: the width and height of a lane's gauge hit rectangle.
+ * One pause-gauge rectangle size: the width and height of a lane's gauge hit rectangle.
  */
 struct PauseGaugeRectSize {
     int nWidth = {};  /*!< The rectangle width. +0x00 */
@@ -22,7 +22,7 @@ struct PauseGaugeRectSize {
 };
 
 /**
- * @brief One pause-gauge sprite layout record: the sprite's anchor, size, and UV-table index.
+ * One pause-gauge sprite layout record: the sprite's anchor, size, and UV-table index.
  *
  * A 28-byte read-only record; the emitter reads the anchor, size, and UV index from it. The
  * trailing
@@ -39,7 +39,7 @@ struct PauseGaugeSpriteLayout {
 };
 
 /**
- * @brief One lane's pause-gauge geometry: the gauge-rectangle centre and its dimmed-lane flag.
+ * One lane's pause-gauge geometry: the gauge-rectangle centre and its dimmed-lane flag.
  *
  * The trailing @c // +0xNN comments document the byte offsets within the 16-byte per-lane entry.
  */
@@ -52,7 +52,7 @@ struct PauseGaugeLaneGeometry {
 };
 
 /**
- * @brief The pause-gauge layer: the per-lane gauge shown while the game is paused.
+ * The pause-gauge layer: the per-lane gauge shown while the game is paused.
  *
  * A @c rb::BaseScene subclass registered as a per-frame task. It owns two sprite instancers and a
  * parts texture, and charges a per-lane gauge while the game is held paused. The trailing
@@ -60,18 +60,18 @@ struct PauseGaugeLaneGeometry {
  */
 class PauseGaugeLayer : public rb::BaseScene {
 public:
-    /** @brief The per-lane gauge geometry record the layer stores one of per lane. */
+    /** The per-lane gauge geometry record the layer stores one of per lane. */
     using LaneGeometry = PauseGaugeLaneGeometry;
 
-    /** @brief The number of sprite slots: a gauge slot and a parts slot. */
+    /** The number of sprite slots: a gauge slot and a parts slot. */
     static constexpr int kSlotCount = 2;
-    /** @brief The number of lane-slot ids. */
+    /** The number of lane-slot ids. */
     static constexpr int kLaneSlotCount = 13;
-    /** @brief The number of lanes the gauge draws a rectangle for. */
+    /** The number of lanes the gauge draws a rectangle for. */
     static constexpr int kLaneCount = 3;
 
     /**
-     * @brief Constructs the pause-gauge layer: chains the UI-layer base, installs the task dispatch
+     * Constructs the pause-gauge layer: chains the UI-layer base, installs the task dispatch
      * table, clears the state and charging flag, seeds the active-lane mask, distributes the
      * per-lane sprite-slot ids from the lane-group table, and loads the sprites.
      * @ghidraAddress 0x1508b4
@@ -79,7 +79,7 @@ public:
     PauseGaugeLayer();
 
     /**
-     * @brief Destroys the layer: releases the parts atlas and flags each owned sprite instancer for
+     * Destroys the layer: releases the parts atlas and flags each owned sprite instancer for
      * the scene walker to delete.
      *
      * The binary emits a non-deleting destructor body (@c 0x150a7c) and a deleting variant
@@ -90,7 +90,7 @@ public:
     ~PauseGaugeLayer() override;
 
     /**
-     * @brief Marks the gauge as charging on first entry, playing the charge-start sound effect.
+     * Marks the gauge as charging on first entry, playing the charge-start sound effect.
      *
      * A no-op when it is already charging.
      * @ghidraAddress 0x150e58
@@ -98,13 +98,13 @@ public:
     void SetCharging();
 
     /**
-     * @brief Clears the charging flag, returning the gauge to its unpaused state.
+     * Clears the charging flag, returning the gauge to its unpaused state.
      * @ghidraAddress 0x150e84
      */
     void ClearCharging();
 
     /**
-     * @brief Hit-tests a point against a lane's pause-gauge rectangle.
+     * Hit-tests a point against a lane's pause-gauge rectangle.
      *
      * The rectangle is centred on the lane's geometry centre, sized from the per-device size table
      * (the iPad uses the variant table, otherwise the default), with the width and
@@ -118,7 +118,7 @@ public:
     bool CheckPointInRect(float flX, float flY, unsigned int nLaneIndex) const;
 
     /**
-     * @brief Emits the pause-gauge sprites for one lane (0 to 2).
+     * Emits the pause-gauge sprites for one lane (0 to 2).
      *
      * The dimmed lanes draw at half alpha; on the main frame with a non-Colette theme the gauge is
      * drawn as a left arrow, a right arrow, and a centre element, otherwise as a single sprite. The
@@ -129,7 +129,7 @@ public:
     void RenderForLane(unsigned int nLaneIndex);
 
     /**
-     * @brief Opens the pause menu when the gauge is fully charged.
+     * Opens the pause menu when the gauge is fully charged.
      *
      * Resets each instancer's sprite count, and when the gauge has charged, resets the menu
      * selection state, clears the per-lane selection flags, and runs the pause-scene show step.
@@ -138,7 +138,7 @@ public:
     void ShowPauseMenu();
 
     /**
-     * @brief The pause-menu Exit action: leaves the song and returns to the menu.
+     * The pause-menu Exit action: leaves the song and returns to the menu.
      *
      * The Limelight and Colette themes refuse to exit while a pastel-bonus (two-player) session is
      * active; otherwise the active scene enters its pause-exit state and the confirm sound plays.
@@ -147,21 +147,21 @@ public:
     void HandleExit();
 
     /**
-     * @brief The pause-menu Resume action: resumes play when a scene is active and plays the
+     * The pause-menu Resume action: resumes play when a scene is active and plays the
      * confirm sound effect.
      * @ghidraAddress 0x15139c
      */
     static void HandleResume();
 
     /**
-     * @brief The pause-menu Retry/Release action: transitions the active scene into its
+     * The pause-menu Retry/Release action: transitions the active scene into its
      * music-release state and plays the confirm sound effect.
      * @ghidraAddress 0x151434
      */
     static void HandleMusicRelease();
 
     /**
-     * @brief The pause-scene per-frame show step: lays out the menu items, updates the touch-drag
+     * The pause-scene per-frame show step: lays out the menu items, updates the touch-drag
      * selection, and re-emits the gauge sprites.
      *
      * A large touch-driven routine; declared here so ShowPauseMenu can run it. Reconstruction
@@ -171,7 +171,7 @@ public:
     void ExecShow();
 
     /**
-     * @brief The pause-scene state-machine step: dispatches on the layer state.
+     * The pause-scene state-machine step: dispatches on the layer state.
      *
      * State 0 loads the sprites, state 1 opens the pause menu, state 2 runs the per-frame show
      * step, and state 3 flags the layer dead so the next dispatch destroys it.
@@ -186,14 +186,14 @@ public:
 
 private:
     /**
-     * @brief Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the
+     * Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the
      * current theme.
      * @ghidraAddress 0x150994
      */
     void LoadSprites();
 
     /**
-     * @brief Emits one gauge sprite into the next free slot of its lane's instancer.
+     * Emits one gauge sprite into the next free slot of its lane's instancer.
      *
      * Reads the sprite's anchor, size, and UV from the layout and UV tables (the size for slot 0
      * comes from the game-system viewport instead), and writes the position, colour, and horizontal
@@ -226,7 +226,7 @@ private:
 };
 
 /**
- * @brief The per-lane gauge rectangle sizes the iPad uses.
+ * The per-lane gauge rectangle sizes the iPad uses.
  *
  * Seeded at startup from the read-only source constants. Every other device uses
  * @c g_aPauseGaugeRectDefault instead.
@@ -234,7 +234,7 @@ private:
  */
 extern PauseGaugeRectSize g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount];
 /**
- * @brief The per-lane gauge rectangle sizes every device other than the iPad uses.
+ * The per-lane gauge rectangle sizes every device other than the iPad uses.
  *
  * Seeded at startup from the read-only source constants, alongside @c g_aPauseGaugeRectVariant.
  * @ghidraAddress 0x3dbeb0
@@ -242,14 +242,14 @@ extern PauseGaugeRectSize g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount];
 extern PauseGaugeRectSize g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount];
 
 /**
- * @brief The default device's pause-gauge sprite layout table (up to 13 records).
+ * The default device's pause-gauge sprite layout table (up to 13 records).
  *
  * Read-only render configuration embedded in the binary.
  * @ghidraAddress 0x308fe0
  */
 extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutDefault[];
 /**
- * @brief The alt-frame device's pause-gauge sprite layout table (up to 13 records).
+ * The alt-frame device's pause-gauge sprite layout table (up to 13 records).
  *
  * Read-only render configuration embedded in the binary.
  * @ghidraAddress 0x308e74
@@ -257,7 +257,7 @@ extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutDefault[];
 extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutAltFrame[];
 
 /**
- * @brief Seeds the per-lane pause-gauge rectangle size tables (both device layouts) at startup.
+ * Seeds the per-lane pause-gauge rectangle size tables (both device layouts) at startup.
  *
  * Run by dyld at image load through the binary's @c __mod_init_func table; nothing calls it by
  * name.

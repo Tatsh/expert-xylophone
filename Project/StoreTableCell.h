@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The pad two-up store list's table cell, holding a left and a right @c StorePackView pack
+ * The pad two-up store list's table cell, holding a left and a right @c StorePackView pack
  * tile side by side across the cell's content view.
  *
  * Its @c initWithStyle:reuseIdentifier: builds both
@@ -18,19 +18,19 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The pad-layout two-up pack table cell.
+ * The pad-layout two-up pack table cell.
  */
 @interface StoreTableCell : UITableViewCell
 
 /**
- * @brief The left pack tile.
+ * The left pack tile.
  * @ghidraAddress 0x1047ec (getter)
  * @ghidraAddress 0x1047fc (setter)
  */
 @property(nonatomic, strong, nullable) StorePackView *leftPackView;
 
 /**
- * @brief The right pack tile.
+ * The right pack tile.
  * @ghidraAddress 0x104834 (getter)
  * @ghidraAddress 0x104844 (setter)
  */

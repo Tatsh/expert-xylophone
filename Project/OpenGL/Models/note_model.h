@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A live play-field note, @c NoteModel.
+ * A live play-field note, @c NoteModel.
  */
 
 #pragma once
@@ -11,7 +11,7 @@ class NoteEffectMgr;
 class RbffNoteRecord;
 
 /**
- * @brief One path waypoint node: a start time, the two endpoints a note interpolates between, and
+ * One path waypoint node: a start time, the two endpoints a note interpolates between, and
  * the segment's length.
  *
  * A 40-byte record. @c AdvanceAlongWaypoint interpolates the note position from @c startPos towards
@@ -22,11 +22,11 @@ class RbffNoteRecord;
 struct WaypointNode {
     float flStartTime = {};  /*!< The node's start time. +0x00 */
     S_VECTOR2 startPos = {}; /*!< The interpolation start position. +0x04 */
-    /** @brief The interpolation end position (the per-fraction delta). +0x0c */
+    /** The interpolation end position (the per-fraction delta). +0x0c */
     S_VECTOR2 endPos = {};
     float flLength = {}; /*!< The segment's length, traded for its traversal time. +0x14 */
     /**
-     * @brief The node's trailing four words. +0x18
+     * The node's trailing four words. +0x18
      *
      * No routine in the binary reads or writes them — the route pass's block-wide clear is their
      * only writer — so they carry no recovered meaning and are named for their position rather
@@ -35,11 +35,11 @@ struct WaypointNode {
     float aflSpare18[4] = {};
 };
 
-/** @brief The number of path nodes a note's waypoint block holds. */
+/** The number of path nodes a note's waypoint block holds. */
 constexpr int kWaypointBlockNodeCount = 4;
 
 /**
- * @brief One live note on the play field: its chart record, animation state, world position, and
+ * One live note on the play field: its chart record, animation state, world position, and
  * judgement result.
  *
  * Spawned from an @c RbffNoteRecord when the chart reaches the note's lead-in and advanced each
@@ -51,7 +51,7 @@ constexpr int kWaypointBlockNodeCount = 4;
 class NoteModel {
 public:
     /**
-     * @brief Constructs a note bound to its owning sheet: clears the play state, seeds every
+     * Constructs a note bound to its owning sheet: clears the play state, seeds every
      * sub-entry slot to its empty defaults, zeroes the waypoint block, and stores the is-pad flag.
      * @param pSheet The owning note sheet.
      * @ghidraAddress 0x1319fc
@@ -59,7 +59,7 @@ public:
     explicit NoteModel(NoteEffectMgr *pSheet);
 
     /**
-     * @brief Reports whether the note should be horizontally mirrored for the current play side.
+     * Reports whether the note should be horizontally mirrored for the current play side.
      *
      * With no chart record, or a record whose side is out of range, the note's own side flag
      * decides (returning the no-partner sentinel when unset). Otherwise the note is flipped when
@@ -71,7 +71,7 @@ public:
     int IsSideFlipped() const;
 
     /**
-     * @brief Reports whether the note is on the current play side.
+     * Reports whether the note is on the current play side.
      *
      * With no chart record, or a record whose side is out of range, the note's own-side flag
      * decides (returning the no-side sentinel when unset). Otherwise the note is on the play side
@@ -82,7 +82,7 @@ public:
     int IsOnPlaySide() const;
 
     /**
-     * @brief Returns the play-field Y bound for a virtual-lane band index.
+     * Returns the play-field Y bound for a virtual-lane band index.
      *
      * The nine bands run from the top edge (bands 0 through 3, at decreasing fractions of the field
      * height), through the centre (band 4, which is zero), to the bottom edge (bands 5 through 8).
@@ -94,7 +94,7 @@ public:
     static float GetVirtualBoundY(int nBand);
 
     /**
-     * @brief Returns the note's across-field X position.
+     * Returns the note's across-field X position.
      *
      * Looks up the lane fraction for the note's hold kind and display lane (from its chart record,
      * or the own-side fallback for a synthetic note) and scales it by the game system's sheet-inset
@@ -105,7 +105,7 @@ public:
     float GetLaneX() const;
 
     /**
-     * @brief Returns the note's play side.
+     * Returns the note's play side.
      *
      * Reads the chart record's side, or (for a synthetic note) derives it from the own-side flag,
      * returning the no-side sentinel when the flag is unset.
@@ -115,7 +115,7 @@ public:
     int GetSide() const;
 
     /**
-     * @brief Returns the note's type.
+     * Returns the note's type.
      *
      * Reads the chart record's type, or (for a synthetic note) returns a fixed value from the
      * own-side flag (the idle sentinel when the flag is unset).
@@ -125,14 +125,14 @@ public:
     int GetType() const;
 
     /**
-     * @brief Returns the note's chart start time, or -1 when it has no record.
+     * Returns the note's chart start time, or -1 when it has no record.
      * @return The start time.
      * @ghidraAddress 0x13490c
      */
     int GetStartTime() const;
 
     /**
-     * @brief Returns the note's hit time.
+     * Returns the note's hit time.
      *
      * From a chart record, the hit time is the sum of the record's two time stamps; for a synthetic
      * note it is the spawn time plus a fixed lead, and zero when the note has neither.
@@ -142,14 +142,14 @@ public:
     float GetHitTime() const;
 
     /**
-     * @brief Returns the note's kind, or -1 when it has no chart record.
+     * Returns the note's kind, or -1 when it has no chart record.
      * @return The note kind.
      * @ghidraAddress 0x136a20
      */
     int GetKind() const;
 
     /**
-     * @brief Returns the number of slide points in a slide (type 3) note.
+     * Returns the number of slide points in a slide (type 3) note.
      *
      * Assumes a chart record is present (a slide note always has one).
      * @return The slide-point count.
@@ -158,7 +158,7 @@ public:
     int GetSlidePointCount() const;
 
     /**
-     * @brief Returns the judge result recorded for slide point @p nIndex of a slide (type 3) note,
+     * Returns the judge result recorded for slide point @p nIndex of a slide (type 3) note,
      * or the miss sentinel (5) when the index is past the slide-point count.
      * @param nIndex The slide-point index.
      * @return The per-point judge result, or 5 when out of range.
@@ -167,7 +167,7 @@ public:
     int GetSlidePointJudge(int nIndex) const;
 
     /**
-     * @brief Returns the note's target Y line: the screen edge the note travels toward.
+     * Returns the note's target Y line: the screen edge the note travels toward.
      *
      * The travel-line fraction is chosen by the note's hold kind (the record's hold kind, or the
      * own- side flag for a synthetic note): kind 0 uses the near-lane slope, kind 1 uses the
@@ -179,27 +179,27 @@ public:
     float GetTargetLineY() const;
 
     /**
-     * @brief Marks this note as touched (the frame's nearest-hit winner).
+     * Marks this note as touched (the frame's nearest-hit winner).
      * @ghidraAddress 0x13609c
      */
     void MarkTouched();
 
     /**
-     * @brief Returns the note's assigned colour kind (0 through 3).
+     * Returns the note's assigned colour kind (0 through 3).
      * @return The assigned colour kind.
      */
     int GetColorKind() const {
         return m_nKind;
     }
     /**
-     * @brief Sets the note's assigned colour kind.
+     * Sets the note's assigned colour kind.
      * @param nKind The colour kind (0 through 3).
      */
     void SetColorKind(int nKind) {
         m_nKind = nKind;
     }
     /**
-     * @brief Whether the note carries a pre-assigned (locked) colour, kept instead of a random one.
+     * Whether the note carries a pre-assigned (locked) colour, kept instead of a random one.
      *
      * A colour-lock state at or below @c kColorLockThreshold is itself the assigned colour.
      *
@@ -209,7 +209,7 @@ public:
         return m_nColorLockState <= kColorLockThreshold;
     }
     /**
-     * @brief The pre-assigned colour a locked note carries (its colour-lock state value).
+     * The pre-assigned colour a locked note carries (its colour-lock state value).
      * @return The pre-assigned colour.
      */
     int GetLockedColor() const {
@@ -217,7 +217,7 @@ public:
     }
 
     /**
-     * @brief Stamps the note with a replay's recorded judge, JR flag, and long-note rate.
+     * Stamps the note with a replay's recorded judge, JR flag, and long-note rate.
      * @param nJudge The recorded judge result.
      * @param bJustReflec The recorded just-reflec flag.
      * @param flLongRate The recorded long-note rate.
@@ -228,7 +228,7 @@ public:
         m_flLongRate = flLongRate;
     }
     /**
-     * @brief Sets slide sub-point @p nIndex's recorded judge result.
+     * Sets slide sub-point @p nIndex's recorded judge result.
      * @param nIndex The slide sub-point index.
      * @param nJudge The judge result to record.
      */
@@ -236,7 +236,7 @@ public:
         m_aSubEntries[nIndex].nSlidePointJudge = nJudge;
     }
     /**
-     * @brief Sets slide sub-point @p nIndex's recorded replay judge (the +0x44 sub-entry slot).
+     * Sets slide sub-point @p nIndex's recorded replay judge (the +0x44 sub-entry slot).
      * @param nIndex The slide sub-point index.
      * @param nJudge The replay judge result to record.
      */
@@ -244,28 +244,28 @@ public:
         m_aSubEntries[nIndex].nIncomingGrade = nJudge;
     }
     /**
-     * @brief The note's recorded judge result (from a replay).
+     * The note's recorded judge result (from a replay).
      * @return The recorded judge result.
      */
     int GetRecordedJudge() const {
         return m_nColorLockState;
     }
     /**
-     * @brief The note's judgement grade (the per-note COOL/GREAT/GOOD/MISS index).
+     * The note's judgement grade (the per-note COOL/GREAT/GOOD/MISS index).
      * @return The judgement grade.
      */
     int GetJudgeGrade() const {
         return m_nJudgeGrade;
     }
     /**
-     * @brief The note's shot travel progress (recorded as the replay long-note rate).
+     * The note's shot travel progress (recorded as the replay long-note rate).
      * @return The shot travel progress.
      */
     float GetShotProgress() const {
         return m_flShotProgress;
     }
     /**
-     * @brief Whether a CPU/ghost shot has been scored on this note (the replay just-reflec flag).
+     * Whether a CPU/ghost shot has been scored on this note (the replay just-reflec flag).
      * @return @c true once a CPU or ghost shot has been scored on the note.
      */
     bool IsShotResolved() const {
@@ -273,21 +273,21 @@ public:
     }
 
     /**
-     * @brief Advances the note's position by one frame: saves the previous position, then either
+     * Advances the note's position by one frame: saves the previous position, then either
      * follows its active waypoint or integrates its velocity over the frame delta.
      * @ghidraAddress 0x1336e4
      */
     void AdvancePosition();
 
     /**
-     * @brief Interpolates the note's position along its current waypoint node by the elapsed
+     * Interpolates the note's position along its current waypoint node by the elapsed
      * fraction since the node's start time.
      * @ghidraAddress 0x136960
      */
     void AdvanceAlongWaypoint();
 
     /**
-     * @brief Reflects the note at a play-field edge, or advances it to its next path waypoint.
+     * Reflects the note at a play-field edge, or advances it to its next path waypoint.
      *
      * Computes the edge bound from the note-field half-width, mirrored by the travel direction and
      * the note's side flip. When the note still has waypoints left, it advances the waypoint index,
@@ -301,14 +301,14 @@ public:
     void HandleReflect(int nDirection);
 
     /**
-     * @brief The state-machine fade-out step: advances the note's position and decays its fade
+     * The state-machine fade-out step: advances the note's position and decays its fade
      * timer, transitioning to the finished state once the timer reaches zero.
      * @ghidraAddress 0x1334dc
      */
     void UpdateStepFadeOut();
 
     /**
-     * @brief The state-machine shot step: advances the reflected note along its reversed velocity
+     * The state-machine shot step: advances the reflected note along its reversed velocity
      * by its speed and progress, stores the render position and draw flags, and finishes the note
      * once it flies below the play field.
      * @ghidraAddress 0x132b20
@@ -316,7 +316,7 @@ public:
     void UpdateStepShot();
 
     /**
-     * @brief The state-machine approach step (state 1): eases the note in until it reaches the play
+     * The state-machine approach step (state 1): eases the note in until it reaches the play
      * field, then hands it to its existing/slide state.
      *
      * Once the play clock passes the note's hit time, links its path and finishes it (state 8).
@@ -330,7 +330,7 @@ public:
     void UpdateStepApproach();
 
     /**
-     * @brief The state-machine existing step (state 2): advances the note, reflects it off the play
+     * The state-machine existing step (state 2): advances the note, reflects it off the play
      * field, and either judges its timing (per rival mode) or, once it has passed its target line
      * without a hit, finalises it as a miss (scoring the miss, applying the gauge penalty, and
      * spawning the miss glow and bounds-damage effects). A hold note keeps its render endpoint
@@ -340,7 +340,7 @@ public:
     void UpdateStepExisted();
 
     /**
-     * @brief The state-machine long-touched step (state 3): tracks a held long note.
+     * The state-machine long-touched step (state 3): tracks a held long note.
      *
      * While the hold runs it moves the note's render endpoint along the reversed velocity by the
      * remaining fraction of the hold. It then decides whether the note is still touched (a CPU or
@@ -354,20 +354,20 @@ public:
     void UpdateStepLongTouched();
 
     /**
-     * @brief The state-machine slide-existing step (state 5): advances a slide note along its path.
+     * The state-machine slide-existing step (state 5): advances a slide note along its path.
      * Reconstruction pending.
      * @ghidraAddress 0x132be0
      */
     void UpdateStepSlideExisted();
 
     /**
-     * @brief Dispatches one per-frame note update to the step handler for the note's current state.
+     * Dispatches one per-frame note update to the step handler for the note's current state.
      * @ghidraAddress 0x131b64
      */
     void UpdateStep();
 
     /**
-     * @brief Emits this frame's sprites for the note into the per-kind note layers.
+     * Emits this frame's sprites for the note into the per-kind note layers.
      *
      * Drops the note outright when it belongs to a hidden rival side or is not in a drawable state.
      * A slide note emits its body, its result burst once scored, and one segment per slide point
@@ -380,7 +380,7 @@ public:
     void RenderNote();
 
     /**
-     * @brief Initialises the note for activation: seeds its full play state from its chart record
+     * Initialises the note for activation: seeds its full play state from its chart record
      * before it enters the active list.
      *
      * Resolves the base position from the first of three sources that applies — a chain-mate's base
@@ -396,7 +396,7 @@ public:
     void Init();
 
     /**
-     * @brief Lays out the note's path through the waypoint block for the coming play.
+     * Lays out the note's path through the waypoint block for the coming play.
      *
      * Clears the block, then fills the start position of each live node. A note partway along a
      * chain copies its head note's route outright; any other note derives its own from its hold
@@ -408,7 +408,7 @@ public:
     void SetRoute();
 
     /**
-     * @brief Sets this note's shot direction (clamped to [-2, 2]) and propagates it, its spawn
+     * Sets this note's shot direction (clamped to [-2, 2]) and propagates it, its spawn
      * position, and its spawn time along the note's linked chain, re-routing each.
      * @param nDirection The requested shot direction.
      * @ghidraAddress 0x1335ec
@@ -416,7 +416,7 @@ public:
     void SetShotDirection(int nDirection);
 
     /**
-     * @brief Returns the play colour of the note bound at this note's start index, or the
+     * Returns the play colour of the note bound at this note's start index, or the
      * no-active-note sentinel (5) when none is active.
      * @return The active note's rival-mode colour, or 5.
      * @ghidraAddress 0x1361b0
@@ -424,26 +424,26 @@ public:
     int GetActiveNoteColor() const;
 
     /**
-     * @brief The shot-phase step: decays the shot lifetime timer and dispatches to the per-colour
+     * The shot-phase step: decays the shot lifetime timer and dispatches to the per-colour
      * shot handler (player, CPU, or ghost) until the note leaves its shot phase.
      * @ghidraAddress 0x133774
      */
     void CheckShot();
 
     /**
-     * @brief The player-controlled shot handler. Reconstruction pending.
+     * The player-controlled shot handler. Reconstruction pending.
      * @ghidraAddress 0x1361ec
      */
     void CheckShotPlayer();
 
     /**
-     * @brief The CPU-controlled shot handler. Reconstruction pending.
+     * The CPU-controlled shot handler. Reconstruction pending.
      * @ghidraAddress 0x136480
      */
     void CheckShotCPU();
 
     /**
-     * @brief The ghost (replay) shot handler.
+     * The ghost (replay) shot handler.
      *
      * The replay counterpart of @c CheckShotCPU: it scores a filled-gauge note by emphasis or the
      * side's full-combo run, but a non-ghost note that fails those tests instead consumes a queued
@@ -454,14 +454,14 @@ public:
     void CheckShotGhost();
 
     /**
-     * @brief Picks a resolved shot's bounce direction: a hold note follows its display lane, any
+     * Picks a resolved shot's bounce direction: a hold note follows its display lane, any
      * other note flips a coin between the two outer directions.
      * @return The bounce direction sign.
      */
     int PickShotBounceDirection() const;
 
     /**
-     * @brief Tests whether a touch point hits this note, reporting the squared touch distance.
+     * Tests whether a touch point hits this note, reporting the squared touch distance.
      *
      * Only a player note in its existing or slide-existing state can be hit, and only once the
      * judge clock is inside its hit window or it is close enough below its target line. The note's
@@ -476,7 +476,7 @@ public:
     bool CheckTouchHit(float flX, float flY, float *pOutDistanceSq) const;
 
     /**
-     * @brief Decides whether this note should be emphasised (highlighted).
+     * Decides whether this note should be emphasised (highlighted).
      *
      * A per-combo random chance emphasises the note outright; otherwise, in versus mode, the note
      * is emphasised when its side matches the local side and that side achieved a full combo
@@ -488,7 +488,7 @@ public:
     bool ShouldEmphasize() const;
 
     /**
-     * @brief Judges a touched note's timing accuracy and reports the resulting grade.
+     * Judges a touched note's timing accuracy and reports the resulting grade.
      *
      * Does nothing when the note is not the frame's touched note. Otherwise it grades the signed
      * time error against the timing windows (0 = just, 1 = early/late, 2 = far) and resolves the
@@ -498,7 +498,7 @@ public:
     void JudgeNoteTiming();
 
     /**
-     * @brief Tests whether an untouched note has passed its hit window and, if so, misses it.
+     * Tests whether an untouched note has passed its hit window and, if so, misses it.
      *
      * Once the judge clock is inside the note's miss window and at or past its hit time, a tap-only
      * note (kind 3) plays its miss sound and is marked processed, while any other note snaps to its
@@ -508,7 +508,7 @@ public:
     void CheckNoteMiss();
 
     /**
-     * @brief The auto-play tap: fires the note's tap once the judge clock reaches its hit window.
+     * The auto-play tap: fires the note's tap once the judge clock reaches its hit window.
      *
      * The window test matches @c CheckNoteMiss; a tap-only note (kind 3) plays its tap sound and is
      * marked processed, any other note snaps to its lane target and resolves its hit.
@@ -517,7 +517,7 @@ public:
     void UpdateNoteAutoTap();
 
     /**
-     * @brief Plays the note's tap/hit sound: its keysound, or a default sound from the sound table.
+     * Plays the note's tap/hit sound: its keysound, or a default sound from the sound table.
      *
      * A CPU/ghost note (rival mode non-zero) that is excluded from scoring stays silent unless the
      * game is in the CPU full-combo mode; the dispatched judge event carries the resolved sound
@@ -529,7 +529,7 @@ public:
     void PlayNoteTapSound(int nSoundIndex, bool bUseAlt);
 
     /**
-     * @brief Records a note's judged grade and drives its post-hit effects and scoring.
+     * Records a note's judged grade and drives its post-hit effects and scoring.
      *
      * A grade of zero latches the perfect-hit flag. A slide note (record type 3) stores the grade
      * and enters its slide state, returning early for a non-scoring grade. A long note (record type
@@ -545,7 +545,7 @@ public:
     void ResolveNoteHit(unsigned int nGrade);
 
     /**
-     * @brief Activates each of the note's chain path-point links, clearing the perfect-hit flag.
+     * Activates each of the note's chain path-point links, clearing the perfect-hit flag.
      *
      * For each of the record's path points, activates the note at that path-point index through the
      * owning manager and clears the note's perfect-hit flag. Does nothing without a chart record or
@@ -555,7 +555,7 @@ public:
     void UpdateNotePathLinks();
 
     /**
-     * @brief The note's index in its sheet.
+     * The note's index in its sheet.
      * @return The note's index in its sheet, or -1 when unassigned.
      */
     int GetNoteIndex() const {
@@ -563,7 +563,7 @@ public:
     }
 
     /**
-     * @brief The note-state-machine state.
+     * The note-state-machine state.
      * @return The current note-state-machine state.
      */
     int GetState() const {
@@ -571,7 +571,7 @@ public:
     }
 
     /**
-     * @brief The note's rival-play mode (0 = player, 1 = CPU, 2 = ghost).
+     * The note's rival-play mode (0 = player, 1 = CPU, 2 = ghost).
      * @return The rival-play mode.
      */
     int GetRivalMode() const {
@@ -579,7 +579,7 @@ public:
     }
 
     /**
-     * @brief Assigns the note's chart index and refreshes its record pointer from the owning
+     * Assigns the note's chart index and refreshes its record pointer from the owning
      *        manager's active chart.
      * @param nIndex The chart note index.
      * @ghidraAddress 0x131aa8
@@ -587,14 +587,14 @@ public:
     void SetNoteIndex(int nIndex);
 
     /**
-     * @brief Detaches the note from any chart note: clears the chart index (to -1) and the record
+     * Detaches the note from any chart note: clears the chart index (to -1) and the record
      *        pointer.
      * @ghidraAddress 0x131ad8
      */
     void ResetBinding();
 
     /**
-     * @brief Resets the note's play state for a new play or retry.
+     * Resets the note's play state for a new play or retry.
      *
      * Clears the state and sub-state, marks the note index unassigned, sets the kind fields to the
      * none sentinel, re-seeds the first ten sub-entries to their empty defaults, and resets the
@@ -603,24 +603,24 @@ public:
      */
     void ResetPlayState();
 
-    /** @brief The no-side sentinel returned when the note has neither a record side nor own side.
+    /** The no-side sentinel returned when the note has neither a record side nor own side.
      */
     static constexpr int kNoSideSentinel = 3;
 
-    /** @brief The idle-type sentinel a synthetic note reports for its type when it has no own side.
+    /** The idle-type sentinel a synthetic note reports for its type when it has no own side.
      */
     static constexpr int kIdleTypeSentinel = 5;
 
-    /** @brief The number of per-note sub-entry (hold/slide segment) slots. */
+    /** The number of per-note sub-entry (hold/slide segment) slots. */
     static constexpr int kSubEntryCount = 16;
 
-    /** @brief A colour-lock state at or below this leaves the note open to random colour
+    /** A colour-lock state at or below this leaves the note open to random colour
      * assignment. */
     static constexpr int kColorLockThreshold = 3;
 
 private:
     /**
-     * @brief Mirrors a render X coordinate for the play side: negated unless the note is flipped.
+     * Mirrors a render X coordinate for the play side: negated unless the note is flipped.
      * @param flX The X before mirroring.
      * @return The mirrored X.
      * @ghidraAddress 0x135388
@@ -628,7 +628,7 @@ private:
     float MirrorRenderX(float flX) const;
 
     /**
-     * @brief Mirrors a render Y coordinate for the play side: negated when the note is flipped.
+     * Mirrors a render Y coordinate for the play side: negated when the note is flipped.
      * @param flY The Y before mirroring.
      * @return The mirrored Y.
      * @ghidraAddress 0x135388
@@ -636,7 +636,7 @@ private:
     float MirrorRenderY(float flY) const;
 
     /**
-     * @brief Returns the colour the render pass draws the note in: its record's side, or (for a
+     * Returns the colour the render pass draws the note in: its record's side, or (for a
      * note with no record) its own side, else the no-side sentinel.
      * @return The render side.
      * @ghidraAddress 0x135388
@@ -644,7 +644,7 @@ private:
     int GetRenderSide() const;
 
     /**
-     * @brief Whether the note draws its end cap: its link's second bit is clear and its timing
+     * Whether the note draws its end cap: its link's second bit is clear and its timing
      * selector is under the bound.
      * @return @c true when the end cap is drawn.
      * @ghidraAddress 0x135388
@@ -652,20 +652,20 @@ private:
     bool HasRenderEndCap() const;
 
     /**
-     * @brief Emits the plain note body. The binary inlines this into @c RenderNote.
+     * Emits the plain note body. The binary inlines this into @c RenderNote.
      * @ghidraAddress 0x135388
      */
     void RenderPlainNote();
 
     /**
-     * @brief Emits a slide note's body, its result burst once scored, and one segment per live
+     * Emits a slide note's body, its result burst once scored, and one segment per live
      * slide point. The binary inlines this into @c RenderNote.
      * @ghidraAddress 0x135388
      */
     void RenderSlideNote();
 
     /**
-     * @brief Emits a long note's body, its trail once held and graded, and its head particle.
+     * Emits a long note's body, its trail once held and graded, and its head particle.
      * @param bAtRenderPoint Whether the note still sits on its render endpoint, which angles the
      *                       body along the travel direction rather than drawing it flat.
      * @ghidraAddress 0x135388
@@ -673,13 +673,13 @@ private:
     void RenderLongNote(bool bAtRenderPoint);
 
     /**
-     * @brief Emits the connector from this note to its chain partner, when it has a live one.
+     * Emits the connector from this note to its chain partner, when it has a live one.
      * @ghidraAddress 0x135388
      */
     void RenderChainConnector();
 
     /**
-     * @brief Fills the live waypoint nodes' start positions for a note that derives its own route.
+     * Fills the live waypoint nodes' start positions for a note that derives its own route.
      *
      * The Y pass places the spawn point, the bounce points (whose play-field bands come from the
      * note's display lane and play side) and the target line; the X pass then places the same nodes
@@ -691,7 +691,7 @@ private:
     void BuildRouteWaypoints(int nRouteKind);
 
     /**
-     * @brief Resolves the laid-out route into per-segment deltas, lengths, and node start times.
+     * Resolves the laid-out route into per-segment deltas, lengths, and node start times.
      *
      * Each node's end position becomes the offset to the next node and its length that offset's
      * magnitude; the path is then traversed at one speed between the spawn and hit times, which
@@ -702,7 +702,7 @@ private:
     void FinishRoute();
 
     /**
-     * @brief Returns the current play-field judge clock: the play time scaled to the chart's
+     * Returns the current play-field judge clock: the play time scaled to the chart's
      * millisecond range and offset by the lead-in.
      */
     float GetCurrentJudgeTime() const;
@@ -737,30 +737,35 @@ private:
     // One per-note sub-entry (a hold/slide segment slot): its kind, source note index, and seeded
     // state, filled by the constructor. The 0x48-byte stride and field roles are from the ctor.
     struct SubEntry {
-        int nKind = {};  // +0x00: the segment kind (5 = none).
-        int nIndex = {}; // +0x04: the source note index (-1 = none).
+        int nKind = {};  /*!< The segment kind (5 = none). +0x00 */
+        int nIndex = {}; /*!< The source note index (-1 = none). +0x04 */
         // +0x08..+0x20: this slide point's three interpolation times and its start/end control
         // positions, set by the approach step's slide-path setup (UpdateStepApproach).
-        float flTime0 = {};  // +0x08: the point's first interpolation time.
-        float flTime1 = {};  // +0x0c: the point's second interpolation time.
-        float flTime2 = {};  // +0x10: the point's third interpolation time (the pre-seeded time).
-        float flStartX = {}; // +0x14: the point's start X.
-        float flStartY = {}; // +0x18: the point's start Y.
-        float flEndX = {};   // +0x1c: the point's end X.
-        float flEndY = {};   // +0x20: the point's end Y.
+        float flTime0 = {}; /*!< The point's first interpolation time. +0x08 */
+        float flTime1 = {}; /*!< The point's second interpolation time. +0x0c */
+        float flTime2 =
+            {}; /*!< The point's third interpolation time (the pre-seeded time). +0x10 */
+        float flStartX = {}; /*!< The point's start X. +0x14 */
+        float flStartY = {}; /*!< The point's start Y. +0x18 */
+        float flEndX = {};   /*!< The point's end X. +0x1c */
+        float flEndY = {};   /*!< The point's end Y. +0x20 */
         // +0x24..+0x28: the point's live interpolated position, advanced each frame by the slide
         // step (UpdateStepSlideExisted) along the two axis slopes.
-        float flCurX = {};    // +0x24: the point's current interpolated X.
-        float flCurY = {};    // +0x28: the point's current interpolated Y.
-        float flSlopeX = {};  // +0x2c: the X slope over the first time span (endX-startX)/(t1-t0).
-        float flSlopeY = {};  // +0x30: the Y slope over the second time span (endY-startY)/(t2-t1).
-        bool bLastPoint = {}; // +0x34: set on the slide path's final point by the activation pass.
+        float flCurX = {}; /*!< The point's current interpolated X. +0x24 */
+        float flCurY = {}; /*!< The point's current interpolated Y. +0x28 */
+        float flSlopeX =
+            {}; /*!< The X slope over the first time span (endX-startX)/(t1-t0). +0x2c */
+        float flSlopeY =
+            {}; /*!< The Y slope over the second time span (endY-startY)/(t2-t1). +0x30 */
+        /** Set on the slide path's final point by the activation pass. +0x34 */
+        bool bLastPoint = {};
         // unsigned char aReserved35[3] = {}; // +0x35
-        int nResolvedGrade =
-            {}; // +0x38: the slide point's resolved judge grade (constructed to 5).
-        int nSlidePointJudge = {}; // +0x3c: the slide point's judge result / per-point hit tally.
-        int nMissCount = {};       // +0x40: the point's miss/combo tally (constructed to 0).
-        int nIncomingGrade = {};   // +0x44: the incoming grade/kind, 5 while unresolved.
+        /** The slide point's resolved judge grade (constructed to 5). +0x38 */
+        int nResolvedGrade = {};
+        int nSlidePointJudge =
+            {};                  /*!< The slide point's judge result / per-point hit tally. +0x3c */
+        int nMissCount = {};     /*!< The point's miss/combo tally (constructed to 0). +0x40 */
+        int nIncomingGrade = {}; /*!< The incoming grade/kind, 5 while unresolved. +0x44 */
     };
     // +0x74..+0x4f3: the 16 per-note sub-entry slots.
     SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74
@@ -817,7 +822,7 @@ private:
 };
 
 /**
- * @brief The note lane-position table: the across-field fractions for the note lanes, plus the lane
+ * The note lane-position table: the across-field fractions for the note lanes, plus the lane
  * spread span and the wide-lane fractions for the alternate lane kind.
  *
  * Seeded once by @c InitNoteLaneTable and read by @c GetNoteLaneFraction. The trailing @c // +0xNN
@@ -839,14 +844,14 @@ struct NoteLaneTable {
 };
 
 /**
- * @brief Seeds the note lane-position table with the across-field lane fractions, spread span, and
+ * Seeds the note lane-position table with the across-field lane fractions, spread span, and
  * wide-lane fractions.
  * @ghidraAddress 0x136afc
  */
 void InitNoteLaneTable();
 
 /**
- * @brief Returns a note lane's across-field position fraction.
+ * Returns a note lane's across-field position fraction.
  *
  * For the ordinary lane kind, returns the lane's fraction (the centre lane is zero, and
  * out-of-range lanes are zero). For the alternate wide-lane kind, the two wide lanes use the
@@ -859,7 +864,7 @@ void InitNoteLaneTable();
 float GetNoteLaneFraction(int nKind, int nLane);
 
 /**
- * @brief Projects a note's screen point onto the play-field intersection line, in place.
+ * Projects a note's screen point onto the play-field intersection line, in place.
  *
  * Builds the screen pick ray through @p pPointInOut, intersects it with the downward reference
  * plane, and writes the resulting X and Y back into @p pPointInOut.

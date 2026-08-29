@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The engine's piecewise-linear animation curve, @c FloatCurve, and its sampling helpers.
+ * The engine's piecewise-linear animation curve, @c FloatCurve, and its sampling helpers.
  */
 
 #pragma once
 
 /**
- * @brief A float animation curve: a keyframe count and a flat array of `{x,y}` pairs sorted
+ * A float animation curve: a keyframe count and a flat array of `{x,y}` pairs sorted
  *        ascending by x.
  */
 struct FloatCurve {
@@ -15,7 +15,7 @@ struct FloatCurve {
 };
 
 /**
- * @brief Samples a piecewise-linear curve of `{x,y}` keyframe pairs at @p flQueryX.
+ * Samples a piecewise-linear curve of `{x,y}` keyframe pairs at @p flQueryX.
  *
  * The result is clamped to the first or last keyframe's y value when @p flQueryX falls outside the
  * keyframe x range.
@@ -27,7 +27,7 @@ struct FloatCurve {
  */
 float CalculateCurveInterpolation(const float *pPairs, int nCount, float flQueryX);
 /**
- * @brief Samples a @c FloatCurve at @p flQueryX.
+ * Samples a @c FloatCurve at @p flQueryX.
  * @param pCurve The curve to sample.
  * @param flQueryX The x position to sample.
  * @return The interpolated y value.

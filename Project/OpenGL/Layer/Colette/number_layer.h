@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The score-digit number layer, @c NumberLayer.
+ * The score-digit number layer, @c NumberLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The score-digit number layer.
+ * The score-digit number layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns two
  * atlases and two sprite instancers, drawn beneath the shared background layer, that present the
@@ -25,14 +25,14 @@ class C_SPRITE_INSTANCING_2D;
 class NumberLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide number layer, created on first use.
+     * The process-wide number layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x17dde0
      */
     static NumberLayer *shared();
 
     /**
-     * @brief Lazily builds the number layer's sprites: loads the two atlases and creates the two
+     * Lazily builds the number layer's sprites: loads the two atlases and creates the two
      * sprite instancers (attaching each under the background layer's render object, making it
      * visible, binding its atlas, and seeding its sprite count).
      *
@@ -41,24 +41,24 @@ public:
      */
     void InitializeNumberLayer();
 
-    /** @brief The number of number-layer sprite instancers the layer builds. */
+    /** The number of number-layer sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 2;
 
     /**
-     * @brief Marks the number display ready to show and resets its frame counter.
+     * Marks the number display ready to show and resets its frame counter.
      * @ghidraAddress 0x17df2c
      */
     void SetReady();
 
     /**
-     * @brief Clears the number display's ready flag.
+     * Clears the number display's ready flag.
      * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x17df3c
      */
     void ClearReady(float flDuration);
 
     /**
-     * @brief Whether the number display is ready to show (its intro is complete).
+     * Whether the number display is ready to show (its intro is complete).
      * @return @c true once the intro is complete.
      */
     bool IsReady() const {
@@ -66,7 +66,7 @@ public:
     }
 
     /**
-     * @brief Advances the number display's intro animation one frame and re-emits its digit
+     * Advances the number display's intro animation one frame and re-emits its digit
      * markers.
      *
      * A no-op until the display is made ready. It advances the animation timer and turns the
@@ -81,7 +81,7 @@ public:
     void Process(float flDelta);
 
     /**
-     * @brief Appends one score-digit marker sprite to its batch at a world position, at the given
+     * Appends one score-digit marker sprite to its batch at a world position, at the given
      * scale and alpha.
      *
      * A no-op when the target batch is full. The anchor, size, and atlas frame come from the shared
@@ -104,7 +104,7 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x17dd98
      */
     NumberLayer();

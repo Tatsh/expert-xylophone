@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The keyframe step-table lookup helper.
+ * The keyframe step-table lookup helper.
  */
 
 #pragma once
 
 /**
- * @brief The sentinel returned by @c KeyframeStepTableLookup when the query time is out of range.
+ * The sentinel returned by @c KeyframeStepTableLookup when the query time is out of range.
  *
  * The raw 32-bit value 10, which callers that read the result as a float see as the bit pattern
  * 1.4e-44.

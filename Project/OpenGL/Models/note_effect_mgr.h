@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note manager / note-effect manager, @c NoteEffectMgr.
+ * The note manager / note-effect manager, @c NoteEffectMgr.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class CMusicSheet2;
 }
 
 /**
- * @brief The process-wide note manager: it owns the active chart, the live note render/effect
+ * The process-wide note manager: it owns the active chart, the live note render/effect
  * objects, and the running play counters.
  *
  * A lazily-created singleton (see @c shared). Only the fields the reconstructed methods touch are
@@ -28,14 +28,14 @@ class CMusicSheet2;
 class NoteEffectMgr {
 public:
     /**
-     * @brief The process-wide note manager, created on first use.
+     * The process-wide note manager, created on first use.
      * @return The shared note manager.
      * @ghidraAddress 0x136b9c
      */
     static NoteEffectMgr *shared();
 
     /**
-     * @brief The chart's note-density tier (0, 1, or 2), which selects the per-grade gauge-gain
+     * The chart's note-density tier (0, 1, or 2), which selects the per-grade gauge-gain
      * row.
      * @return The density tier.
      */
@@ -44,14 +44,14 @@ public:
     }
 
     /**
-     * @brief Resets the per-note position cache: sets every render entry's cached position to the
+     * Resets the per-note position cache: sets every render entry's cached position to the
      *        -1 empty marker.
      * @ghidraAddress 0x1373a0
      */
     void ClearNotePositionCache();
 
     /**
-     * @brief Returns a touch's projected note-field position, computing and caching it on first use
+     * Returns a touch's projected note-field position, computing and caching it on first use
      * this frame.
      *
      * Returns the cached position when the touch id is already cached; otherwise claims the first
@@ -66,7 +66,7 @@ public:
     const S_VECTOR2 *GetOrCacheNotePosition(int nTouchId);
 
     /**
-     * @brief Returns the note object for a chart note index, or @c nullptr when none matches.
+     * Returns the note object for a chart note index, or @c nullptr when none matches.
      *
      * A valid in-range index returns the pooled object directly; otherwise (or for a negative
      * index) the pool is scanned for an object whose note index matches.
@@ -77,7 +77,7 @@ public:
     NoteModel *FindNoteByIndex(int nIndex);
 
     /**
-     * @brief Returns the active chart's note record at @p nIndex, or @c nullptr when no chart is
+     * Returns the active chart's note record at @p nIndex, or @c nullptr when no chart is
      *        bound.
      * @param nIndex The note-record index.
      * @return The note record, or @c nullptr.
@@ -86,7 +86,7 @@ public:
     RbffNoteRecord *GetActiveNoteRecord(int nIndex);
 
     /**
-     * @brief Whether the note at @p nIndex is excluded from scoring (flag bit 2 of its record).
+     * Whether the note at @p nIndex is excluded from scoring (flag bit 2 of its record).
      * @param nIndex The note-record index.
      * @return @c true when the note is excluded from scoring; @c false when it is not or has no
      *         record.
@@ -95,7 +95,7 @@ public:
     bool IsNoteScoreExcluded(int nIndex);
 
     /**
-     * @brief Whether the note at @p nIndex has record flag bit 6 (mask 0x40) set.
+     * Whether the note at @p nIndex has record flag bit 6 (mask 0x40) set.
      * @param nIndex The note-record index.
      * @return @c true when the flag is set; @c false otherwise.
      * @ghidraAddress 0x137ab8
@@ -103,7 +103,7 @@ public:
     bool IsNoteFlag40Set(int nIndex);
 
     /**
-     * @brief Grows the note-object pool and active-list arrays to hold at least @p nCount objects.
+     * Grows the note-object pool and active-list arrays to hold at least @p nCount objects.
      *
      * A no-op when the current capacity already covers @p nCount. Otherwise it allocates new pool
      * and active-list arrays, copies the existing pooled objects across, constructs a fresh
@@ -114,7 +114,7 @@ public:
     void EnsureNoteObjectCapacity(int nCount);
 
     /**
-     * @brief Prepares the note objects for the bound chart: ensures pool capacity for the chart's
+     * Prepares the note objects for the bound chart: ensures pool capacity for the chart's
      *        note count, assigns each note its index, and clears the active list.
      *
      * A no-op when no chart is bound.
@@ -123,14 +123,14 @@ public:
     void InitNoteObjects();
 
     /**
-     * @brief Detaches every pooled note from its chart binding and clears the active list (a
+     * Detaches every pooled note from its chart binding and clears the active list (a
      * lighter reset than a full re-init).
      * @ghidraAddress 0x1379cc
      */
     void ResetAllNoteSubEntries();
 
     /**
-     * @brief Binds a parsed chart and prepares its note objects, choosing a density tier by the
+     * Binds a parsed chart and prepares its note objects, choosing a density tier by the
      *        chart's note count; a null chart clears the note bindings instead.
      * @param pMusicSheet The parsed chart, or @c nullptr to clear.
      * @ghidraAddress 0x137a4c
@@ -138,7 +138,7 @@ public:
     void SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet);
 
     /**
-     * @brief Evaluates the chart's scroll position at a target time by integrating the speed-change
+     * Evaluates the chart's scroll position at a target time by integrating the speed-change
      *        path.
      *
      * Walks the bound chart's speed-change path nodes, accumulating each segment's speed times its
@@ -151,7 +151,7 @@ public:
     float EvaluateNotePathAtTime(int nTargetTime) const;
 
     /**
-     * @brief Appends a newly-activated note to the active list and insertion-sorts it into hit-time
+     * Appends a newly-activated note to the active list and insertion-sorts it into hit-time
      *        order.
      * @param pNote The note to insert.
      * @ghidraAddress 0x137080
@@ -159,7 +159,7 @@ public:
     void InsertActiveNoteSorted(NoteModel *pNote);
 
     /**
-     * @brief Activates the chart note at @p nChartIndex: spawns its @c NoteModel and sorts it into
+     * Activates the chart note at @p nChartIndex: spawns its @c NoteModel and sorts it into
      * the active list, unless it has no record or is already active.
      *
      * A no-op without a bound chart, when the index has no record, when no pooled object matches,
@@ -170,21 +170,21 @@ public:
     void ActivateNoteByIndex(int nChartIndex);
 
     /**
-     * @brief Applies the current theme to the manager: caches the player theme from the user
+     * Applies the current theme to the manager: caches the player theme from the user
      * settings and the game system's shot type, then preloads that shot type's sound variants.
      * @ghidraAddress 0x136c50
      */
     void ApplyTheme();
 
     /**
-     * @brief Resets every pooled note's play state and clears the active list and counters (a full
+     * Resets every pooled note's play state and clears the active list and counters (a full
      * replay reset).
      * @ghidraAddress 0x137124
      */
     void ResetAllNoteModels();
 
     /**
-     * @brief Dispatches a note judge/tap event to the shot-sound manager, queuing the manager's
+     * Dispatches a note judge/tap event to the shot-sound manager, queuing the manager's
      * shot-sound slot at the event's priority.
      * @param nPlaySide The note's play side (the binary computes and passes it, but the sound
      * manager discards it).
@@ -194,7 +194,7 @@ public:
     void DispatchNoteJudgeEvent(int nPlaySide, unsigned int nPriority);
 
     /**
-     * @brief Removes finished notes from the active list, compacting the survivors to the front.
+     * Removes finished notes from the active list, compacting the survivors to the front.
      *
      * A note survives while its state has any bit set other than the finished bit (bit 3).
      * @ghidraAddress 0x136f38
@@ -202,7 +202,7 @@ public:
     void CompactActiveNotes();
 
     /**
-     * @brief Processes the active-note list for one frame: touch-hit testing, step update, render,
+     * Processes the active-note list for one frame: touch-hit testing, step update, render,
      * and compaction.
      *
      * Unless input is locked, it resolves each live touch's play-field position and, for each
@@ -215,7 +215,7 @@ public:
     void ProcessActiveNotes();
 
     /**
-     * @brief Walks every note record of the attached chart (a bounds/validation pass).
+     * Walks every note record of the attached chart (a bounds/validation pass).
      *
      * Fetches each record by index from the bound chart; the fetched pointers are not consumed (the
      * body that used them was inlined away), so this only exercises the record lookup.
@@ -224,7 +224,7 @@ public:
     void IterateNoteRecords();
 
     /**
-     * @brief Assigns each active note a randomised colour, then locks the full-combo colours.
+     * Assigns each active note a randomised colour, then locks the full-combo colours.
      *
      * A per-combo probability picks the proportion of the four colours; each unlocked note draws
      * its colour from that distribution. When the user or CPU achieved a full combo, every note on
@@ -234,7 +234,7 @@ public:
     void AssignNoteColors();
 
     /**
-     * @brief The active note count (the loaded chart's note count).
+     * The active note count (the loaded chart's note count).
      * @return The loaded chart's note count.
      * @ghidraAddress 0x13719c
      */
@@ -243,7 +243,7 @@ public:
     }
 
     /**
-     * @brief The active player theme (0 classic, 1 limelight, otherwise colette).
+     * The active player theme (0 classic, 1 limelight, otherwise colette).
      * @return The active player theme.
      */
     int GetThema() const {
@@ -251,7 +251,7 @@ public:
     }
 
     /**
-     * @brief Records a scored note and, when every note of the side is judged, fires the chart's
+     * Records a scored note and, when every note of the side is judged, fires the chart's
      * completion.
      *
      * Sums the side's per-grade tallies (grades 3 through 6) on the score tracker; when they reach
@@ -265,7 +265,7 @@ public:
     void HandleNoteScored(int nUnused, int nSide);
 
     /**
-     * @brief The accumulated hit (judged-note) count.
+     * The accumulated hit (judged-note) count.
      * @return The accumulated hit count.
      * @ghidraAddress 0x137ae4
      */
@@ -273,14 +273,14 @@ public:
         return m_nHitCount;
     }
     /**
-     * @brief Increments the hit count.
+     * Increments the hit count.
      * @ghidraAddress 0x137aec
      */
     void IncrementHitCount() {
         ++m_nHitCount;
     }
     /**
-     * @brief Decrements the hit count (undo on a rewind or miss-revert).
+     * Decrements the hit count (undo on a rewind or miss-revert).
      * @ghidraAddress 0x137afc
      */
     void DecrementHitCount() {
@@ -289,7 +289,7 @@ public:
 
 private:
     /**
-     * @brief Constructs the manager: zeroes the header, clears the per-note render sub-table, sets
+     * Constructs the manager: zeroes the header, clears the per-note render sub-table, sets
      * the six active-slot indices to the -1 empty marker, and seeds the is-pad flag.
      * @ghidraAddress 0x136bec
      */
@@ -321,8 +321,8 @@ private:
 
     // One per-note render entry: the cached note position (-1 when empty) and its render state.
     struct RenderEntry {
-        int nCachedKey = {};      // +0x00: the touch id this slot caches, or -1 when empty.
-        S_VECTOR2 cachedPosition; // +0x04: the touch's projected note-field position.
+        int nCachedKey = {};      /*!< The touch id this slot caches, or -1 when empty. +0x00 */
+        S_VECTOR2 cachedPosition; /*!< The touch's projected note-field position. +0x04 */
     };
     // +0x68..+0x157: the 20-entry per-note render sub-table (each kRenderEntryStride bytes).
     RenderEntry m_aRenderTable[kRenderEntryCount] = {}; // +0x68

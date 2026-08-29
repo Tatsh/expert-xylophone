@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A singleton that fires the game's telemetry and progression calls at the secure API host.
+ * A singleton that fires the game's telemetry and progression calls at the secure API host.
  *
  * Each
  * class method builds a parameter dictionary (region, music, difficulty, score, unlock, or tutorial
@@ -22,27 +22,27 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Sends the game's server API calls (play logs, unlocks, and tutorial status) and owns their
+ * Sends the game's server API calls (play logs, unlocks, and tutorial status) and owns their
  * in-flight @c Downloader connections.
  */
 @interface RBServerAPIManager : NSObject <DownloaderDelegate>
 
 /**
- * @brief The live @c Downloader connections started by the API calls, held until each completes.
+ * The live @c Downloader connections started by the API calls, held until each completes.
  * @ghidraAddress 0x17dd3c (getter)
  * @ghidraAddress 0x17dd4c (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *httpArray;
 
 /**
- * @brief The lazily-created shared manager.
+ * The lazily-created shared manager.
  * @return The shared server-API manager.
  * @ghidraAddress 0x17ca08
  */
 + (instancetype)getInstance;
 
 /**
- * @brief Post a play-log entry for a music selection and difficulty (legacy endpoint).
+ * Post a play-log entry for a music selection and difficulty (legacy endpoint).
  * @param musicID The tune identifier played.
  * @param dif The difficulty played.
  * @ghidraAddress 0x17cac4
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)playedAPIWithMusicID:(unsigned int)musicID dif:(unsigned int)dif;
 
 /**
- * @brief Post a detailed play-log entry (version 2) for a music selection, difficulty, and result.
+ * Post a detailed play-log entry (version 2) for a music selection, difficulty, and result.
  * @param musicID The tune identifier played.
  * @param dif The difficulty played.
  * @param note The note count achieved.
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                          score:(unsigned int)score;
 
 /**
- * @brief Report an unlock (type, identity, and point cost) to the server.
+ * Report an unlock (type, identity, and point cost) to the server.
  * @param type The unlock type.
  * @param identity The identifier of the unlocked item.
  * @param point The point cost of the unlock.
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)unlockedAPIWithType:(unsigned int)type identity:(unsigned int)identity point:(float)point;
 
 /**
- * @brief Report the current tutorial completion status to the server.
+ * Report the current tutorial completion status to the server.
  * @ghidraAddress 0x17d860
  */
 + (void)tutorialAPI;

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note chain-link block, @c NoteChainLink.
+ * The note chain-link block, @c NoteChainLink.
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include <cstring>
 
 /**
- * @brief The 12-byte chain-link block embedded in each chart note record (at record +0x3c).
+ * The 12-byte chain-link block embedded in each chart note record (at record +0x3c).
  *
  * A chain threads its notes through the previous- and next-segment indices; both hold the -1 marker
  * when the note is at an end. The trailing eight bytes are cleared spare space. The chart parser
@@ -18,14 +18,14 @@
 class NoteChainLink {
 public:
     /**
-     * @brief Constructs the block in the empty state: both indices to the -1 marker, the partner,
+     * Constructs the block in the empty state: both indices to the -1 marker, the partner,
      * end marker, and trailing spare all cleared.
      * @ghidraAddress 0x12eadc
      */
     NoteChainLink();
 
     /**
-     * @brief Whether this note heads its chain (no previous segment).
+     * Whether this note heads its chain (no previous segment).
      * @return @c true when the previous-segment index is the -1 marker.
      * @ghidraAddress 0x12eaf0
      */
@@ -34,7 +34,7 @@ public:
     }
 
     /**
-     * @brief Whether this note ends its chain (no next segment).
+     * Whether this note ends its chain (no next segment).
      * @return @c true when the next-segment index is the -1 marker.
      * @ghidraAddress 0x12eb00
      */
@@ -43,7 +43,7 @@ public:
     }
 
     /**
-     * @brief The next chain-segment index, or the -1 marker at the tail.
+     * The next chain-segment index, or the -1 marker at the tail.
      * @return The next chain-segment index, or -1 at the tail.
      */
     short GetNext() const {
@@ -51,14 +51,14 @@ public:
     }
 
     /**
-     * @brief The head-note chain id (the parser stores it here for a long-note head).
+     * The head-note chain id (the parser stores it here for a long-note head).
      * @return The head-note chain id.
      */
     short GetChainId() const {
         return m_nPrev;
     }
 
-    /** @brief Marks this note a long-note head bound to @p nPartner, with both end markers unset.
+    /** Marks this note a long-note head bound to @p nPartner, with both end markers unset.
      *
      * Used only by the legacy parser, which leaves the next index unset and fills it later in its
      * own resolve pass. The v10 parser takes an already-resolved block from the chart instead; see
@@ -74,7 +74,7 @@ public:
     }
 
     /**
-     * @brief Seeds the block from a v10 chart's already-resolved twelve-byte chain payload.
+     * Seeds the block from a v10 chart's already-resolved twelve-byte chain payload.
      *
      * The v10 parser has no resolve pass: the chart carries the whole block and the binary copies
      * it verbatim, so the next index arrives from the file rather than being left at the -1 marker.
@@ -92,7 +92,7 @@ public:
     }
 
     /**
-     * @brief Records the resolved long-note tail: its partner note id and time delta.
+     * Records the resolved long-note tail: its partner note id and time delta.
      * @param nPartnerNoteId The tail's partner note id.
      * @param nTimeDelta The tail's time delta.
      */
@@ -102,7 +102,7 @@ public:
     }
 
     /**
-     * @brief The bound partner index, when this note heads a long note.
+     * The bound partner index, when this note heads a long note.
      * @return The bound partner index.
      */
     short GetPartner() const {

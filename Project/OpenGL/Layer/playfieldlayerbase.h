@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The shared base class for the play-field theme layers.
+ * The shared base class for the play-field theme layers.
  */
 
 #pragma once
 
 /**
- * @brief Shared base for the play-field theme layers.
+ * Shared base for the play-field theme layers.
  *
  * Holds the presentation context common to every theme layer: the is-pad flag, whether the device
  * is the older hardware type, and the selected theme. Concrete play-field layers (the clear gauge,
@@ -16,7 +16,7 @@
 class PlayFieldLayerBase {
 public:
     /**
-     * @brief Whether the device is an iPad (seeded from @c IsPad at construction).
+     * Whether the device is an iPad (seeded from @c IsPad at construction).
      * @return @c true on an iPad-idiom device.
      */
     bool IsPad() const {
@@ -24,7 +24,7 @@ public:
     }
 
     /**
-     * @brief Whether the device is the older (type 9) hardware.
+     * Whether the device is the older (type 9) hardware.
      * @return @c true on the older type-9 hardware.
      */
     bool IsHardwareType9() const {
@@ -32,7 +32,7 @@ public:
     }
 
     /**
-     * @brief The selected theme identifier.
+     * The selected theme identifier.
      * @return The selected theme identifier.
      */
     int GetThema() const {
@@ -40,7 +40,7 @@ public:
     }
 
     /**
-     * @brief Re-reads the user's theme setting into the layer.
+     * Re-reads the user's theme setting into the layer.
      *
      * Called once per layer during theme initialisation to refresh @c m_nThema from the current
      * @c RBUserSettingData theme.
@@ -49,7 +49,7 @@ public:
     void RefreshThema();
 
     /**
-     * @brief The base layer-release hook: releases nothing.
+     * The base layer-release hook: releases nothing.
      *
      * A concrete layer's destructor releases its own resources and then chains this empty base
      * hook. The base holds only value fields, so it has nothing to release.
@@ -60,7 +60,7 @@ public:
 
 protected:
     /**
-     * @brief Constructs the layer base from the current device and settings.
+     * Constructs the layer base from the current device and settings.
      *
      * Fills in the is-pad flag, hardware type, and selected theme. Every concrete layer's
      * constructor runs this base constructor before setting up its own fields. The binary returns

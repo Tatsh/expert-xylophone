@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note-trail layer, @c NoteTrailLayer.
+ * The note-trail layer, @c NoteTrailLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The note-trail layer (the trailing ribbons behind long notes).
+ * The note-trail layer (the trailing ribbons behind long notes).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and one sprite instancer, drawn beneath the shared background layer, that presents the note
@@ -26,18 +26,18 @@ class C_SPRITE_INSTANCING_2D;
  */
 class NoteTrailLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The sprite-instancer capacity the layer builds. */
+    /** The sprite-instancer capacity the layer builds. */
     static constexpr unsigned int kSpriteCapacity = 0x28;
 
     /**
-     * @brief The process-wide note-trail layer, created on first use.
+     * The process-wide note-trail layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x184708
      */
     static NoteTrailLayer *shared();
 
     /**
-     * @brief Lazily builds the note-trail sprite: loads the gm_parts1 atlas and creates the sprite
+     * Lazily builds the note-trail sprite: loads the gm_parts1 atlas and creates the sprite
      * instancer (attaching it under the background layer's render object, making it visible,
      * binding the atlas, flagging additive blend, and, except on the tutorial hardware, enabling
      * its two texture-environment parameters).
@@ -47,15 +47,15 @@ public:
      */
     void LoadNoteTrailSprites();
 
-    /** @brief The judge grades a queued result mark may carry, asserted by @c Create. */
+    /** The judge grades a queued result mark may carry, asserted by @c Create. */
     static constexpr int kJudgeMax = 4;
-    /** @brief The most result marks the queue holds in one frame. */
+    /** The most result marks the queue holds in one frame. */
     static constexpr int kMaxResults = 40;
-    /** @brief The number of result sprite graphics @c CreateSprite can emit. */
+    /** The number of result sprite graphics @c CreateSprite can emit. */
     static constexpr int kResultSpriteTypeCount = 6;
 
     /**
-     * @brief Queues a note-trail result mark at (@p flX, @p flY) for the current frame.
+     * Queues a note-trail result mark at (@p flX, @p flY) for the current frame.
      *
      * Finds the first free slot in the queue (up to @c kMaxResults marks) and stores the judge and
      * position; drops the mark when the queue is full.
@@ -67,7 +67,7 @@ public:
     void Create(int nJudge, float flX, float flY);
 
     /**
-     * @brief Advances the layer one frame: steps the two spin phases (wrapping each into range),
+     * Advances the layer one frame: steps the two spin phases (wrapping each into range),
      * then emits every queued result mark's spinning sprite and clears the queue.
      *
      * The first spin phase drives the sprite rotation; the second selects the spin frame (0 through
@@ -80,7 +80,7 @@ public:
     void Update(float flDeltaSeconds);
 
     /**
-     * @brief Emits one result sprite into the batch at the running write index.
+     * Emits one result sprite into the batch at the running write index.
      *
      * Both graphics draw a fixed 58-anchored, 116-square quad; the type only selects the UV rect.
      * Writes the sprite's position, anchor, size, UV rect, rotation, scale, and colour (opaque
@@ -102,16 +102,16 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x1846b0
      */
     NoteTrailLayer();
 
     // One queued result mark (16 bytes): whether the slot is in use, its judge, and its position.
     struct ResultMark {
-        bool bActive = {};       // +0x00: whether the slot holds a queued mark.
-        int nJudge = {};         // +0x04: the mark's judge grade.
-        S_VECTOR2 position = {}; // +0x08: the mark position.
+        bool bActive = {};       /*!< Whether the slot holds a queued mark. +0x00 */
+        int nJudge = {};         /*!< The mark's judge grade. +0x04 */
+        S_VECTOR2 position = {}; /*!< The mark position. +0x08 */
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.

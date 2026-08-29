@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The ranking (leaderboard) popup view.
+ * The ranking (leaderboard) popup view.
  *
  * It is an @c RBMusicMenuPopupView configured with the
  * ranking popup type, presenting two overlaid @c RBRankingTableView leaderboards — a friend-scope
@@ -20,14 +20,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Popup view that shows the friend and total ranking boards over the music menu.
+ * Popup view that shows the friend and total ranking boards over the music menu.
  */
 @interface RBRankingView : RBMusicMenuPopupView
 
 #pragma mark Lifecycle
 
 /**
- * @brief Create the ranking popup, select the ranking popup type, and build its content.
+ * Create the ranking popup, select the ranking popup type, and build its content.
  * @param frame The view's frame rectangle.
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0xdda2c
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the ranking content: the friend and total ranking table views, and the friend and
+ * Build the ranking content: the friend and total ranking table views, and the friend and
  * all tab buttons with their flash effects; then show the total board.
  * @ghidraAddress 0xddaec
  */
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Actions
 
 /**
- * @brief Switch which ranking board is visible: show the friend board and its selected tab, or the
+ * Switch which ranking board is visible: show the friend board and its selected tab, or the
  * total board and its tab.
  * @param showFriend Whether to show the friend board (@c YES) or the total board (@c NO).
  * @ghidraAddress 0xdec60
@@ -52,34 +52,34 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showFriend:(BOOL)showFriend;
 
 /**
- * @brief Friend tab handler: play the cancel sound effect and show the friend board.
+ * Friend tab handler: play the cancel sound effect and show the friend board.
  * @ghidraAddress 0xdedf4
  */
 - (void)SelectFriendButton;
 
 /**
- * @brief All tab handler: play the cancel sound effect and show the total board.
+ * All tab handler: play the cancel sound effect and show the total board.
  * @ghidraAddress 0xdee2c
  */
 - (void)SelectAllButton;
 
 #pragma mark Properties
 
-/** @brief The optional title image view at the top of the content view. */
+/** The optional title image view at the top of the content view. */
 @property(strong, nonatomic, nullable) UIImageView *titleView;
-/** @brief The optional scrolling base view that hosts the boards. */
+/** The optional scrolling base view that hosts the boards. */
 @property(strong, nonatomic, nullable) UIView *scrollBaseView;
-/** @brief The friend-scope ranking board. */
+/** The friend-scope ranking board. */
 @property(strong, nonatomic, nullable) RBRankingTableView *friendRanking;
-/** @brief The total-scope ranking board. */
+/** The total-scope ranking board. */
 @property(strong, nonatomic, nullable) RBRankingTableView *totalRanking;
-/** @brief The friend tab button. */
+/** The friend tab button. */
 @property(strong, nonatomic, nullable) UIButton *friendButton;
-/** @brief The flash overlay drawn over the friend tab button. */
+/** The flash overlay drawn over the friend tab button. */
 @property(strong, nonatomic, nullable) UIImageView *friendButtonEffect;
-/** @brief The all (total) tab button. */
+/** The all (total) tab button. */
 @property(strong, nonatomic, nullable) UIButton *allButton;
-/** @brief The flash overlay drawn over the all tab button. */
+/** The flash overlay drawn over the all tab button. */
 @property(strong, nonatomic, nullable) UIImageView *allButtonEffect;
 
 @end

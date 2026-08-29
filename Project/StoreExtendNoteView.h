@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A single extend-note product view embedded in a pad pack-table cell (the left or right
+ * A single extend-note product view embedded in a pad pack-table cell (the left or right
  * half of a two-product row).
  *
  * It lays out the tune artwork, its name, artist, comment, and difficulty level,
@@ -24,74 +24,74 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A single extend-note product view inside a pad pack-table cell.
+ * A single extend-note product view inside a pad pack-table cell.
  */
 @interface StoreExtendNoteView : StoreTableCellViewBase
 
 /**
- * @brief The tune artwork image view.
+ * The tune artwork image view.
  * @ghidraAddress 0x4d058 (getter)
  * @ghidraAddress 0x4d068 (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *artworkImageView;
 /**
- * @brief The shadowed backing plate shown behind the artwork.
+ * The shadowed backing plate shown behind the artwork.
  * @ghidraAddress 0x4d0a0 (getter)
  * @ghidraAddress 0x4d0b0 (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *artworkBackImageView;
 /**
- * @brief The tune name label.
+ * The tune name label.
  * @ghidraAddress 0x4d0e8 (getter)
  * @ghidraAddress 0x4d0f8 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *nameLabel;
 /**
- * @brief The tune artist label.
+ * The tune artist label.
  * @ghidraAddress 0x4d130 (getter)
  * @ghidraAddress 0x4d140 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *artistLabel;
 /**
- * @brief The tune comment label.
+ * The tune comment label.
  * @ghidraAddress 0x4d158 (getter)
  * @ghidraAddress 0x4d188 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *commentLabel;
 /**
- * @brief The difficulty-level label.
+ * The difficulty-level label.
  * @ghidraAddress 0x4d1a0 (getter)
  * @ghidraAddress 0x4d1d0 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *levelLabel;
 /**
- * @brief The purchased/price overlay label.
+ * The purchased/price overlay label.
  * @ghidraAddress 0x4d1d8 (getter)
  * @ghidraAddress 0x4d208 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *purchasedLabel;
 /**
- * @brief An informational deep link associated with the item, when present.
+ * An informational deep link associated with the item, when present.
  * @ghidraAddress 0x4d250 (getter)
  * @ghidraAddress 0x4d260 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *linkURL;
 /**
- * @brief Whether the extend note is purchased, derived from the purchased-label visibility.
+ * Whether the extend note is purchased, derived from the purchased-label visibility.
  * @ghidraAddress 0x4cb68 (getter)
  * @ghidraAddress 0x4cbc8 (setter)
  */
 @property(nonatomic, assign) BOOL isPurchased;
 
 /**
- * @brief Loads the given extend-note record into the view at the given product-list index.
+ * Loads the given extend-note record into the view at the given product-list index.
  * @param info The extend-note record to display.
  * @param index The product-list index of the record.
  * @ghidraAddress 0x4cc28
  */
 - (void)loadExtendNoteInfo:(nullable StoreExtendNoteInfo *)info index:(NSUInteger)index;
 /**
- * @brief Sets the view's artwork image.
+ * Sets the view's artwork image.
  * @param artwork The artwork image.
  * @ghidraAddress 0x4cadc
  */

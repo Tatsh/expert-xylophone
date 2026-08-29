@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The application's main window.
+ * The application's main window.
  *
  * @c neWindow is a trivial @c UIWindow subclass that hosts the game
  * engine's render surface. It overrides the four touch-phase entry points with empty bodies so that
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The main window hosting the game engine's render surface.
+ * The main window hosting the game engine's render surface.
  */
 @interface neWindow : UIWindow
 

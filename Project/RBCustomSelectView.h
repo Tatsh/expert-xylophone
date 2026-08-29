@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The customize item picker hosted by @c RBCustomView.
+ * The customize item picker hosted by @c RBCustomView.
  *
  * It fills the popup content view with a
  * vertically scrolling stack of per-category item grids (@c RBCustomSelectCollectionView): the
@@ -19,7 +19,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Customize item picker view.
+ * Customize item picker view.
  *
  * The picker owns a scroll view holding one @c RBCustomSelectCollectionView per customization
  * category, stacked top to bottom, plus a preview button. The stack layout (each grid's start Y,
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBCustomSelectView : UIView
 
 /**
- * @brief Create the picker with the given frame and build its subviews.
+ * Create the picker with the given frame and build its subviews.
  * @param frame The view's frame rectangle.
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0x1687dc
@@ -37,13 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the scroll view, the per-category item grids, and the preview button.
+ * Build the scroll view, the per-category item grids, and the preview button.
  * @ghidraAddress 0x1688c0
  */
 - (void)setupView;
 
 /**
- * @brief The vertical origin of the first category grid, chosen by the theme and the iPad idiom.
+ * The vertical origin of the first category grid, chosen by the theme and the iPad idiom.
  *
  * The sole caller passes the current player theme; a Classic theme starts the stack higher than the
  * others, and the two iPad idioms use different offsets.
@@ -54,67 +54,67 @@ NS_ASSUME_NONNULL_BEGIN
 - (float)getCollectionViewStartY:(RBUserSettingDataTheme)thema;
 
 /**
- * @brief The vertical gap left between consecutive category grids, chosen by the iPad idiom.
+ * The vertical gap left between consecutive category grids, chosen by the iPad idiom.
  * @return The inter-grid margin.
  * @ghidraAddress 0x16889c
  */
 - (float)getCollectionViewMargin;
 
 /**
- * @brief Reload every category grid's item content.
+ * Reload every category grid's item content.
  * @ghidraAddress 0x1696d4
  */
 - (void)reloadData;
 
 /**
- * @brief Start the game preview and play the decide sound effect.
+ * Start the game preview and play the decide sound effect.
  * @param sender The preview button that sent the action.
  * @ghidraAddress 0x169828
  */
 - (void)prevButtonTap:(nullable id)sender;
 
 /**
- * @brief The scroll view holding the stacked category grids and the preview button.
+ * The scroll view holding the stacked category grids and the preview button.
  */
 @property(strong, nonatomic, nullable) UIScrollView *scrollView;
 
 /**
- * @brief The theme background-music category grid.
+ * The theme background-music category grid.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *bgmCollectionView;
 
 /**
- * @brief The tap shot-sound category grid.
+ * The tap shot-sound category grid.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *shotCollectionView;
 
 /**
- * @brief The explosion-effect category grid.
+ * The explosion-effect category grid.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *explosionCollectionView;
 
 /**
- * @brief The frame category grid.
+ * The frame category grid.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *frameCollectionView;
 
 /**
- * @brief The background category grid.
+ * The background category grid.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *bgCollectionView;
 
 /**
- * @brief The note-skin category grid.
+ * The note-skin category grid.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *noteCollectionView;
 
 /**
- * @brief The gauge category grid, built only on the non-default font layout.
+ * The gauge category grid, built only on the non-default font layout.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *gaugeCollectionView;
 
 /**
- * @brief The judge-timing category grid.
+ * The judge-timing category grid.
  */
 @property(strong, nonatomic, nullable) RBCustomSelectCollectionView *timingCollectionView;
 

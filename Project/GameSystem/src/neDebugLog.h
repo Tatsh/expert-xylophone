@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Optional @c os_log runtime diagnostics, gated behind the @c RBPDBG build flag.
+ * Optional @c os_log runtime diagnostics, gated behind the @c RBPDBG build flag.
  *
  * None of this is part of the original binary: it is compiled in only when the build defines
  * @c RBPDBG (the CMake option of that name, which is enable-able in any build configuration and is
@@ -36,7 +36,7 @@
 #pragma once
 
 /**
- * @brief Whether the optional runtime diagnostics are compiled in.
+ * Whether the optional runtime diagnostics are compiled in.
  *
  * Defaults to zero when the build system does not define it, which selects the no-op helpers
  * below.
@@ -54,7 +54,7 @@
 #include <stdio.h>
 
 /**
- * @brief Emits one printf-style diagnostic line through @c os_log.
+ * Emits one printf-style diagnostic line through @c os_log.
  *
  * Works in @c .c, @c .m, @c .cpp, and @c .mm translation units alike; @c os_log lines are what
  * @c idevicesyslog captures.
@@ -71,7 +71,7 @@ static inline void neDebugLog(const char *fmt, ...) {
 }
 
 /**
- * @brief A call counter helper: returns true for the first @p limit invocations at a given site.
+ * A call counter helper: returns true for the first @p limit invocations at a given site.
  *
  * A per-frame draw call can therefore log a bounded burst instead of flooding the log at 60 fps.
  * This is a statement expression rather than a lambda so that it compiles in the project's pure
@@ -85,7 +85,7 @@ static inline void neDebugLog(const char *fmt, ...) {
     })
 
 /**
- * @brief Wraps debug-only statements that have real side effects.
+ * Wraps debug-only statements that have real side effects.
  *
  * Expands to the statements when @c RBPDBG is on and to nothing otherwise, so a call such as
  * @c glGetError(), which clears GL error state, never runs in the faithful build. An internal
@@ -100,7 +100,7 @@ static inline void neDebugLog(const char *fmt, ...) {
 #else
 
 /**
- * @brief The no-op fallback build of @c neDebugLog.
+ * The no-op fallback build of @c neDebugLog.
  *
  * A bare, unguarded log call still compiles away to nothing.
  * @param fmt Ignored in this build.
@@ -111,7 +111,7 @@ static inline void neDebugLog(const char *fmt, ...) {
 }
 
 /**
- * @brief The no-op fallback build of @c NE_DBG_FIRST, which is always false.
+ * The no-op fallback build of @c NE_DBG_FIRST, which is always false.
  *
  * It collapses an `if (NE_DBG_FIRST(n)) { ... }` block to dead code that the optimiser drops.
  * The expansion is a plain @c 0 rather than @c false, which is a keyword only in C++ and would
@@ -120,7 +120,7 @@ static inline void neDebugLog(const char *fmt, ...) {
  */
 #define NE_DBG_FIRST(limit) (0)
 /**
- * @brief The no-op fallback build of @c NE_DBG: the wrapped statements are not compiled in.
+ * The no-op fallback build of @c NE_DBG: the wrapped statements are not compiled in.
  * @param ... The debug-only statements, which do not run in this build.
  */
 #define NE_DBG(...) ((void)0)
@@ -128,7 +128,7 @@ static inline void neDebugLog(const char *fmt, ...) {
 #endif
 
 /**
- * @brief The build's git SHA, set by CMake at configure time.
+ * The build's git SHA, set by CMake at configure time.
  *
  * Logged once at startup under @c RBPDBG so a captured @c os_log identifies exactly which build
  * produced it. It falls back to @c "unknown" when the build system does not define it.

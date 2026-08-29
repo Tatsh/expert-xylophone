@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The pad two-up store list's pack tile: a single purchasable song pack rendered as a tile
+ * The pad two-up store list's pack tile: a single purchasable song pack rendered as a tile
  * with a
  * jacket, name, comment, price, an owned-state overlay button, and "new" and "sequence-extension"
  * corner badges. It reports a tap to its delegate through the @c StorePackViewDelegate protocol.
@@ -19,7 +19,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The messages a @c StorePackView and its detail surfaces send to their shared delegate.
+ * The messages a @c StorePackView and its detail surfaces send to their shared delegate.
  *
  * The compiled protocol in the binary declares a single optional method, @c packViewSelected:,
  * which is the only message @c StorePackView itself sends (from its tap handler). The remaining
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 /**
- * @brief Sent when a pack tile is tapped.
+ * Sent when a pack tile is tapped.
  *
  * This is the only method in the binary's compiled @c StorePackViewDelegate protocol.
  * @param packView The tapped pack tile.
@@ -41,14 +41,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)packViewSelected:(StorePackView *)packView;
 
 /**
- * @brief Sent by the pack detail surface when it should be dismissed.
+ * Sent by the pack detail surface when it should be dismissed.
  *
  * Informal: not part of the compiled protocol; sent by @c RBStoreDetailViewController.
  */
 - (void)detailViewClose;
 
 /**
- * @brief Sent by the pack detail surface to begin buying the given pack.
+ * Sent by the pack detail surface to begin buying the given pack.
  *
  * Informal: not part of the compiled protocol; sent by @c RBStoreDetailViewController.
  * @param packInfo The pack to buy.
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)detailViewStartPurchase:(StorePackInfo *)packInfo;
 
 /**
- * @brief Sent by the pack detail surface to re-download an already-purchased pack's tunes.
+ * Sent by the pack detail surface to re-download an already-purchased pack's tunes.
  *
  * Informal: not part of the compiled protocol; sent by @c RBStoreDetailViewController.
  * @param packInfo The pack to re-download.
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reDownloadPackMusics:(StorePackInfo *)packInfo;
 
 /**
- * @brief Sent by the pack detail surface to switch to the sequence-extension store for a tune.
+ * Sent by the pack detail surface to switch to the sequence-extension store for a tune.
  *
  * Informal: not part of the compiled protocol; sent by @c RBStoreDetailViewController.
  */
@@ -73,19 +73,19 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief A single pack tile in the pad two-up store list.
+ * A single pack tile in the pad two-up store list.
  */
 @interface StorePackView : UIView
 
 /**
- * @brief The delegate notified when the tile is tapped.
+ * The delegate notified when the tile is tapped.
  * @ghidraAddress 0xfefc0 (getter)
  * @ghidraAddress 0xfefe0 (setter)
  */
 @property(nonatomic, weak, nullable) id<StorePackViewDelegate> delegate;
 
 /**
- * @brief The flattened pack-list index this tile displays.
+ * The flattened pack-list index this tile displays.
  *
  * Set by @c loadPackInfo:index:; the store page reads it back when routing a tap.
  * @ghidraAddress 0xfeff4 (getter)
@@ -93,49 +93,49 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly) NSUInteger index;
 
 /**
- * @brief The tile background image view, which also hosts the tap gesture recogniser.
+ * The tile background image view, which also hosts the tap gesture recogniser.
  * @ghidraAddress 0xff004 (getter)
  * @ghidraAddress 0xff014 (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *backGroundImageView;
 
 /**
- * @brief The jacket artwork image view.
+ * The jacket artwork image view.
  * @ghidraAddress 0xff04c (getter)
  * @ghidraAddress 0xff05c (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *artworkImageView;
 
 /**
- * @brief The framed backing image view behind the jacket, showing the default jacket placeholder.
+ * The framed backing image view behind the jacket, showing the default jacket placeholder.
  * @ghidraAddress 0xff094 (getter)
  * @ghidraAddress 0xff0a4 (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *artworkBackImageView;
 
 /**
- * @brief The pack name label.
+ * The pack name label.
  * @ghidraAddress 0xff0dc (getter)
  * @ghidraAddress 0xff0ec (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *nameLabel;
 
 /**
- * @brief The pack short-comment label.
+ * The pack short-comment label.
  * @ghidraAddress 0xff124 (getter)
  * @ghidraAddress 0xff134 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *commentLabel;
 
 /**
- * @brief The pack price label.
+ * The pack price label.
  * @ghidraAddress 0xff16c (getter)
  * @ghidraAddress 0xff17c (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *priceLabel;
 
 /**
- * @brief The owned-state overlay button, shown (as a disabled "installed" cover) once the pack is
+ * The owned-state overlay button, shown (as a disabled "installed" cover) once the pack is
  * purchased and hidden otherwise.
  * @ghidraAddress 0xff1b4 (getter)
  * @ghidraAddress 0xff1c4 (setter)
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) UIButton *purchasedButton;
 
 /**
- * @brief The "new" corner badge image view.
+ * The "new" corner badge image view.
  *
  * The runtime property metadata types this @c CALayer, but the instance the binary stores is a
  * @c UIImageView (from @c initWithImage:) and the backing @c _iconNew ivar is typed
@@ -154,14 +154,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) UIImageView *iconNew;
 
 /**
- * @brief The "sequence-extension" corner badge image view.
+ * The "sequence-extension" corner badge image view.
  * @ghidraAddress 0xff244 (getter)
  * @ghidraAddress 0xff254 (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *iconSp;
 
 /**
- * @brief Whether the pack is owned, expressed as the visibility of @c purchasedButton.
+ * Whether the pack is owned, expressed as the visibility of @c purchasedButton.
  *
  * The getter returns @c YES when @c purchasedButton is visible; the setter shows it when set to
  * @c YES. There is no backing ivar.
@@ -171,21 +171,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, getter=isPurchased, setter=setIsPurchased:) BOOL purchased;
 
 /**
- * @brief Sets the tile background image on @c backGroundImageView.
+ * Sets the tile background image on @c backGroundImageView.
  * @param bgImage The background image.
  * @ghidraAddress 0xfe9e0
  */
 - (void)setBgImage:(nullable UIImage *)bgImage;
 
 /**
- * @brief Sets the jacket artwork on @c artworkImageView.
+ * Sets the jacket artwork on @c artworkImageView.
  * @param artwork The jacket image.
  * @ghidraAddress 0xfea6c
  */
 - (void)setArtwork:(nullable UIImage *)artwork;
 
 /**
- * @brief Populates the tile from the given pack and records its flattened list index.
+ * Populates the tile from the given pack and records its flattened list index.
  * @param loadPackInfo The pack to display.
  * @param index The flattened pack-list index.
  * @ghidraAddress 0xfec94

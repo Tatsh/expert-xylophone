@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The sort-order selector for the store manage page.
+ * The sort-order selector for the store manage page.
  *
  * Presented as a pushed controller on the phone
  * and inside a popover on the pad, it lists the tune list's sort orders in a table and reports the
@@ -20,7 +20,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The store manage page's sort-order selector.
+ * The store manage page's sort-order selector.
  *
  * A grouped-less @c UITableView lists the sort orders held in @c sortTitleList; selecting a row
  * tells the owning manage page to switch to that order through its @c switchToSort:title:
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
     RBBaseViewController <UITableViewDelegate, UITableViewDataSource>
 
 /**
- * @brief Builds the sort-order table, sizes the popover content, and installs the table as the
+ * Builds the sort-order table, sizes the popover content, and installs the table as the
  *        controller's view.
  *
  * Seeds @c sortTitleList with the four built-in sort-order titles when it is still empty, records
@@ -42,32 +42,32 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadView;
 
 /**
- * @brief Sets the navigation title to the localised "sort" heading.
+ * Sets the navigation title to the localised "sort" heading.
  * @param animated Whether the appearance is animated.
  * @ghidraAddress 0x55ca4
  */
 - (void)viewWillAppear:(BOOL)animated;
 
 /**
- * @brief The active sort-order index count, i.e. the number of rows and sort orders.
+ * The active sort-order index count, i.e. the number of rows and sort orders.
  * @ghidraAddress 0x563e0 (getter)
  * @ghidraAddress 0x563f0 (setter)
  */
 @property(nonatomic, assign) NSUInteger sortRuleCount;
 /**
- * @brief The sort-order titles shown in the table, one per row.
+ * The sort-order titles shown in the table, one per row.
  * @ghidraAddress 0x56398 (getter)
  * @ghidraAddress 0x563a8 (setter)
  */
 @property(nonatomic, strong, nullable) NSArray<NSString *> *sortTitleList;
 /**
- * @brief The sort-order table.
+ * The sort-order table.
  * @ghidraAddress 0x56350 (getter)
  * @ghidraAddress 0x56360 (setter)
  */
 @property(nonatomic, strong, nullable) UITableView *tableView;
 /**
- * @brief The manage page this selector reports its choice to.
+ * The manage page this selector reports its choice to.
  *
  * Held unretained (the binary's @c manageViewCtrl property is @c assign, and @c .cxx_destruct does
  * not release it); the manage page outlives the selector it owns.

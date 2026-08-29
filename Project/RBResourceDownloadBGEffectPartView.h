@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A single particle layer of the resource-download background effect.
+ * A single particle layer of the resource-download background effect.
  *
  * Its @c init seeds the three
  * artwork paths that its @c RBMenuBGEffectPartView base animates.
@@ -15,12 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A particle layer for the resource-download background effect.
+ * A particle layer for the resource-download background effect.
  */
 @interface RBResourceDownloadBGEffectPartView : RBMenuBGEffectPartView
 
 /**
- * @brief Initialise the layer and seed its three background artwork paths on the base class.
+ * Initialise the layer and seed its three background artwork paths on the base class.
  * @return The initialised instance, or @c nil if the superclass initialiser failed.
  * @ghidraAddress 0x19aa0
  */

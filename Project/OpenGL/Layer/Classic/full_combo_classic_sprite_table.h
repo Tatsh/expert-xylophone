@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The Classic full-combo sprite-type descriptor table.
+ * The Classic full-combo sprite-type descriptor table.
  */
 
 #pragma once
 
 /**
- * @brief One Classic full-combo sprite-type descriptor: the sprite's anchor and size, and the
+ * One Classic full-combo sprite-type descriptor: the sprite's anchor and size, and the
  * UV-table index it samples.
  *
  * A 20-byte read-only record indexed by the sprite type (0 through 15); the batch the sprite draws
@@ -21,15 +21,15 @@ struct ClassicFullComboSpriteType {
     unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x10 */
 };
 
-/** @brief The number of Classic full-combo sprite types. */
+/** The number of Classic full-combo sprite types. */
 constexpr int kClassicFullComboSpriteTypeCount = 16;
 /**
- * @brief The number of Classic full-combo object types, each selecting a distinct sprite batch.
+ * The number of Classic full-combo object types, each selecting a distinct sprite batch.
  */
 constexpr int kClassicFullComboObjectTypeCount = 3;
 
 /**
- * @brief The Classic full-combo sprite-type descriptor table: read-only ROM data.
+ * The Classic full-combo sprite-type descriptor table: read-only ROM data.
  * @ghidraAddress 0x302bf8
  */
 extern const ClassicFullComboSpriteType

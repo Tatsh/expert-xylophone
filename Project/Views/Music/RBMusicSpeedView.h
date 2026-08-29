@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The high-SPEED (scroll-speed) setting sub-view of the music-detail setting scroll hosted
+ * The high-SPEED (scroll-speed) setting sub-view of the music-detail setting scroll hosted
  * by @c RBMusicView.
  *
  * It draws a horizontal bar image (@c sliderView) and layers a transparent
@@ -27,7 +27,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The high-SPEED (scroll-speed) setting sub-view hosted by @c RBMusicView.
+ * The high-SPEED (scroll-speed) setting sub-view hosted by @c RBMusicView.
  *
  * The view draws a horizontal speed bar (@c sliderView) and layers a transparent @c barBase over
  * it, carrying the selected-image marker (@c selectedImage). A tap or the animation-driven glide
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBMusicSpeedView : UIView
 
 /**
- * @brief Creates the speed sub-view for a page of the host's setting scroll.
+ * Creates the speed sub-view for a page of the host's setting scroll.
  * @param frame The page frame inside the host's setting scroll view.
  * @param MusicSelectedBase The hosting music-detail view the selection is reported back to.
  * @return The initialised speed sub-view.
@@ -50,55 +50,55 @@ NS_ASSUME_NONNULL_BEGIN
                      MusicSelectedBase:(nullable RBMusicView *)MusicSelectedBase;
 
 /**
- * @brief Builds the bar, marker, and tap recogniser. @ghidraAddress 0xe158
+ * Builds the bar, marker, and tap recogniser. @ghidraAddress 0xe158
  */
 - (void)SetupView;
 
 /**
- * @brief Maps a tap along the speed bar to a speed step and commits it. @ghidraAddress 0x10eb9c
+ * Maps a tap along the speed bar to a speed step and commits it. @ghidraAddress 0x10eb9c
  * @param tap The tap gesture recogniser.
  */
 - (void)tap:(nullable UITapGestureRecognizer *)tap;
 
 /**
- * @brief Clamps the given step to 0 through 10, stores it, plays the change sound effect, animates
+ * Clamps the given step to 0 through 10, stores it, plays the change sound effect, animates
  *        the marker, and refreshes the host's decide button. @ghidraAddress 0x10eda0
  * @param SelectSpeed The candidate speed step.
  */
 - (void)SelectSpeed:(int)SelectSpeed;
 
 /**
- * @brief The selected speed step, 0 through 10.
+ * The selected speed step, 0 through 10.
  * @ghidraAddress 0x10f0d0 (getter)
  * @ghidraAddress 0x10f0e0 (setter)
  */
 @property(nonatomic, assign) int speed;
 /**
- * @brief The slider style flag, seeded to 0 by the initialiser.
+ * The slider style flag, seeded to 0 by the initialiser.
  * @ghidraAddress 0x10f1fc (getter)
  * @ghidraAddress 0x10f20c (setter)
  */
 @property(nonatomic, assign) int sliderType;
 /**
- * @brief The marker drawn over the bar at the current speed. @c strong.
+ * The marker drawn over the bar at the current speed. @c strong.
  * @ghidraAddress 0x10f124 (getter)
  * @ghidraAddress 0x10f134 (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *selectedImage;
 /**
- * @brief The horizontal speed bar image. @c strong.
+ * The horizontal speed bar image. @c strong.
  * @ghidraAddress 0x10f16c (getter)
  * @ghidraAddress 0x10f17c (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *sliderView;
 /**
- * @brief The transparent container the marker is centred within. @c strong.
+ * The transparent container the marker is centred within. @c strong.
  * @ghidraAddress 0x10f1b4 (getter)
  * @ghidraAddress 0x10f1c4 (setter)
  */
 @property(strong, nonatomic, nullable) UIView *barBase;
 /**
- * @brief The hosting music-detail view the selection is reported back to. @c weak.
+ * The hosting music-detail view the selection is reported back to. @c weak.
  * @ghidraAddress 0x10f0f0 (getter)
  * @ghidraAddress 0x10f110 (setter)
  */

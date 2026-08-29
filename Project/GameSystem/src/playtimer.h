@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The engine play-timing singleton, @c PlayTimer.
+ * The engine play-timing singleton, @c PlayTimer.
  */
 
 #pragma once
 
 /**
- * @brief The engine play-timing singleton.
+ * The engine play-timing singleton.
  *
  * It is created lazily by @c PlayTimer::shared and read directly through the @c g_pPlayTimer
  * global; only the delay-frame offset the customize picker writes is modelled here.
@@ -15,7 +15,7 @@
 class PlayTimer {
 public:
     /**
-     * @brief The device OS-version tier applied to play timing, distinguishing the timing
+     * The device OS-version tier applied to play timing, distinguishing the timing
      * behaviour changes across iOS 8.0 and 8.1.
      */
     enum OsVersionTier {
@@ -25,7 +25,7 @@ public:
     };
 
     /**
-     * @brief Records the device OS-version timing tier.
+     * Records the device OS-version timing tier.
      * @param tier The OS-version tier.
      */
     void SetOsVersionTier(OsVersionTier tier) {
@@ -33,7 +33,7 @@ public:
     }
 
     /**
-     * @brief Stores the delay-frame-derived timing offset applied to note judging.
+     * Stores the delay-frame-derived timing offset applied to note judging.
      * @param value The offset in seconds.
      */
     void SetDelayFrameOffset(float value) {
@@ -58,7 +58,7 @@ private:
 
 public:
     /**
-     * @brief Marks the timer paused and records the media time it paused at.
+     * Marks the timer paused and records the media time it paused at.
      * @param dMediaTime The media time the timer paused at.
      */
     void MarkPaused(double dMediaTime) {
@@ -67,7 +67,7 @@ public:
     }
 
     /**
-     * @brief Whether the timer is currently paused.
+     * Whether the timer is currently paused.
      * @return @c true while the timer is paused.
      */
     bool IsPaused() const {
@@ -75,7 +75,7 @@ public:
     }
 
     /**
-     * @brief The current play time, in scaled units.
+     * The current play time, in scaled units.
      * @return The current play time, in scaled units.
      */
     float GetPlayTime() const {
@@ -83,7 +83,7 @@ public:
     }
 
     /**
-     * @brief The per-frame time step.
+     * The per-frame time step.
      * @return The per-frame time step.
      */
     float GetFrameDelta() const {
@@ -91,7 +91,7 @@ public:
     }
 
     /**
-     * @brief Resumes the timer, shifting its origin forward by the interval it spent paused.
+     * Resumes the timer, shifting its origin forward by the interval it spent paused.
      * @param dMediaTime The current media time.
      */
     void Resume(double dMediaTime) {
@@ -100,7 +100,7 @@ public:
     }
 
     /**
-     * @brief Starts (or restarts) playback timing from the given media time: seeds the timing
+     * Starts (or restarts) playback timing from the given media time: seeds the timing
      * origin and last-update time, zeroes the play time, frame delta, and accumulated time, sets
      * the running flag, and clears the paused flag.
      * @param dMediaTime The current media time to time from.
@@ -118,7 +118,7 @@ public:
     }
 
     /**
-     * @brief Returns the engine play-timing singleton (@c g_pPlayTimer), constructing it on first
+     * Returns the engine play-timing singleton (@c g_pPlayTimer), constructing it on first
      * use.
      * @return The singleton timer (also stored in @c g_pPlayTimer).
      * @ghidraAddress 0x131868
@@ -126,7 +126,7 @@ public:
     static PlayTimer *shared();
 
     /**
-     * @brief Advances the play clock for this frame, syncing to the BGM playback time.
+     * Advances the play clock for this frame, syncing to the BGM playback time.
      *
      * A no-op that zeroes the frame delta while paused. Otherwise it measures the wall-clock
      * interval since the last update, and — when the timer is running (music-driven) — corrects the
@@ -140,11 +140,11 @@ public:
     PlayTimer *Update();
 };
 
-/** @brief The engine play-timing singleton, constructed by @c PlayTimer::shared. */
+/** The engine play-timing singleton, constructed by @c PlayTimer::shared. */
 extern PlayTimer *g_pPlayTimer;
 
 /**
- * @brief The per-frame time step (about 16.667, one 60th of a second expressed in milliseconds)
+ * The per-frame time step (about 16.667, one 60th of a second expressed in milliseconds)
  * used to scale a delay-frame count into the play-timing offset.
  * @ghidraAddress 0x2ef178
  */

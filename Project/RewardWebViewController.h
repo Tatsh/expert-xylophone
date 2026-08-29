@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink reward SDK's @c RewardWebViewController.
+ * Reconstructed interface for the Applilink reward SDK's @c RewardWebViewController.
  *
  * @c RewardWebViewController is the reward advert SDK's in-application web-view host: a
  * @c UIViewController that owns a base @c UIView, a @c UIWebView, an optional @c UINavigationBar
@@ -20,12 +20,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The in-application host controller for the reward advert web page.
+ * The in-application host controller for the reward advert web page.
  */
 @interface RewardWebViewController : UIViewController
 
 /**
- * @brief The SDK delegate that receives the advert lifecycle notices.
+ * The SDK delegate that receives the advert lifecycle notices.
  *
  * Held weakly: the controller forwards each notice to it but does not own it, and clears the
  * reference once the closing or open-failure notice has been sent.
@@ -33,61 +33,61 @@ NS_ASSUME_NONNULL_BEGIN
 @property(weak, nonatomic, nullable) id<SdkViewDelegate> sdkDelegate;
 
 /**
- * @brief The host view the advert web view is added to.
+ * The host view the advert web view is added to.
  *
  * When @c nil the advert is added to @c [ApplilinkCore mainWindow] instead.
  */
 @property(strong, nonatomic, nullable) UIView *parentView;
 
 /**
- * @brief The container view that hosts the web view and navigation bar.
+ * The container view that hosts the web view and navigation bar.
  */
 @property(strong, nonatomic, nullable) UIView *baseView;
 
 /**
- * @brief The web view that renders the reward advert page.
+ * The web view that renders the reward advert page.
  */
 @property(strong, nonatomic, nullable) UIWebView *webView;
 
 /**
- * @brief The navigation bar carrying the advert title and close button.
+ * The navigation bar carrying the advert title and close button.
  *
  * Created only when the navigation bar is not hidden.
  */
 @property(strong, nonatomic, nullable) UINavigationBar *navigationBar;
 
 /**
- * @brief The loading overlay shown while the advert page loads.
+ * The loading overlay shown while the advert page loads.
  */
 @property(strong, nonatomic, nullable) ApplilinkIndicator *indicator;
 
 /**
- * @brief Whether the web view's scroll view is allowed to bounce.
+ * Whether the web view's scroll view is allowed to bounce.
  *
  * The stored value is inverted: it is cleared after @c -loadView applies it to the scroll view.
  */
 @property(nonatomic) BOOL webViewBounces;
 
 /**
- * @brief Show or hide the loading overlay.
+ * Show or hide the loading overlay.
  * @param show @c YES to show the overlay, @c NO to hide it.
  */
 - (void)updateIndicator:(BOOL)show;
 
 /**
- * @brief Whether the advert screen hides its navigation bar.
+ * Whether the advert screen hides its navigation bar.
  */
 @property(nonatomic) BOOL isNavigationBarHidden;
 
 /**
- * @brief The current load state of the advert web view.
+ * The current load state of the advert web view.
  *
  * @c 0 before any load starts, @c 1 while loading, and @c 2 once the load has finished.
  */
 @property(nonatomic) int webViewStatus;
 
 /**
- * @brief Set whether the advert screen hides its navigation bar.
+ * Set whether the advert screen hides its navigation bar.
  *
  * This is the SDK-facing alias for @c isNavigationBarHidden used by @c RewardCore.
  * @param navigationBarHidden @c YES to hide the navigation bar.
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setNavigationBarHidden:(BOOL)navigationBarHidden;
 
 /**
- * @brief Load the reward advert page from a URL with request parameters.
+ * Load the reward advert page from a URL with request parameters.
  *
  * Resets the load state, attaches the controller's view to @c parentView (or the main window),
  * builds a ten-second, no-cache mutable request with the parameters appended to the URL, lazily
@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadRequestWithURL:(nullable NSString *)url parameters:(nullable NSDictionary *)parameters;
 
 /**
- * @brief Close the advert list from an external request.
+ * Close the advert list from an external request.
  *
  * Cancels the pending indicator activation, marks the view closed, stops any in-flight load, and
  * tears the advert web view down.
@@ -117,13 +117,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appliListClosed;
 
 /**
- * @brief Tear down the advert web view and release its subviews.
+ * Tear down the advert web view and release its subviews.
  * @ghidraAddress 0x21d1bc
  */
 - (void)viewDealloc;
 
 /**
- * @brief Clear the SDK delegate and detach the web view's delegate.
+ * Clear the SDK delegate and detach the web view's delegate.
  * @ghidraAddress 0x21f19c
  */
 - (void)clearDelegate;

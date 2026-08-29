@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The terms-of-service overlay popup.
+ * The terms-of-service overlay popup.
  *
  * It is an @c RBMusicMenuPopupView subclass (popup type
  * @c RBMusicMenuPopupViewTypeTerms) presented over the music menu on the pad build. It downloads
@@ -25,7 +25,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The terms-of-service overlay popup presented over the music menu, showing a downloaded
+ * The terms-of-service overlay popup presented over the music menu, showing a downloaded
  * list of terms and, on selection, each term's body or external link.
  */
 @interface RBTermView : RBMusicMenuPopupView <UIAlertViewDelegate>
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Lifecycle
 
 /**
- * @brief Create the terms popup, select the terms popup type, build its content, and start the
+ * Create the terms popup, select the terms popup type, build its content, and start the
  * terms-list download.
  *
  * Calls through to @c super, selects @c RBMusicMenuPopupViewTypeTerms, clears the terms list,
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the terms popup content: the gradation overlay, title label, dimming overlay,
+ * Build the terms popup content: the gradation overlay, title label, dimming overlay,
  * loading spinner, the scrolling terms list, the terms body view and text view, and the back
  * button; then start the terms-list download.
  * @ghidraAddress 0x1101ac
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupView;
 
 /**
- * @brief Fade the popup out. For the agreement view type this defers to the base dismiss; for the
+ * Fade the popup out. For the agreement view type this defers to the base dismiss; for the
  * store view type it fades the popup and tears down the owning music-menu overlay.
  * @ghidraAddress 0x1116c4
  */
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Configuration
 
 /**
- * @brief Configure the popup for the store terms viewer (sets @c viewType to the store value).
+ * Configure the popup for the store terms viewer (sets @c viewType to the store value).
  * @ghidraAddress 0x11019c
  */
 - (void)setViewTypeStore;
@@ -70,14 +70,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Networking
 
 /**
- * @brief Start the loading spinner and download the terms list for the current region, parsing the
+ * Start the loading spinner and download the terms list for the current region, parsing the
  * JSON response into @c termsList.
  * @ghidraAddress 0x1118dc
  */
 - (void)loadList;
 
 /**
- * @brief Download the body of a single term identified by @p termID, caching the parsed response
+ * Download the body of a single term identified by @p termID, caching the parsed response
  * in @c terms keyed by the term id string.
  * @param termID The term identifier whose detail should be fetched.
  * @ghidraAddress 0x11307c
@@ -87,14 +87,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Presentation
 
 /**
- * @brief Reveal the terms list: hide the term body, hide the back button, and lay a titled button
+ * Reveal the terms list: hide the term body, hide the back button, and lay a titled button
  * per term into the terms list scroll view, then fade the list in.
  * @ghidraAddress 0x112084
  */
 - (void)showTermsList;
 
 /**
- * @brief Show the body for the term identified by @p termID: set the title, load the cached body
+ * Show the body for the term identified by @p termID: set the title, load the cached body
  * text into the text view, and fade the body view in.
  * @param termID The term identifier whose body should be shown.
  * @ghidraAddress 0x113948
@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showTermView:(nullable id)termID;
 
 /**
- * @brief Handle a term-button tap: open the term's external URL if it has one, otherwise show its
+ * Handle a term-button tap: open the term's external URL if it has one, otherwise show its
  * cached body or fetch it.
  * @param sender The tapped term button.
  * @ghidraAddress 0x112c2c
@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)selectTerm:(nullable id)sender;
 
 /**
- * @brief Set the popup title label to @p termsTitle, sized and centred over the title bar.
+ * Set the popup title label to @p termsTitle, sized and centred over the title bar.
  * @param termsTitle The title text to display.
  * @ghidraAddress 0x114420
  */
@@ -119,48 +119,48 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Loading animation
 
 /**
- * @brief Show the dimming overlay (when enabled) and start the loading spinner.
+ * Show the dimming overlay (when enabled) and start the loading spinner.
  * @ghidraAddress 0x1142b8
  */
 - (void)startLoadAnimation;
 
 /**
- * @brief Hide the dimming overlay (when enabled) and stop the loading spinner.
+ * Hide the dimming overlay (when enabled) and stop the loading spinner.
  * @ghidraAddress 0x11436c
  */
 - (void)endLoadAnimation;
 
 #pragma mark Properties
 
-/** @brief Whether this is the first terms request, gating the alert-driven dismiss. */
+/** Whether this is the first terms request, gating the alert-driven dismiss. */
 @property(assign, nonatomic) BOOL isFirstRequest;
-/** @brief Whether a show or hide animation is currently running. */
+/** Whether a show or hide animation is currently running. */
 @property(assign, nonatomic) BOOL isAnimating;
-/** @brief The back button that returns from a term body to the terms list. */
+/** The back button that returns from a term body to the terms list. */
 @property(strong, nonatomic, nullable) UIButton *backButton;
-/** @brief The popup title label. */
+/** The popup title label. */
 @property(strong, nonatomic, nullable) UILabel *titleView;
-/** @brief The scroll view holding one button per term. */
+/** The scroll view holding one button per term. */
 @property(weak, nonatomic, nullable) UIScrollView *termsListView;
-/** @brief The container view for a single term's body text. */
+/** The container view for a single term's body text. */
 @property(weak, nonatomic, nullable) UIView *termView;
-/** @brief The text view rendering a single term's body. */
+/** The text view rendering a single term's body. */
 @property(weak, nonatomic, nullable) UITextView *termTextView;
-/** @brief The parsed per-term body cache, keyed by the term id string. */
+/** The parsed per-term body cache, keyed by the term id string. */
 @property(strong, nonatomic, nullable) NSMutableDictionary *terms;
-/** @brief The in-flight terms list or detail download. */
+/** The in-flight terms list or detail download. */
 @property(strong, nonatomic, nullable) Downloader *downloader;
-/** @brief Whether the dimming overlay is shown while loading. */
+/** Whether the dimming overlay is shown while loading. */
 @property(assign, nonatomic) BOOL isUseGrayView;
-/** @brief The dimming overlay covering the content while loading. */
+/** The dimming overlay covering the content while loading. */
 @property(weak, nonatomic, nullable) UIView *grayView;
-/** @brief The loading spinner shown during network activity. */
+/** The loading spinner shown during network activity. */
 @property(weak, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
-/** @brief The view type: the agreement overlay (0) or the store terms viewer (1). */
+/** The view type: the agreement overlay (0) or the store terms viewer (1). */
 @property(assign, nonatomic) int viewType;
-/** @brief The list of term descriptors downloaded from the server. */
+/** The list of term descriptors downloaded from the server. */
 @property(strong, nonatomic, nullable) NSArray *termsList;
-/** @brief The settings view that owns and presents this popup, held weakly. */
+/** The settings view that owns and presents this popup, held weakly. */
 @property(weak, nonatomic, nullable) RBSettingView *settingView;
 
 @end

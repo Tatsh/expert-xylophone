@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c UIColor palette shared across the whole UI of REFLEC BEAT plus.
+ * @c UIColor palette shared across the whole UI of REFLEC BEAT plus.
  *
  * The binary builds a fixed
  * table of cached @c UIColor objects once at start-up (see @c InitializeUIColorPalette below) into
@@ -25,7 +25,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Named index of each entry in the shared @c UIColor palette.
+ * Named index of each entry in the shared @c UIColor palette.
  *
  * The order matches the global slots filled by @c InitializeUIColorPalette (0x5517c),
  * from @c DAT_1003cff88 upward in eight-byte steps. Several colours recur across slots
@@ -52,12 +52,12 @@ typedef NS_ENUM(NSUInteger, RBPaletteIndex) {
 };
 
 /**
- * @brief Shared palette-colour accessor layered on @c UIColor.
+ * Shared palette-colour accessor layered on @c UIColor.
  */
 @interface UIColor (RB)
 
 /**
- * @brief Return an entry of the shared UIColor palette.
+ * Return an entry of the shared UIColor palette.
  *
  * The palette is built once, on first access, exactly as @c InitializeUIColorPalette
  * (0x5517c) fills the global slots, then reused for the lifetime of the process.

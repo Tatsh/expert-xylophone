@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Game Center wrapper singleton.
+ * The Game Center wrapper singleton.
  *
  * It gates access to the GameKit APIs behind an availability
  * check (the @c GKLocalPlayer class must exist and the system version must be at least 4.1), then
@@ -18,14 +18,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The Game Center wrapper singleton.
+ * The Game Center wrapper singleton.
  */
 @interface RBGameKitManager : NSObject
 
 #pragma mark Singleton
 
 /**
- * @brief The shared Game Center manager, created once on first use.
+ * The shared Game Center manager, created once on first use.
  * @ghidraAddress 0x202c30
  * @return The shared @c RBGameKitManager.
  */
@@ -34,14 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Game Center
 
 /**
- * @brief Whether the GameKit APIs are usable: the @c GKLocalPlayer class exists and the running
+ * Whether the GameKit APIs are usable: the @c GKLocalPlayer class exists and the running
  *        system version is at least 4.1.
  * @ghidraAddress 0x202c98
  * @return @c YES when Game Center may be used.
  */
 - (BOOL)isGameCenterAPIAvailable;
 /**
- * @brief Authenticate the Game Center local player when Game Center is available and the player is
+ * Authenticate the Game Center local player when Game Center is available and the player is
  *        not already authenticated, installing an authentication-completion handler.
  * @ghidraAddress 0x202d64
  */

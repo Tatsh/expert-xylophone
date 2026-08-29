@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The just-reflec effect layer, @c JustReflecEffectLayer.
+ * The just-reflec effect layer, @c JustReflecEffectLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The just-reflec effect layer (the just-timing charge-note build-up graphics).
+ * The just-reflec effect layer (the just-timing charge-note build-up graphics).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and one sprite instancer, drawn beneath the shared background layer, that presents the
@@ -29,14 +29,14 @@ class C_SPRITE_INSTANCING_2D;
 class JustReflecEffectLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide just-reflec effect layer, created on first use.
+     * The process-wide just-reflec effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x180bf8
      */
     static JustReflecEffectLayer *shared();
 
     /**
-     * @brief Lazily builds the note-charge sprite: loads the gm_parts1 atlas and creates the sprite
+     * Lazily builds the note-charge sprite: loads the gm_parts1 atlas and creates the sprite
      * instancer sized to the accumulated capacity (attaching it under the background layer's render
      * object, making it visible, binding the atlas, flagging additive blend, and, except on the
      * tutorial hardware, enabling its two texture-environment parameters).
@@ -47,19 +47,19 @@ public:
     void LoadNoteChargeSprites();
 
     /**
-     * @brief The player colours a charge or particle may carry, asserted by @c Create and
+     * The player colours a charge or particle may carry, asserted by @c Create and
      * @c CreateParticle (the valid colour range is @c [0, kPlayerColorMax)).
      */
     static constexpr int kPlayerColorMax = 2;
-    /** @brief The number of pooled charge records. */
+    /** The number of pooled charge records. */
     static constexpr int kChargeCount = 0x20;
-    /** @brief The number of pooled burst particles. */
+    /** The number of pooled burst particles. */
     static constexpr int kParticleCount = 0x100;
-    /** @brief The number of sprite graphics @c CreateSprite can emit. */
+    /** The number of sprite graphics @c CreateSprite can emit. */
     static constexpr int kSpriteTypeCount = 8;
 
     /**
-     * @brief Queues a charge record for a player colour at the given position and geometry.
+     * Queues a charge record for a player colour at the given position and geometry.
      *
      * Finds the first free charge slot (up to @c kChargeCount) and stores the colour and the four
      * geometry floats; drops the charge when the pool is full.
@@ -73,7 +73,7 @@ public:
     void Create(int nColor, float flX, float flY, float flA, float flB);
 
     /**
-     * @brief Spawns a burst particle for a player colour near the given position.
+     * Spawns a burst particle for a player colour near the given position.
      *
      * Finds the first free particle slot (up to @c kParticleCount), stores the colour and an offset
      * position (each axis offset by a random value in [-32, 32)), and seeds a randomised lifetime
@@ -85,7 +85,7 @@ public:
     void CreateParticle(int nColor, const S_VECTOR2 *pPosition);
 
     /**
-     * @brief Advances the layer one frame: steps the two spin phases, emits each active charge
+     * Advances the layer one frame: steps the two spin phases, emits each active charge
      * (plus a phase-driven number of burst particles), then ages and emits each active particle,
      * clearing both pools' spent entries.
      * @param flDeltaSeconds The frame delta in seconds.
@@ -94,7 +94,7 @@ public:
     void Update(float flDeltaSeconds);
 
     /**
-     * @brief Emits one charge sprite of the given type into the batch at the running write index.
+     * Emits one charge sprite of the given type into the batch at the running write index.
      * @param nType The sprite graphic (0 through @c kSpriteTypeCount - 1).
      * @param pPosition The sprite position.
      * @param nAlpha The sprite alpha.
@@ -110,7 +110,7 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor, zero-clearing its record tables,
+     * Constructs the layer, chaining the base constructor, zero-clearing its record tables,
      * and accumulating the per-group capacity table into the instancer capacity.
      * @ghidraAddress 0x180b54
      */
@@ -118,21 +118,22 @@ private:
 
     // One pooled charge record (24 bytes): its colour, position, and geometry.
     struct ChargeRecord {
-        bool bActive = {};       // +0x00: whether the slot holds a live charge.
-        int nColor = {};         // +0x04: the player colour.
-        S_VECTOR2 position = {}; // +0x08: the charge position.
-        float flA = {};          // +0x10: the sprite rotation.
-        float flB = {};          // +0x14: the alpha-weight geometry parameter.
+        bool bActive = {};       /*!< Whether the slot holds a live charge. +0x00 */
+        int nColor = {};         /*!< The player colour. +0x04 */
+        S_VECTOR2 position = {}; /*!< The charge position. +0x08 */
+        float flA = {};          /*!< The sprite rotation. +0x10 */
+        float flB = {};          /*!< The alpha-weight geometry parameter. +0x14 */
     };
 
     // One pooled burst particle (24 bytes): its colour, lifetime-slot sprite type, position, and
     // age.
     struct BurstParticle {
-        bool bActive = {};       // +0x00: whether the slot holds a live particle.
-        int nColor = {};         // +0x04: the player colour.
-        int nSpriteType = {};    // +0x08: the sprite type (a randomised lifetime slot 2 through 7).
-        S_VECTOR2 position = {}; // +0x0c: the particle position.
-        float flAge = {};        // +0x14: the elapsed age.
+        bool bActive = {}; /*!< Whether the slot holds a live particle. +0x00 */
+        int nColor = {};   /*!< The player colour. +0x04 */
+        int nSpriteType =
+            {}; /*!< The sprite type (a randomised lifetime slot 2 through 7). +0x08 */
+        S_VECTOR2 position = {}; /*!< The particle position. +0x0c */
+        float flAge = {};        /*!< The elapsed age. +0x14 */
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The parsed chart note record, @c RbffNoteRecord.
+ * The parsed chart note record, @c RbffNoteRecord.
  */
 
 #pragma once
@@ -8,14 +8,14 @@
 #include "note_chain_link.h"
 
 /**
- * @brief One slide sub-record: a slide point's note index, timing selector, and value pair.
+ * One slide sub-record: a slide point's note index, timing selector, and value pair.
  *
  * The chart parser fills an array of these; @c CalculateChartTiming and the slide renderers index
  * it. The trailing @c // +0xNN comments document the original 24-byte layout.
  */
 struct RbffSlideRecord {
     short nNoteIndex = {}; /*!< The owning note's index in the record pool. +0x00 */
-    /** @brief Copied from the chart sub-record's second short and never read back. +0x02 */
+    /** Copied from the chart sub-record's second short and never read back. +0x02 */
     short nField2 = {};
     int nTimingSel = {};    /*!< The timing selector. +0x04 */
     int nValueA = {};       /*!< The primary slide value. +0x08 */
@@ -25,7 +25,7 @@ struct RbffSlideRecord {
 };
 
 /**
- * @brief One parsed note from the chart: its timing, geometry, lane, and colour data.
+ * One parsed note from the chart: its timing, geometry, lane, and colour data.
  *
  * Populated when the chart is decoded and referenced by a live @c NoteModel through its record
  * pointer. The trailing @c // +0xNN comments document the original member offsets for reference
@@ -36,7 +36,7 @@ struct RbffSlideRecord {
 class RbffNoteRecord {
 public:
     /**
-     * @brief Constructs a note record in its default per-note state before the chart parser fills
+     * Constructs a note record in its default per-note state before the chart parser fills
      * it: zeroes the timing, geometry, and link fields; seeds the empty chain-link block; and sets
      * the default lane and lane-slot (3), the timing-selector sentinel (-2), and the colour/link
      * sentinels (-1).
@@ -45,14 +45,14 @@ public:
     RbffNoteRecord();
 
     /**
-     * @brief Returns the note's primary time stamp.
+     * Returns the note's primary time stamp.
      * @return The note's primary time stamp.
      */
     int GetTimeA() const {
         return m_nTimeA;
     }
     /**
-     * @brief Stores the note's primary time stamp.
+     * Stores the note's primary time stamp.
      * @param nTimeA The note's primary time stamp.
      */
     void SetTimeA(int nTimeA) {
@@ -60,14 +60,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's secondary time stamp.
+     * Returns the note's secondary time stamp.
      * @return The note's secondary time stamp.
      */
     int GetTimeB() const {
         return m_nTimeB;
     }
     /**
-     * @brief Stores the note's secondary time stamp.
+     * Stores the note's secondary time stamp.
      * @param nTimeB The note's secondary time stamp.
      */
     void SetTimeB(int nTimeB) {
@@ -75,14 +75,14 @@ public:
     }
 
     /**
-     * @brief Returns the note identifier.
+     * Returns the note identifier.
      * @return The note identifier.
      */
     int GetNoteId() const {
         return m_nNoteId;
     }
     /**
-     * @brief Stores the note identifier.
+     * Stores the note identifier.
      * @param nNoteId The note identifier.
      */
     void SetNoteId(int nNoteId) {
@@ -90,14 +90,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's start time.
+     * Returns the note's start time.
      * @return The note's start time.
      */
     int GetStartTime() const {
         return m_nStartTime;
     }
     /**
-     * @brief Stores the note's start time.
+     * Stores the note's start time.
      * @param nStartTime The note's start time.
      */
     void SetStartTime(int nStartTime) {
@@ -105,14 +105,14 @@ public:
     }
 
     /**
-     * @brief Returns the number of path points.
+     * Returns the number of path points.
      * @return The number of path points.
      */
     int GetPointCount() const {
         return m_nPointCount;
     }
     /**
-     * @brief Stores the number of path points.
+     * Stores the number of path points.
      * @param nPointCount The number of path points.
      */
     void SetPointCount(int nPointCount) {
@@ -120,14 +120,14 @@ public:
     }
 
     /**
-     * @brief Returns the packed path-point array.
+     * Returns the packed path-point array.
      * @return The packed path-point array, or @c nullptr when the note has no path.
      */
     short *GetPathPoints() const {
         return m_pPathPoints;
     }
     /**
-     * @brief Stores the packed path-point array.
+     * Stores the packed path-point array.
      * @param pPathPoints The packed path-point array.
      */
     void SetPathPoints(short *pPathPoints) {
@@ -135,14 +135,14 @@ public:
     }
 
     /**
-     * @brief Returns the note kind.
+     * Returns the note kind.
      * @return The note kind.
      */
     int GetKind() const {
         return m_nKind;
     }
     /**
-     * @brief Stores the note kind.
+     * Stores the note kind.
      * @param nKind The note kind.
      */
     void SetKind(int nKind) {
@@ -150,14 +150,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's play side.
+     * Returns the note's play side.
      * @return The note's play side.
      */
     int GetSide() const {
         return m_nSide;
     }
     /**
-     * @brief Stores the note's play side.
+     * Stores the note's play side.
      * @param nSide The note's play side.
      */
     void SetSide(int nSide) {
@@ -165,14 +165,14 @@ public:
     }
 
     /**
-     * @brief Returns the hold-note kind.
+     * Returns the hold-note kind.
      * @return The hold-note kind.
      */
     int GetHoldKind() const {
         return m_nHoldKind;
     }
     /**
-     * @brief Stores the hold-note kind.
+     * Stores the hold-note kind.
      * @param nHoldKind The hold-note kind.
      */
     void SetHoldKind(int nHoldKind) {
@@ -180,14 +180,14 @@ public:
     }
 
     /**
-     * @brief Returns the note type.
+     * Returns the note type.
      * @return The note type.
      */
     int GetType() const {
         return m_nType;
     }
     /**
-     * @brief Stores the note type.
+     * Stores the note type.
      * @param nType The note type.
      */
     void SetType(int nType) {
@@ -195,14 +195,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's target coordinates for direct element writes.
+     * Returns the note's target coordinates for direct element writes.
      * @return The three-element target-coordinate array; the first element is scaled.
      */
     short *GetTargetCoords() {
         return m_aTargetCoords;
     }
     /**
-     * @brief Returns the note's target coordinates.
+     * Returns the note's target coordinates.
      * @return The three-element target-coordinate array; the first element is scaled.
      */
     const short *GetTargetCoords() const {
@@ -210,14 +210,14 @@ public:
     }
 
     /**
-     * @brief Returns the target pad, cleared alongside the target coordinates.
+     * Returns the target pad, cleared alongside the target coordinates.
      * @return The target pad.
      */
     short GetTargetPad() const {
         return m_nTargetPad;
     }
     /**
-     * @brief Stores the target pad.
+     * Stores the target pad.
      * @param nTargetPad The target pad.
      */
     void SetTargetPad(short nTargetPad) {
@@ -225,14 +225,14 @@ public:
     }
 
     /**
-     * @brief Returns the note flag bits.
+     * Returns the note flag bits.
      * @return The note flag bits.
      */
     unsigned int GetFlags() const {
         return m_dwFlags;
     }
     /**
-     * @brief Stores the note flag bits.
+     * Stores the note flag bits.
      * @param dwFlags The note flag bits.
      */
     void SetFlags(unsigned int dwFlags) {
@@ -240,14 +240,14 @@ public:
     }
 
     /**
-     * @brief Returns the chain-link block threading chain notes, for direct writes.
+     * Returns the chain-link block threading chain notes, for direct writes.
      * @return The note's chain-link block.
      */
     NoteChainLink &GetChainLink() {
         return m_chainLink;
     }
     /**
-     * @brief Returns the chain-link block threading chain notes.
+     * Returns the chain-link block threading chain notes.
      * @return The note's chain-link block.
      */
     const NoteChainLink &GetChainLink() const {
@@ -255,14 +255,14 @@ public:
     }
 
     /**
-     * @brief Returns the scheduled hit time.
+     * Returns the scheduled hit time.
      * @return The scheduled hit time.
      */
     int GetHitTime() const {
         return m_nHitTime;
     }
     /**
-     * @brief Stores the scheduled hit time.
+     * Stores the scheduled hit time.
      * @param nHitTime The scheduled hit time.
      */
     void SetHitTime(int nHitTime) {
@@ -270,14 +270,14 @@ public:
     }
 
     /**
-     * @brief Returns the hit-window width.
+     * Returns the hit-window width.
      * @return The hit-window width.
      */
     int GetHitWindow() const {
         return m_nHitWindow;
     }
     /**
-     * @brief Stores the hit-window width.
+     * Stores the hit-window width.
      * @param nHitWindow The hit-window width.
      */
     void SetHitWindow(int nHitWindow) {
@@ -285,14 +285,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's index within its side, assigned on install.
+     * Returns the note's index within its side, assigned on install.
      * @return The note's index within its side.
      */
     int GetSideIndex() const {
         return m_nSideIndex;
     }
     /**
-     * @brief Stores the note's index within its side.
+     * Stores the note's index within its side.
      * @param nSideIndex The note's index within its side.
      */
     void SetSideIndex(int nSideIndex) {
@@ -300,14 +300,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's lane.
+     * Returns the note's lane.
      * @return The note's lane.
      */
     int GetLane() const {
         return m_nLane;
     }
     /**
-     * @brief Stores the note's lane.
+     * Stores the note's lane.
      * @param nLane The note's lane.
      */
     void SetLane(int nLane) {
@@ -315,14 +315,14 @@ public:
     }
 
     /**
-     * @brief Returns the lane slot.
+     * Returns the lane slot.
      * @return The lane slot.
      */
     int GetLaneSlot() const {
         return m_nLaneSlot;
     }
     /**
-     * @brief Stores the lane slot.
+     * Stores the lane slot.
      * @param nLaneSlot The lane slot.
      */
     void SetLaneSlot(int nLaneSlot) {
@@ -330,14 +330,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's route.
+     * Returns the note's route.
      * @return The note's route.
      */
     int GetRoute() const {
         return m_nRoute;
     }
     /**
-     * @brief Stores the note's route.
+     * Stores the note's route.
      * @param nRoute The note's route.
      */
     void SetRoute(int nRoute) {
@@ -345,14 +345,14 @@ public:
     }
 
     /**
-     * @brief Returns the copy of the first target coordinate.
+     * Returns the copy of the first target coordinate.
      * @return The copy of the first target coordinate.
      */
     int GetTargetCopy() const {
         return m_nTargetCopy;
     }
     /**
-     * @brief Stores the copy of the first target coordinate.
+     * Stores the copy of the first target coordinate.
      * @param nTargetCopy The copy of the first target coordinate.
      */
     void SetTargetCopy(int nTargetCopy) {
@@ -360,14 +360,14 @@ public:
     }
 
     /**
-     * @brief Returns the chain offset.
+     * Returns the chain offset.
      * @return The chain offset.
      */
     int GetChainOffset() const {
         return m_nChainOffset;
     }
     /**
-     * @brief Stores the chain offset.
+     * Stores the chain offset.
      * @param nChainOffset The chain offset.
      */
     void SetChainOffset(int nChainOffset) {
@@ -375,14 +375,14 @@ public:
     }
 
     /**
-     * @brief Returns the colour tone.
+     * Returns the colour tone.
      * @return The colour tone.
      */
     int GetColorTone() const {
         return m_nColorTone;
     }
     /**
-     * @brief Stores the colour tone.
+     * Stores the colour tone.
      * @param nColorTone The colour tone.
      */
     void SetColorTone(int nColorTone) {
@@ -390,14 +390,14 @@ public:
     }
 
     /**
-     * @brief Reports whether the note is a basic note.
+     * Reports whether the note is a basic note.
      * @return @c true when the note is a basic note.
      */
     bool IsBasicNote() const {
         return m_bBasicNote;
     }
     /**
-     * @brief Records whether the note is a basic note.
+     * Records whether the note is a basic note.
      * @param bBasicNote @c true when the note is a basic note.
      */
     void SetBasicNote(bool bBasicNote) {
@@ -405,14 +405,14 @@ public:
     }
 
     /**
-     * @brief Returns the display lane.
+     * Returns the display lane.
      * @return The display lane.
      */
     int GetDisplayLane() const {
         return m_nDisplayLane;
     }
     /**
-     * @brief Stores the display lane.
+     * Stores the display lane.
      * @param nDisplayLane The display lane.
      */
     void SetDisplayLane(int nDisplayLane) {
@@ -420,14 +420,14 @@ public:
     }
 
     /**
-     * @brief Returns the colour index.
+     * Returns the colour index.
      * @return The colour index.
      */
     int GetColorIndex() const {
         return m_nColorIndex;
     }
     /**
-     * @brief Stores the colour index.
+     * Stores the colour index.
      * @param nColorIndex The colour index.
      */
     void SetColorIndex(int nColorIndex) {
@@ -435,14 +435,14 @@ public:
     }
 
     /**
-     * @brief Returns the packed colour.
+     * Returns the packed colour.
      * @return The packed colour.
      */
     int GetColor() const {
         return m_nColor;
     }
     /**
-     * @brief Stores the packed colour.
+     * Stores the packed colour.
      * @param nColor The packed colour.
      */
     void SetColor(int nColor) {
@@ -450,14 +450,14 @@ public:
     }
 
     /**
-     * @brief Returns the primary link.
+     * Returns the primary link.
      * @return The primary link.
      */
     int GetLinkA() const {
         return m_nLinkA;
     }
     /**
-     * @brief Stores the primary link.
+     * Stores the primary link.
      * @param nLinkA The primary link.
      */
     void SetLinkA(int nLinkA) {
@@ -465,14 +465,14 @@ public:
     }
 
     /**
-     * @brief Returns the timing selector.
+     * Returns the timing selector.
      * @return The timing selector.
      */
     int GetTimingSel() const {
         return m_nTimingSel;
     }
     /**
-     * @brief Stores the timing selector.
+     * Stores the timing selector.
      * @param nTimingSel The timing selector.
      */
     void SetTimingSel(int nTimingSel) {
@@ -480,14 +480,14 @@ public:
     }
 
     /**
-     * @brief Returns the per-slot green-target availability bitmap, for direct element writes.
+     * Returns the per-slot green-target availability bitmap, for direct element writes.
      * @return The eleven-element green-target bitmap, a byte per reachable target.
      */
     unsigned char *GetGreenTargets() {
         return m_aGreenTargets;
     }
     /**
-     * @brief Returns the per-slot green-target availability bitmap.
+     * Returns the per-slot green-target availability bitmap.
      * @return The eleven-element green-target bitmap, a byte per reachable target.
      */
     const unsigned char *GetGreenTargets() const {
@@ -495,14 +495,14 @@ public:
     }
 
     /**
-     * @brief Returns the note's chosen green target.
+     * Returns the note's chosen green target.
      * @return The note's chosen green target.
      */
     int GetChosenTarget() const {
         return m_nChosenTarget;
     }
     /**
-     * @brief Stores the note's chosen green target.
+     * Stores the note's chosen green target.
      * @param nChosenTarget The note's chosen green target.
      */
     void SetChosenTarget(int nChosenTarget) {
@@ -510,14 +510,14 @@ public:
     }
 
     /**
-     * @brief Reports whether the note is on-screen, that is its start speed is below its end speed.
+     * Reports whether the note is on-screen, that is its start speed is below its end speed.
      * @return @c true while the note is on-screen.
      */
     bool IsScrollVisible() const {
         return m_bScrollVisible;
     }
     /**
-     * @brief Records whether the note is on-screen.
+     * Records whether the note is on-screen.
      * @param bScrollVisible @c true while the note is on-screen.
      */
     void SetScrollVisible(bool bScrollVisible) {
@@ -525,14 +525,14 @@ public:
     }
 
     /**
-     * @brief Returns the resolved scroll speed at the note's start.
+     * Returns the resolved scroll speed at the note's start.
      * @return The resolved scroll speed at the note's start.
      */
     float GetScrollStartSpeed() const {
         return m_flScrollStartSpeed;
     }
     /**
-     * @brief Stores the resolved scroll speed at the note's start.
+     * Stores the resolved scroll speed at the note's start.
      * @param flScrollStartSpeed The resolved scroll speed at the note's start.
      */
     void SetScrollStartSpeed(float flScrollStartSpeed) {
@@ -540,14 +540,14 @@ public:
     }
 
     /**
-     * @brief Returns the resolved scroll speed at the note's end.
+     * Returns the resolved scroll speed at the note's end.
      * @return The resolved scroll speed at the note's end.
      */
     float GetScrollEndSpeed() const {
         return m_flScrollEndSpeed;
     }
     /**
-     * @brief Stores the resolved scroll speed at the note's end.
+     * Stores the resolved scroll speed at the note's end.
      * @param flScrollEndSpeed The resolved scroll speed at the note's end.
      */
     void SetScrollEndSpeed(float flScrollEndSpeed) {
@@ -555,14 +555,14 @@ public:
     }
 
     /**
-     * @brief Returns the slide sub-record.
+     * Returns the slide sub-record.
      * @return The slide sub-record, or @c nullptr when the note has none.
      */
     RbffSlideRecord *GetSlideRecord() const {
         return m_pSlideRecord;
     }
     /**
-     * @brief Stores the slide sub-record.
+     * Stores the slide sub-record.
      * @param pSlideRecord The slide sub-record, or @c nullptr when the note has none.
      */
     void SetSlideRecord(RbffSlideRecord *pSlideRecord) {
@@ -570,14 +570,14 @@ public:
     }
 
     /**
-     * @brief Returns the number of slide points.
+     * Returns the number of slide points.
      * @return The number of slide points.
      */
     int GetSlidePointCount() const {
         return m_nSlidePointCount;
     }
     /**
-     * @brief Stores the number of slide points.
+     * Stores the number of slide points.
      * @param nSlidePointCount The number of slide points.
      */
     void SetSlidePointCount(int nSlidePointCount) {

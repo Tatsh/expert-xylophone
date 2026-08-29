@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The phone-layout anchor-position record type and its runtime-filled tables.
+ * The phone-layout anchor-position record type and its runtime-filled tables.
  */
 
 #pragma once
 
 /**
- * @brief One phone-layout anchor-position record: a base coordinate and the anchor mode that
+ * One phone-layout anchor-position record: a base coordinate and the anchor mode that
  * offsets it relative to the play-field viewport.
  *
  * The record tables are zero-initialised in the binary's @c __common segment and filled at runtime
@@ -19,11 +19,11 @@ struct PhoneAnchorRecord {
     int nAnchorMode = {}; /*!< The viewport-relative anchor mode (0 through 8). +0x08 */
 };
 
-/** @brief The number of records in each phone-layout anchor-position table. */
+/** The number of records in each phone-layout anchor-position table. */
 constexpr int kPhoneAnchorRecordCount = 168;
 
 /**
- * @brief The phone-layout anchor-position table used in portrait orientation.
+ * The phone-layout anchor-position table used in portrait orientation.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime by the
  * result-layout-table initialisers; the portrait flag selects between it and
@@ -34,7 +34,7 @@ constexpr int kPhoneAnchorRecordCount = 168;
 extern PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount];
 
 /**
- * @brief The default phone-layout anchor-position table, used outside portrait orientation.
+ * The default phone-layout anchor-position table, used outside portrait orientation.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime by the
  * result-layout-table initialisers; the portrait flag selects between it and

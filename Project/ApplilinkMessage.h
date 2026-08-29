@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkMessage helper.
+ * Reconstructed interface for the Applilink advert SDK's @c ApplilinkMessage helper.
  *
  * @c ApplilinkMessage is the SDK's stateless localised-message helper: it resolves a message key
  * into the corresponding localised string from the reward bundle's @c "Message" table, supplying a
@@ -13,12 +13,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Applilink SDK localised user-facing message helper.
+ * Applilink SDK localised user-facing message helper.
  */
 @interface ApplilinkMessage : NSObject
 
 /**
- * @brief Resolve a message key into its localised string.
+ * Resolve a message key into its localised string.
  *
  * The value is looked up under @p localizedMessage in the reward bundle's @c "Message" strings
  * table. A built-in English default is supplied for each of the two recognised keys:

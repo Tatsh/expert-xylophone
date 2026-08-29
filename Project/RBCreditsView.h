@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The staff-credits popup view.
+ * The staff-credits popup view.
  *
  * It is an @c RBMusicMenuPopupView configured with the credits popup
  * type, presenting the scrolling credits artwork centred in the popup's content view.
@@ -18,12 +18,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Popup view that shows the staff credits roll over the settings screen.
+ * Popup view that shows the staff credits roll over the settings screen.
  */
 @interface RBCreditsView : RBMusicMenuPopupView
 
 /**
- * @brief Create the credits popup with the given frame.
+ * Create the credits popup with the given frame.
  *
  * Calls through to @c super, then selects the credits popup type and builds the view.
  * @param frame The view's frame rectangle.
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the credits content: lay the credits-text image out in the popup content view.
+ * Build the credits content: lay the credits-text image out in the popup content view.
  *
  * Calls through to @c super, then adds the @c 07_credits/cre_text image to the content view,
  * centred horizontally and vertically within the remaining space below a theme-dependent top
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupView;
 
 /**
- * @brief The settings view that owns and presents this credits popup.
+ * The settings view that owns and presents this credits popup.
  */
 @property(weak, nonatomic, nullable) RBSettingView *settingView;
 

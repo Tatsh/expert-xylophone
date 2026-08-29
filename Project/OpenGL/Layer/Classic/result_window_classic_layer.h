@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Classic-theme result-window layer, @c ResultWindowClassicLayer.
+ * The Classic-theme result-window layer, @c ResultWindowClassicLayer.
  */
 
 #pragma once
@@ -20,7 +20,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The Classic-theme result-window layer.
+ * The Classic-theme result-window layer.
  *
  * Draws the Classic result panel; a process-wide singleton built on first access, deriving from
  * @c PlayFieldLayerBase. The sprite-set state (two textures, eight sprite instancers, four ribbon
@@ -30,14 +30,14 @@ class C_SPRITE_INSTANCING_2D;
 class ResultWindowClassicLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide Classic result-window layer, created on first use.
+     * The process-wide Classic result-window layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x1151fc
      */
     static ResultWindowClassicLayer *shared();
 
     /**
-     * @brief Resets the five result-score/effect display animation channels to their zeroed initial
+     * Resets the five result-score/effect display animation channels to their zeroed initial
      * state, each easing from its current shown value to zero over @p flStartTime (snapping
      * immediately when non-positive), resets the four ribbon trails, and clears the score-animation
      * active flag.
@@ -47,7 +47,7 @@ public:
     void ResetResultScoreAnimations(float flStartTime);
 
     /**
-     * @brief Kicks off the staggered result-screen score/effect show animations.
+     * Kicks off the staggered result-screen score/effect show animations.
      *
      * Seeds the five display animation channels to ease each from its current shown value to one:
      * the score channel over @p flStartTime, and the four effect channels over fixed 200/300-unit
@@ -61,7 +61,7 @@ public:
     void StartResultScoreAnimations(float flStartTime);
 
     /**
-     * @brief Counts a gesture hold-timer down and fires the release cue when it expires.
+     * Counts a gesture hold-timer down and fires the release cue when it expires.
      *
      * A no-op while the score/gesture-active flag is clear. Otherwise it accumulates the frame
      * delta into the hold timer and, once the timer passes the hold timeout, clears the active flag
@@ -72,7 +72,7 @@ public:
     void UpdateGestureHoldTimer(float flDeltaTime);
 
     /**
-     * @brief The per-frame result-score-window update: advances the score/effect animation channels
+     * The per-frame result-score-window update: advances the score/effect animation channels
      * and rotating decorations, updates the gesture-hold timer and the touch/Twitter-share state,
      * then dispatches to the iPad or phone render path.
      *
@@ -87,7 +87,7 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Renders the result-score window on the iPad (landscape) path.
+     * Renders the result-score window on the iPad (landscape) path.
      *
      * Clears the eight instancer slots, then — once the panel alpha channel is non-zero — draws the
      * whole pad panel: the backdrop and frame furniture, the confirm and share buttons (each dimmed
@@ -107,7 +107,7 @@ public:
     void RenderResultScoreLayerActive(float flDeltaTime);
 
     /**
-     * @brief Renders the result-score window on the phone (portrait) path.
+     * Renders the result-score window on the phone (portrait) path.
      *
      * The phone twin of @c RenderResultScoreLayerActive, built from the phone position bank rather
      * than the pad anchor bank. It clears the eight instancer slots, then — once the panel alpha
@@ -129,7 +129,7 @@ public:
     void RenderResultScoreLayerIdle(float flDeltaTime);
 
     /**
-     * @brief Updates the result screen's touch handling and posts the score to Twitter on the share
+     * Updates the result screen's touch handling and posts the score to Twitter on the share
      * gesture.
      *
      * Enables the gesture regions once the panel is fully shown, runs the four hit-box regions,
@@ -141,7 +141,7 @@ public:
     void UpdateTouchAndPostTwitterShare();
 
     /**
-     * @brief Advances the level-up experience-bar reveal animation and returns its inverse
+     * Advances the level-up experience-bar reveal animation and returns its inverse
      * progress.
      *
      * While unsettled it accumulates the frame delta into the reveal timer, normalises it against
@@ -159,7 +159,7 @@ public:
     float AdvanceCustomizeOverlayProgress(int nDeltaFrames);
 
     /**
-     * @brief Advances and renders the customize phone-skin overlay for one frame.
+     * Advances and renders the customize phone-skin overlay for one frame.
      *
      * Runs the overlay's slide timer forward while the direction flag is set (clamped to the reveal
      * duration) or backward while it is clear (clamped to zero, kicking off the queued main-asset
@@ -177,7 +177,7 @@ public:
     void RenderCustomizePhoneOverlay(int nDeltaFrames, const S_VECTOR2 *pBasePos, float flScale);
 
     /**
-     * @brief Advances and renders the customize nameplate overlay for one frame, swapping the shown
+     * Advances and renders the customize nameplate overlay for one frame, swapping the shown
      * skin texture when its reveal completes.
      *
      * Runs the overlay's slide timer down (while the preview is hidden) or up (while shown),
@@ -197,7 +197,7 @@ public:
     RenderCustomizeNameplateOverlay(int nDeltaFrames, const S_VECTOR2 *pBasePos, float flScale);
 
     /**
-     * @brief Resets the result-screen score/level display block to its per-round defaults.
+     * Resets the result-screen score/level display block to its per-round defaults.
      *
      * Sets the networked-play flag from the game type, clears the display counters and sentinels
      * (the music-track indices to -1), copies the player level and experience from the game system,
@@ -209,7 +209,7 @@ public:
     void ResetScoreDisplayState();
 
     /**
-     * @brief Whether a customize-character texture swap is pending.
+     * Whether a customize-character texture swap is pending.
      *
      * The flag lives in the first gesture region's tap-edge byte (+0x71); the customize overlay and
      * the result-screen gesture never run together, so the binary reuses the same byte.
@@ -221,7 +221,7 @@ public:
     }
 
     /**
-     * @brief Clears the pending customize-character texture-swap flag.
+     * Clears the pending customize-character texture-swap flag.
      * @ghidraAddress 0x11c598
      */
     void ClearCustomizeReloadFlag() {
@@ -229,7 +229,7 @@ public:
     }
 
     /**
-     * @brief Returns a result-window parts descriptor by index for the current device.
+     * Returns a result-window parts descriptor by index for the current device.
      *
      * Selects the pad or phone parts table by the device kind and returns the record at @p nIndex.
      * @param nIndex The parts-record index (0 through 239).
@@ -239,7 +239,7 @@ public:
     const PartsDataRecord *getPartsData(int nIndex) const;
 
     /**
-     * @brief Returns a phone-layout parts descriptor by index.
+     * Returns a phone-layout parts descriptor by index.
      *
      * Always reads the static phone parts table.
      * @param nIndex The parts-record index (0 through 125).
@@ -249,7 +249,7 @@ public:
     const PartsDataRecord *getPartsData_Phone(int nIndex) const;
 
     /**
-     * @brief Lazily builds the layer's sprite set: loads the two textures, creates the eight sprite
+     * Lazily builds the layer's sprite set: loads the two textures, creates the eight sprite
      * instancers (registering each in the global scene tree, making it visible, binding the slot's
      * texture, and clearing its sprite count), and initialises the four ribbon trails.
      *
@@ -259,7 +259,7 @@ public:
     void InitSpriteSetsLazy();
 
     /**
-     * @brief Resolves a phone-layout position by index, offset relative to the play-field viewport.
+     * Resolves a phone-layout position by index, offset relative to the play-field viewport.
      *
      * Looks up a @c PhoneAnchorRecord from the portrait or landscape table (selected by the layer's
      * orientation flag), copies its base coordinate, then shifts it by the viewport's half or full
@@ -271,7 +271,7 @@ public:
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
-     * @brief Returns a phone-layout separator record by index.
+     * Returns a phone-layout separator record by index.
      *
      * Selects the portrait or landscape separator table by the layer's orientation flag and returns
      * the record at @p nIndex.
@@ -282,7 +282,7 @@ public:
     const PhoneLayoutRecord *getSeparator_Phone(int nIndex) const;
 
     /**
-     * @brief Resolves a phone-layout rectangle by index and state, offset relative to the viewport.
+     * Resolves a phone-layout rectangle by index and state, offset relative to the viewport.
      *
      * Selects the state table on the iPad, otherwise the portrait or
      * landscape table by the orientation flag, copies the record's four floats to @p pOutRect, then
@@ -295,7 +295,7 @@ public:
     void getPositionByState_Phone(int nIndex, PhoneLayoutRect *pOutRect) const;
 
     /**
-     * @brief Resolves the single phone-layout centre-position rectangle, offset by the viewport.
+     * Resolves the single phone-layout centre-position rectangle, offset by the viewport.
      *
      * Copies the state, portrait, or landscape centre record (selected by the state and orientation
      * flags) to @p pOutRect. When the state flag is clear the leading coordinate is shifted by half
@@ -306,7 +306,7 @@ public:
     void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
     /**
-     * @brief Emits one result-window part sprite by part id into an instancer slot.
+     * Emits one result-window part sprite by part id into an instancer slot.
      *
      * Looks up the part's placement rectangle and UV-palette rectangle and appends a quad to the
      * slot; part ids at or above the table bound are ignored. The main pass draws at full alpha,
@@ -331,7 +331,7 @@ public:
                         bool bShadowPass);
 
     /**
-     * @brief Renders a right-to-left digit sequence from a chosen glyph bank.
+     * Renders a right-to-left digit sequence from a chosen glyph bank.
      *
      * Splits @p nValue into up to @p nDigitCount decimal digits and emits each glyph (part id
      * @p nGlyphBase plus the digit) right to left, advancing by each glyph's width less
@@ -357,7 +357,7 @@ public:
                              float flSpacing);
 
     /**
-     * @brief Renders a compact (no decimal point) score as centred digit glyphs.
+     * Renders a compact (no decimal point) score as centred digit glyphs.
      *
      * Splits @p nValue into up to four digits (at least one), centres the run about @p position
      * using the zero glyph's advance, and emits each digit right to left stepping by its own width.
@@ -369,7 +369,7 @@ public:
     void RenderScoreDigitsCompact(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
-     * @brief Renders an integer and fractional value joined by a dot glyph, centred as one run.
+     * Renders an integer and fractional value joined by a dot glyph, centred as one run.
      *
      * Splits both parts into up to four digits each (at least one), centres the combined run
      * (integer digits, the dot, and fraction digits) about @p position using the zero glyph's
@@ -386,7 +386,7 @@ public:
                                   unsigned int nAlpha);
 
     /**
-     * @brief Renders a value padded to at least two digits with a dot glyph after the ones digit.
+     * Renders a value padded to at least two digits with a dot glyph after the ones digit.
      *
      * Splits @p nValue into up to four digits (at least two) and emits each digit right to left
      * from
@@ -399,7 +399,7 @@ public:
     void RenderScorePaddedWithDot(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
-     * @brief Renders a number field of glyphs at an offset position, with an optional paired glyph
+     * Renders a number field of glyphs at an offset position, with an optional paired glyph
      *        and dimmed leading-zero padding.
      *
      * Splits @p nValue into up to @p nDigitCount digits, offsets @p position by @p offset, and
@@ -429,7 +429,7 @@ public:
                                   float flSpacing);
 
     /**
-     * @brief Renders a value as centred digit glyphs, advancing by each glyph's own width.
+     * Renders a value as centred digit glyphs, advancing by each glyph's own width.
      *
      * Splits @p nValue into up to four digits (rendering at least one significant digit), centres
      * the run about @p pPosition using a nominal seven-pixel glyph width, then emits each digit
@@ -443,7 +443,7 @@ public:
     void RenderDigitRowSpacedByWidth(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
-     * @brief Renders two digit groups separated by a separator glyph, centred as one run.
+     * Renders two digit groups separated by a separator glyph, centred as one run.
      *
      * Splits both values into up to four digits each (rendering at least one significant digit
      * per group), centres the combined run about @p pPosition using a nominal seven-pixel glyph
@@ -463,7 +463,7 @@ public:
                            unsigned int nAlpha);
 
     /**
-     * @brief Renders a value as centred digit glyphs with a leading glyph and an inline dot glyph.
+     * Renders a value as centred digit glyphs with a leading glyph and an inline dot glyph.
      *
      * Splits @p nValue into up to four digits (rendering at least two significant digits), centres
      * the run about @p pPosition using a fixed six-pixel glyph advance, and emits the glyphs right
@@ -477,7 +477,7 @@ public:
     void RenderDecimalWithDotGlyph(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
-     * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
+     * Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
      *
      * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in
      * the slot, resizes it to the texture image size over its scale factor, zeroes its UV origin,
@@ -490,7 +490,7 @@ public:
     void SetInstancerTextureAndRefreshSlots(unsigned int nSlot, ne::C_TEXTURE *pTexture);
 
     /**
-     * @brief Toggles the customize character preview, loading its texture into the preview slot.
+     * Toggles the customize character preview, loading its texture into the preview slot.
      *
      * When the preview is hidden, records @p nCharacterId, marks it shown, resolves the character's
      * unlock entry (its category becomes the cached sub-id and its item the asset variant), builds
@@ -503,7 +503,7 @@ public:
     void ToggleCustomizeCharacterTexture(unsigned int nCharacterId);
 
     /**
-     * @brief Begins displaying the main customize sprite asset for the given asset id.
+     * Begins displaying the main customize sprite asset for the given asset id.
      *
      * Records the asset id and checks its availability by the player's level threshold. When
      * unavailable the two active flags are cleared and nothing is shown. Otherwise it marks the
@@ -516,7 +516,7 @@ public:
     void BeginCustomizeMainAsset(unsigned int nAssetId);
 
     /**
-     * @brief Emits one glyph sprite anchored by a separator record, at that record's scale.
+     * Emits one glyph sprite anchored by a separator record, at that record's scale.
      *
      * Fetches the separator record @p nSepIndex, which supplies the anchored base position (offset
      * relative to the viewport per its anchor mode), the sprite X scale (its width field), and the
@@ -538,7 +538,7 @@ public:
                                 unsigned int nAlpha);
 
     /**
-     * @brief Draws a slot's whole bound texture image as one quad at a position and size.
+     * Draws a slot's whole bound texture image as one quad at a position and size.
      *
      * Reads the slot's bound texture, computes the used UV region (image size over allocated
      * power-of-two size), and appends a full-intensity quad of the given size at the given
@@ -555,7 +555,7 @@ public:
                                   unsigned int nAlpha);
 
     /**
-     * @brief Draws a slot's bound texture image scaled by the texture's own scale factor.
+     * Draws a slot's bound texture image scaled by the texture's own scale factor.
      *
      * Like BlitInstancerTextureSlot, but sizes the quad by the texture's stored scale factor and
      * draws it at the layer's default alpha, with the alpha channel driven by @p nScale times the
@@ -570,7 +570,7 @@ public:
                                          unsigned int nScale);
 
     /**
-     * @brief Draws a slot's bound texture image centred on a position (half-size anchor).
+     * Draws a slot's bound texture image centred on a position (half-size anchor).
      *
      * Like RenderSpriteInstancerSlotScaled's sizing, but anchors the quad at half its size so it is
      * centred on @p position, and takes explicit alpha and intensity.
@@ -586,7 +586,7 @@ public:
                                             unsigned int nIntensity);
 
     /**
-     * @brief Emits one glyph sprite from the glyph table by character code.
+     * Emits one glyph sprite from the glyph table by character code.
      *
      * Looks up the glyph's placement rectangle (from the parts table indexed by @p nCharCode) and
      * its glyph UV-palette rectangle, then appends a quad to the slot. Character codes at or above
@@ -612,7 +612,7 @@ public:
                                       float flScaleY);
 
     /**
-     * @brief Emits one phone-table glyph sprite at a position plus an offset, with rotation and
+     * Emits one phone-table glyph sprite at a position plus an offset, with rotation and
      *        scale.
      *
      * Looks up the glyph's placement rectangle from the phone parts table and its glyph UV-palette
@@ -641,7 +641,7 @@ public:
                                   float flScaleY);
 
     /**
-     * @brief Emits one phone-table glyph sprite at a resolved position index plus an offset.
+     * Emits one phone-table glyph sprite at a resolved position index plus an offset.
      *
      * Resolves the base position from the phone position table by @p nPositionIndex, then behaves
      * as RenderTableSpriteAtIndex: looks up the glyph rectangle and UV rectangle, adds @p offset,
@@ -668,7 +668,7 @@ public:
                                      float flScaleY);
 
     /**
-     * @brief Emits one glyph sprite at a resolved position index plus an offset, X-scaled only.
+     * Emits one glyph sprite at a resolved position index plus an offset, X-scaled only.
      *
      * Resolves the base position from the phone position table by @p nPositionIndex, adds @p
      * offset, then dispatches the glyph through the glyph dispatcher with the given X scale (unit Y
@@ -688,17 +688,17 @@ public:
                                         unsigned int nAlpha,
                                         float flScaleX);
 
-    /** @brief The number of player sides the result panel reports. */
+    /** The number of player sides the result panel reports. */
     static constexpr int kSideCount = 2;
 
-    /** @brief The play colour a seeded result score belongs to. */
+    /** The play colour a seeded result score belongs to. */
     enum ResultScoreColor {
         kResultScoreRed = 0,  /*!< The red side's score. */
         kResultScoreBlue = 1, /*!< The blue side's score. */
     };
 
     /**
-     * @brief Stores the pair of per-colour result score values the scene seeds at set-up.
+     * Stores the pair of per-colour result score values the scene seeds at set-up.
      * @param nScore The red side's result score.
      * @param nScoreHi The blue side's result score.
      */
@@ -707,23 +707,23 @@ public:
         m_aResultScores[kResultScoreBlue] = nScoreHi;
     }
 
-    /** @brief The number of sprite-instancer slots the layer builds. */
+    /** The number of sprite-instancer slots the layer builds. */
     static constexpr int kSpriteSlotCount = 8;
-    /** @brief The number of ribbon trails the layer builds (during the first slot's setup). */
+    /** The number of ribbon trails the layer builds (during the first slot's setup). */
     static constexpr int kTrailCount = 4;
-    /** @brief The number of result-score/effect display animation channels. */
+    /** The number of result-score/effect display animation channels. */
     static constexpr int kScoreAnimCount = 5;
-    /** @brief The number of phone-layout position records. */
+    /** The number of phone-layout position records. */
     static constexpr int kPositionRecordCount = 82;
     /**
-     * @brief The number of result-screen gesture hit-box regions (the side-slider drag region is
+     * The number of result-screen gesture hit-box regions (the side-slider drag region is
      * separate).
      */
     static constexpr int kGestureRegionCount = 4;
 
 private:
     /**
-     * @brief Constructs the layer: chains the base constructor, seeds the fields whose defaults are
+     * Constructs the layer: chains the base constructor, seeds the fields whose defaults are
      * not zero, and builds the four ribbon trails.
      *
      * The gesture regions and the slider start with no tracked touch, the reveal sound-effect
@@ -735,7 +735,7 @@ private:
     ResultWindowClassicLayer();
 
     /**
-     * @brief Begins loading the customize-character main asset for the result screen.
+     * Begins loading the customize-character main asset for the result screen.
      * Reconstruction pending.
      * @ghidraAddress 0x11c66c
      */
@@ -779,10 +779,10 @@ private:
     // result-screen gesture are never live at the same time, so the binary overlaps them in the
     // same byte.
     struct GestureTouchRegion {
-        int nTouchId = {};  // +0x00: the tracked touch id (-1 when none).
-        bool bDown = {};    // +0x04: whether a touch is currently inside the region.
-        bool bTapEdge = {}; // +0x05: latched when a press ends inside the region.
-        bool bEnabled = {}; // +0x06: whether the region accepts input this frame.
+        int nTouchId = {};  /*!< The tracked touch id (-1 when none). +0x00 */
+        bool bDown = {};    /*!< Whether a touch is currently inside the region. +0x04 */
+        bool bTapEdge = {}; /*!< Latched when a press ends inside the region. +0x05 */
+        bool bEnabled = {}; /*!< Whether the region accepts input this frame. +0x06 */
         // unsigned char m_aPad07[1] = {}; // +0x07
     };
     GestureTouchRegion m_aGestureRegions[kGestureRegionCount] = {}; // +0x6c

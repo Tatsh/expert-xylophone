@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The engine's five-float linear-interpolation channel, @c LinearTween.
+ * The engine's five-float linear-interpolation channel, @c LinearTween.
  *
  * A recurring engine idiom: a start value, an end value, a duration, the elapsed time, and the
  * current interpolated value, embedded directly in a UI layer as a value type. Many layers advance
@@ -22,7 +22,7 @@
 //
 
 /**
- * @brief A five-float linear-interpolation channel: current = start + t*(end - start), where
+ * A five-float linear-interpolation channel: current = start + t*(end - start), where
  * t = elapsed / duration clamped to 1.
  *
  * A value type embedded directly in the UI layers that animate one channel per frame.
@@ -32,7 +32,7 @@
 class LinearTween {
 public:
     /**
-     * @brief Advances the channel by @p flDelta and recomputes the current value, unless it has
+     * Advances the channel by @p flDelta and recomputes the current value, unless it has
      * already reached its duration. The elapsed time is clamped to the duration; a zero duration
      * forces the progress to 1.
      * @param flDelta The time (or frame count) to advance by.
@@ -40,7 +40,7 @@ public:
     void Advance(float flDelta);
 
     /**
-     * @brief The elapsed time so far.
+     * The elapsed time so far.
      * @return The elapsed time, never above the duration.
      */
     float GetElapsed() const {
@@ -48,7 +48,7 @@ public:
     }
 
     /**
-     * @brief The channel's total duration.
+     * The channel's total duration.
      * @return The total duration.
      */
     float GetDuration() const {
@@ -56,7 +56,7 @@ public:
     }
 
     /**
-     * @brief The last computed interpolated value.
+     * The last computed interpolated value.
      * @return The last computed interpolated value.
      */
     float GetCurrent() const {
@@ -64,7 +64,7 @@ public:
     }
 
     /**
-     * @brief The interpolation start value.
+     * The interpolation start value.
      * @return The interpolation start value.
      */
     float GetStart() const {
@@ -72,7 +72,7 @@ public:
     }
 
     /**
-     * @brief The interpolation end value.
+     * The interpolation end value.
      * @return The interpolation end value.
      */
     float GetEnd() const {
@@ -80,7 +80,7 @@ public:
     }
 
     /**
-     * @brief Sets the interpolation start value.
+     * Sets the interpolation start value.
      * @param flStart The interpolation start value.
      */
     void SetStart(float flStart) {
@@ -88,7 +88,7 @@ public:
     }
 
     /**
-     * @brief Sets the interpolation end value.
+     * Sets the interpolation end value.
      * @param flEnd The interpolation end value.
      */
     void SetEnd(float flEnd) {
@@ -96,7 +96,7 @@ public:
     }
 
     /**
-     * @brief Sets the total duration.
+     * Sets the total duration.
      * @param flDuration The total duration.
      */
     void SetDuration(float flDuration) {
@@ -104,7 +104,7 @@ public:
     }
 
     /**
-     * @brief Sets the elapsed time so far.
+     * Sets the elapsed time so far.
      * @param flElapsed The elapsed time.
      */
     void SetElapsed(float flElapsed) {
@@ -112,7 +112,7 @@ public:
     }
 
     /**
-     * @brief Sets the last computed interpolated value.
+     * Sets the last computed interpolated value.
      * @param flCurrent The interpolated value.
      */
     void SetCurrent(float flCurrent) {

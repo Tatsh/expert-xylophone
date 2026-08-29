@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c SFSafariViewController status-bar preference.
+ * @c SFSafariViewController status-bar preference.
  *
  * The application presents the in-app browser
  * full screen, so the category overrides the controller's status-bar preference to hide it.
@@ -18,7 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Status-bar preference override for the in-app browser.
+ * Status-bar preference override for the in-app browser.
  *
  * The category adds no state and overrides a single @c UIViewController preference, so it takes
  * effect on every @c SFSafariViewController the application presents.
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SFSafariViewController (RB)
 
 /**
- * @brief Whether the presented browser hides the status bar.
+ * Whether the presented browser hides the status bar.
  * @return Always @c YES.
  * @ghidraAddress 0x20f48
  */

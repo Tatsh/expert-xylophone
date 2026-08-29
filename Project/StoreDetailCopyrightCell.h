@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The trailing copyright and terms rows in the phone-layout pack detail table, each a
+ * The trailing copyright and terms rows in the phone-layout pack detail table, each a
  * single multi-line label.
  *
  * @c RBStoreDetailViewController dequeues this cell for both the copyright row
@@ -15,7 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The copyright or terms row in the pack detail table.
+ * The copyright or terms row in the pack detail table.
  *
  * The cell holds a single word-wrapping label that renders either the pack's copyright notice or
  * the fixed terms-of-use sentence.
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface StoreDetailCopyrightCell : UITableViewCell
 
 /**
- * @brief The label carrying the copyright notice or terms text.
+ * The label carrying the copyright notice or terms text.
  */
 @property(nonatomic, strong, nullable) UILabel *labelCopyright;
 

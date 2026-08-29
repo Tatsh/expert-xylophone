@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The popup wrapper that hosts the music-menu page slider.
+ * The popup wrapper that hosts the music-menu page slider.
  *
  * It is an @c RBPopupView subclass that
  * allocates and embeds a single @c RBMenuPageSlider, exposes it through the @c slider property, and
@@ -19,12 +19,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A popup that wraps and presents an @c RBMenuPageSlider.
+ * A popup that wraps and presents an @c RBMenuPageSlider.
  */
 @interface RBMenuPageSliderView : RBPopupView
 
 /**
- * @brief Create the wrapper and its embedded slider.
+ * Create the wrapper and its embedded slider.
  *
  * Initialises the popup base with @p frame, disables its show/hide animation flag, makes the base,
  * content, and self views resize flexibly, then allocates an @c RBMenuPageSlider over the same
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                               delegate:(nullable id<RBMenuPageSliderDelegate>)delegate;
 
 /**
- * @brief Reconfigure the embedded slider's page range and slide the popup in.
+ * Reconfigure the embedded slider's page range and slide the popup in.
  *
  * Resets the slider to the given page range and current page, repositions it directly below the
  * supplied frame, then runs the popup's show animation.
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showView:(CGRect)frame pageMax:(NSUInteger)pageMax currentPage:(NSUInteger)currentPage;
 
 /**
- * @brief Prepare the embedded slider for a device rotation.
+ * Prepare the embedded slider for a device rotation.
  *
  * Hides the slider by dropping it to full transparency and marks the view as animating; the
  * complementary @c didRotate fades it back in once the rotation completes.
@@ -59,13 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)willRotate;
 
 /**
- * @brief Fade the embedded slider back to full opacity after a device rotation.
+ * Fade the embedded slider back to full opacity after a device rotation.
  * @ghidraAddress 0x1c05e8
  */
 - (void)didRotate;
 
 /**
- * @brief Reconfigure the embedded slider's page range and current page.
+ * Reconfigure the embedded slider's page range and current page.
  * @param pageMax The highest selectable page.
  * @param currentPage The page to move the grip to.
  * @ghidraAddress 0x1c0750
@@ -73,18 +73,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reset:(NSUInteger)pageMax currentPage:(NSUInteger)currentPage;
 
 /**
- * @brief The embedded page slider.
+ * The embedded page slider.
  * @ghidraAddress 0x1c0a38
  */
 @property(strong, nonatomic, nullable) RBMenuPageSlider *slider;
 
 /**
- * @brief The floating index-label text shown while paging.
+ * The floating index-label text shown while paging.
  */
 @property(strong, nonatomic, nullable) NSString *indexLabel;
 
 /**
- * @brief Whether a show or hide transition is currently running.
+ * Whether a show or hide transition is currently running.
  *
  * Backed by the @c _animating ivar, whose metadata types it @c B (a one-byte @c BOOL).
  * @ghidraAddress 0x1c0a58 (getter)

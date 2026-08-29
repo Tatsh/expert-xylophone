@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The tutorial-guide layer, @c TutorialGuideLayer.
+ * The tutorial-guide layer, @c TutorialGuideLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The tutorial-guide layer.
+ * The tutorial-guide layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It presents
  * the tap-tutorial guide: a 20-sprite instancer plus a set of hard-coded keyframe timings and two
@@ -25,17 +25,17 @@ class C_SPRITE_INSTANCING_2D;
  */
 class TutorialGuideLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of keyframe steps in the guide sweep. */
+    /** The number of keyframe steps in the guide sweep. */
     static constexpr int kKeyframeCount = 9;
-    /** @brief The number of grid rows filled per keyframe. */
+    /** The number of grid rows filled per keyframe. */
     static constexpr int kGridRows = 4;
-    /** @brief The number of grid entries per row. */
+    /** The number of grid entries per row. */
     static constexpr int kGridColumns = 6;
-    /** @brief The sprite-instancer capacity the guide builds. */
+    /** The sprite-instancer capacity the guide builds. */
     static constexpr unsigned int kSpriteCapacity = 0x14;
 
     /**
-     * @brief A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
+     * A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
      */
     struct Keyframe {
         float flStartX = {}; /*!< The sweep's start X. +0x00 */
@@ -44,7 +44,7 @@ public:
     };
 
     /**
-     * @brief One coordinate-grid entry: an X position and an enable weight.
+     * One coordinate-grid entry: an X position and an enable weight.
      *
      * The binary copies the second field as raw 32 bits, and every value in the shipped offset
      * tables is the float 0.0 or 1.0.
@@ -55,20 +55,20 @@ public:
     };
 
     /**
-     * @brief The process-wide tutorial-guide layer, created on first use.
+     * The process-wide tutorial-guide layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x10b3b0
      */
     static TutorialGuideLayer *shared();
 
     /**
-     * @brief Releases and destroys the process-wide tutorial-guide layer, if it exists.
+     * Releases and destroys the process-wide tutorial-guide layer, if it exists.
      * @ghidraAddress 0x10b400
      */
     static void destroyShared();
 
     /**
-     * @brief Lazily builds the guide's sprite and its keyframe and coordinate tables.
+     * Lazily builds the guide's sprite and its keyframe and coordinate tables.
      *
      * Loads the tutorial atlas, creates the 20-sprite instancer (registered in the global scene
      * tree, made visible, and bound to the atlas), then seeds the nine keyframe timings and the
@@ -80,41 +80,41 @@ public:
     void BuildTutorialGuideSpriteTable();
 
     /**
-     * @brief Hides the guide, clearing its active flag.
+     * Hides the guide, clearing its active flag.
      * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x10b734
      */
     void Stop(float flDuration);
 
     /**
-     * @brief Puts the guide into its fade-in state.
+     * Puts the guide into its fade-in state.
      * @ghidraAddress 0x10b73c
      */
     void StartFadeIn();
 
     /**
-     * @brief Begins showing the guide: activates it, resets the animation clock, and advances the
+     * Begins showing the guide: activates it, resets the animation clock, and advances the
      * game system's tutorial phase to the guide-active phase.
      * @ghidraAddress 0x10b70c
      */
     void Start();
 
     /**
-     * @brief Resets the guide to its idle fade-out state: sets the fade state to hidden, clears the
+     * Resets the guide to its idle fade-out state: sets the fade state to hidden, clears the
      * game system's tutorial phase, and resets the timer.
      * @ghidraAddress 0x10b748
      */
     void Reset();
 
     /**
-     * @brief Tears the guide down: releases its atlas, flags its sprite instancer for deferred
+     * Tears the guide down: releases its atlas, flags its sprite instancer for deferred
      * deletion, and clears the built guard.
      * @ghidraAddress 0x10b350
      */
     void Release();
 
     /**
-     * @brief The per-frame update dispatcher.
+     * The per-frame update dispatcher.
      *
      * On the phone (non-pad) it first refreshes the portrait flag from the game system's current
      * viewport dimensions. It then branches on the fade state: an active state (low byte non-zero)
@@ -127,35 +127,35 @@ public:
 
 private:
     /**
-     * @brief Advances and draws the animated tutorial finger sprites for the frame.
+     * Advances and draws the animated tutorial finger sprites for the frame.
      * @param flDeltaTime The frame's elapsed time, in seconds.
      * @ghidraAddress 0x10b828
      */
     void AnimateFingerSprites(float flDeltaTime);
 
     /**
-     * @brief Advances the tutorial fade-out state machine.
+     * Advances the tutorial fade-out state machine.
      * @param flDeltaTime The frame's elapsed time, in seconds.
      * @ghidraAddress 0x10c430
      */
     void AdvanceStateMachine(float flDeltaTime);
 
     /**
-     * @brief Renders the tutorial result overlay during the fade-out phase.
+     * Renders the tutorial result overlay during the fade-out phase.
      * @param flDeltaTime The frame's elapsed time, in seconds.
      * @ghidraAddress 0x10c5f8
      */
     void RenderResultOverlay(float flDeltaTime);
 
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state
      * (the texture, sprite, counts, flags, animation clock, and coordinate table).
      * @ghidraAddress 0x10b308
      */
     TutorialGuideLayer();
 
     /**
-     * @brief Looks up a keyframe step table by time, returning the value of the range that contains
+     * Looks up a keyframe step table by time, returning the value of the range that contains
      * it.
      *
      * The table is a flat array of three-float groups `{rangeStart, rangeEnd, value}`, where each
@@ -171,7 +171,7 @@ private:
     static unsigned int KeyframeStepTableLookup(float flTime, const float *pTable, int nEntries);
 
     /**
-     * @brief Emits one guide sprite of a given kind into the instancer, if its pool is not full.
+     * Emits one guide sprite of a given kind into the instancer, if its pool is not full.
      *
      * Looks up the sprite kind's descriptor (target anchor, size, and UV-table index) and its UV
      * rectangle, optionally re-derives the Y position from the gauge coordinate when the guide is

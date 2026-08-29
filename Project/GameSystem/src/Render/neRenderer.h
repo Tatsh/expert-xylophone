@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The reference-counted projection viewport and camera node, @c ne::Viewport and
+ * The reference-counted projection viewport and camera node, @c ne::Viewport and
  * @c ne::CameraNode, and the render-camera installation and factory helpers.
  */
 
@@ -13,7 +13,7 @@ struct S_VECTOR3;
 namespace ne {
 
 /**
- * @brief A reference-counted projection viewport: a 4x4 projection matrix and a GL viewport
+ * A reference-counted projection viewport: a 4x4 projection matrix and a GL viewport
  * rectangle.
  *
  * Built by @c CreateOrthoViewport or @c CreatePerspectiveViewport and shared by reference count;
@@ -25,7 +25,7 @@ namespace ne {
 class Viewport {
 public:
     /**
-     * @brief Constructs an orthographic viewport with a zero-to-one depth ortho projection.
+     * Constructs an orthographic viewport with a zero-to-one depth ortho projection.
      * @param flWidth The orthographic width.
      * @param flHeight The orthographic height.
      * @param nViewX The GL viewport x origin.
@@ -36,7 +36,7 @@ public:
      */
     Viewport(float flWidth, float flHeight, int nViewX, int nViewY, int nViewW, int nViewH);
     /**
-     * @brief Constructs a perspective viewport.
+     * Constructs a perspective viewport.
      * @param flFovY The vertical field of view, in radians.
      * @param flAspect The aspect ratio.
      * @param flNear The near clip plane.
@@ -57,33 +57,33 @@ public:
              int nViewH);
 
     /**
-     * @brief Add a reference to the viewport.
+     * Add a reference to the viewport.
      */
     void AddRef() {
         ++m_nRefCount;
     }
     /**
-     * @brief Remove a reference from the viewport.
+     * Remove a reference from the viewport.
      * @return The reference count after the decrement.
      */
     int ReleaseRef() {
         return --m_nRefCount;
     }
     /**
-     * @brief Drops a reference and destroys the viewport once the last reference is released.
+     * Drops a reference and destroys the viewport once the last reference is released.
      * @ghidraAddress 0x29900
      */
     void Release();
 
     /**
-     * @brief Pushes the viewport's GL rectangle and projection matrix to the renderer.
+     * Pushes the viewport's GL rectangle and projection matrix to the renderer.
      * @param pRenderer The renderer to apply them to.
      * @ghidraAddress 0x29a80
      */
     void ApplyToRenderer(neGLESRenderer *pRenderer);
 
     /**
-     * @brief Projects a world-space homogeneous point to screen (pixel) coordinates.
+     * Projects a world-space homogeneous point to screen (pixel) coordinates.
      *
      * Applies the projection matrix, performs the perspective divide, and maps the clip-space
      * result into the pixel rectangle (with the Y axis flipped to a top-left origin). The point's
@@ -96,49 +96,49 @@ public:
     void ProjectWorldToScreen(float *pVec4);
 
     /**
-     * @brief The column-major 4x4 projection matrix.
+     * The column-major 4x4 projection matrix.
      * @return The sixteen-float column-major projection matrix.
      */
     const float *GetProjectionMatrix() const {
         return m_mProjection;
     }
     /**
-     * @brief The vertical field of view, in radians (zero for an orthographic viewport).
+     * The vertical field of view, in radians (zero for an orthographic viewport).
      * @return The vertical field of view in radians, or zero for an orthographic viewport.
      */
     float GetFovY() const {
         return m_flFovY;
     }
     /**
-     * @brief The perspective aspect ratio (zero for an orthographic viewport).
+     * The perspective aspect ratio (zero for an orthographic viewport).
      * @return The aspect ratio, or zero for an orthographic viewport.
      */
     float GetAspect() const {
         return m_flAspect;
     }
     /**
-     * @brief The GL viewport x origin.
+     * The GL viewport x origin.
      * @return The GL viewport x origin.
      */
     int GetViewX() const {
         return m_nViewX;
     }
     /**
-     * @brief The GL viewport y origin.
+     * The GL viewport y origin.
      * @return The GL viewport y origin.
      */
     int GetViewY() const {
         return m_nViewY;
     }
     /**
-     * @brief The GL viewport width.
+     * The GL viewport width.
      * @return The GL viewport width.
      */
     int GetViewWidth() const {
         return m_nViewW;
     }
     /**
-     * @brief The GL viewport height.
+     * The GL viewport height.
      * @return The GL viewport height.
      */
     int GetViewHeight() const {
@@ -160,7 +160,7 @@ private:
 };
 
 /**
- * @brief A reference-counted camera node: a view matrix and its inverse (camera-to-world).
+ * A reference-counted camera node: a view matrix and its inverse (camera-to-world).
  *
  * Built by @c CreateLookAtCamera or @c CreateCameraFromMatrix and installed as the current model
  * node through @c SetCurrentModelNode. Storing both the view and its inverse lets the projection
@@ -172,12 +172,12 @@ private:
 class CameraNode {
 public:
     /**
-     * @brief Constructs a camera node with identity view and inverse-view matrices.
+     * Constructs a camera node with identity view and inverse-view matrices.
      * @ghidraAddress 0x21ed4
      */
     CameraNode();
     /**
-     * @brief Constructs a camera node whose view matrix looks from @p pEye towards @p pTarget.
+     * Constructs a camera node whose view matrix looks from @p pEye towards @p pTarget.
      * @param pEye The camera position.
      * @param pTarget The look-at target.
      * @param pUp The up direction.
@@ -185,47 +185,47 @@ public:
      */
     CameraNode(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp);
     /**
-     * @brief Constructs a camera node whose view matrix is taken from @p pViewMatrix.
+     * Constructs a camera node whose view matrix is taken from @p pViewMatrix.
      * @param pViewMatrix A column-major 4x4 view matrix.
      * @ghidraAddress 0x21fe0
      */
     explicit CameraNode(const float *pViewMatrix);
 
     /**
-     * @brief Add a reference to the camera node.
+     * Add a reference to the camera node.
      */
     void AddRef() {
         ++m_nRefCount;
     }
     /**
-     * @brief Remove a reference from the camera node.
+     * Remove a reference from the camera node.
      * @return The reference count after the decrement.
      */
     int ReleaseRef() {
         return --m_nRefCount;
     }
     /**
-     * @brief Drops a reference and destroys the camera node once the last reference is released.
+     * Drops a reference and destroys the camera node once the last reference is released.
      * @ghidraAddress 0x21f58
      */
     void Release();
 
     /**
-     * @brief Transforms a 4-vector in place by the camera's view matrix.
+     * Transforms a 4-vector in place by the camera's view matrix.
      * @param pVec4 The 4-vector, transformed in place.
      * @ghidraAddress 0x22058
      */
     void TransformVector4(float *pVec4);
 
     /**
-     * @brief The column-major 4x4 view (world-to-camera) matrix.
+     * The column-major 4x4 view (world-to-camera) matrix.
      * @return The sixteen-float column-major view matrix.
      */
     float *GetViewMatrix() {
         return m_mView;
     }
     /**
-     * @brief The column-major 4x4 inverse-view (camera-to-world) matrix.
+     * The column-major 4x4 inverse-view (camera-to-world) matrix.
      * @return The sixteen-float column-major inverse-view matrix.
      */
     const float *GetInverseViewMatrix() const {
@@ -242,23 +242,23 @@ private:
 } // namespace ne
 
 /**
- * @brief The current projection viewport, retained by @c SetCurrentProjection.
+ * The current projection viewport, retained by @c SetCurrentProjection.
  * @ghidraAddress 0x3cff08
  */
 extern ne::Viewport *g_pCurrentProjection;
 /**
- * @brief The active view-camera viewport, retained by @c SetActiveViewCamera.
+ * The active view-camera viewport, retained by @c SetActiveViewCamera.
  * @ghidraAddress 0x3cff10
  */
 extern ne::Viewport *g_pActiveViewCamera;
 /**
- * @brief The current model/world camera node, retained by @c SetCurrentModelNode.
+ * The current model/world camera node, retained by @c SetCurrentModelNode.
  * @ghidraAddress 0x3cff18
  */
 extern ne::CameraNode *g_pCurrentModelNode;
 
 /**
- * @brief Installs a camera as the current one and applies it to the renderer.
+ * Installs a camera as the current one and applies it to the renderer.
  *
  * When the camera differs from the current one, releases the previous camera, retains the new one,
  * stores it, and pushes its viewport and projection matrix to the renderer.
@@ -268,28 +268,28 @@ extern ne::CameraNode *g_pCurrentModelNode;
  */
 void SetCurrentCamera(neGLESRenderer *pRenderer, ne::Viewport *pCamera);
 /**
- * @brief Installs the given viewport as the current projection (retaining it and releasing the
+ * Installs the given viewport as the current projection (retaining it and releasing the
  *        previous one).
  * @param pViewport The viewport to install as the current projection.
  * @ghidraAddress 0x29f1c
  */
 void SetCurrentProjection(ne::Viewport *pViewport);
 /**
- * @brief Installs the given viewport as the active view camera (retaining it and releasing the
+ * Installs the given viewport as the active view camera (retaining it and releasing the
  *        previous one).
  * @param pViewport The viewport to install as the active view camera.
  * @ghidraAddress 0x29f64
  */
 void SetActiveViewCamera(ne::Viewport *pViewport);
 /**
- * @brief Installs the given camera node as the current model/world node (retaining it and releasing
+ * Installs the given camera node as the current model/world node (retaining it and releasing
  *        the previous one).
  * @param pCamera The camera node to install as the current model/world node.
  * @ghidraAddress 0x29fac
  */
 void SetCurrentModelNode(ne::CameraNode *pCamera);
 /**
- * @brief Creates an orthographic viewport for the given view rectangle.
+ * Creates an orthographic viewport for the given view rectangle.
  * @param width The orthographic width.
  * @param height The orthographic height.
  * @param x The GL viewport x origin.
@@ -302,7 +302,7 @@ void SetCurrentModelNode(ne::CameraNode *pCamera);
 ne::Viewport *
 CreateOrthoViewport(float width, float height, int x, int y, int viewportWidth, int viewportHeight);
 /**
- * @brief Creates a perspective viewport for the given field of view and view rectangle.
+ * Creates a perspective viewport for the given field of view and view rectangle.
  * @param fovY The vertical field of view, in radians.
  * @param aspect The aspect ratio.
  * @param nearZ The near clip plane.
@@ -323,14 +323,14 @@ ne::Viewport *CreatePerspectiveViewport(float fovY,
                                         int viewportWidth,
                                         int viewportHeight);
 /**
- * @brief Creates a camera node from a 4x4 view matrix.
+ * Creates a camera node from a 4x4 view matrix.
  * @param pMatrix A column-major 4x4 view matrix.
  * @return The new camera node, with one reference held by the caller.
  * @ghidraAddress 0x21fe0
  */
 ne::CameraNode *CreateCameraFromMatrix(float *pMatrix);
 /**
- * @brief Creates a look-at camera node from an eye, a target, and an up vector.
+ * Creates a look-at camera node from an eye, a target, and an up vector.
  * @param pEye The camera position.
  * @param pTarget The look-at target.
  * @param pUp The up direction.
@@ -340,7 +340,7 @@ ne::CameraNode *CreateCameraFromMatrix(float *pMatrix);
 ne::CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp);
 
 /**
- * @brief Computes a world-space picking ray from a normalised screen point (a perspective
+ * Computes a world-space picking ray from a normalised screen point (a perspective
  *        unprojection through the current active-view camera and model node).
  *
  * Builds a near-plane point from the screen coordinates using @c tan(fovY/2) of the active-view
@@ -355,7 +355,7 @@ ne::CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR
 void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VECTOR3 *pRayDir);
 
 /**
- * @brief Projects a world-space point to screen coordinates through the current camera globals.
+ * Projects a world-space point to screen coordinates through the current camera globals.
  *
  * A convenience wrapper: transforms @p pVec4 by the current model node's view matrix
  * (@c g_pCurrentModelNode), then projects it through the active view camera (@c

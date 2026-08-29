@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note chain-connector layer, @c ChainConnectorLayer.
+ * The note chain-connector layer, @c ChainConnectorLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The shared chain-connector draw count.
+ * The shared chain-connector draw count.
  *
  * It is reset when the layer is constructed, advanced as connectors are enqueued, and reset again
  * at the end of each frame's @c ChainConnectorLayer::Update.
@@ -24,7 +24,7 @@ class C_SPRITE_INSTANCING_2D;
 extern int g_nChainConnectorDrawCount;
 
 /**
- * @brief The note chain-connector layer: the connector sprites drawn between chained notes.
+ * The note chain-connector layer: the connector sprites drawn between chained notes.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
  * carries no RTTI, so the name is inferred from its @c GetChainConnectorLayer accessor. Only the
@@ -35,18 +35,18 @@ extern int g_nChainConnectorDrawCount;
  */
 class ChainConnectorLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of pooled chain-connector records. */
+    /** The number of pooled chain-connector records. */
     static constexpr int kChainRecordCount = 128;
 
     /**
-     * @brief The process-wide chain-connector layer, created on first use.
+     * The process-wide chain-connector layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x185844
      */
     static ChainConnectorLayer *shared();
 
     /**
-     * @brief Builds the gm_parts1 connector sprite batch and binds its atlas on first use.
+     * Builds the gm_parts1 connector sprite batch and binds its atlas on first use.
      *
      * Creates the world sprite batch sized to the layer's capacity, attaches it under the
      * background layer, makes it visible, flags additive blend, (on a non-tutorial build) seeds two
@@ -56,7 +56,7 @@ public:
     void CreateSprites();
 
     /**
-     * @brief Emits one connector sprite of the given type into the batch.
+     * Emits one connector sprite of the given type into the batch.
      *
      * Both types draw a fixed 14x16 quad anchored at (7, 0); the type only selects the UV-table
      * entry. Appends a sprite at @p pPosition with the given rotation and y-scale (x-scale is
@@ -75,7 +75,7 @@ public:
                       float flScaleY);
 
     /**
-     * @brief Enqueues one chain connector between two note endpoints for this frame.
+     * Enqueues one chain connector between two note endpoints for this frame.
      *
      * Finds the first free pooled record and stores the connector's colour (0 or 1) and its two
      * endpoints, then advances the shared draw count. Silently drops the connector when the pool is
@@ -91,7 +91,7 @@ public:
     void Create(int nColor, float flStartX, float flStartY, float flEndX, float flEndY);
 
     /**
-     * @brief Resolves this frame's queued connectors into sprites and clears the queue.
+     * Resolves this frame's queued connectors into sprites and clears the queue.
      *
      * Derives the frame's connector alpha from the play colour and the rival-alpha setting (the
      * play side's connectors draw fully opaque, the rival side's at the scaled rival alpha), then
@@ -107,7 +107,7 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the sprite header and the
+     * Constructs the layer: chains the base constructor, clears the sprite header and the
      * pooled chain records, and resets the shared connector draw count.
      * @ghidraAddress 0x1857e4
      */
@@ -116,12 +116,12 @@ private:
     // One pooled chain-connector record (24 bytes): a colour and the two endpoints a connector
     // spans.
     struct ChainRecord {
-        bool bActive = {};   // +0x00: set while the record holds a queued connector.
-        int nColor = {};     // +0x04: the connector colour (0 or 1), selecting the sprite type.
-        float flStartX = {}; // +0x08: the start endpoint x (the sprite position x).
-        float flStartY = {}; // +0x0c: the start endpoint y (the sprite position y).
-        float flEndX = {};   // +0x10: the end endpoint x.
-        float flEndY = {};   // +0x14: the end endpoint y.
+        bool bActive = {};   /*!< Set while the record holds a queued connector. +0x00 */
+        int nColor = {};     /*!< The connector colour (0 or 1), selecting the sprite type. +0x04 */
+        float flStartX = {}; /*!< The start endpoint x (the sprite position x). +0x08 */
+        float flStartY = {}; /*!< The start endpoint y (the sprite position y). +0x0c */
+        float flEndX = {};   /*!< The end endpoint x. +0x10 */
+        float flEndY = {};   /*!< The end endpoint y. +0x14 */
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the connector atlas.

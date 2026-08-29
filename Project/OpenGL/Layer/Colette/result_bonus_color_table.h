@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The result-window bonus colour palette shared by the Colette result renderers.
+ * The result-window bonus colour palette shared by the Colette result renderers.
  */
 
 #pragma once
 
 /**
- * @brief One result-bonus colour: a red, green, and blue channel, each in @c [0, 255] as a float.
+ * One result-bonus colour: a red, green, and blue channel, each in @c [0, 255] as a float.
  */
 struct ResultBonusColor {
     float flRed = {};   /*!< The red channel. +0x00 */
@@ -15,7 +15,7 @@ struct ResultBonusColor {
 };
 
 /**
- * @brief The number of colours in the result-bonus palette.
+ * The number of colours in the result-bonus palette.
  *
  * The table ends where the per-slot instancer capacity table begins at 0x2fe854, which fixes the
  * count at eleven: seven named tints followed by black, a mid grey, a light grey, and white.
@@ -23,7 +23,7 @@ struct ResultBonusColor {
 constexpr int kResultBonusColorCount = 11;
 
 /**
- * @brief The result-bonus colour palette, indexed by a bonus/colour index.
+ * The result-bonus colour palette, indexed by a bonus/colour index.
  *
  * Read-only ROM data in the binary.
  *
@@ -31,7 +31,7 @@ constexpr int kResultBonusColorCount = 11;
  */
 extern const ResultBonusColor g_aResultBonusColor[kResultBonusColorCount];
 
-/** @brief The palette entries the result renderers select by index. */
+/** The palette entries the result renderers select by index. */
 enum ResultBonusColorIndex {
     kResultBonusColorAmber = 0,     /*!< 231, 174, 0. */
     kResultBonusColorOrange = 1,    /*!< 255, 120, 20. */

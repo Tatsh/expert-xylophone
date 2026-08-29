@@ -293,19 +293,19 @@ static BOOL g_bRandamIntSeeded = NO;
 // protocol appears in the class's public conformance list.
 @interface RBMenuView () <UIAlertViewDelegate, RBMenuPageSliderDelegate>
 
-/** @brief Build the tall-layout header and the theme 0/1 footer. */
+/** Build the tall-layout header and the theme 0/1 footer. */
 - (void)buildHeaderAndFooter:(NSInteger)thema;
-/** @brief Build the campaign paging background; returns whether the effect view was used. */
+/** Build the campaign paging background; returns whether the effect view was used. */
 - (BOOL)buildCampaignBackground:(BOOL)isPad;
-/** @brief Build the button bar, grid, mascot, search UI, news ticker, cover, and gestures. */
+/** Build the button bar, grid, mascot, search UI, news ticker, cover, and gestures. */
 - (void)buildMenuBarWithThema:(NSInteger)thema
                         isPad:(BOOL)isPad
      backgroundUsesEffectView:(BOOL)bgUsesEffectView;
-/** @brief Re-lay the wrapping paging background scroll view and its image pages. */
+/** Re-lay the wrapping paging background scroll view and its image pages. */
 - (void)layoutPagingBackground;
-/** @brief Lay out the search bar, cancel button, and Colette mascot for the search state. */
+/** Lay out the search bar, cancel button, and Colette mascot for the search state. */
 - (void)layoutSearchBarActive:(BOOL)active;
-/** @brief Slide the menu buttons to reveal or hide the playlist-edit controls. */
+/** Slide the menu buttons to reveal or hide the playlist-edit controls. */
 - (void)shiftMenuButtonsForPlaylistEditEntering:(BOOL)entering;
 
 @end

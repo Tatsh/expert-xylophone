@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Miscellaneous engine-runtime free functions the application layer calls: the sound-effect
+ * Miscellaneous engine-runtime free functions the application layer calls: the sound-effect
  * backend, customize-asset paths, the texture cache, the global scene tree, and the media timer.
  */
 
@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Returns the clear rank for the given achievement rate.
+ * Returns the clear rank for the given achievement rate.
  * @param achievementRate The achievement rate to grade.
  * @return The clear rank for the rate.
  * @ghidraAddress 0x14992c
@@ -25,7 +25,7 @@ extern "C" {
 int GetClearRank(float achievementRate);
 #ifdef __OBJC__
 /**
- * @brief Builds the bundle image path for a customize asset of the given category and variant.
+ * Builds the bundle image path for a customize asset of the given category and variant.
  *
  * Formats a name of the form @c "04_customize/cus_i<category>_<variant>" for the bgm (0), shot (1),
  * explosion (2), frame (3), background (4), object (5), and thema (10) categories, or the
@@ -38,7 +38,7 @@ int GetClearRank(float achievementRate);
  */
 NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantIndex);
 /**
- * @brief Builds the bundle image path for a customize music-item frame overlay.
+ * Builds the bundle image path for a customize music-item frame overlay.
  * @param kind The customize element id; only the music kind (7) yields a path.
  * @return An autoreleased path string, or @c nil for any other kind.
  * @ghidraAddress 0x550dc
@@ -49,12 +49,12 @@ NSString *_Nullable GetCustomizeFrameImagePath(int kind);
 // (ReloadAll, ReleaseAllHandles, and GetCacheList in neTexture.h), not free functions; they are
 // declared there rather than duplicated here.
 /**
- * @brief Renders the whole global scene tree for the current frame.
+ * Renders the whole global scene tree for the current frame.
  * @ghidraAddress 0x29d58
  */
 void RenderGlobalSceneTree(void);
 /**
- * @brief Constructs the title/gauge scene layer matching the current UI theme and registers it in
+ * Constructs the title/gauge scene layer matching the current UI theme and registers it in
  * the sorted listener list at priority 1.
  *
  * The concrete layer class is chosen by the selected theme.
@@ -62,14 +62,14 @@ void RenderGlobalSceneTree(void);
  */
 void CreateTitleLayerForTheme(void);
 /**
- * @brief Dispatches the per-frame notification (an opaque frame-elapsed argument) to every live
+ * Dispatches the per-frame notification (an opaque frame-elapsed argument) to every live
  *        node in the engine listener list.
  * @param nElapsedMs The frame delta, in milliseconds, passed to each listener.
  * @ghidraAddress 0x36628
  */
 void DispatchListenerList(int nElapsedMs);
 /**
- * @brief Zeroes @p nSize bytes of @p pBuffer, guarding against a null pointer.
+ * Zeroes @p nSize bytes of @p pBuffer, guarding against a null pointer.
  * @param pBuffer The buffer to clear, or @c nullptr to do nothing.
  * @param nSize The number of bytes to clear.
  * @ghidraAddress 0x12e900

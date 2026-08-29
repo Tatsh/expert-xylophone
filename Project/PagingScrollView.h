@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The paging scroll view used to lay the store promotion banners side by side.
+ * The paging scroll view used to lay the store promotion banners side by side.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c PagingScrollView, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.
@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A horizontally paging scroll view whose banners can be tapped even when they extend past
+ * A horizontally paging scroll view whose banners can be tapped even when they extend past
  * the scroll view's own bounds.
  *
  * The carousel clips the visible page but keeps the neighbouring pages' banners laid out beyond the
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PagingScrollView : UIScrollView
 
 /**
- * @brief Returns the first subview whose frame contains @p point, or the scroll view itself when
+ * Returns the first subview whose frame contains @p point, or the scroll view itself when
  * none does.
  *
  * Unlike the default implementation, a subview is returned even when @p point lies outside the

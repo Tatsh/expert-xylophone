@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Shared base class for the application's grouped table screens.
+ * Shared base class for the application's grouped table screens.
  *
  * It is a @c UITableViewController
  * subclass that hides the status bar, paints the table's background white, and drives every
@@ -18,26 +18,26 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Grouped table view controller base that hides the status bar, whitens the table
+ * Grouped table view controller base that hides the status bar, whitens the table
  *        background, and locks rotation while music plays.
  */
 @interface RBBaseTableViewController : UITableViewController
 
 /**
- * @brief Loads the view, then paints the table's background white.
+ * Loads the view, then paints the table's background white.
  * @ghidraAddress 0x20282c
  */
 - (void)viewDidLoad;
 
 /**
- * @brief Keep the status bar hidden while this view controller is on screen.
+ * Keep the status bar hidden while this view controller is on screen.
  * @return Always @c YES.
  * @ghidraAddress 0x2028f8
  */
 - (BOOL)prefersStatusBarHidden;
 
 /**
- * @brief Decide whether the view controller may autorotate.
+ * Decide whether the view controller may autorotate.
  * @return @c NO only when the iPad (wide) layout is active and background music is playing;
  * otherwise @c YES.
  * @ghidraAddress 0x202900
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldAutorotate;
 
 /**
- * @brief Report the interface orientations this view controller supports.
+ * Report the interface orientations this view controller supports.
  * @return @c UIInterfaceOrientationMaskAll when the phone (standard) layout is active; otherwise
  * both portrait orientations, narrowed to whichever one is current while music is playing.
  * @ghidraAddress 0x202930
@@ -53,14 +53,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations;
 
 /**
- * @brief Report the preferred orientation for a modal presentation.
+ * Report the preferred orientation for a modal presentation.
  * @return Always @c UIInterfaceOrientationPortrait.
  * @ghidraAddress 0x20298c
  */
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation;
 
 /**
- * @brief Legacy (pre-iOS 6) autorotation predicate for a specific interface orientation.
+ * Legacy (pre-iOS 6) autorotation predicate for a specific interface orientation.
  * @param interfaceOrientation The candidate interface orientation.
  * @return @c YES for the phone (standard) layout; for the wide variant, @c YES only for the
  * portrait orientations while no music is playing.

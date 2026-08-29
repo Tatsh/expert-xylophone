@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The two-button modal dialog @c RBErosionMarkUpdater presents when it offers to correct a
+ * The two-button modal dialog @c RBErosionMarkUpdater presents when it offers to correct a
  * stored score for the tune Erosion Mark (tune ID 99999344) recorded under version 4.4.0.
  *
  * It is only reached on systems that predate @c UIAlertController: @c RBErosionMarkUpdater builds
@@ -14,7 +14,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A hand-rolled modal dialog used by @c RBErosionMarkUpdater on systems that predate
+ * A hand-rolled modal dialog used by @c RBErosionMarkUpdater on systems that predate
  * @c UIAlertController.
  *
  * It fades a rounded, shadowed panel over a translucent black backdrop; the panel carries a title
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBErosionMarkUpdaterScoreView : UIView
 
 /**
- * @brief The layout scale applied to every child frame.
+ * The layout scale applied to every child frame.
  *
  * The initialiser seeds it with 1.0 on iPad and the shared translucent-alpha metric otherwise.
  *
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) double displayRate;
 
 /**
- * @brief The object that receives the button actions.
+ * The object that receives the button actions.
  *
  * The buttons target it with @c showAlertCancel and @c showAlertConfirm, so in practice it is the
  * owning @c RBErosionMarkUpdater.
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(weak, nonatomic, nullable) id delegate;
 
 /**
- * @brief The rounded panel that holds the title label, the message label, and the buttons.
+ * The rounded panel that holds the title label, the message label, and the buttons.
  *
  * It is the view whose alpha the show and hide animations drive.
  *
@@ -53,35 +53,35 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, nonatomic, nullable) UIView *dialogView;
 
 /**
- * @brief The centred, bold title label at the top of the panel.
+ * The centred, bold title label at the top of the panel.
  *
  * @ghidraAddress 0x142980
  */
 @property(assign, nonatomic, nullable) UILabel *titleLabel;
 
 /**
- * @brief The centred, red message label below the title.
+ * The centred, red message label below the title.
  *
  * @ghidraAddress 0x1429a0
  */
 @property(strong, nonatomic, nullable) UILabel *messageLabel;
 
 /**
- * @brief The left (cancel) button.
+ * The left (cancel) button.
  *
  * @ghidraAddress 0x1429c0
  */
 @property(assign, nonatomic, nullable) UIButton *leftButton;
 
 /**
- * @brief The right (confirm) button.
+ * The right (confirm) button.
  *
  * @ghidraAddress 0x1429e0
  */
 @property(assign, nonatomic, nullable) UIButton *rightButton;
 
 /**
- * @brief Builds the dialog hierarchy within @p frame and wires the buttons to @p delegate.
+ * Builds the dialog hierarchy within @p frame and wires the buttons to @p delegate.
  *
  * @param frame The frame the dialog fills, normally the presenting view's bounds.
  * @param delegate The object messaged with the button actions.
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithFrame:(CGRect)frame delegate:(nullable id)delegate;
 
 /**
- * @brief Fades the dialog panel in, then runs @p completion.
+ * Fades the dialog panel in, then runs @p completion.
  *
  * @param completion An optional block invoked when the fade finishes.
  * @ghidraAddress 0x1424cc
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showAnimation:(nullable void (^)(void))completion;
 
 /**
- * @brief Fades the dialog panel out, then runs @p completion.
+ * Fades the dialog panel out, then runs @p completion.
  *
  * @param completion An optional block invoked when the fade finishes.
  * @ghidraAddress 0x1426c0
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideAnimation:(nullable void (^)(void))completion;
 
 /**
- * @brief Detaches the dialog: clears the delegate and removes the view from its superview.
+ * Detaches the dialog: clears the delegate and removes the view from its superview.
  *
  * @ghidraAddress 0x1428b4
  */

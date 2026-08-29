@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The judge-effect layer, @c JudgeEffectLayer.
+ * The judge-effect layer, @c JudgeEffectLayer.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The judge-effect layer (the COOL/GREAT/GOOD/BAD hit-judgement graphics).
+ * The judge-effect layer (the COOL/GREAT/GOOD/BAD hit-judgement graphics).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and one sprite instancer, drawn beneath the shared background layer, that presents the
@@ -26,18 +26,18 @@ class C_SPRITE_INSTANCING_2D;
  */
 class JudgeEffectLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The sprite-instancer capacity the layer builds. */
+    /** The sprite-instancer capacity the layer builds. */
     static constexpr unsigned int kSpriteCapacity = 0x14;
 
     /**
-     * @brief The process-wide judge-effect layer, created on first use.
+     * The process-wide judge-effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x184c28
      */
     static JudgeEffectLayer *shared();
 
     /**
-     * @brief Lazily builds the judge-effect sprite: loads the gm_parts2 atlas and creates the
+     * Lazily builds the judge-effect sprite: loads the gm_parts2 atlas and creates the
      * sprite instancer (attaching it under the background layer's render object, making it visible,
      * binding the atlas, and seeding its sprite count).
      *
@@ -47,7 +47,7 @@ public:
     void LoadJudgeEffectSprites();
 
     /**
-     * @brief Arms a lane's judgement score/combo popup effect.
+     * Arms a lane's judgement score/combo popup effect.
      *
      * Marks the lane's record active, stores the displayed score and judgement type, and resets its
      * animation timer.
@@ -59,7 +59,7 @@ public:
     void TriggerJudgeEffect(unsigned int nLane, unsigned int nScore, unsigned int nJudgeType);
 
     /**
-     * @brief Emits one judgement-glyph sprite (a label or score digit) into the batch's next slot.
+     * Emits one judgement-glyph sprite (a label or score digit) into the batch's next slot.
      *
      * Looks up the glyph's anchor, pixel size, and shared-atlas frame from the platform's
      * judgement-glyph table (the iPad set or the phone set, chosen by the hardware), positions the
@@ -80,7 +80,7 @@ public:
                          float flRotation);
 
     /**
-     * @brief Advances and draws both lanes' judgement score/combo popups for the frame.
+     * Advances and draws both lanes' judgement score/combo popups for the frame.
      *
      * Advances the layer fade channel, then for each active lane advances its popup timer (clearing
      * the lane once the timer passes its lifetime) and emits the judgement label, the fixed
@@ -94,7 +94,7 @@ public:
     void RenderJudgeScoreEffect(float flDelta);
 
     /**
-     * @brief Begins the fade-in animation, easing the layer to fully opaque over @p flDuration
+     * Begins the fade-in animation, easing the layer to fully opaque over @p flDuration
      * (snapping to opaque immediately when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x184d00
@@ -102,7 +102,7 @@ public:
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Begins the fade-out animation, easing the layer to transparent over @p flDuration
+     * Begins the fade-out animation, easing the layer to transparent over @p flDuration
      * (snapping to transparent immediately when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x184d28
@@ -111,18 +111,18 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x184bb0
      */
     JudgeEffectLayer();
 
     // A per-lane judge popup record.
     struct JudgeRecord {
-        bool m_bActive = {}; // +0x00: whether the popup is showing.
+        bool m_bActive = {}; /*!< Whether the popup is showing. +0x00 */
         // unsigned char m_aPad01[3] = {}; // +0x01
-        unsigned int m_nScore = {};     // +0x04: the displayed score value.
-        unsigned int m_nJudgeType = {}; // +0x08: the judgement kind.
-        float m_flTimer = {};           // +0x0c: the popup animation timer, in frame-time.
+        unsigned int m_nScore = {};     /*!< The displayed score value. +0x04 */
+        unsigned int m_nJudgeType = {}; /*!< The judgement kind. +0x08 */
+        float m_flTimer = {};           /*!< The popup animation timer, in frame-time. +0x0c */
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts2 atlas.

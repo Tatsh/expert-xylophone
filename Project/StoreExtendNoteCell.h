@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The pad two-up extend-note table cell, holding a left and a right @c StoreExtendNoteView
+ * The pad two-up extend-note table cell, holding a left and a right @c StoreExtendNoteView
  * product view side by side across the cell's content view.
  *
  * Its @c initWithStyle:reuseIdentifier:
@@ -24,7 +24,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The pad-layout two-up extend-note table cell.
+ * The pad-layout two-up extend-note table cell.
  */
 @interface StoreExtendNoteCell : StoreTableCellBase
 

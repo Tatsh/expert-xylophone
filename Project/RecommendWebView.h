@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink recommend advert SDK's @c RecommendWebView.
+ * Reconstructed interface for the Applilink recommend advert SDK's @c RecommendWebView.
  *
  * @c RecommendWebView is the @c UIView container that hosts a recommend advert. Unlike
  * @c RecommendAdWebView (which is the @c UIWebView that actually renders the advert and drives its
@@ -25,43 +25,43 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The Applilink recommend advert web-view container.
+ * The Applilink recommend advert web-view container.
  * @ghidraAddress 0x3bd9e0
  */
 @interface RecommendWebView : UIView
 
 /**
- * @brief The loading activity indicator overlaid while the advert loads.
+ * The loading activity indicator overlaid while the advert loads.
  */
 @property(nonatomic, strong, nullable) UIActivityIndicatorView *indicator;
 
 /**
- * @brief The inner web view that renders a live recommend advert.
+ * The inner web view that renders a live recommend advert.
  */
 @property(nonatomic, strong, nullable) RecommendAdWebView *webView;
 
 /**
- * @brief The inner area view that renders a cached (local HTML) recommend advert.
+ * The inner area view that renders a cached (local HTML) recommend advert.
  */
 @property(nonatomic, strong, nullable) RecommendAdAreaView *adAreaWebView;
 
 /**
- * @brief The advert delegate notified of the advert-list lifecycle and failures.
+ * The advert delegate notified of the advert-list lifecycle and failures.
  */
 @property(nonatomic, weak, nullable) id<ApplilinkViewDelegate> applilinkDelegate;
 
 /**
- * @brief The request parameters for the advert currently being displayed.
+ * The request parameters for the advert currently being displayed.
  */
 @property(nonatomic, copy, nullable) ApplilinkParameters *applilinkParams;
 
 /**
- * @brief Whether the inner web view is allowed to bounce when scrolled.
+ * Whether the inner web view is allowed to bounce when scrolled.
  */
 @property(nonatomic, assign) BOOL webViewBounces;
 
 /**
- * @brief Initialise from an archive and apply the shared container configuration.
+ * Initialise from an archive and apply the shared container configuration.
  * @param coder The unarchiver to decode from.
  * @return The initialised container, or @c nil.
  * @ghidraAddress 0x245490
@@ -69,14 +69,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder;
 
 /**
- * @brief Apply the shared container configuration (transparent, non-opaque, flexible autoresizing,
+ * Apply the shared container configuration (transparent, non-opaque, flexible autoresizing,
  * scale-to-fill content mode).
  * @ghidraAddress 0x2454f4
  */
 - (void)setInitParam;
 
 /**
- * @brief Load the advert web content for an advert model at an advert location.
+ * Load the advert web content for an advert model at an advert location.
  *
  * Builds the request parameters, then delegates to
  * @c loadRequestWithAdModel:adLocation:verticalAlign:delegate:.
@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                       delegate:(nullable id<ApplilinkViewDelegate>)delegate;
 
 /**
- * @brief Load the advert, choosing the cached-HTML or live path based on the advert model.
+ * Load the advert, choosing the cached-HTML or live path based on the advert model.
  *
  * When the SDK may be used and the recommend core is initialised: advert models @c 5 and
  * @c 100..101 build a cached @c RecommendAdAreaView from a local HTML file, and every other model
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
                       delegate:(nullable id<ApplilinkViewDelegate>)delegate;
 
 /**
- * @brief Set whether the inner web view may scroll, recording it as the bounce state and forwarding
+ * Set whether the inner web view may scroll, recording it as the bounce state and forwarding
  * it to the inner web view.
  * @param scrollEnabled @c YES to allow scrolling.
  * @ghidraAddress 0x246120
@@ -120,45 +120,45 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setScrollEnabled:(BOOL)scrollEnabled;
 
 /**
- * @brief Stop animating and cancel the pending auto-hide of the loading indicator.
+ * Stop animating and cancel the pending auto-hide of the loading indicator.
  * @ghidraAddress 0x246028
  */
 - (void)hiddenIndicator;
 
 /**
- * @brief Tear down both inner advert views before this view leaves the tree.
+ * Tear down both inner advert views before this view leaves the tree.
  * @ghidraAddress 0x24607c
  */
 - (void)closeAdArea;
 
 /**
- * @brief Notify the delegate that the advert list started.
+ * Notify the delegate that the advert list started.
  * @ghidraAddress 0x246158
  */
 - (void)appListDidStart;
 
 /**
- * @brief Remove the loading indicator and notify the delegate that the advert list appeared.
+ * Remove the loading indicator and notify the delegate that the advert list appeared.
  * @ghidraAddress 0x2461c0
  */
 - (void)appListDidAppear;
 
 /**
- * @brief Remove the loading indicator and inner web view, notify the delegate that the advert list
+ * Remove the loading indicator and inner web view, notify the delegate that the advert list
  * disappeared, and clear the delegate.
  * @ghidraAddress 0x24628c
  */
 - (void)appListDidDisappear;
 
 /**
- * @brief Notify the delegate of an advert-list load failure and clear the delegate.
+ * Notify the delegate of an advert-list load failure and clear the delegate.
  * @param error The load failure error.
  * @ghidraAddress 0x246374
  */
 - (void)appListFailLoadWithError:(nullable NSError *)error;
 
 /**
- * @brief Notify the delegate of an advert-list link failure.
+ * Notify the delegate of an advert-list link failure.
  * @param error The link failure error.
  * @ghidraAddress 0x24647c
  */

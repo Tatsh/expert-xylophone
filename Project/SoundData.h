@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A decoded audio asset used by the game's sound engine.
+ * A decoded audio asset used by the game's sound engine.
  *
  * On construction the object resolves a
  * sound file (from the application's document directory or main bundle, trying the @c .mp3, @c
@@ -18,37 +18,37 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A decoded (or streamed) audio asset that vends interleaved PCM frames into a caller
+ * A decoded (or streamed) audio asset that vends interleaved PCM frames into a caller
  * supplied @c AudioBufferList.
  */
 @interface SoundData : NSObject
 
 /**
- * @brief The name the asset was created with, used to locate the backing file.
+ * The name the asset was created with, used to locate the backing file.
  * @ghidraAddress 0x34b40
  */
 @property(readonly) NSString *fileName;
 
 /**
- * @brief The number of channels in the decoded PCM stream.
+ * The number of channels in the decoded PCM stream.
  * @ghidraAddress 0x34b50
  */
 @property(readonly) unsigned int channels;
 
 /**
- * @brief The total number of frames in the asset.
+ * The total number of frames in the asset.
  * @ghidraAddress 0x34b60
  */
 @property(readonly) long long totalFrames;
 
 /**
- * @brief The client PCM stream format the asset was decoded into.
+ * The client PCM stream format the asset was decoded into.
  * @ghidraAddress 0x34b30
  */
 @property(nonatomic, readonly) AudioStreamBasicDescription *format;
 
 /**
- * @brief Creates an asset for the named sound file and prepares it for playback.
+ * Creates an asset for the named sound file and prepares it for playback.
  * @param fileName The base name of the sound file to load.
  * @param stream Whether to stream the file on demand (@c YES) or decode it fully into memory
  * (@c NO).
@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContentsFileName:(NSString *)fileName Stream:(BOOL)stream;
 
 /**
- * @brief Resolves and opens the backing file, configures the client PCM format, and either decodes
+ * Resolves and opens the backing file, configures the client PCM format, and either decodes
  * the whole file into a per-channel play buffer or leaves it open for streaming.
  * @param fileName The base name of the sound file to load.
  * @param stream Whether to stream the file on demand (@c YES) or decode it fully into memory
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepare:(NSString *)fileName Stream:(BOOL)stream;
 
 /**
- * @brief Fills a buffer list with interleaved PCM frames starting at a given frame, optionally
+ * Fills a buffer list with interleaved PCM frames starting at a given frame, optionally
  * looping back to the start when the end of the asset is reached.
  * @param startFrame The frame index to begin reading from.
  * @param frameCount The number of frames requested.

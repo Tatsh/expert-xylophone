@@ -17,7 +17,7 @@ static NSString *const kVersionDictionaryKey = @"Version";
 static NSString *const kPackageDictionaryKey = @"Package";
 
 /**
- * @brief Builds the ordered package list from a catalogue dictionary's @c Package array.
+ * Builds the ordered package list from a catalogue dictionary's @c Package array.
  *
  * Each raw package entry is wrapped in a freshly parsed @c RBUnlockPackageData, and the results are
  * sorted in descending order of their display order.

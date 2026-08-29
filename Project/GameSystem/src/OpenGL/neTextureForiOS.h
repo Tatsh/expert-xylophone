@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The iOS texture-loading helper class, @c neTextureForiOS.
+ * The iOS texture-loading helper class, @c neTextureForiOS.
  */
 
 #pragma once
@@ -12,7 +12,7 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief The iOS texture-loading helper.
+ * The iOS texture-loading helper.
  *
  * Vends engine textures decoded from image data. Only the class method used by the game system's
  * artwork/name texture loaders is modelled so far.
@@ -20,7 +20,7 @@ class C_TEXTURE;
 @interface neTextureForiOS : NSObject
 
 /**
- * @brief Decodes @p pData into a reference-counted engine texture at the given screen scale.
+ * Decodes @p pData into a reference-counted engine texture at the given screen scale.
  * The returned texture carries one reference, which the caller owns and drops through
  * @c ne::C_TEXTURE::Release.
  * @param pData The encoded image data.

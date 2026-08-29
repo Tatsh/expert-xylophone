@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief StoreKit in-app-purchase manager.
+ * StoreKit in-app-purchase manager.
  *
  * Wraps @c SKPaymentQueue to buy and restore products, tracks the
  * set of owned product identifiers, and verifies each purchase or restore against the game server
@@ -20,7 +20,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Optional callbacks the purchase manager sends to its delegate as a purchase or restore
+ * Optional callbacks the purchase manager sends to its delegate as a purchase or restore
  * progresses.
  *
  * Every method is optional; the manager guards each call with @c -respondsToSelector: .
@@ -30,30 +30,30 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 /**
- * @brief Sent when a purchase has been bought and verified by the server.
+ * Sent when a purchase has been bought and verified by the server.
  * @param productID The product identifier that was purchased.
  */
 - (void)purchaseSucceeded:(NSString *)productID;
 
 /**
- * @brief Sent when a purchase failed at any stage (the queue, verification, or download).
+ * Sent when a purchase failed at any stage (the queue, verification, or download).
  * @param productID The product identifier that failed, or @c nil when none is known.
  * @param error The failure reason.
  */
 - (void)purchaseFailed:(nullable NSString *)productID error:(nullable NSError *)error;
 
 /**
- * @brief Sent when every restored transaction has been verified and granted.
+ * Sent when every restored transaction has been verified and granted.
  */
 - (void)restoreSucceeded;
 
 /**
- * @brief Sent when a restore completed but there was nothing to restore.
+ * Sent when a restore completed but there was nothing to restore.
  */
 - (void)restoreNothing;
 
 /**
- * @brief Sent when a restore failed.
+ * Sent when a restore failed.
  * @param error The failure reason.
  */
 - (void)restoreFailed:(NSError *)error;
@@ -61,101 +61,101 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief Singleton that drives StoreKit purchases and restores and verifies their receipts.
+ * Singleton that drives StoreKit purchases and restores and verifies their receipts.
  */
 @interface RBPurchaseManager :
     NSObject <SKPaymentTransactionObserver, SKRequestDelegate, DownloaderDelegate>
 
 /**
- * @brief The delegate that receives purchase and restore progress callbacks.
+ * The delegate that receives purchase and restore progress callbacks.
  */
 @property(nonatomic, weak, nullable) id<RBPurchaseManagerDelegate> delegate;
 
 /**
- * @brief The product identifiers the user owns.
+ * The product identifiers the user owns.
  */
 @property(nonatomic, strong) NSMutableArray *purchasedProducts;
 
 /**
- * @brief Transactions queued for server-side receipt verification.
+ * Transactions queued for server-side receipt verification.
  */
 @property(nonatomic, strong) NSMutableArray *purchaseCheckTransactions;
 
 /**
- * @brief Product identifiers whose purchase has been checked during the current flow.
+ * Product identifiers whose purchase has been checked during the current flow.
  */
 @property(nonatomic, strong) NSMutableArray *purchaseCheckedProductsIn;
 
 /**
- * @brief Restored transactions still awaiting verification.
+ * Restored transactions still awaiting verification.
  */
 @property(nonatomic, strong) NSMutableArray *restoredTransactions;
 
 /**
- * @brief The in-flight receipt-verification request, if any.
+ * The in-flight receipt-verification request, if any.
  */
 @property(nonatomic, strong, nullable) Downloader *downloader;
 
 /**
- * @brief Whether a purchase or restore flow is currently in progress.
+ * Whether a purchase or restore flow is currently in progress.
  */
 @property(nonatomic, assign) BOOL transactioing;
 
 /**
- * @brief Whether the current flow is a restore rather than a purchase.
+ * Whether the current flow is a restore rather than a purchase.
  */
 @property(nonatomic, assign) BOOL isRestored;
 
 /**
- * @brief Product identifiers gathered from the transactions of the current flow.
+ * Product identifiers gathered from the transactions of the current flow.
  */
 @property(nonatomic, strong) NSMutableArray *productIds;
 
 /**
- * @brief The nonce carried through the current receipt-verification request for replay protection.
+ * The nonce carried through the current receipt-verification request for replay protection.
  */
 @property(nonatomic, strong, nullable) NSString *nonce;
 
 /**
- * @brief The shared purchase manager.
+ * The shared purchase manager.
  * @return The lazily created singleton instance.
  * @ghidraAddress 0x6d260
  */
 + (instancetype)sharedManager;
 
 /**
- * @brief Whether the device is allowed to make payments.
+ * Whether the device is allowed to make payments.
  * @return @c YES when @c SKPaymentQueue reports that payments can be made.
  * @ghidraAddress 0x6d4d0
  */
 + (BOOL)isPurchasable;
 
 /**
- * @brief Begin observing the payment queue for transaction updates.
+ * Begin observing the payment queue for transaction updates.
  * @ghidraAddress 0x6d5ac
  */
 - (void)start;
 
 /**
- * @brief Stop observing the payment queue.
+ * Stop observing the payment queue.
  * @ghidraAddress 0x6d610
  */
 - (void)end;
 
 /**
- * @brief Persist the owned product identifiers to encrypted local storage.
+ * Persist the owned product identifiers to encrypted local storage.
  * @ghidraAddress 0x6d674
  */
 - (void)saveProductList;
 
 /**
- * @brief Load the owned product identifiers from encrypted local storage.
+ * Load the owned product identifiers from encrypted local storage.
  * @ghidraAddress 0x6d8e8
  */
 - (void)loadProductList;
 
 /**
- * @brief Whether the given product identifier is already owned.
+ * Whether the given product identifier is already owned.
  * @param productID The product identifier to test.
  * @return @c YES when @p productID is in the owned set.
  * @ghidraAddress 0x6dc30
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isPurchased:(NSString *)productID;
 
 /**
- * @brief Start buying the given product.
+ * Start buying the given product.
  * @param product The product to buy.
  * @return @c YES when a payment was queued, @c NO when the purchase could not be started.
  * @ghidraAddress 0x6dcc8
@@ -171,34 +171,34 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)beginPurchase:(nullable SKProduct *)product;
 
 /**
- * @brief Start restoring previously bought products.
+ * Start restoring previously bought products.
  * @return @c YES when a restore was started, @c NO when it could not be started.
  * @ghidraAddress 0x6de88
  */
 - (BOOL)beginRestore;
 
 /**
- * @brief The product identifiers checked during the current flow.
+ * The product identifiers checked during the current flow.
  * @return The purchase-checked product list.
  * @ghidraAddress 0x6e024
  */
 - (NSMutableArray *)purchaseCheckedProducts;
 
 /**
- * @brief Remove a product identifier from the purchase-checked list.
+ * Remove a product identifier from the purchase-checked list.
  * @param productID The product identifier to remove.
  * @ghidraAddress 0x6e030
  */
 - (void)removePurchaseCheckedProduct:(NSString *)productID;
 
 /**
- * @brief Empty the purchase-checked list.
+ * Empty the purchase-checked list.
  * @ghidraAddress 0x6e0bc
  */
 - (void)clearPurchaseCheckedProducts;
 
 /**
- * @brief Add a product identifier to the owned set, optionally persisting it.
+ * Add a product identifier to the owned set, optionally persisting it.
  * @param productID The product identifier to add.
  * @param save Whether to persist the owned set afterwards.
  * @return @c YES when the identifier was newly added, @c NO when it was already owned.
@@ -207,13 +207,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)addProductID:(NSString *)productID Save:(BOOL)save;
 
 /**
- * @brief Add every purchase-checked product to the owned set and persist it.
+ * Add every purchase-checked product to the owned set and persist it.
  * @ghidraAddress 0x6e21c
  */
 - (void)addProductFromPurchaseCheckedProducts;
 
 /**
- * @brief Queue a transaction for server-side receipt verification.
+ * Queue a transaction for server-side receipt verification.
  * @param transaction The cached transaction to verify.
  * @return @c YES when the transaction was queued, @c NO when it was already owned or was @c nil.
  * @ghidraAddress 0x6e370
@@ -221,14 +221,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)addPurchaseCheckTransaction:(nullable id)transaction;
 
 /**
- * @brief Send the next queued receipt to the server for verification.
+ * Send the next queued receipt to the server for verification.
  * @return @c YES when a verification request was started.
  * @ghidraAddress 0x6e468
  */
 - (BOOL)checkNextReceipt;
 
 /**
- * @brief Base64-encode the bytes of the given data.
+ * Base64-encode the bytes of the given data.
  * @param data The data to encode.
  * @return The Base64 string.
  * @ghidraAddress 0x6f3b8
@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)encodedStringWithBase64:(NSData *)data;
 
 /**
- * @brief Base64-encode the bytes of the given data using the padded variant.
+ * Base64-encode the bytes of the given data using the padded variant.
  * @param data The data to encode.
  * @return The Base64 string.
  * @ghidraAddress 0x6f544
@@ -244,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)encodedStringWithBase64V2:(NSData *)data;
 
 /**
- * @brief Base64-decode the given string.
+ * Base64-decode the given string.
  * @param string The Base64 string to decode.
  * @return The decoded data.
  * @ghidraAddress 0x6f784

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The user-playlist manager singleton.
+ * The user-playlist manager singleton.
  *
  * It owns an ordered list of user-created playlists, each a
  * mutable dictionary of a stable identifier (@c PLID), a display name (@c NAME), and a list of the
@@ -22,14 +22,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The user-playlist manager singleton.
+ * The user-playlist manager singleton.
  */
 @interface RBPlaylistManager : NSObject
 
 #pragma mark Singleton
 
 /**
- * @brief The shared playlist-manager instance, loaded from the @c Documents/playlist archive on
+ * The shared playlist-manager instance, loaded from the @c Documents/playlist archive on
  *        first use.
  * @ghidraAddress 0x71060
  * @return The shared @c RBPlaylistManager.
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Lifecycle
 
 /**
- * @brief Initialise the manager by reading the persisted playlist archive at @p filePath, keeping
+ * Initialise the manager by reading the persisted playlist archive at @p filePath, keeping
  *        only the entries that carry a @c PLID, a @c NAME, and a @c LIST.
  * @ghidraAddress 0x71190
  * @param filePath The property-list path the playlists are read from and later written back to.
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Persistence
 
 /**
- * @brief Write the in-memory playlist list back to the archive file as a property list.
+ * Write the in-memory playlist list back to the archive file as a property list.
  * @ghidraAddress 0x71654
  */
 - (void)synchronize;
@@ -58,13 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Playlists
 
 /**
- * @brief The number of playlists.
+ * The number of playlists.
  * @ghidraAddress 0x716f4
  * @return The playlist count.
  */
 - (NSUInteger)numberOfPlaylists;
 /**
- * @brief The playlist dictionary at @p index, or @c nil when the index is out of range or the entry
+ * The playlist dictionary at @p index, or @c nil when the index is out of range or the entry
  *        is malformed (missing a @c PLID, @c NAME, or @c LIST).
  * @ghidraAddress 0x71754
  * @param index The playlist index.
@@ -72,28 +72,28 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable NSDictionary *)playlistAtIndex:(NSUInteger)index;
 /**
- * @brief The index of @p playlist by identity, or @c NSNotFound.
+ * The index of @p playlist by identity, or @c NSNotFound.
  * @ghidraAddress 0x7193c
  * @param playlist The playlist dictionary to locate.
  * @return The playlist index, or @c NSNotFound.
  */
 - (NSUInteger)indexOfPlaylist:(NSDictionary *)playlist;
 /**
- * @brief The index of the playlist whose @c PLID equals @p identifier, or @c NSNotFound.
+ * The index of the playlist whose @c PLID equals @p identifier, or @c NSNotFound.
  * @ghidraAddress 0x719d4
  * @param identifier The playlist identifier to match, or @c nil.
  * @return The playlist index, or @c NSNotFound.
  */
 - (NSUInteger)indexOfPlaylistWithIdentifier:(nullable NSString *)identifier;
 /**
- * @brief The display name of the playlist at @p index, or @c nil when out of range.
+ * The display name of the playlist at @p index, or @c nil when out of range.
  * @ghidraAddress 0x71b84
  * @param index The playlist index.
  * @return The playlist name, or @c nil.
  */
 - (nullable NSString *)nameOfPlaylistAtIndex:(NSUInteger)index;
 /**
- * @brief Rename the playlist at @p index. A rename with an empty name is ignored.
+ * Rename the playlist at @p index. A rename with an empty name is ignored.
  * @ghidraAddress 0x71db4
  * @param name The new playlist name.
  * @param index The playlist index.
@@ -101,14 +101,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)setNameOfPlaylist:(NSString *)name atIndex:(NSUInteger)index;
 /**
- * @brief The identifier (@c PLID) of the playlist at @p index, or @c nil when out of range.
+ * The identifier (@c PLID) of the playlist at @p index, or @c nil when out of range.
  * @ghidraAddress 0x71c9c
  * @param index The playlist index.
  * @return The playlist identifier, or @c nil.
  */
 - (nullable NSString *)identifierOfPlaylistAtIndex:(NSUInteger)index;
 /**
- * @brief Append a new, empty playlist with the given name and an identifier derived from the name
+ * Append a new, empty playlist with the given name and an identifier derived from the name
  *        and the current timestamp. A creation with an empty name is ignored.
  * @ghidraAddress 0x71eac
  * @param name The new playlist's display name.
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)addPlaylistWithName:(NSString *)name;
 /**
- * @brief Remove the playlist at @p index.
+ * Remove the playlist at @p index.
  * @ghidraAddress 0x721c0
  * @param index The playlist index.
  * @return @c YES when the index was in range.
@@ -126,14 +126,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Playlist contents
 
 /**
- * @brief The number of tunes in the playlist at @p index, or @c 0 when out of range.
+ * The number of tunes in the playlist at @p index, or @c 0 when out of range.
  * @ghidraAddress 0x72288
  * @param index The playlist index.
  * @return The tune count.
  */
 - (NSUInteger)numberOfMusicInPlaylistAtIndex:(NSUInteger)index;
 /**
- * @brief Whether the playlist at @p index contains the tune @p musicID.
+ * Whether the playlist at @p index contains the tune @p musicID.
  * @ghidraAddress 0x723c8
  * @param musicID The tune identifier.
  * @param index The playlist index.
@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)containsMusic:(NSUInteger)musicID inPlaylistAtIndex:(NSUInteger)index;
 /**
- * @brief Add the tune @p musicID to the playlist at @p index, allocating the tune list when absent
+ * Add the tune @p musicID to the playlist at @p index, allocating the tune list when absent
  *        and skipping tunes already present.
  * @ghidraAddress 0x72560
  * @param musicID The tune identifier.
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)addMusic:(NSUInteger)musicID toPlaylistAtIndex:(NSUInteger)index;
 /**
- * @brief Remove the tune @p musicID from the playlist at @p index.
+ * Remove the tune @p musicID from the playlist at @p index.
  * @ghidraAddress 0x72748
  * @param musicID The tune identifier.
  * @param index The playlist index.
@@ -160,19 +160,19 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Properties
 
 /**
- * @brief The ordered list of playlist dictionaries.
+ * The ordered list of playlist dictionaries.
  * @ghidraAddress 0x7291c (getter)
  * @ghidraAddress 0x7292c (setter)
  */
 @property(nonatomic, strong) NSMutableArray *arrayPlaylist;
 /**
- * @brief The property-list path the playlists are persisted to.
+ * The property-list path the playlists are persisted to.
  * @ghidraAddress 0x72964 (getter)
  * @ghidraAddress 0x72974 (setter)
  */
 @property(nonatomic, copy) NSString *filePath;
 /**
- * @brief The identifier of the tune last selected within a playlist.
+ * The identifier of the tune last selected within a playlist.
  * @ghidraAddress 0x72980 (getter)
  * @ghidraAddress 0x72990 (setter)
  */

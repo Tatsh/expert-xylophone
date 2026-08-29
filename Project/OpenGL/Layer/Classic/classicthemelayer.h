@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Classic-theme play-field background layer.
+ * The Classic-theme play-field background layer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief One Classic-theme sprite-kind transform record (a 20-byte entry): the sprite's anchor, its
+ * One Classic-theme sprite-kind transform record (a 20-byte entry): the sprite's anchor, its
  * size, and the atlas-frame index it draws from.
  */
 struct ClassicThemeSpriteTransform {
@@ -25,13 +25,13 @@ struct ClassicThemeSpriteTransform {
 };
 
 /**
- * @brief The per-sprite-kind transform table, indexed by sprite kind. Read-only binary data.
+ * The per-sprite-kind transform table, indexed by sprite kind. Read-only binary data.
  * @ghidraAddress 0x301c60
  */
 extern const ClassicThemeSpriteTransform g_aClassicThemeSpriteTransforms[];
 
 /**
- * @brief The Classic-theme play-field background layer.
+ * The Classic-theme play-field background layer.
  *
  * Owns the three background sprite batches for the Classic theme and the shared texture they draw
  * from, building them lazily into the background scene graph on first use. The trailing @c // +0xNN
@@ -41,14 +41,14 @@ extern const ClassicThemeSpriteTransform g_aClassicThemeSpriteTransforms[];
 class ClassicThemeLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide Classic-theme layer, created on first use.
+     * The process-wide Classic-theme layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x109ee0
      */
     static ClassicThemeLayer *shared();
 
     /**
-     * @brief Constructs the layer: chains the base constructor and clears the batch, count,
+     * Constructs the layer: chains the base constructor and clears the batch, count,
      * texture, and colour state, defaulting the colour index to one and the two trailing slots to
      * four.
      * @ghidraAddress 0x109e68
@@ -56,7 +56,7 @@ public:
     ClassicThemeLayer();
 
     /**
-     * @brief Build the Classic-theme background sprite batches into the scene graph.
+     * Build the Classic-theme background sprite batches into the scene graph.
      *
      * On the first call it loads the shared background texture, creates the three world sprite
      * batches, attaches them under the background layer's root, seeds each batch's sprite count
@@ -67,14 +67,14 @@ public:
     void InitializeBackgroundSceneNodes();
 
     /**
-     * @brief Sets the theme colour index.
+     * Sets the theme colour index.
      * @param nColor The colour index.
      * @ghidraAddress 0x10a0a0
      */
     void SetColor(int nColor);
 
     /**
-     * @brief Populates one sprite slot in a batch from the per-kind transform and UV tables.
+     * Populates one sprite slot in a batch from the per-kind transform and UV tables.
      *
      * Positions the slot (offsetting Y by the play-field half-height), copies the sprite kind's
      * anchor and size, looks up its atlas UV, applies the given scale and rotation, and tints it
@@ -98,20 +98,20 @@ public:
                              int nAlpha);
 
     /**
-     * @brief Initialises the theme-animation state, then seeds its per-side score values from the
+     * Initialises the theme-animation state, then seeds its per-side score values from the
      * score tracker.
      * @ghidraAddress 0x10a01c
      */
     void InitializeScoreGaugeState();
 
     /**
-     * @brief Seeds the per-side score display values from the active score tracker's play records.
+     * Seeds the per-side score display values from the active score tracker's play records.
      * @ghidraAddress 0x10a044
      */
     void InitializeScoreValuesFromTracker();
 
     /**
-     * @brief Starts the theme fade-in animation, easing the display value from its start to its end
+     * Starts the theme fade-in animation, easing the display value from its start to its end
      * over the given duration; a non-positive duration snaps it in immediately.
      * @param flDuration The animation duration.
      * @ghidraAddress 0x10a080
@@ -119,7 +119,7 @@ public:
     void StartGaugeValueFade(float flDuration);
 
     /**
-     * @brief Whether the theme reveal animation's progress timer is still advancing (the result
+     * Whether the theme reveal animation's progress timer is still advancing (the result
      * screen waits for it to finish before building itself).
      * @return @c true while the reveal is still animating.
      */
@@ -128,14 +128,14 @@ public:
     }
 
     /**
-     * @brief Advances the theme's eased-progress channel by @p flDelta.
+     * Advances the theme's eased-progress channel by @p flDelta.
      * @param flDelta The frame's elapsed time.
      * @ghidraAddress 0x10a5fc
      */
     void AdvanceEasedProgress(float flDelta);
 
     /**
-     * @brief Advances the theme's reveal animation by one frame and emits its sprites.
+     * Advances the theme's reveal animation by one frame and emits its sprites.
      *
      * Clears the batch slot counts, advances the eased-progress channel, and — while the animation
      * is enabled — advances the reveal clock (retiring it at its end) and emits the full-screen

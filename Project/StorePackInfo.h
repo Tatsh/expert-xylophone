@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A store pack model describing one purchasable song pack: its identifier, its StoreKit
+ * A store pack model describing one purchasable song pack: its identifier, its StoreKit
  * product, the display metadata read from the catalogue entry dictionary, and the tunes it
  * contains. Instances are built either from a @c SKProduct, from a bare pack identifier, or from a
  * server catalogue entry dictionary, and are handed to @c RBStorePageViewController and its detail
@@ -18,91 +18,91 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A store model for a single purchasable song pack.
+ * A store model for a single purchasable song pack.
  */
 @interface StorePackInfo : NSObject
 
 /**
- * @brief The pack identifier.
+ * The pack identifier.
  * @ghidraAddress 0x69278 (getter)
  * @ghidraAddress 0x69288 (setter)
  */
 @property(nonatomic, assign) int packID;
 /**
- * @brief Whether the pack is flagged as new in the catalogue.
+ * Whether the pack is flagged as new in the catalogue.
  * @ghidraAddress 0x69298 (getter)
  * @ghidraAddress 0x692a8 (setter)
  */
 @property(nonatomic, assign) BOOL isNew;
 /**
- * @brief The pack artwork URL.
+ * The pack artwork URL.
  * @ghidraAddress 0x692b8 (getter)
  * @ghidraAddress 0x692c8 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *artworkURL;
 /**
- * @brief The pack display name.
+ * The pack display name.
  * @ghidraAddress 0x69300 (getter)
  * @ghidraAddress 0x69310 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *packName;
 /**
- * @brief The pack long-form comment.
+ * The pack long-form comment.
  * @ghidraAddress 0x69348 (getter)
  * @ghidraAddress 0x69358 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *comment;
 /**
- * @brief The pack short-form comment.
+ * The pack short-form comment.
  * @ghidraAddress 0x69390 (getter)
  * @ghidraAddress 0x693a0 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *s_comment;
 /**
- * @brief The pack copyright notice.
+ * The pack copyright notice.
  * @ghidraAddress 0x693d8 (getter)
  * @ghidraAddress 0x693e8 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *copyright;
 /**
- * @brief The number of extend-note charts advertised for the pack.
+ * The number of extend-note charts advertised for the pack.
  * @ghidraAddress 0x69420 (getter)
  * @ghidraAddress 0x69430 (setter)
  */
 @property(nonatomic, assign) int extCount;
 /**
- * @brief The tunes contained in the pack, once its detail is loaded.
+ * The tunes contained in the pack, once its detail is loaded.
  * @ghidraAddress 0x69440 (getter)
  * @ghidraAddress 0x69450 (setter)
  */
 @property(nonatomic, strong, nullable) NSArray<StoreMusicInfo *> *musicInfos;
 /**
- * @brief The pack artist URL.
+ * The pack artist URL.
  * @ghidraAddress 0x69488 (getter)
  * @ghidraAddress 0x69498 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *artistURL;
 /**
- * @brief The pack artist-banner URL.
+ * The pack artist-banner URL.
  * @ghidraAddress 0x694d0 (getter)
  * @ghidraAddress 0x694e0 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *bunnerURL;
 /**
- * @brief The StoreKit product backing the pack, once loaded.
+ * The StoreKit product backing the pack, once loaded.
  * @ghidraAddress 0x69518 (getter)
  * @ghidraAddress 0x69528 (setter)
  */
 @property(nonatomic, strong, nullable) SKProduct *product;
 /**
- * @brief The most recent detail-download error message.
+ * The most recent detail-download error message.
  * @ghidraAddress 0x69560 (getter)
  * @ghidraAddress 0x69570 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *ErrorMessage;
 
 /**
- * @brief Build a pack info from a StoreKit product.
+ * Build a pack info from a StoreKit product.
  *
  * The product is stored and the pack identifier is derived from its product identifier through
  * @c StoreUtil.
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithProduct:(SKProduct *)product;
 
 /**
- * @brief Build a pack info from a bare pack identifier.
+ * Build a pack info from a bare pack identifier.
  * @param packID The pack identifier.
  * @return The initialised instance.
  * @ghidraAddress 0x68924
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPackID:(int)packID;
 
 /**
- * @brief Build a pack info from a catalogue entry dictionary.
+ * Build a pack info from a catalogue entry dictionary.
  *
  * The dictionary provides the @c ID entry, from which the pack identifier is read, and the entry is
  * then handed to @c setDictionary: to populate the remaining metadata.
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
 /**
- * @brief Populate the pack metadata from a catalogue entry dictionary.
+ * Populate the pack metadata from a catalogue entry dictionary.
  *
  * The entry is ignored unless its @c ID matches the pack's own identifier. The @c Name, @c Comment,
  * @c ShortComment, @c IsNew, @c Copyright, @c ArtworkURL, @c ArtistURL, and @c ArtistBunnerURL
@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)setDictionary:(NSDictionary *)dictionary;
 
 /**
- * @brief Build the contained-tune list from a music-list array of catalogue entry dictionaries.
+ * Build the contained-tune list from a music-list array of catalogue entry dictionaries.
  *
  * Does nothing when the tune list is already loaded. Each entry becomes a @c StoreMusicInfo through
  * its @c initWithDictionary:, and at most four tunes are kept; the resulting immutable list is
@@ -158,21 +158,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)setMusicInfo:(nullable NSArray<NSDictionary *> *)musicInfo;
 
 /**
- * @brief The pack's localised price string, formatted from the StoreKit product via @c StoreUtil.
+ * The pack's localised price string, formatted from the StoreKit product via @c StoreUtil.
  * @return The formatted price string.
  * @ghidraAddress 0x68e30
  */
 - (nullable NSString *)priceString;
 
 /**
- * @brief Whether the pack still needs its detailed tune info downloaded.
+ * Whether the pack still needs its detailed tune info downloaded.
  * @return @c YES when the tune list has not yet been loaded.
  * @ghidraAddress 0x69114
  */
 - (BOOL)downloadDetailInfo;
 
 /**
- * @brief Whether every contained tune's archive is already present on disk.
+ * Whether every contained tune's archive is already present on disk.
  * @return @c YES when the tune list is empty or every tune reports @c fileExist.
  * @ghidraAddress 0x69150
  */
@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 /**
- * @brief What the catalogue said this pack costs.
+ * What the catalogue said this pack costs.
  *
  * Present only in a patched build. A free function rather than a method, because the shipped class
  * carries no such selector and no price of its own: a pack is priced entirely through its StoreKit
@@ -198,7 +198,7 @@ extern "C" {
 NSNumber *_Nullable RBStorePackCatalogPrice(int packID);
 
 /**
- * @brief Whether the catalogue priced this pack at nothing.
+ * Whether the catalogue priced this pack at nothing.
  *
  * Present only in a patched build. A pack counts as free only when the catalogue says so
  * explicitly; an absent price is not read as zero.

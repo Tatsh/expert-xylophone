@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The long-note layer, @c LongNoteLayer.
+ * The long-note layer, @c LongNoteLayer.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The long-note layer (the held-note connector graphics).
+ * The long-note layer (the held-note connector graphics).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and three sprite instancers, drawn beneath the shared background layer, that present the
@@ -24,20 +24,20 @@ class C_SPRITE_INSTANCING_2D;
  */
 class LongNoteLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of connector sprite instancers the layer builds. */
+    /** The number of connector sprite instancers the layer builds. */
     static constexpr int kBatchCount = 3;
-    /** @brief The sprite-instancer capacity each batch is built with. */
+    /** The sprite-instancer capacity each batch is built with. */
     static constexpr unsigned int kSpriteCapacity = 0x5a;
 
     /**
-     * @brief The process-wide long-note layer, created on first use.
+     * The process-wide long-note layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x181310
      */
     static LongNoteLayer *shared();
 
     /**
-     * @brief Lazily builds the long-note sprites: loads the gm_parts1 atlas and creates the three
+     * Lazily builds the long-note sprites: loads the gm_parts1 atlas and creates the three
      * sprite instancers (attaching each under the background layer's render object, making it
      * visible, binding the atlas, flagging additive blend on the outer two, and, except on the
      * tutorial hardware, enabling each batch's two texture-environment parameters), then resets the
@@ -49,7 +49,7 @@ public:
     void LoadSprites();
 
     /**
-     * @brief Consumes every queued note record and emits the connector sprites it describes.
+     * Consumes every queued note record and emits the connector sprites it describes.
      *
      * Restarts the batch counts and advances the shared pulse clock, wrapping it into its period,
      * then walks the record pool up to the shared draw count. Each live record is consumed and
@@ -65,7 +65,7 @@ public:
     void BuildLongNoteConnectorSprites(float flDelta);
 
     /**
-     * @brief Emits one long-note sprite of the given type into its batch.
+     * Emits one long-note sprite of the given type into its batch.
      *
      * Looks the type up in the descriptor table for its batch, anchor, size, and UV-table index,
      * and appends a sprite at @p pPosition. The stretchable body types size to the layout height
@@ -88,7 +88,7 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x1812a0
      */
     LongNoteLayer();
@@ -105,24 +105,24 @@ private:
     float m_flPulseClock = {};
 
     /**
-     * @brief One pooled connector draw record (36 bytes): its active flag, the two shape selectors,
+     * One pooled connector draw record (36 bytes): its active flag, the two shape selectors,
      * the note colour, the connector's two endpoints, three more flags, an alpha scale, and an
      * optional rotation override.
      */
     struct NoteRecord {
-        bool bActive = {};         // +0x00: whether the slot holds a live connector.
-        unsigned char nFlagA = {}; // +0x01: the first shape selector.
-        unsigned char nFlagB = {}; // +0x02: the second shape selector.
+        bool bActive = {};         /*!< Whether the slot holds a live connector. +0x00 */
+        unsigned char nFlagA = {}; /*!< The first shape selector. +0x01 */
+        unsigned char nFlagB = {}; /*!< The second shape selector. +0x02 */
         // unsigned char m_aPad03[1] = {}; // +0x03
-        int nColor = {};           // +0x04: the note colour.
-        S_VECTOR2 startPoint;      // +0x08: the connector's start point.
-        S_VECTOR2 endPoint;        // +0x10: the connector's end point.
-        unsigned char nFlagC = {}; // +0x18: gates the pulse-phase sprite.
-        unsigned char nFlagD = {}; // +0x19: indexes the frame-alpha table.
-        unsigned char nFlagE = {}; // +0x1a: set when the record carries its own rotation.
+        int nColor = {};           /*!< The note colour. +0x04 */
+        S_VECTOR2 startPoint;      /*!< The connector's start point. +0x08 */
+        S_VECTOR2 endPoint;        /*!< The connector's end point. +0x10 */
+        unsigned char nFlagC = {}; /*!< Gates the pulse-phase sprite. +0x18 */
+        unsigned char nFlagD = {}; /*!< Indexes the frame-alpha table. +0x19 */
+        unsigned char nFlagE = {}; /*!< Set when the record carries its own rotation. +0x1a */
         // unsigned char m_aPad1b[1] = {}; // +0x1b
-        float flAlphaScale = {}; // +0x1c: scales the record's emitted alpha.
-        float flRotation = {};   // +0x20: the rotation used when nFlagE is set.
+        float flAlphaScale = {}; /*!< Scales the record's emitted alpha. +0x1c */
+        float flRotation = {};   /*!< The rotation used when nFlagE is set. +0x20 */
     };
     // The number of pooled connector draw records.
     static constexpr int kNoteRecordCount = 30;
@@ -133,7 +133,7 @@ private:
 
 public:
     /**
-     * @brief Queues a connector into the first free pool slot.
+     * Queues a connector into the first free pool slot.
      *
      * Scans the pool from its head for a free slot and, on finding one, stores the note colour, the
      * two shape selectors and three flags, the connector's two endpoints, the alpha scale, and the

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Limelight-theme result-window layer, @c LimelightResultLayer.
+ * The Limelight-theme result-window layer, @c LimelightResultLayer.
  */
 
 #pragma once
@@ -19,7 +19,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief One phone result-panel touch/button record: the tracked touch id, a pressed flag, a
+ * One phone result-panel touch/button record: the tracked touch id, a pressed flag, a
  * tap-edge (just-released-inside) flag, and an initialised byte. The two flag bytes are together
  * the flags half-word the click latch writes as 0x100. The constructor resets the id to the "none"
  * sentinel and clears the flags.
@@ -33,7 +33,7 @@ struct ResultButtonRecord {
 };
 
 /**
- * @brief The Limelight-theme result-window layer.
+ * The Limelight-theme result-window layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It draws
  * the Limelight result panel through eight sprite instancers. The class carries no RTTI (it is
@@ -45,22 +45,22 @@ struct ResultButtonRecord {
  */
 class LimelightResultLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of result-screen bonus/EX display animation channels. */
+    /** The number of result-screen bonus/EX display animation channels. */
     static constexpr int kBonusAnimCount = 5;
-    /** @brief The number of phone result-panel touch/button records. */
+    /** The number of phone result-panel touch/button records. */
     static constexpr int kButtonCount = 4;
-    /** @brief The number of result-step animation slots. */
+    /** The number of result-step animation slots. */
     static constexpr int kStepAnimSlotCount = 2;
 
     /**
-     * @brief The process-wide Limelight result-window layer, created on first use.
+     * The process-wide Limelight result-window layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x123d54
      */
     static LimelightResultLayer *shared();
 
     /**
-     * @brief Initialises the phone (portrait) result-window state at the start of the result
+     * Initialises the phone (portrait) result-window state at the start of the result
      * screen.
      *
      * Marks the layer active, arms the bonus voice cue when the game system's result-bonus feature
@@ -70,7 +70,7 @@ public:
     void InitializePhoneResultLayer();
 
     /**
-     * @brief The per-frame result-window update: advances the bonus tweens and decoration timers,
+     * The per-frame result-window update: advances the bonus tweens and decoration timers,
      * updates the bonus voice cue and the phone touch/share state, then dispatches to the Limelight
      * (iPad) or phone (portrait) render path.
      *
@@ -84,7 +84,7 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Renders the Limelight (iPad/landscape) result window for the current frame.
+     * Renders the Limelight (iPad/landscape) result window for the current frame.
      *
      * Clears the eight instancers, then draws (when the window fade is non-zero) the panel frame
      * and furniture, the music jacket and character previews, the difficulty badge, the target
@@ -99,7 +99,7 @@ public:
     void RenderLimelightResultWindow();
 
     /**
-     * @brief Renders the phone (portrait) result window for the current frame.
+     * Renders the phone (portrait) result window for the current frame.
      *
      * The phone-layout twin of @c RenderLimelightResultWindow: it clears the eight instancers, then
      * draws the backdrop, side rail, header bar, and footer band, two nine-patch panel boxes and
@@ -114,7 +114,7 @@ public:
     void RenderPhoneResultWindow();
 
     /**
-     * @brief Updates the phone result screen's touch handling and Twitter-share button.
+     * Updates the phone result screen's touch handling and Twitter-share button.
      *
      * Enables the gesture buttons once the panel is fully shown, runs the four phone-part buttons,
      * then tracks the centre side-slider: a horizontal drag past the threshold toggles the slider
@@ -125,7 +125,7 @@ public:
     void UpdatePhoneTouchAndShare();
 
     /**
-     * @brief Updates the four phone-part result buttons' touch state and publishes the overall
+     * Updates the four phone-part result buttons' touch state and publishes the overall
      * pressed state.
      *
      * For each button it claims an active touch whose position falls inside the button's
@@ -138,7 +138,7 @@ public:
     void UpdatePhonePartTouchStates();
 
     /**
-     * @brief Whether the result screen's confirm button has been tapped this play.
+     * Whether the result screen's confirm button has been tapped this play.
      *
      * The confirm signal is the first phone-part button's tap-edge latch; the result-finalise state
      * polls it to know the player has acknowledged the result.
@@ -148,13 +148,13 @@ public:
         return m_aButtons[0].bTapEdge;
     }
 
-    /** @brief Clears the result-confirm tap-edge latch. */
+    /** Clears the result-confirm tap-edge latch. */
     void ClearResultConfirmed() {
         m_aButtons[0].bTapEdge = false;
     }
 
     /**
-     * @brief Resets the five bonus/EX display animation channels to their zeroed initial state,
+     * Resets the five bonus/EX display animation channels to their zeroed initial state,
      * each easing from its current shown value to zero over @p flStartTime (snapping to zero
      * immediately when @p flStartTime is non-positive), and disarms the bonus voice cue.
      * @param flStartTime The animation base start time.
@@ -163,7 +163,7 @@ public:
     void ResetResultBonusAnimations(float flStartTime);
 
     /**
-     * @brief Opens the five bonus/EX display channels for the phone result screen's appear
+     * Opens the five bonus/EX display channels for the phone result screen's appear
      * animation.
      *
      * Each channel eases from its current shown value up to one; the first channel's duration is
@@ -175,7 +175,7 @@ public:
     void SetupOpenTweenPhone(float flBaseTime);
 
     /**
-     * @brief Clears the five result-bonus display values and refreshes the current theme.
+     * Clears the five result-bonus display values and refreshes the current theme.
      *
      * Zeroes the clear, miss, rank, first-play, and experience bonus fields, then re-reads the
      * user's current theme (through the base layer's theme refresh).
@@ -184,7 +184,7 @@ public:
     void ResetThemeSelectState();
 
     /**
-     * @brief Lazily builds the eight result-window sprite instancers: loads the two atlases and
+     * Lazily builds the eight result-window sprite instancers: loads the two atlases and
      * creates each instancer (registering it in the global scene tree, making it visible, binding
      * the edge slots' textures, and clearing its sprite count).
      *
@@ -194,7 +194,7 @@ public:
     void InitializePhoneSpriteInstancers();
 
     /**
-     * @brief Binds a texture to one phone sprite instancer and rescales all its slots to the
+     * Binds a texture to one phone sprite instancer and rescales all its slots to the
      * texture's dimensions.
      *
      * With a null texture, or a zero-capacity instancer, only the instancer's texture is set (no
@@ -206,7 +206,7 @@ public:
     void SetPhoneInstancerTextureAndScale(unsigned int nPhoneIndex, ne::C_TEXTURE *pTexture);
 
     /**
-     * @brief Returns the result-window parts descriptor at @p nIndex.
+     * Returns the result-window parts descriptor at @p nIndex.
      *
      * Selects the pad or phone parts table by the current device kind. The routine takes only the
      * index (in @c x0) and never touches the layer, so it is a static member rather than an
@@ -218,7 +218,7 @@ public:
     static PartsDataRecord *GetPartsData(unsigned int nIndex);
 
     /**
-     * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
+     * Resolves a phone-layout anchor position by index, offset relative to the play field.
      *
      * Looks up a @c PhoneAnchorRecord from the portrait or default table (selected by the layer's
      * orientation flag), copies its base coordinate, then shifts it by the play-field viewport's
@@ -230,7 +230,7 @@ public:
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
-     * @brief Resolves a by-state phone-layout rectangle by index, offset relative to the play
+     * Resolves a by-state phone-layout rectangle by index, offset relative to the play
      * field.
      *
      * Selects the state table on the iPad, otherwise the portrait or default table by the
@@ -243,7 +243,7 @@ public:
     void getPositionByState_Phone(int nIndex, PhoneLayoutRect *pOutRect) const;
 
     /**
-     * @brief Returns a phone-layout glyph descriptor by index.
+     * Returns a phone-layout glyph descriptor by index.
      *
      * Always reads the pad parts table (which doubles as the phone glyph-metrics table), regardless
      * of device kind.
@@ -254,7 +254,7 @@ public:
     static PartsDataRecord *getPartsData_Phone(int nIndex);
 
     /**
-     * @brief Returns a phone-layout separator record by index.
+     * Returns a phone-layout separator record by index.
      *
      * Selects the portrait or default separator table by the layer's orientation flag and returns
      * the record at @p nIndex.
@@ -265,7 +265,7 @@ public:
     const PhoneLayoutRecord *getSeparator_Phone(int nIndex) const;
 
     /**
-     * @brief Resolves the single phone-layout centre-position rectangle, offset by the viewport.
+     * Resolves the single phone-layout centre-position rectangle, offset by the viewport.
      *
      * Copies the state, portrait, or default centre record (selected by the is-pad flag and
      * orientation flags) to @p pOutRect. When the state flag is clear the leading coordinate is
@@ -276,7 +276,7 @@ public:
     void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
     /**
-     * @brief Renders a small unsigned integer as centred phone digit-glyph sprites.
+     * Renders a small unsigned integer as centred phone digit-glyph sprites.
      *
      * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run
      * about
@@ -291,7 +291,7 @@ public:
     void RenderPhoneNumberDigitsRow(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
-     * @brief Renders a multi-digit decimal number in the phone result layout, right to left from a
+     * Renders a multi-digit decimal number in the phone result layout, right to left from a
      * position plus offset.
      *
      * Splits @p nValue into up to @p nMaxDigits digits, tracking the significant count; when the
@@ -324,7 +324,7 @@ public:
                            unsigned int nAlpha);
 
     /**
-     * @brief Renders the result screen's total-score digits in the phone result layout.
+     * Renders the result screen's total-score digits in the phone result layout.
      *
      * Sums the five result-bonus values, scales the total to tenths, and renders up to seven digits
      * right to left from @p pPosition: the ones place from one glyph bank and the higher places
@@ -337,7 +337,7 @@ public:
     void RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
-     * @brief Renders a multiplier value (in tenths) in the phone result layout.
+     * Renders a multiplier value (in tenths) in the phone result layout.
      *
      * Scales @p flMultiplier to tenths, splits it into up to three digits, and draws them right to
      * left from @p pPosition using the multiplier glyph bank, inserting a marker glyph beside the
@@ -353,7 +353,7 @@ public:
                                            unsigned int nAlpha);
 
     /**
-     * @brief Renders a percentage value (a leading marker, digits, and a decimal point) in the
+     * Renders a percentage value (a leading marker, digits, and a decimal point) in the
      * phone result layout.
      *
      * Splits @p nValue into up to four decimal digits (drawing at least two), centres the run about
@@ -368,7 +368,7 @@ public:
     void RenderPhonePercentValue(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
-     * @brief Renders a fraction (@p nNumerator over @p nDenominator) in the phone result layout.
+     * Renders a fraction (@p nNumerator over @p nDenominator) in the phone result layout.
      *
      * Centres the whole run about @p pPosition using a nominal seven-pixel per-digit width, then
      * draws the denominator digits right to left, a separating slash glyph, and the numerator
@@ -387,7 +387,7 @@ public:
                              unsigned int nAlpha);
 
     /**
-     * @brief Emits one result-window part sprite by part id.
+     * Emits one result-window part sprite by part id.
      *
      * Looks up the part's placement rectangle and UV-palette entry, then appends a quad to the
      * layer's shared instancer slot. Part id @c 0xff is a no-op used to skip optional parts. The
@@ -411,7 +411,7 @@ public:
                         unsigned int nAlpha,
                         bool bShadowPass);
     /**
-     * @brief Emits one part sprite drawing a slot's whole bound texture at the given size.
+     * Emits one part sprite drawing a slot's whole bound texture at the given size.
      *
      * The texture's used-image fraction of its power-of-two allocation becomes the sprite's UV
      * rectangle. A no-op when the slot is out of range, empty, or unbound.
@@ -426,7 +426,7 @@ public:
                           const S_VECTOR2 &size,
                           unsigned int nAlpha);
     /**
-     * @brief Emits one part sprite from a slot's bound texture, deriving both the pixel size (the
+     * Emits one part sprite from a slot's bound texture, deriving both the pixel size (the
      *        texture's used size over its scale) and the UV rectangle (the used fraction of the
      *        allocation), and scaling the alpha by the layer's fade factor.
      * @param nSlot The instancer slot (0 through 7).
@@ -437,7 +437,7 @@ public:
     void EmitAutoUvPart(unsigned long nSlot, const S_VECTOR2 &position, unsigned int nBaseAlpha);
 
     /**
-     * @brief Emits one glyph sprite at a resolved position index plus an offset, dimmable.
+     * Emits one glyph sprite at a resolved position index plus an offset, dimmable.
      *
      * Resolves the base position from the phone anchor table by @p nPositionIndex, adds @p offset,
      * looks up the glyph placement rectangle from the pad parts table by @p nCharCode and its
@@ -466,7 +466,7 @@ public:
                                    float flScaleY);
 
     /**
-     * @brief Emits one glyph sprite at a position plus an offset, dimmable.
+     * Emits one glyph sprite at a position plus an offset, dimmable.
      *
      * Looks up the glyph placement rectangle from the pad parts table by @p nCharCode and its
      * texture rectangle from the Limelight glyph UV palette, adds @p offset to @p position, and
@@ -495,7 +495,7 @@ public:
                                  float flScaleY);
 
     /**
-     * @brief Emits one result part at a phone layout anchor plus an offset (a convenience wrapper).
+     * Emits one result part at a phone layout anchor plus an offset (a convenience wrapper).
      *
      * Resolves the base position from the phone anchor table by @p nAnchorIndex, adds @p offset,
      * and renders the part by id at that position with unit Y scale, no rotation, and the main
@@ -516,7 +516,7 @@ public:
                                float flScaleX);
 
     /**
-     * @brief Emits one part sprite drawing a slot's whole bound texture, centred (half-size
+     * Emits one part sprite drawing a slot's whole bound texture, centred (half-size
      * anchor).
      *
      * Sizes the quad by the texture's own scale factor, derives its UV rectangle from the used
@@ -535,7 +535,7 @@ public:
                                         unsigned int nIntensity);
 
     /**
-     * @brief Renders a small unsigned integer as centred Limelight digit-glyph sprites.
+     * Renders a small unsigned integer as centred Limelight digit-glyph sprites.
      *
      * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run
      * about
@@ -549,7 +549,7 @@ public:
     void RenderDigits(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
-     * @brief Renders a multi-digit decimal number as right-aligned glyph sprites from a chosen
+     * Renders a multi-digit decimal number as right-aligned glyph sprites from a chosen
      * glyph bank, with optional leading-zero padding and per-column layout tweaks.
      *
      * Splits @p nValue into up to @p nMaxDigits decimal digits and emits each digit's glyph (part
@@ -578,7 +578,7 @@ public:
                       unsigned int nAlpha);
 
     /**
-     * @brief Renders a value with a decimal-point glyph inserted after the ones digit.
+     * Renders a value with a decimal-point glyph inserted after the ones digit.
      *
      * Emits up to four digit glyphs right to left (at least two are drawn), inserting the point
      * glyph after the least-significant digit; used for the rate percentage such as 98.7.
@@ -590,7 +590,7 @@ public:
     void RenderPercentValue(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
-     * @brief Renders a "denominator / numerator" fraction as digit glyphs with a slash glyph.
+     * Renders a "denominator / numerator" fraction as digit glyphs with a slash glyph.
      *
      * Centres the combined run about @p position using the uniform zero-glyph advance, draws the
      * denominator digits right to left, then the slash glyph, then the numerator digits.
@@ -606,7 +606,7 @@ public:
                         unsigned int nAlpha);
 
     /**
-     * @brief Renders the result screen's total-score digits in the Limelight (pad) layout.
+     * Renders the result screen's total-score digits in the Limelight (pad) layout.
      *
      * Sums the five result-bonus values, scales the total to tenths, and draws up to seven places
      * right to left from @p pPosition: the ones place from one glyph bank and the higher places
@@ -620,7 +620,7 @@ public:
     void RenderLimelightTotalScore(const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
-     * @brief Renders a one-decimal rating value as small glyph sprites with a decimal point.
+     * Renders a one-decimal rating value as small glyph sprites with a decimal point.
      *
      * Scales @p flValue by ten and splits it into up to three digits (at least two), emitting each
      * from the rating glyph bank right to left with a per-glyph vertical offset; inserts the point
@@ -633,7 +633,7 @@ public:
     void RenderRatingValue(float flValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
-     * @brief Stores the five result-bonus display values computed at the end of a play.
+     * Stores the five result-bonus display values computed at the end of a play.
      * @param flClear The clear bonus.
      * @param flMiss The miss bonus.
      * @param flRank The rank bonus.
@@ -650,7 +650,7 @@ public:
     }
 
     /**
-     * @brief Stores the pair of result score values the scene seeds at set-up.
+     * Stores the pair of result score values the scene seeds at set-up.
      * @param nScore The result score.
      * @param nScoreHi The high result score.
      */
@@ -659,12 +659,12 @@ public:
         m_nResultScoreHi = nScoreHi;
     }
 
-    /** @brief The number of sprite-instancer slots the layer builds. */
+    /** The number of sprite-instancer slots the layer builds. */
     static constexpr int kSpriteSlotCount = 8;
 
 private:
     /**
-     * @brief Constructs the layer: chains the base-layer constructor, then zero-clears its state
+     * Constructs the layer: chains the base-layer constructor, then zero-clears its state
      * and seeds the non-zero defaults — the default part alpha (255), the current-step and
      * per-button touch-id "none" sentinels (-1), and the cleared flags. The binary inlines this
      * into @c shared.
@@ -673,7 +673,7 @@ private:
     LimelightResultLayer();
 
     /**
-     * @brief Emits one phone-layout part sprite positioned relative to a separator field, offset by
+     * Emits one phone-layout part sprite positioned relative to a separator field, offset by
      * a caller-supplied delta.
      *
      * A no-op when the part index or separator index is out of range. The part's anchor, size, and
@@ -709,7 +709,7 @@ private:
                             unsigned int nAlpha);
 
     /**
-     * @brief Emits one glyph sprite from the pad parts table by part id, dimmable.
+     * Emits one glyph sprite from the pad parts table by part id, dimmable.
      *
      * Looks up the glyph's placement rectangle from the pad parts table indexed by @p nPartId and
      * its texture rectangle from the Limelight glyph UV palette, then appends the quad to the slot
@@ -797,7 +797,7 @@ private:
     // unsigned char m_aReserved16c[4]; // +0x16c (trailing pad to the 0x170-byte allocation)
 
     /**
-     * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
+     * Advances the bonus voice-cue timer and fires the cue once past its threshold.
      *
      * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold
      * the cue is disarmed and themed voice 7 is loaded and played.

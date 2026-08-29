@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The growable note-chart path-point array, @c NotePathPointArray, and its entry type.
+ * The growable note-chart path-point array, @c NotePathPointArray, and its entry type.
  *
  * Used by the @c CMusicSheet2 chart parsers. Each entry is an 8-byte pair of ints holding a node's
  * scroll speed (as raw float bits) and its time in milliseconds; the array grows by a fixed step
@@ -21,12 +21,12 @@
 //
 
 /**
- * @brief One note-chart path point: a pair of ints stored in the growable array.
+ * One note-chart path point: a pair of ints stored in the growable array.
  * Reconstructed type @c NotePathPoint: engine chart-parse struct.
  */
 struct NotePathPoint {
     /**
-     * @brief The node's scroll speed, held as the raw bit pattern of a float.
+     * The node's scroll speed, held as the raw bit pattern of a float.
      *
      * The chart stores the speed in this int slot and the readers copy the bits out rather than
      * converting them, so the value is only meaningful once reinterpreted as a float.
@@ -37,7 +37,7 @@ struct NotePathPoint {
 };
 
 /**
- * @brief A growable array of @c NotePathPoint entries, grown by @c kGrowStep when full.
+ * A growable array of @c NotePathPoint entries, grown by @c kGrowStep when full.
  *
  * The layout matches the binary's inline array header: the entry buffer pointer, the live count,
  * and the allocated capacity.
@@ -47,11 +47,11 @@ struct NotePathPoint {
  */
 class NotePathPointArray {
 public:
-    /** @brief The number of extra entries each grow reserves. */
+    /** The number of extra entries each grow reserves. */
     static constexpr int kGrowStep = 5;
 
     /**
-     * @brief Reserves @p nCount zero-initialised entries and returns the buffer.
+     * Reserves @p nCount zero-initialised entries and returns the buffer.
      *
      * The binary passes the array as an ignored first argument; the fresh buffer is returned in the
      * result register and stored by the caller.
@@ -61,14 +61,14 @@ public:
      */
     NotePathPoint *AllocateEntries(int nCount);
     /**
-     * @brief Appends @p point, growing the buffer by @c kGrowStep entries when it is full.
+     * Appends @p point, growing the buffer by @c kGrowStep entries when it is full.
      * @param point The path point to append.
      * @ghidraAddress 0x12f648
      */
     void Append(const NotePathPoint &point);
 
     /**
-     * @brief The number of live entries.
+     * The number of live entries.
      * @return The number of live entries.
      */
     int GetCount() const {
@@ -76,7 +76,7 @@ public:
     }
 
     /**
-     * @brief The entry at @p nIndex.
+     * The entry at @p nIndex.
      * @param nIndex The entry index, below @c GetCount.
      * @return The entry at @p nIndex.
      */
@@ -84,7 +84,7 @@ public:
         return m_pEntries[nIndex];
     }
 
-    /** @brief Releases the entry buffer and clears the count and capacity. */
+    /** Releases the entry buffer and clears the count and capacity. */
     void Free() {
         delete[] m_pEntries;
         m_pEntries = nullptr;
@@ -92,7 +92,7 @@ public:
         m_nCapacity = 0;
     }
 
-    /** @brief Seeds an empty array with room for a single entry (the reader's initial state). */
+    /** Seeds an empty array with room for a single entry (the reader's initial state). */
     void Reserve() {
         m_pEntries = AllocateEntries(1);
         m_nCount = 0;

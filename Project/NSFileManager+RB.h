@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c NSFileManager convenience helpers used throughout the game: existence and directory
+ * @c NSFileManager convenience helpers used throughout the game: existence and directory
  * checks, directory creation, a free-space guard, and cached accessors for the standard on-device
  * directories.
  *
@@ -16,12 +16,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Filesystem convenience helpers layered on @c NSFileManager.
+ * Filesystem convenience helpers layered on @c NSFileManager.
  */
 @interface NSFileManager (RB)
 
 /**
- * @brief Whether a regular (non-directory) file exists at a path.
+ * Whether a regular (non-directory) file exists at a path.
  * @param path The filesystem path to test.
  * @return @c YES when @p path exists and is not a directory.
  * @ghidraAddress 0x1c9954
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isFileExist:(NSString *)path;
 
 /**
- * @brief Whether a directory exists at a path.
+ * Whether a directory exists at a path.
  * @param path The filesystem path to test.
  * @return @c YES when @p path exists and is a directory.
  * @ghidraAddress 0x1c9a0c
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isDirectoryExist:(NSString *)path;
 
 /**
- * @brief Create a directory, including any missing intermediate directories.
+ * Create a directory, including any missing intermediate directories.
  * @param path The directory path to create.
  * @return @c YES when the directory was created.
  * @ghidraAddress 0x1c9ac0
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)createDirectory:(NSString *)path;
 
 /**
- * @brief Create a directory tree one component at a time, applying default file attributes to each
+ * Create a directory tree one component at a time, applying default file attributes to each
  * newly created level.
  * @param path The target directory path.
  * @return @c YES when every component was created (or already existed).
@@ -54,49 +54,49 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)createDirectorysAtPath:(NSString *)path;
 
 /**
- * @brief Whether the volume has more than the required amount of free space.
+ * Whether the volume has more than the required amount of free space.
  * @return @c YES when the free space reported by @c freeFileSystemSize exceeds the minimum.
  * @ghidraAddress 0x1c9b70
  */
 + (BOOL)isFreeSystemSize;
 
 /**
- * @brief The number of free bytes on the application-support volume.
+ * The number of free bytes on the application-support volume.
  * @return The free size in bytes.
  * @ghidraAddress 0x1c9ba0
  */
 + (unsigned long long)freeFileSystemSize;
 
 /**
- * @brief The padding-file directory (@c padding under the Documents directory).
+ * The padding-file directory (@c padding under the Documents directory).
  * @return The padding directory path.
  * @ghidraAddress 0x1ca0c8
  */
 + (NSString *)paddingDirName;
 
 /**
- * @brief The cached documents directory path (@c NSDocumentDirectory).
+ * The cached documents directory path (@c NSDocumentDirectory).
  * @return The cached path.
  * @ghidraAddress 0x1ca130
  */
 + (NSString *)documentDirectoryPath;
 
 /**
- * @brief The cached application-support directory path (@c NSApplicationSupportDirectory).
+ * The cached application-support directory path (@c NSApplicationSupportDirectory).
  * @return The cached path.
  * @ghidraAddress 0x1ca248
  */
 + (NSString *)applicationSupportDirectoryPath;
 
 /**
- * @brief The cached caches directory path (@c NSCachesDirectory).
+ * The cached caches directory path (@c NSCachesDirectory).
  * @return The cached path.
  * @ghidraAddress 0x1ca360
  */
 + (NSString *)cachesDirectoryPath;
 
 /**
- * @brief The cached temporary directory path.
+ * The cached temporary directory path.
  *
  * Uses @c NSTemporaryDirectory when available, otherwise falls back to a `"Temporary Files"`
  * directory under the caches directory.
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)temporaryDirectoryPath;
 
 /**
- * @brief The cached main-bundle resource path.
+ * The cached main-bundle resource path.
  * @return The cached path.
  * @ghidraAddress 0x1ca560
  */

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Router for the game's custom-scheme and push-notification deep links.
+ * Router for the game's custom-scheme and push-notification deep links.
  *
  * Given a URL, it derives a
  * per-host handler class named @c RBUrlScheme<Host>Controller, verifies it conforms to
@@ -16,19 +16,19 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Singleton router that dispatches deep-link URLs to per-host scheme handlers.
+ * Singleton router that dispatches deep-link URLs to per-host scheme handlers.
  */
 @interface RBUrlSchemeManager : NSObject
 
 /**
- * @brief The shared router instance, lazily created on first access.
+ * The shared router instance, lazily created on first access.
  * @return The singleton @c RBUrlSchemeManager.
  * @ghidraAddress 0x168174
  */
 + (instancetype)sharedManager;
 
 /**
- * @brief Route a deep-link URL to its per-host handler.
+ * Route a deep-link URL to its per-host handler.
  *
  * The handler class name is built from the URL host with its first letter capitalised, in the form
  * @c RBUrlScheme<Host>Controller. If that class exists and conforms to
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)parseURL:(NSURL *)url;
 
 /**
- * @brief Parse a URL query string into a dictionary of its key-value pairs.
+ * Parse a URL query string into a dictionary of its key-value pairs.
  *
  * Splits the query on @c & into pairs, then splits each pair on @c = into a key and value.
  * @param queryString The raw query string (without a leading @c ?), or @c nil.

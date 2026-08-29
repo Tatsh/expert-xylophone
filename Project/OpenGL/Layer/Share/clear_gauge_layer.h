@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The play-field clear-gauge layer, @c ClearGaugeLayer.
+ * The play-field clear-gauge layer, @c ClearGaugeLayer.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief The play-field clear-gauge layer.
+ * The play-field clear-gauge layer.
  *
  * Draws each player side's clear gauge as a set of sprite batches over the background scene node.
  * It derives from @c PlayFieldLayerBase and is a process-wide singleton built on first access. The
@@ -26,16 +26,16 @@ class C_TEXTURE;
  */
 class ClearGaugeLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of player sides the gauge tracks. */
+    /** The number of player sides the gauge tracks. */
     static constexpr int kSideCount = 2;
-    /** @brief The number of sprite batches the gauge draws through. */
+    /** The number of sprite batches the gauge draws through. */
     static constexpr int kBatchCount = 8;
 
-    /** @brief Constructs the clear-gauge render layer. */
+    /** Constructs the clear-gauge render layer. */
     ClearGaugeLayer();
 
     /**
-     * @brief Builds the gauge's eight sprite batches on first use.
+     * Builds the gauge's eight sprite batches on first use.
      *
      * Loads the gm_parts2 atlas, creates each batch sized from the capacity table, attaches it
      * under the background layer, makes it visible, binds the atlas, and clears its sprite count.
@@ -46,7 +46,7 @@ public:
     void CreateSprites();
 
     /**
-     * @brief Advances the reveal fade and rebuilds the gauge's sprite batches for the frame.
+     * Advances the reveal fade and rebuilds the gauge's sprite batches for the frame.
      *
      * Eases the reveal fade toward its target over its duration (marking the colour dirty), clears
      * every batch's sprite count, and then for each drawn side (the first side only when the
@@ -58,7 +58,7 @@ public:
     void Process(float flDelta);
 
     /**
-     * @brief Appends the gauge's base icon quad, choosing its size and atlas frame by layout.
+     * Appends the gauge's base icon quad, choosing its size and atlas frame by layout.
      *
      * Selects a quad size and atlas frame from the current orientation and gauge style (three
      * variants: phone, iPad default, and iPad alternate), then appends it to the first batch
@@ -72,7 +72,7 @@ public:
     void SetClearGaugeIcon(int nBottomBand, int nAlpha);
 
     /**
-     * @brief Appends the gauge's fill marker quad for one side, scaled by that side's gauge value.
+     * Appends the gauge's fill marker quad for one side, scaled by that side's gauge value.
      *
      * Chooses the marker's anchor, height, width, and atlas frame by orientation and gauge style,
      * reads the side's stored gauge value through @c GetValue, and appends the quad to the second
@@ -84,7 +84,7 @@ public:
     void SetClearGaugeMarker(unsigned int nSide, int nAlpha);
 
     /**
-     * @brief Appends the gauge's percentage readout for one side: two labels and up to four digits.
+     * Appends the gauge's percentage readout for one side: two labels and up to four digits.
      *
      * Reads the side's gauge value, scales it into a per-mille percentage (so a full gauge reads as
      * @c 100.0), and appends the two fixed labels (a separator and the percent sign) plus the
@@ -99,7 +99,7 @@ public:
     void SetClearGaugeDigits(unsigned int nSide, int nAlpha);
 
     /**
-     * @brief Appends one gauge quad to a batch, positioned by orientation, band, and gauge style.
+     * Appends one gauge quad to a batch, positioned by orientation, band, and gauge style.
      *
      * The shared low-level writer behind @c SetClearGaugeIcon, @c SetClearGaugeMarker, and
      * @c SetClearGaugeDigits. It places the quad using the play-field gauge base rows (mirroring
@@ -123,7 +123,7 @@ public:
                              S_VECTOR2 uvSize);
 
     /**
-     * @brief Sets a side's clear-gauge value, clamped to the range zero to one.
+     * Sets a side's clear-gauge value, clamped to the range zero to one.
      * @param flValue The gauge value (clamped to @c [0, 1]).
      * @param nSide The player side.
      * @ghidraAddress 0x175c90
@@ -131,7 +131,7 @@ public:
     void SetValue(float flValue, unsigned int nSide);
 
     /**
-     * @brief A side's stored clear-gauge value.
+     * A side's stored clear-gauge value.
      * @param nSide The player side.
      * @return The gauge value.
      * @ghidraAddress 0x175d04
@@ -139,13 +139,13 @@ public:
     float GetValue(unsigned int nSide) const;
 
     /**
-     * @brief Clears both sides' clear-gauge value slots to zero (a per-play reset).
+     * Clears both sides' clear-gauge value slots to zero (a per-play reset).
      * @ghidraAddress 0x175c70
      */
     void ClearValues();
 
     /**
-     * @brief Sets the gauge style (the sprite-layout variant), taken from the user's gauge-style
+     * Sets the gauge style (the sprite-layout variant), taken from the user's gauge-style
      * setting.
      * @param nStyle The gauge style.
      * @ghidraAddress 0x175d68
@@ -153,14 +153,14 @@ public:
     void SetGaugeStyle(int nStyle);
 
     /**
-     * @brief Sets whether the two-player (both-side) gauge is drawn.
+     * Sets whether the two-player (both-side) gauge is drawn.
      * @param bTwoSide Whether the 2P gauge is enabled.
      * @ghidraAddress 0x175d70
      */
     void SetTwoSideEnabled(bool bTwoSide);
 
     /**
-     * @brief Begins the reveal fade-in, easing the gauge to fully opaque over @p flDuration
+     * Begins the reveal fade-in, easing the gauge to fully opaque over @p flDuration
      * (snapping to opaque and marking the colour dirty immediately when the duration is
      * non-positive).
      * @param flDuration The fade duration, in frames.
@@ -169,7 +169,7 @@ public:
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Begins the reveal fade-out, easing the gauge to transparent over @p flDuration
+     * Begins the reveal fade-out, easing the gauge to transparent over @p flDuration
      * (snapping to transparent and marking the colour dirty immediately when the duration is
      * non-positive).
      * @param flDuration The fade duration, in frames.
@@ -178,7 +178,7 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief The process-wide clear-gauge layer, created on first use.
+     * The process-wide clear-gauge layer, created on first use.
      * @return The shared clear-gauge layer.
      * @ghidraAddress 0x175aac
      */
@@ -219,8 +219,8 @@ private:
     // Each side's clear-gauge value occupies an eight-byte slot (the float followed by four unused
     // bytes), so the two sides sit at +0x144 and +0x14c.
     struct ValueSlot {
-        float flValue = {}; // +0x00: the side's clear-gauge value.
-        int nUnused = {};   // +0x04: unused slot tail.
+        float flValue = {}; /*!< The side's clear-gauge value. +0x00 */
+        int nUnused = {};   /*!< Unused slot tail. +0x04 */
     };
     ValueSlot m_aValues[kSideCount] = {}; // +0x144
     int m_nTwoSideEnabled = {};           // +0x154: non-zero when the 2P gauge is drawn.

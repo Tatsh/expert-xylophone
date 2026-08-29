@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The downloadable-resource state helper.
+ * The downloadable-resource state helper.
  *
  * It is a stateless @c NSObject utility whose class methods answer whether the installed
  * downloadable game-asset bundle needs refreshing: it verifies the
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The action an availability check reports the launch flow must take.
+ * The action an availability check reports the launch flow must take.
  */
 typedef NS_ENUM(NSInteger, DownloadResourceManagerResult) {
     DownloadResourceManagerResultMissing = 0,  /*!< No usable resource bundle is installed. */
@@ -26,12 +26,12 @@ typedef NS_ENUM(NSInteger, DownloadResourceManagerResult) {
 };
 
 /**
- * @brief Stateless queries over the downloadable game-asset bundle's installed state.
+ * Stateless queries over the downloadable game-asset bundle's installed state.
  */
 @interface DownloadResourceManager : NSObject
 
 /**
- * @brief Verify the extracted asset list: unzip the manifest, then confirm every listed file exists
+ * Verify the extracted asset list: unzip the manifest, then confirm every listed file exists
  * in the image-asset directory.
  * @return @c YES when the manifest and every file it lists are present; otherwise @c NO.
  * @ghidraAddress 0xdd2dc
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, DownloadResourceManagerResult) {
 + (BOOL)fileListCheck;
 
 /**
- * @brief Decide how an offline launch must treat the installed resource bundle.
+ * Decide how an offline launch must treat the installed resource bundle.
  * @return @c DownloadResourceManagerResultMissing when no bundle directory exists,
  * @c DownloadResourceManagerResultOutdated when no version is recorded,
  * @c DownloadResourceManagerResultUpdate when the recorded version is older than the built-in
@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, DownloadResourceManagerResult) {
 + (DownloadResourceManagerResult)offlineCheck;
 
 /**
- * @brief Decide how an online launch must proceed, given the server's resource-version response.
+ * Decide how an online launch must proceed, given the server's resource-version response.
  * @param response The server response dictionary, carrying the current @c "Version" and an optional
  * @c "Type" flag.
  * @return When the installed bundle is at least as new as the server version,

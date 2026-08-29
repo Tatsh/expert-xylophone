@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The result-window parts-data record type and its runtime-filled Colette tables.
+ * The result-window parts-data record type and its runtime-filled Colette tables.
  */
 
 #pragma once
 
 /**
- * @brief One result-window parts descriptor: a sprite's placement rectangle and the UV-palette
+ * One result-window parts descriptor: a sprite's placement rectangle and the UV-palette
  * entry it draws from.
  *
  * The parts tables are zero-initialised in the binary's @c __common segment and filled at runtime.
@@ -23,21 +23,21 @@ struct PartsDataRecord {
 };
 
 /**
- * @brief The number of pad records in the Colette result-window parts tables.
+ * The number of pad records in the Colette result-window parts tables.
  *
  * The device-selecting accessor bounds both tables at this pad count.
  */
 constexpr int kColettePartsRecordCount = 348;
 
 /**
- * @brief The number of phone records in the Colette result-window parts tables.
+ * The number of phone records in the Colette result-window parts tables.
  *
  * This is the larger of the two counts; the phone-only accessor bounds at it.
  */
 constexpr int kColettePhonePartsRecordCount = 400;
 
 /**
- * @brief The Colette result-window parts table used on the pad.
+ * The Colette result-window parts table used on the pad.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime; the pad-versus-phone
  * device kind selects between this table and @c g_aColettePartsPhone.
@@ -47,7 +47,7 @@ constexpr int kColettePhonePartsRecordCount = 400;
 extern PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount];
 
 /**
- * @brief The Colette result-window parts table used on the phone.
+ * The Colette result-window parts table used on the phone.
  *
  * Zero-initialised in the binary's @c __common segment and filled at runtime; the pad-versus-phone
  * device kind selects between this table and @c g_aColettePartsPad.

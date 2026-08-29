@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note-burst explosion effect layer, @c ExplosionEffectLayer.
+ * The note-burst explosion effect layer, @c ExplosionEffectLayer.
  */
 
 #pragma once
@@ -13,7 +13,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The note-burst explosion effect layer.
+ * The note-burst explosion effect layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It keeps
  * two per-player-colour banks of nineteen effect slots, each drawn through one of two world-space
@@ -22,29 +22,29 @@ class C_SPRITE_INSTANCING_2D;
  */
 class ExplosionEffectLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of player-colour banks. */
+    /** The number of player-colour banks. */
     static constexpr int kBankCount = 2;
-    /** @brief The number of effect slots per bank. */
+    /** The number of effect slots per bank. */
     static constexpr int kSlotsPerBank = 19;
-    /** @brief The capacity each bank's sprite instancer is created with. */
+    /** The capacity each bank's sprite instancer is created with. */
     static constexpr int kSpriteCapacity = 0x26;
 
     /**
-     * @brief The process-wide explosion effect layer, created on first use.
+     * The process-wide explosion effect layer, created on first use.
      * @return The shared explosion effect layer.
      * @ghidraAddress 0x176ed0
      */
     static ExplosionEffectLayer *shared();
 
     /**
-     * @brief Lazily builds the two effect sprite instancers and attaches them to the background
+     * Lazily builds the two effect sprite instancers and attaches them to the background
      * scene node.
      * @ghidraAddress 0x176f20
      */
     void InitializeSprites();
 
     /**
-     * @brief Spawns a burst in the first free slot of the given colour bank.
+     * Spawns a burst in the first free slot of the given colour bank.
      * @param nColor The player-colour bank (0 or 1).
      * @param nJudge The judgement type that triggered the burst (0 through 2).
      * @param flPosX The burst X position.
@@ -54,7 +54,7 @@ public:
     void CreateExplosionEffect(unsigned int nColor, int nJudge, float flPosX, float flPosY);
 
     /**
-     * @brief Advances every live burst for one frame and re-emits its sprite.
+     * Advances every live burst for one frame and re-emits its sprite.
      *
      * Clears both banks' live sprite counts, then for each colour bank whose effect type is
      * enabled: picks the per-bank play-colour alpha and mirror rotation from whether the bank
@@ -69,7 +69,7 @@ public:
     void Process(float flDeltaTime);
 
     /**
-     * @brief Sets a colour bank's explosion texture type, rebinding its instancer texture and
+     * Sets a colour bank's explosion texture type, rebinding its instancer texture and
      * clearing every effect slot when the type changes.
      * @param nColor The player-colour bank (0 or 1).
      * @param nType The explosion texture type (0 through 18).
@@ -78,26 +78,26 @@ public:
     void SetEffectType(unsigned int nColor, int nType);
 
     /**
-     * @brief Sets the burst size applied to every effect sprite's scale.
+     * Sets the burst size applied to every effect sprite's scale.
      * @param flSize The burst size, from the user setting.
      * @ghidraAddress 0x177130
      */
     void SetEffectSize(float flSize);
 
     /**
-     * @brief Stores a lane's play-colour alpha, scaling the unit-interval value to a byte.
+     * Stores a lane's play-colour alpha, scaling the unit-interval value to a byte.
      * @param flAlpha The alpha, in the range zero to one.
      * @param nLane The lane (0 selects the first bank's byte, non-zero the second).
      * @ghidraAddress 0x17710c
      */
     void SetPlayColorAlpha(float flAlpha, int nLane);
 
-    /** @brief The number of explosion texture types. */
+    /** The number of explosion texture types. */
     static constexpr int kEffectTypeCount = 19;
 
 private:
     /**
-     * @brief Appends one explosion-effect sprite to a lane's instancer.
+     * Appends one explosion-effect sprite to a lane's instancer.
      *
      * Writes the next free slot of the lane's sprite batch with a fixed 84-point anchor and
      * 168-point size, the caller's position and animation-frame UV origin, a fixed UV cell size,
@@ -121,13 +121,13 @@ private:
     // @ghidraAddress 0x176e18
     ExplosionEffectLayer();
 
-    /** @brief One live burst: its activity, animation timer, judgement, and position. */
+    /** One live burst: its activity, animation timer, judgement, and position. */
     struct EffectEntry {
-        bool bActive = {}; // +0x00: whether the slot holds a live burst.
+        bool bActive = {}; /*!< Whether the slot holds a live burst. +0x00 */
         // unsigned char m_aPad01[3] = {}; // +0x01
-        float flTimer = {};      // +0x04: the burst animation timer, advanced each frame.
-        int nJudge = {};         // +0x08: the judgement type that spawned the burst.
-        S_VECTOR2 position = {}; // +0x0c: the burst position.
+        float flTimer = {};      /*!< The burst animation timer, advanced each frame. +0x04 */
+        int nJudge = {};         /*!< The judgement type that spawned the burst. +0x08 */
+        S_VECTOR2 position = {}; /*!< The burst position. +0x0c */
     };
 
     // +0x08: the two world-space sprite instancers, one per bank.

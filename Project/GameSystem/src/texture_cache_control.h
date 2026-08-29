@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The texture-cache control singleton node, @c TextureCacheControl.
+ * The texture-cache control singleton node, @c TextureCacheControl.
  */
 
 #pragma once
 
 /**
- * @brief The small tagged control node the texture cache keeps as a lazily-allocated singleton.
+ * The small tagged control node the texture cache keeps as a lazily-allocated singleton.
  *
  * A 32-byte node holding a tag byte, a next-node pointer, an int slot, and a spare slot. It is
  * distinct from the live-texture cache list (@c C_TEXTURE::GetCacheList); it appears to be a
@@ -20,7 +20,7 @@ struct TextureCacheControl {
     int nValue = {};                 /*!< An int slot, zero on construction. +0x10 */
     // unsigned char aReserved14[4] = {}; /*!< Padding before the spare slot. +0x14 */
     /**
-     * @brief Eight bytes the constructor zeroes and nothing else in the binary reads or writes.
+     * Eight bytes the constructor zeroes and nothing else in the binary reads or writes.
      *
      * Their type is unknown, so they are modelled as raw storage rather than claimed as a pointer.
      * +0x18
@@ -29,7 +29,7 @@ struct TextureCacheControl {
 };
 
 /**
- * @brief The lazily-allocated texture-cache control singleton.
+ * The lazily-allocated texture-cache control singleton.
  * @ghidraAddress 0x3cff20
  */
 extern TextureCacheControl *g_pTextureCacheControl;

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Classic-theme full-combo layer, @c FullComboClassicLayer.
+ * The Classic-theme full-combo layer, @c FullComboClassicLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The Classic-theme full-combo layer.
+ * The Classic-theme full-combo layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and three sprite instancers, drawn beneath the shared background layer, that present the
@@ -26,14 +26,14 @@ class C_SPRITE_INSTANCING_2D;
 class FullComboClassicLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide Classic full-combo layer, created on first use.
+     * The process-wide Classic full-combo layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x10f2dc
      */
     static FullComboClassicLayer *shared();
 
     /**
-     * @brief Lazily builds the layer's three background sprite instancers: loads the atlas and
+     * Lazily builds the layer's three background sprite instancers: loads the atlas and
      * creates each instancer (attaching it under the background layer's render object, making it
      * visible, binding the atlas, clearing its sprite count, flagging additive blend, and seeding
      * its two texture-environment parameters).
@@ -44,14 +44,14 @@ public:
     void InitializeBackgroundSprites();
 
     /**
-     * @brief Activates the full-combo effect for a player colour.
+     * Activates the full-combo effect for a player colour.
      * @param nColor The player colour (0 or 1).
      * @ghidraAddress 0x10f3f4
      */
     void CreateFullComboClassic(unsigned int nColor);
 
     /**
-     * @brief Emits one full-combo sprite of the given object and geometry type.
+     * Emits one full-combo sprite of the given object and geometry type.
      *
      * The object type selects the target sprite batch (and its slot counter); the geometry type
      * indexes the descriptor table for the anchor, size, and UV-table index. While the batch has
@@ -75,20 +75,20 @@ public:
                       float flRotation);
 
     /**
-     * @brief Clears every player colour's full-combo effect active flag.
+     * Clears every player colour's full-combo effect active flag.
      * @ghidraAddress 0x10f46c
      */
     void ClearEffectFlags();
 
     /**
-     * @brief Whether any player colour's full-combo effect is currently active.
+     * Whether any player colour's full-combo effect is currently active.
      * @return @c true when at least one effect record's active flag is set.
      * @ghidraAddress 0x10f488
      */
     bool IsAnyEffectActive() const;
 
     /**
-     * @brief Advances every active full-combo effect by one frame and emits its sprites.
+     * Advances every active full-combo effect by one frame and emits its sprites.
      *
      * Clears the three batch counts, derives each side's lane-row base from the near lane's slope,
      * then for every active player colour advances the effect clock, fires the themed voice cue
@@ -100,24 +100,24 @@ public:
      */
     void Update(float flDelta);
 
-    /** @brief The number of background sprite instancers the layer builds. */
+    /** The number of background sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 3;
-    /** @brief The number of player colours with a full-combo effect record. */
+    /** The number of player colours with a full-combo effect record. */
     static constexpr int kColorCount = 2;
 
 private:
     /**
-     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x10f280
      */
     FullComboClassicLayer();
 
     // A per-colour full-combo effect record.
     struct EffectRecord {
-        bool m_bActive = {}; // +0x00: whether the effect is playing.
+        bool m_bActive = {}; /*!< Whether the effect is playing. +0x00 */
         // unsigned char m_aPad1[3]; // +0x01 (alignment padding, compiler-inserted)
-        float m_flTimer = {};    // +0x04: the effect animation clock, in milliseconds.
-        bool m_bVoiceFired = {}; // +0x08: set once the effect has fired its themed voice cue.
+        float m_flTimer = {};    /*!< The effect animation clock, in milliseconds. +0x04 */
+        bool m_bVoiceFired = {}; /*!< Set once the effect has fired its themed voice cue. +0x08 */
         // unsigned char m_aPad9[3]; // +0x09 (alignment padding, compiler-inserted)
     };
 

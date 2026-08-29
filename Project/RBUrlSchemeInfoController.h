@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Deep-link handler for the @c info host of the game's custom URL scheme.
+ * Deep-link handler for the @c info host of the game's custom URL scheme.
  *
  * It is one of the per-host
  * handler classes resolved by name and dispatched to by @c RBUrlSchemeManager, and it adopts
@@ -19,12 +19,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Handles @c info deep links routed by @c RBUrlSchemeManager.
+ * Handles @c info deep links routed by @c RBUrlSchemeManager.
  */
 @interface RBUrlSchemeInfoController : NSObject <RBUrlSchemeControllerProtocol>
 
 /**
- * @brief Dispatch a routed action to its matching @c \<action\>RbAction: handler method.
+ * Dispatch a routed action to its matching @c \<action\>RbAction: handler method.
  *
  * The action name is turned into a selector of the form @c \<action\>RbAction: (for example
  * @c webRbAction: for the @c web action). When the receiver responds to that selector, it is
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)action:(NSString *)action query:(nullable NSDictionary *)query;
 
 /**
- * @brief Build the news web-info URL for a @c web deep link and store it on the app delegate.
+ * Build the news web-info URL for a @c web deep link and store it on the app delegate.
  *
  * Reads the @c id entry of the query dictionary; when it is present and its integer value is at
  * least one, the base web-info URL is copied and, unless it already contains a query string, the

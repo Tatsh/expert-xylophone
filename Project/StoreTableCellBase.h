@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The shared base table cell for the store list screens.
+ * The shared base table cell for the store list screens.
  *
  * It carries two @c StoreTableCellViewBase
  * product tiles (a left and a right slot) and, on construction, gives itself the store list's dark
@@ -22,19 +22,19 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The shared base table cell for the store list screens.
+ * The shared base table cell for the store list screens.
  */
 @interface StoreTableCellBase : UITableViewCell
 
 /**
- * @brief The left product tile.
+ * The left product tile.
  * @ghidraAddress 0x42308 (getter)
  * @ghidraAddress 0x42318 (setter)
  */
 @property(nonatomic, strong, nullable) StoreTableCellViewBase *leftView;
 
 /**
- * @brief The right product tile.
+ * The right product tile.
  * @ghidraAddress 0x42350 (getter)
  * @ghidraAddress 0x42360 (setter)
  */

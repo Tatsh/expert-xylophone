@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c DestinationCore endpoint helper.
+ * Reconstructed interface for the Applilink advert SDK's @c DestinationCore endpoint helper.
  *
  * @c DestinationCore is a stateless class that registers a click-through destination with the
  * Applilink advert server. Its single public class method assembles a parameter dictionary (the
@@ -18,7 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Stateless helper that registers a click-through destination with the Applilink server.
+ * Stateless helper that registers a click-through destination with the Applilink server.
  *
  * The class conforms to @c ApplilinkURLConnectionDelegate so it can be passed as the connection
  * delegate for its own request; the shipped build leaves every delegate callback empty.
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DestinationCore : NSObject <ApplilinkURLConnectionDelegate>
 
 /**
- * @brief Register a click-through destination with the Applilink advert server.
+ * Register a click-through destination with the Applilink advert server.
  *
  * Builds a parameter dictionary containing the @c ad system marker, @p countryCode, and @p url,
  * merges the shared user-agent parameters, and posts a @c GET request to

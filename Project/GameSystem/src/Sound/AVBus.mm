@@ -29,7 +29,7 @@ static const float kUnboundVoiceVolume = 1.0f;
 }
 
 /**
- * @brief The voice's audio player, rebuilt each time a source is bound and released on unbind.
+ * The voice's audio player, rebuilt each time a source is bound and released on unbind.
  * @ghidraAddress 0x41f48 (getter)
  * @ghidraAddress 0x41f58 (setter)
  */

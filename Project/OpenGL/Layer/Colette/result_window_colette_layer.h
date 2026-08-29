@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Colette-theme result-window layer, @c ResultWindowColetteLayer.
+ * The Colette-theme result-window layer, @c ResultWindowColetteLayer.
  */
 
 #pragma once
@@ -18,7 +18,7 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief One result-panel touch hit-region: the tracked touch id and its press, tap-edge, and
+ * One result-panel touch hit-region: the tracked touch id and its press, tap-edge, and
  * enabled flags. The input pass claims a touch inside the region's anchor box and reports a press
  * or a tap-edge (a press that ended inside).
  */
@@ -31,7 +31,7 @@ struct ResultTouchRegion {
 };
 
 /**
- * @brief The Colette-theme result-window layer.
+ * The Colette-theme result-window layer.
  *
  * Draws the phone-layout result panel (score, rank, rate, per-side stats, and bonus rows) as a bank
  * of eight sprite-instancer nodes over the play field. It is a process-wide singleton built on
@@ -42,30 +42,30 @@ struct ResultTouchRegion {
  */
 class ResultWindowColetteLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of sprite-instancer slots the result window draws with. */
+    /** The number of sprite-instancer slots the result window draws with. */
     static constexpr int kSlotCount = 8;
-    /** @brief The number of open/close display animation channels. */
+    /** The number of open/close display animation channels. */
     static constexpr int kTweenChannelCount = 5;
-    /** @brief The number of touch hit-regions the input pass tracks. */
+    /** The number of touch hit-regions the input pass tracks. */
     static constexpr int kTouchRegionCount = 4;
-    /** @brief The number of per-colour result score values the scene seeds. */
+    /** The number of per-colour result score values the scene seeds. */
     static constexpr int kResultScoreColorCount = 2;
 
-    /** @brief The play colour a seeded result score belongs to. */
+    /** The play colour a seeded result score belongs to. */
     enum ResultScoreColor {
         kResultScoreRed = 0,  /*!< The red side's score. */
         kResultScoreBlue = 1, /*!< The blue side's score. */
     };
 
     /**
-     * @brief The process-wide Colette result-window layer, created on first use.
+     * The process-wide Colette result-window layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x73edc
      */
     static ResultWindowColetteLayer *shared();
 
     /**
-     * @brief Whether a tutorial touch was just released this frame (the tutorial advance gate).
+     * Whether a tutorial touch was just released this frame (the tutorial advance gate).
      * @return @c true when a tutorial touch was released this frame.
      */
     bool IsTutorialTouchEnded() const {
@@ -73,7 +73,7 @@ public:
     }
 
     /**
-     * @brief Whether a flick changed the result page this frame.
+     * Whether a flick changed the result page this frame.
      * @return @c true when a flick changed the result page this frame.
      */
     bool IsPageDirty() const {
@@ -81,7 +81,7 @@ public:
     }
 
     /**
-     * @brief The current result page index (0 or 1), also the running/initialised marker.
+     * The current result page index (0 or 1), also the running/initialised marker.
      * @return The current result page index.
      */
     int GetActivePage() const {
@@ -89,7 +89,7 @@ public:
     }
 
     /**
-     * @brief Whether the result screen's confirm region has been tapped this play.
+     * Whether the result screen's confirm region has been tapped this play.
      *
      * The confirm signal is the first touch region's tap-edge latch; the result-finalise state
      * polls it to know the player has acknowledged the result.
@@ -99,13 +99,13 @@ public:
         return m_aTouchRegion[0].bTapEdge;
     }
 
-    /** @brief Clears the result-confirm tap-edge latch. */
+    /** Clears the result-confirm tap-edge latch. */
     void ClearResultConfirmed() {
         m_aTouchRegion[0].bTapEdge = false;
     }
 
     /**
-     * @brief Builds the eight result-window sprite instancers on first use.
+     * Builds the eight result-window sprite instancers on first use.
      *
      * Loads the selection-background and result-parts textures, creates one sprite instancer per
      * slot (from a per-slot capacity table), registers each as a global scene node, and binds a
@@ -115,7 +115,7 @@ public:
     void InitializeResultWindowSprites();
 
     /**
-     * @brief Initialises the result-screen state flags at the start of the result screen.
+     * Initialises the result-screen state flags at the start of the result screen.
      *
      * Marks the panel active, arms the bonus voice cue when the game system's result-bonus feature
      * is set, resets the bonus-cue timer, and records whether the Twitter share API is available.
@@ -124,7 +124,7 @@ public:
     void InitializeResultScreenFlags();
 
     /**
-     * @brief Starts the result panel's show animation: keyframes the alpha channel to fully opaque
+     * Starts the result panel's show animation: keyframes the alpha channel to fully opaque
      * and the four offset/scale channels in from their start values over @p flDuration, with a
      * per-channel stagger that cascades them (snapping the alpha immediately when non-positive).
      * @param flDuration The animation duration.
@@ -133,7 +133,7 @@ public:
     void StartShowTween(float flDuration);
 
     /**
-     * @brief Starts the result panel's hide animation: keyframes each display animation channel
+     * Starts the result panel's hide animation: keyframes each display animation channel
      * from its current shown value toward zero over @p flDuration (snapping immediately when
      * non-positive) and clears the panel-active flag.
      * @param flDuration The animation duration.
@@ -142,14 +142,14 @@ public:
     void StartHideTween(float flDuration);
 
     /**
-     * @brief Updates the four touch hit-regions: claims or tracks one touch per region against its
+     * Updates the four touch hit-regions: claims or tracks one touch per region against its
      * anchor box, reporting a press (@c bDown) and latching a tap-edge when a press ends inside.
      * @ghidraAddress 0x744cc
      */
     void UpdateTouchHitRegions();
 
     /**
-     * @brief The per-frame result-window update: advances the open/close tween channels and
+     * The per-frame result-window update: advances the open/close tween channels and
      * rotating decorations, updates the bonus voice cue and the appropriate input pass, then
      * dispatches to the iPad or phone render path.
      *
@@ -165,7 +165,7 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Renders the whole result-score and bonus panel: the pad-layout result screen.
+     * Renders the whole result-score and bonus panel: the pad-layout result screen.
      *
      * Derives the frame's alpha from the alpha tween channel scaled by 255 and returns immediately
      * when that is zero, so a fully faded panel costs nothing. The four remaining tween channels
@@ -188,7 +188,7 @@ public:
     void RenderResultScoreBonusPanel();
 
     /**
-     * @brief Renders the whole result panel in the phone layout: the portrait and landscape path.
+     * Renders the whole result panel in the phone layout: the portrait and landscape path.
      *
      * The phone twin of @c RenderResultScoreBonusPanel, sharing its alpha model exactly: the frame
      * alpha is the alpha tween channel scaled by 255 and a zero value returns immediately, the four
@@ -212,7 +212,7 @@ public:
     void RenderColetteResultPanel();
 
     /**
-     * @brief The result screen's per-frame input pass: gates on the fade-in, tracks a vertical
+     * The result screen's per-frame input pass: gates on the fade-in, tracks a vertical
      * swipe to toggle the result page and fire its sound, updates the touch hit-regions, and posts
      * the Twitter share when its region is tapped.
      * @ghidraAddress 0x7427c
@@ -220,7 +220,7 @@ public:
     void ProcessResultScreenInput();
 
     /**
-     * @brief The phone-layout result input pass: like @c ProcessResultScreenInput but gates the
+     * The phone-layout result input pass: like @c ProcessResultScreenInput but gates the
      * interactive flags by the tutorial game phase and detects a horizontal flick (setting the page
      * dirty flag) rather than a vertical swipe.
      * @ghidraAddress 0x74c70
@@ -228,7 +228,7 @@ public:
     void UpdateResultTouchInput();
 
     /**
-     * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
+     * Resolves a phone-layout anchor position by index, offset relative to the play field.
      *
      * Looks up a @c PhoneAnchorRecord from one of two runtime-filled tables (selected by the
      * portrait flag), copies its base coordinate into @p pOutPosition, then shifts it by the
@@ -240,7 +240,7 @@ public:
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
-     * @brief Resolves a non-phone anchor-box position by index, offset relative to the play field.
+     * Resolves a non-phone anchor-box position by index, offset relative to the play field.
      *
      * The non-phone counterpart of @c getPosition_Phone using 20-byte @c AnchorBoxRecord entries.
      * Selects one of three tables — the pad table when the layer is on an iPad, otherwise the
@@ -254,7 +254,7 @@ public:
     void getPosition(int nIndex, PhoneLayoutRect *pOutRect) const;
 
     /**
-     * @brief Returns a result-window parts descriptor by index.
+     * Returns a result-window parts descriptor by index.
      *
      * Selects the pad or phone parts table by the current device kind and returns the record at
      * @p nIndex.
@@ -265,7 +265,7 @@ public:
     PartsDataRecord *getPartsData(int nIndex) const;
 
     /**
-     * @brief Returns a phone-layout parts descriptor by index.
+     * Returns a phone-layout parts descriptor by index.
      *
      * Always uses the phone parts table, regardless of device kind, and returns the record at
      * @p nIndex.
@@ -276,7 +276,7 @@ public:
     PartsDataRecord *getPartsData_Phone(int nIndex) const;
 
     /**
-     * @brief Resolves the single phone-layout centre-position rectangle, offset by the viewport.
+     * Resolves the single phone-layout centre-position rectangle, offset by the viewport.
      *
      * Copies the state, portrait, or default centre record (selected by the is-pad flag and
      * orientation flags) to @p pOutRect. When the state flag is clear the leading coordinate is
@@ -287,7 +287,7 @@ public:
     void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
     /**
-     * @brief Computes an element's axis-aligned bounding box for the given anchor id.
+     * Computes an element's axis-aligned bounding box for the given anchor id.
      *
      * Resolves the two corner anchor positions for the anchor id (three ids are supported: the
      * centre panel, the music-info block, and the score block) and inflates them by half the
@@ -303,7 +303,7 @@ public:
     void ComputeElementBounds(int nAnchorId, S_VECTOR2 *pMin, S_VECTOR2 *pMax) const;
 
     /**
-     * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
+     * Advances the bonus voice-cue timer and fires the cue once past its threshold.
      *
      * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold
      * the cue is disarmed and the themed bonus voice is loaded and played.
@@ -313,7 +313,7 @@ public:
     void UpdateBonusSoundCueTimer(float flDeltaTime);
 
     /**
-     * @brief Stores the seven result-bonus display values computed at the end of a play.
+     * Stores the seven result-bonus display values computed at the end of a play.
      * @param flClear The clear bonus.
      * @param flMiss The miss bonus.
      * @param flRank The rank bonus.
@@ -339,7 +339,7 @@ public:
     }
 
     /**
-     * @brief Stores the pair of per-colour result score values the scene seeds at set-up.
+     * Stores the pair of per-colour result score values the scene seeds at set-up.
      * @param nScore The red side's result score.
      * @param nScoreHi The blue side's result score.
      */
@@ -349,7 +349,7 @@ public:
     }
 
     /**
-     * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
+     * Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
      *
      * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in
      * the slot, resizes it to the texture image size over its scale factor, zeroes its UV origin,
@@ -363,7 +363,7 @@ public:
 
 private:
     /**
-     * @brief Renders a non-negative integer as a row of parts-atlas digit sprites.
+     * Renders a non-negative integer as a row of parts-atlas digit sprites.
      *
      * Extracts @p nDigitCount base-ten digits of @p nValue (least significant first) into a local
      * buffer, then draws the significant digits right to left, walking downward through the layout
@@ -404,7 +404,7 @@ private:
                                    float flBlue);
 
     /**
-     * @brief Renders a non-negative integer as a row of proportionally-spaced digit sprites.
+     * Renders a non-negative integer as a row of proportionally-spaced digit sprites.
      *
      * The proportional-spacing twin of @c RenderNumberDigitsAsParts: rather than stepping through
      * the layout position bank, it seeds an X cursor from the base position and advances it by each
@@ -441,7 +441,7 @@ private:
                                         float flBlue);
 
     /**
-     * @brief Renders a non-negative integer as a row of phone-layout glyph sprites at an anchored
+     * Renders a non-negative integer as a row of phone-layout glyph sprites at an anchored
      * position.
      *
      * The phone-layout twin of @c RenderNumberDigitsAsParts: it decomposes @p nValue into base-ten
@@ -484,7 +484,7 @@ private:
                                  float flBlue);
 
     /**
-     * @brief Renders a non-negative integer as a row of proportionally-spaced phone-layout glyph
+     * Renders a non-negative integer as a row of proportionally-spaced phone-layout glyph
      * sprites at an anchored position.
      *
      * The phone-layout twin of @c RenderNumberDigitsProportional: it decomposes @p nValue into
@@ -522,7 +522,7 @@ private:
                                        float flBlue);
 
     /**
-     * @brief Renders two numbers separated by a slash as monospaced parts-atlas digit sprites.
+     * Renders two numbers separated by a slash as monospaced parts-atlas digit sprites.
      *
      * Draws @p nLeftValue and @p nRightValue (each up to four significant digits, rank-family
      * digits) as a "left/right" pair centred on the base position, advancing a proportional cursor
@@ -547,7 +547,7 @@ private:
                                        int nRightColorIndex);
 
     /**
-     * @brief Renders two numbers separated by a slash as phone-layout glyph sprites.
+     * Renders two numbers separated by a slash as phone-layout glyph sprites.
      *
      * The phone-layout twin of @c RenderNumberPairWithSeparator: it draws @p nLeftValue and
      * @p nRightValue (each up to four significant digits, from the phone digit family based at
@@ -574,7 +574,7 @@ private:
                                         int nRightColorIndex);
 
     /**
-     * @brief Constructs the layer: chains the base-layer constructor and zero-clears its state,
+     * Constructs the layer: chains the base-layer constructor and zero-clears its state,
      * seeding the swipe touch id and the four touch-region touch ids to the "none" sentinel (-1).
      * The binary inlines this into @c shared (0x73edc).
      * @ghidraAddress 0x7aba8
@@ -582,7 +582,7 @@ private:
     ResultWindowColetteLayer();
 
     /**
-     * @brief Draws a slot's whole bound texture centred on a position (half-size anchor), tinted.
+     * Draws a slot's whole bound texture centred on a position (half-size anchor), tinted.
      *
      * Like @c renderSpriteInstanceScaled (full texture-scaled size), but anchors the quad at half
      * its size so it is centred on @p position. The alpha is @p nScale times the layer parts scale;
@@ -596,7 +596,7 @@ private:
     void blitSpriteInstanceHalfScale(int nSlot, const S_VECTOR2 &position, unsigned int nScale);
 
     /**
-     * @brief Draws a slot's whole bound texture scaled by the layer's parts scale, tinted.
+     * Draws a slot's whole bound texture scaled by the layer's parts scale, tinted.
      *
      * Reads the slot's bound texture, sizes the quad by the texture's own scale factor, derives its
      * UV size from the used image over allocated dimensions, and appends it through
@@ -611,7 +611,7 @@ private:
     void renderSpriteInstanceScaled(int nSlot, const S_VECTOR2 &position, unsigned int nScale);
 
     /**
-     * @brief Draws a slot's whole bound texture as one quad, at half the given extent.
+     * Draws a slot's whole bound texture as one quad, at half the given extent.
      *
      * Reads the slot instancer's bound texture, derives its UV size from the used-image over
      * allocated dimensions, and appends a sprite at @p position anchored at half @p extent with a
@@ -628,7 +628,7 @@ private:
                                       unsigned int nAlpha);
 
     /**
-     * @brief Appends one sprite quad to a slot's sprite instancer.
+     * Appends one sprite quad to a slot's sprite instancer.
      *
      * When the slot index is in range, the slot's instancer exists, and it is not already full,
      * writes the quad's position, anchor, size, UV origin, UV size, rotation, and scale into the
@@ -658,7 +658,7 @@ private:
                             unsigned int nAlpha);
 
     /**
-     * @brief Appends one sprite quad to a slot's instancer with an explicit per-channel colour.
+     * Appends one sprite quad to a slot's instancer with an explicit per-channel colour.
      *
      * Identical to @c appendSpriteToSlot but takes independent red, green, and blue channels rather
      * than a single intensity. When the slot is in range, its instancer exists, and it is not full,
@@ -692,7 +692,7 @@ private:
                                 const S_VECTOR2 &scale);
 
     /**
-     * @brief Emits one glyph sprite at a resolved position index plus an offset, dimmable.
+     * Emits one glyph sprite at a resolved position index plus an offset, dimmable.
      *
      * Resolves the base position from the phone anchor table by @p nPositionIndex, adds @p offset,
      * looks up the glyph placement rectangle from the phone parts table by @p nCharCode and its
@@ -721,7 +721,7 @@ private:
                                       float flScaleY);
 
     /**
-     * @brief Emits one result-window part sprite by part id with a per-channel float colour.
+     * Emits one result-window part sprite by part id with a per-channel float colour.
      *
      * Looks up the part's placement rectangle by @p nPartId (device-selected parts table) and its
      * texture rectangle from the Colette part UV palette, then appends the quad through
@@ -752,7 +752,7 @@ private:
                                  float flBlue);
 
     /**
-     * @brief Emits one result-window part sprite by part id, dimmable.
+     * Emits one result-window part sprite by part id, dimmable.
      *
      * Looks up the part's placement rectangle by @p nPartId (device-selected parts table) and its
      * texture rectangle from the Colette part UV palette, then appends the quad to the slot at
@@ -778,7 +778,7 @@ private:
                                    float flScaleY);
 
     /**
-     * @brief Emits one glyph sprite from the phone parts table by part id, dimmable.
+     * Emits one glyph sprite from the phone parts table by part id, dimmable.
      *
      * Looks up the glyph's placement rectangle from the phone parts table indexed by @p nPartId and
      * its texture rectangle from the Colette glyph UV palette, then appends the quad to the slot at
@@ -804,7 +804,7 @@ private:
                                       float flScaleY);
 
     /**
-     * @brief Emits one glyph sprite from the phone parts table by part id, with an explicit
+     * Emits one glyph sprite from the phone parts table by part id, with an explicit
      * per-vertex colour.
      *
      * The non-dimmable colour twin of @c RenderDimmableGlyphFromTable: it looks up the glyph's

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkViewController.
+ * Reconstructed interface for the Applilink advert SDK's @c ApplilinkViewController.
  *
  * @c ApplilinkViewController is the SDK's @c UIViewController that owns and presents the native App
  * Store product page through a @c RotateStoreProductViewController (a rotation-forcing
@@ -21,29 +21,29 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The SDK view controller that presents the App Store product page.
+ * The SDK view controller that presents the App Store product page.
  */
 @interface ApplilinkViewController : UIViewController <SKStoreProductViewControllerDelegate>
 
 /**
- * @brief The delegate notified of the store lifecycle notices.
+ * The delegate notified of the store lifecycle notices.
  *
  * Held weakly: the view controller forwards each notice to it but does not own it.
  */
 @property(weak, nonatomic, nullable) id<SdkViewDelegate> sdkDelegate;
 
 /**
- * @brief The advert request parameters of the in-flight store request.
+ * The advert request parameters of the in-flight store request.
  */
 @property(copy, nonatomic, nullable) ApplilinkParameters *applilinkParams;
 
 /**
- * @brief The loading overlay shown over the product page while it loads.
+ * The loading overlay shown over the product page while it loads.
  */
 @property(strong, nonatomic, nullable) ApplilinkIndicator *indicator;
 
 /**
- * @brief Present the App Store product page for an application.
+ * Present the App Store product page for an application.
  *
  * Sizes the view to the main screen, adds a loading @c ApplilinkIndicator overlay, hosts the view
  * in the SDK main window, and asks a @c RotateStoreProductViewController to load the product
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
            delegate:(nullable id<SdkViewDelegate>)delegate;
 
 /**
- * @brief Dismiss the presented App Store product page with animation and post the close notices.
+ * Dismiss the presented App Store product page with animation and post the close notices.
  *
  * The @c SKStoreProductViewControllerDelegate finish callback: fires the close notice, dismisses
  * the product page with animation, and on completion fires the closed notice.
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)productViewControllerDidFinish:(nullable SKStoreProductViewController *)viewController;
 
 /**
- * @brief Dismiss the presented App Store product page without animation and post the close notices.
+ * Dismiss the presented App Store product page without animation and post the close notices.
  *
  * Fires the close notice, dismisses the product page without animation, and on completion fires the
  * closed notice.

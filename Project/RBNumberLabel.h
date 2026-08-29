@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A control that renders a numeric value using image-based digit glyphs from the customize
+ * A control that renders a numeric value using image-based digit glyphs from the customize
  * screen's unlock artwork.
  *
  * It has no text layer: @c drawRect: splits the current @c number into decimal
@@ -17,7 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The digit-glyph style RBNumberLabel draws its number with.
+ * The digit-glyph style RBNumberLabel draws its number with.
  */
 typedef NS_ENUM(NSInteger, RBNumberLabelImageType) {
     RBNumberLabelImageTypeNormal = 0,  /*!< Whole-number glyphs (@c cus_unlock_nm_0 …
@@ -33,12 +33,12 @@ typedef NS_ENUM(NSInteger, RBNumberLabelImageType) {
 };
 
 /**
- * @brief A control that draws a number as a row of image-based digit glyphs.
+ * A control that draws a number as a row of image-based digit glyphs.
  */
 @interface RBNumberLabel : UIControl
 
 /**
- * @brief Create the label with the given frame.
+ * Create the label with the given frame.
  *
  * Calls through to @c super, gives the control a clear background, and resets the number to zero.
  * @param frame The control's frame rectangle.
@@ -48,7 +48,7 @@ typedef NS_ENUM(NSInteger, RBNumberLabelImageType) {
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Draw the current number as image-based digit glyphs within @p rect.
+ * Draw the current number as image-based digit glyphs within @p rect.
  *
  * Calls through to @c super, then splits @c number (scaled by ten when @c imageType is
  * @c RBNumberLabelImageTypeDecimal) into its decimal digits and draws one themed glyph per digit,
@@ -59,14 +59,14 @@ typedef NS_ENUM(NSInteger, RBNumberLabelImageType) {
 - (void)drawRect:(CGRect)rect;
 
 /**
- * @brief The value drawn by the control.
+ * The value drawn by the control.
  *
  * Setting a new value redraws the control.
  */
 @property(assign, nonatomic) float number;
 
 /**
- * @brief The digit-glyph style and formatting used to draw the number.
+ * The digit-glyph style and formatting used to draw the number.
  *
  * Setting a new style redraws the control.
  */

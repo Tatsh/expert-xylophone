@@ -1,12 +1,12 @@
 /**
  * @file
- * @brief The replay/ghost application helper for the note play field.
+ * The replay/ghost application helper for the note play field.
  */
 
 #pragma once
 
 /**
- * @brief Loads the saved replay/ghost for the current song and stamps each live note with its
+ * Loads the saved replay/ghost for the current song and stamps each live note with its
  * recorded judgement.
  *
  * Operates on the process-wide AppDelegate, game system, and note-effect manager: loads the replay

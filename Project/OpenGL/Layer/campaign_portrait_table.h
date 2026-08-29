@@ -1,13 +1,13 @@
 /**
  * @file
- * @brief The Hinabita campaign portrait layer's anchor and animation-curve tables for
+ * The Hinabita campaign portrait layer's anchor and animation-curve tables for
  * @c rb::TitleColetteScene.
  */
 
 #pragma once
 
 /**
- * @brief The five sub-character base X positions the phone layout interpolates from.
+ * The five sub-character base X positions the phone layout interpolates from.
  *
  * Each is eased toward the screen centre by the fit scale.
  * @ghidraAddress 0x2fccd8
@@ -15,7 +15,7 @@
 constexpr float g_aCampaignPortraitPhoneBaseX[] = {190.0f, 280.0f, 384.0f, 488.0f, 581.0f};
 
 /**
- * @brief The six character anchor positions the iPad layout uses directly.
+ * The six character anchor positions the iPad layout uses directly.
  * @ghidraAddress 0x2fccd0
  */
 constexpr float g_aCampaignPortraitPadAnchor[][2] = {
@@ -28,7 +28,7 @@ constexpr float g_aCampaignPortraitPadAnchor[][2] = {
 };
 
 /**
- * @brief The entrance alpha (fade-in) curves, one per character.
+ * The entrance alpha (fade-in) curves, one per character.
  *
  * Ordered as the main portrait then five sub-characters; four knots each.
  * @ghidraAddress 0x2fcd00
@@ -42,7 +42,7 @@ constexpr float g_aCampaignPortraitEntranceAlpha[][8] = {
     {2000.0f, 0.0f, 2333.333251953125f, 1.0f, 4150.0f, 1.0f, 4166.66650390625f, 0.0f},
 };
 /**
- * @brief The matching entrance scale curves: a pop that overshoots to 1.2 then settles.
+ * The matching entrance scale curves: a pop that overshoots to 1.2 then settles.
  *
  * Six knots each.
  * @ghidraAddress 0x2fcdc0
@@ -123,7 +123,7 @@ constexpr float g_aCampaignPortraitEntranceScale[][12] = {
 };
 
 /**
- * @brief The SE-reaction scale curve (six knots).
+ * The SE-reaction scale curve (six knots).
  *
  * Its last knot's time is when the reaction ends.
  * @ghidraAddress 0x2fcee0
@@ -141,6 +141,6 @@ constexpr float g_aCampaignPortraitReaction[] = {0.0f,
                                                  183.3333282470703f,
                                                  1.0f};
 /**
- * @brief The time at which the SE-reaction scale curve ends, matching that curve's last knot time.
+ * The time at which the SE-reaction scale curve ends, matching that curve's last knot time.
  */
 constexpr float kCampaignPortraitReactionEnd = 183.3333282470703f;

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The one-shot voice-player subsystem, @c caPlayerMgr.
+ * The one-shot voice-player subsystem, @c caPlayerMgr.
  */
 
 #pragma once
@@ -11,7 +11,7 @@ class caCAMixer;
 class caSource;
 
 /**
- * @brief The one-shot voice-player subsystem, reached through @c AudioManager's @c sePlayer ivar.
+ * The one-shot voice-player subsystem, reached through @c AudioManager's @c sePlayer ivar.
  *
  * The former free engine functions that took the @c caPlayerMgr as their first argument are its
  * instance methods. Only the members the reconstructed methods touch are modelled; the 32-bit
@@ -20,40 +20,40 @@ class caSource;
 class caPlayerMgr {
 public:
     /**
-     * @brief Constructs the audio context: the graph, the name-to-id dictionary, and the buffer
+     * Constructs the audio context: the graph, the name-to-id dictionary, and the buffer
      * array.
      * @param channelCount The number of mixer channels to create.
      * @ghidraAddress 0x4b580
      */
     void InitializeAudioContext(int channelCount);
     /**
-     * @brief Tears down the audio context.
+     * Tears down the audio context.
      * @ghidraAddress 0x4b4a8
      */
     void DestroyAudioContext();
     /**
-     * @brief Tears down the audio context (wrapper entry point).
+     * Tears down the audio context (wrapper entry point).
      * @ghidraAddress 0x4b57c
      */
     void DestroyAudioContextWrapper();
 
     /**
-     * @brief Destroys the manager: tears down the audio context and releases the source dictionary.
+     * Destroys the manager: tears down the audio context and releases the source dictionary.
      * @ghidraAddress 0x4b468
      */
     ~caPlayerMgr();
     /**
-     * @brief Starts the audio graph.
+     * Starts the audio graph.
      * @ghidraAddress 0x4b61c
      */
     void StartAudioGraph();
     /**
-     * @brief Stops the audio graph.
+     * Stops the audio graph.
      * @ghidraAddress 0x4b60c
      */
     void StopAudioGraph();
     /**
-     * @brief Creates a sound buffer, loads PCM from a path, and registers it, returning its id.
+     * Creates a sound buffer, loads PCM from a path, and registers it, returning its id.
      * @param szPath The path of the PCM file to load.
      * @param bLoop Whether the sound loops.
      * @return The registered sound id.
@@ -61,7 +61,7 @@ public:
      */
     int CreateAndLoadSound(const char *szPath, bool bLoop);
     /**
-     * @brief Loads a sound and caches its id keyed by a call name, returning whether it was loaded.
+     * Loads a sound and caches its id keyed by a call name, returning whether it was loaded.
      * @param szPath The path of the PCM file to load.
      * @param callName The call name the sound id is cached under.
      * @param bLoop Whether the sound loops.
@@ -70,7 +70,7 @@ public:
      */
     int LoadAndCacheSoundForKey(const char *szPath, NSString *callName, bool bLoop);
     /**
-     * @brief Frees the PCM data of the sound at @p index, detaching it from any active voice first.
+     * Frees the PCM data of the sound at @p index, detaching it from any active voice first.
      * @param index The registered sound id.
      * @return @c 1 when a sound was freed, @c 0 when the index is out of range or the slot is
      * empty.
@@ -78,14 +78,14 @@ public:
      */
     int FreeSoundDataByIndex(int index);
     /**
-     * @brief Frees the sound registered under a call name and removes its dictionary entry.
+     * Frees the sound registered under a call name and removes its dictionary entry.
      * @param callName The call name the sound was cached under.
      * @return @c 1 when a cached sound was found and freed, @c 0 otherwise.
      * @ghidraAddress 0x4b8cc
      */
     int FreeSoundForKey(NSString *callName);
     /**
-     * @brief Plays the sound at the given index on the first free voice, returning its handle.
+     * Plays the sound at the given index on the first free voice, returning its handle.
      * @param index The registered sound id.
      * @param volume The gain-table index forwarded to the chosen voice.
      * @return The play handle for the started voice.
@@ -93,7 +93,7 @@ public:
      */
     unsigned int PlaySoundByIndex(int index, int volume);
     /**
-     * @brief Plays the sound registered under a call name, returning its handle.
+     * Plays the sound registered under a call name, returning its handle.
      * @param callName The call name the sound was cached under.
      * @param volume The gain-table index forwarded to the chosen voice.
      * @return The play handle for the started voice.
@@ -101,7 +101,7 @@ public:
      */
     unsigned int PlaySoundForKey(NSString *callName, int volume);
     /**
-     * @brief Plays the sound at the given index on a specific voice, returning its handle.
+     * Plays the sound at the given index on a specific voice, returning its handle.
      * @param resourceId The registered sound id.
      * @param busId The voice to play the sound on.
      * @param volume The gain-table index forwarded to the voice.
@@ -110,7 +110,7 @@ public:
      */
     unsigned int PlaySoundOnVoice(int resourceId, int busId, int volume);
     /**
-     * @brief Plays the sound under a call name on a specific voice, returning its handle.
+     * Plays the sound under a call name on a specific voice, returning its handle.
      * @param callName The call name the sound was cached under.
      * @param busId The voice to play the sound on.
      * @param volume The gain-table index forwarded to the voice.
@@ -119,41 +119,41 @@ public:
      */
     unsigned int PlaySoundForKeyOnBus(NSString *callName, int busId, int volume);
     /**
-     * @brief Resumes or starts the voice identified by a handle.
+     * Resumes or starts the voice identified by a handle.
      * @param handle The play handle of the voice to resume.
      * @return Whether a voice was found for the handle.
      * @ghidraAddress 0x4bb6c
      */
     bool ResumeVoiceByHandle(unsigned int handle);
     /**
-     * @brief Pauses the voice identified by a handle.
+     * Pauses the voice identified by a handle.
      * @param handle The play handle of the voice to pause.
      * @return Whether a voice was found for the handle.
      * @ghidraAddress 0x4bb9c
      */
     bool PauseVoiceByHandle(unsigned int handle);
     /**
-     * @brief Stops the voice identified by a handle.
+     * Stops the voice identified by a handle.
      * @param handle The play handle of the voice to stop.
      * @return Whether a voice was found for the handle.
      * @ghidraAddress 0x4bb84
      */
     bool StopVoiceByHandle(unsigned int handle);
     /**
-     * @brief Releases the voice identified by a handle.
+     * Releases the voice identified by a handle.
      * @param handle The play handle of the voice to release.
      * @ghidraAddress 0x4bcac
      */
     void ReleaseVoiceByHandle(unsigned int handle);
     /**
-     * @brief Returns the playback state of the voice identified by a handle.
+     * Returns the playback state of the voice identified by a handle.
      * @param handle The play handle of the voice to query.
      * @return The voice's playback state.
      * @ghidraAddress 0x4bbb4
      */
     int GetVoiceStateByHandle(unsigned int handle);
     /**
-     * @brief Sets the mixer's master voice gain to the given volume-table index.
+     * Sets the mixer's master voice gain to the given volume-table index.
      * @param volume The gain-table index applied to every voice.
      * @ghidraAddress 0x4bbcc
      */

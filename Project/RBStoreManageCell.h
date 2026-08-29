@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief A purchased-tune row cell for the store manage page.
+ * A purchased-tune row cell for the store manage page.
  *
  * It carries the download or delete action
  * button whose tag encodes the tune's section and row.
@@ -16,12 +16,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A purchased-tune row cell carrying a download/delete action button.
+ * A purchased-tune row cell carrying a download/delete action button.
  */
 @interface RBStoreManageCell : UITableViewCell
 
 /**
- * @brief The row's download or delete action button.
+ * The row's download or delete action button.
  */
 @property(nonatomic, strong, nullable) UIButton *button;
 

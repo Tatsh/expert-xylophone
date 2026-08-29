@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The animated pastel speech-bubble layer drawn beside the tutorial spotlight by
+ * The animated pastel speech-bubble layer drawn beside the tutorial spotlight by
  * @c RBMenuTutorialView.
  *
  * It is a @c CALayer that builds four weak child layers (head, body, and the
@@ -20,7 +20,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The tutorial pastel speech-bubble layer.
+ * The tutorial pastel speech-bubble layer.
  *
  * @c init sizes the layer and picks its display rate from the current iPad idiom, @c setupView:
  * cuts the four child layers from the message artwork and positions them, and @c stopAnimation
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBTutorialPastelLayer : CALayer
 
 /**
- * @brief Create the layer, choosing the display rate from the current iPad idiom and sizing the
+ * Create the layer, choosing the display rate from the current iPad idiom and sizing the
  *        layer's frame from that rate.
  * @return The initialised layer, or @c nil.
  * @ghidraAddress 0x1b35fc
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init;
 
 /**
- * @brief Build the pastel bubble's four child layers from the tutorial message artwork.
+ * Build the pastel bubble's four child layers from the tutorial message artwork.
  *
  * Cuts the right, left, body, and head regions out of @p image, wraps each in a weak child layer,
  * anchors and positions them around the display rate, and adds them as sublayers.
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupView:(nullable UIImage *)image;
 
 /**
- * @brief Return the artwork clip rectangle for the child layer at @p index.
+ * Return the artwork clip rectangle for the child layer at @p index.
  *
  * The rectangle is halved when the current iPad idiom is the compact (non-retina) layout.
  * @param index The child-layer index (0 head, 1 body, 2 left tail, 3 right tail).
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGRect)getClipList:(int)index;
 
 /**
- * @brief Return the layout point for the child layer at @p index.
+ * Return the layout point for the child layer at @p index.
  * @param index The child-layer index (0 head, 1 body, 2 left tail, 3 right tail).
  * @return The layout point.
  * @ghidraAddress 0x1b35cc
@@ -65,14 +65,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGPoint)getPosition:(int)index;
 
 /**
- * @brief Run the wave animation over the base, right, and head layers for @p duration.
+ * Run the wave animation over the base, right, and head layers for @p duration.
  * @param duration The animation's duration, in seconds.
  * @ghidraAddress 0x1b3cf4
  */
 - (void)startWaveAnimationWithDuration:(float)duration;
 
 /**
- * @brief Run the jump animation over the right, left, head, and base layers for @p duration.
+ * Run the jump animation over the right, left, head, and base layers for @p duration.
  *
  * When @p delay is effectively zero the animations are added immediately; otherwise they are added
  * inside a delayed @c UIView animation block.
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startJumpAnimationWithDuration:(float)duration delay:(float)delay;
 
 /**
- * @brief Remove every running animation from the layer, its four child layers, and their sublayers.
+ * Remove every running animation from the layer, its four child layers, and their sublayers.
  * @ghidraAddress 0x1b7848
  */
 - (void)stopAnimation;
@@ -91,35 +91,35 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Properties
 
 /**
- * @brief The resolution-dependent layout scale: half on the compact iPad idiom, unity otherwise.
+ * The resolution-dependent layout scale: half on the compact iPad idiom, unity otherwise.
  * @ghidraAddress 0x1b8170 (getter)
  * @ghidraAddress 0x1b8160 (setter)
  */
 @property(nonatomic, assign) float displayRate;
 
 /**
- * @brief The head child layer, held weakly (retained by its superlayer).
+ * The head child layer, held weakly (retained by its superlayer).
  * @ghidraAddress 0x1b80c4 (getter)
  * @ghidraAddress 0x1b80e4 (setter)
  */
 @property(nonatomic, weak, nullable) CALayer *headLayer;
 
 /**
- * @brief The body child layer, held weakly (retained by its superlayer).
+ * The body child layer, held weakly (retained by its superlayer).
  * @ghidraAddress 0x1b812c (getter)
  * @ghidraAddress 0x1b814c (setter)
  */
 @property(nonatomic, weak, nullable) CALayer *bodyLayer;
 
 /**
- * @brief The right-tail child layer, held weakly (retained by its superlayer).
+ * The right-tail child layer, held weakly (retained by its superlayer).
  * @ghidraAddress 0x1b8090 (getter)
  * @ghidraAddress 0x1b80b0 (setter)
  */
 @property(nonatomic, weak, nullable) CALayer *rightLayer;
 
 /**
- * @brief The left-tail child layer, held weakly (retained by its superlayer).
+ * The left-tail child layer, held weakly (retained by its superlayer).
  * @ghidraAddress 0x1b80f8 (getter)
  * @ghidraAddress 0x1b8118 (setter)
  */

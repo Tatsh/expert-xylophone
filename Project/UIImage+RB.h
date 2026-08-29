@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c UIImage convenience factories and image-processing helpers used across the game: themed
+ * @c UIImage convenience factories and image-processing helpers used across the game: themed
  * and localised named-asset loading (with an @c NSCache texture cache), rectangular cropping, a
  * bottom reflection (an alpha-gradient mask), and a per-channel @c CIColorMatrix tint.
  *
@@ -18,12 +18,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Asset-loading, cropping, and image-processing helpers layered on @c UIImage.
+ * Asset-loading, cropping, and image-processing helpers layered on @c UIImage.
  */
 @interface UIImage (RB)
 
 /**
- * @brief Load the named game asset, consulting and populating the texture cache.
+ * Load the named game asset, consulting and populating the texture cache.
  *
  * Equivalent to @c imageWithName:useCache: with @p useCache set to @c YES.
  * @param name The asset name (without extension).
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable UIImage *)imageWithName:(NSString *)name;
 
 /**
- * @brief Load the named game asset, optionally consulting and populating the texture cache.
+ * Load the named game asset, optionally consulting and populating the texture cache.
  *
  * The asset is resolved in order: the current theme directory, the shared @c "00_Share" directory,
  * the primary and fallback @c lproj bundle images, and finally @c imageNamedWithoutCache:.
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable UIImage *)imageWithName:(NSString *)name useCache:(BOOL)useCache;
 
 /**
- * @brief Load a PNG asset from an image directory under the current theme, retrying under the
+ * Load a PNG asset from an image directory under the current theme, retrying under the
  * device's Retina setting.
  *
  * Tries the Retina variant first when the device is Retina, then the non-Retina variant.
@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                      themaDirectory:(NSString *)themaDirectory;
 
 /**
- * @brief Load a PNG asset from an image directory under the current theme, with a localised
+ * Load a PNG asset from an image directory under the current theme, with a localised
  * @c lproj fallback.
  *
  * Builds @c imageDirectory/themaDirectory/name.png (appending @c "@2x" to @p name when @p retina is
@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
                              retina:(BOOL)retina;
 
 /**
- * @brief Load a localised PNG resource from the main bundle without the texture cache.
+ * Load a localised PNG resource from the main bundle without the texture cache.
  *
  * Resolves the resource through a language (@c ja / @c en) and region (@c JP) fallback chain, first
  * for the idiom Retina-tagged name and then for the plain name.
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable UIImage *)imageNamedWithoutCache:(NSString *)name;
 
 /**
- * @brief Empty the shared themed-image cache.
+ * Empty the shared themed-image cache.
  *
  * Called on a theme change or a memory warning.
  * @ghidraAddress 0x1a1630
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearImageCache;
 
 /**
- * @brief Crop the receiver to a sub-rectangle, honouring its Retina scale.
+ * Crop the receiver to a sub-rectangle, honouring its Retina scale.
  * @param rect The crop rectangle, in points; multiplied by the receiver's scale when it is 2.0 or
  * 3.0.
  * @return The cropped image, preserving the receiver's scale and orientation.
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)clipImageWithRect:(CGRect)rect;
 
 /**
- * @brief Build a bottom reflection of the receiver, faded by a black-to-white greyscale mask.
+ * Build a bottom reflection of the receiver, faded by a black-to-white greyscale mask.
  * @param height The reflection height, in points; multiplied by the receiver's scale on Retina.
  * @return The reflected, gradient-masked image, or @c nil when @p height is zero or the receiver is
  * unavailable.
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)reflectedImageWithHeight:(CGFloat)height;
 
 /**
- * @brief Tint the receiver by a @c CIColorMatrix built from a colour's components.
+ * Tint the receiver by a @c CIColorMatrix built from a colour's components.
  * @param color The tint colour; its red, green, blue, and alpha components scale the matching
  * channels (falling back to a grey scale when the colour is not RGBA).
  * @return The tinted image.
@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)colorMatrixFilterWithColor:(UIColor *)color;
 
 /**
- * @brief Tint the receiver by a per-channel @c CIColorMatrix multiply.
+ * Tint the receiver by a per-channel @c CIColorMatrix multiply.
  * @param red The red-channel multiplier.
  * @param green The green-channel multiplier.
  * @param blue The blue-channel multiplier.

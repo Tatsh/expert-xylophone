@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Colette-theme layer, @c ColetteThemeLayer.
+ * The Colette-theme layer, @c ColetteThemeLayer.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The Colette-theme layer.
+ * The Colette-theme layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * three full-combo atlases and four sprite instancers, drawn beneath the shared background layer,
@@ -28,14 +28,14 @@ class C_SPRITE_INSTANCING_2D;
 class ColetteThemeLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide Colette-theme layer, created on first use.
+     * The process-wide Colette-theme layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x18751c
      */
     static ColetteThemeLayer *shared();
 
     /**
-     * @brief Lazily builds the full-combo effect sprites: loads the three atlases and creates the
+     * Lazily builds the full-combo effect sprites: loads the three atlases and creates the
      * four sprite instancers (attaching each under the background layer's render object, making it
      * visible, binding its atlas for the textured slots, seeding its sprite count, and flagging
      * additive blend on the last slot).
@@ -45,26 +45,26 @@ public:
      */
     void CreateFcEffectSprites();
 
-    /** @brief The number of full-combo sprite instancers the layer builds. */
+    /** The number of full-combo sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 4;
-    /** @brief The number of player sides the result grade display tracks. */
+    /** The number of player sides the result grade display tracks. */
     static constexpr int kSideCount = 2;
 
     /**
-     * @brief Resets the result grade display: seeds the reveal channel, parks the reveal clock,
+     * Resets the result grade display: seeds the reveal channel, parks the reveal clock,
      * arms the display, loads the per-side best-rank flags, and picks the reveal duration.
      * @ghidraAddress 0x187690
      */
     void ResetGradeDisplayState();
 
     /**
-     * @brief Loads the per-side best-rank flags from the active score tracker's play records.
+     * Loads the per-side best-rank flags from the active score tracker's play records.
      * @ghidraAddress 0x187710
      */
     void LoadBestRankFlags();
 
     /**
-     * @brief Begins the result grade channel's fade-out, easing it to zero over @p flDuration and
+     * Begins the result grade channel's fade-out, easing it to zero over @p flDuration and
      *        snapping to zero immediately when the duration is non-positive.
      * @param flDuration The fade duration.
      * @ghidraAddress 0x18774c
@@ -72,14 +72,14 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Advances the grade/full-combo reveal channel by @p flDelta.
+     * Advances the grade/full-combo reveal channel by @p flDelta.
      * @param flDelta The frame's elapsed time.
      * @ghidraAddress 0x18795c
      */
     void AdvanceFadeInterp(float flDelta);
 
     /**
-     * @brief Whether the result grade display is drawing (the theme intro has finished animating).
+     * Whether the result grade display is drawing (the theme intro has finished animating).
      * @return @c true once the grade display is visible.
      */
     bool IsGradeVisible() const {
@@ -87,7 +87,7 @@ public:
     }
 
     /**
-     * @brief Advances and re-emits the full-combo result-grade effect for the frame.
+     * Advances and re-emits the full-combo result-grade effect for the frame.
      *
      * Caches the viewport size, clears the sprite batches, and advances the reveal channel. While
      * the reveal is armed it advances the reveal clock (clearing the clock-active flag once it
@@ -102,7 +102,7 @@ public:
     void Update(float flDelta);
 
     /**
-     * @brief Sets the side count the grade display runs with.
+     * Sets the side count the grade display runs with.
      * @param nSideCount The side count (one runs the display single-side).
      */
     void SetSideCount(int nSideCount) {
@@ -111,7 +111,7 @@ public:
 
 private:
     /**
-     * @brief Emits one full-combo quad into its sprite batch, if that batch still has a free slot.
+     * Emits one full-combo quad into its sprite batch, if that batch still has a free slot.
      *
      * Resolves the sprite slot's descriptor (its batch kind, anchor, pixel size, and atlas frame),
      * maps the batch kind to one of the layer's four instancers, and — while that instancer is
@@ -135,7 +135,7 @@ private:
                       int nAlpha);
 
     /**
-     * @brief Emits the six curve-animated "miss"/lower-rank full-combo sprites plus their banner
+     * Emits the six curve-animated "miss"/lower-rank full-combo sprites plus their banner
      * for one player side.
      *
      * Lays out the six sprites along a fixed row of X columns at a shared base Y (the layout height
@@ -150,7 +150,7 @@ private:
     void EmitFcMissSprites(int nSide);
 
     /**
-     * @brief Emits the seven curve-animated rank-medal sprites for one player side.
+     * Emits the seven curve-animated rank-medal sprites for one player side.
      *
      * Only runs while the grade-reveal clock is inside the medals' window; on the first such frame
      * it plays the reveal sound once. Each of the seven medals is placed at its fixed column and
@@ -165,7 +165,7 @@ private:
     void EmitFcRankSprites(int nSide, int nColorVariant);
 
     /**
-     * @brief Emits the nine curve-animated result/high-rank full-combo sprites for one player side.
+     * Emits the nine curve-animated result/high-rank full-combo sprites for one player side.
      *
      * Each of the nine sprites is placed at its fixed X column with its Y driven by a per-sprite
      * position curve (built once with the layout height folded in), and sized and faded by its own
@@ -178,7 +178,7 @@ private:
     void EmitFcResultSprites(int nSide);
 
     /**
-     * @brief Constructs the layer, chaining the base constructor and seeding its own state.
+     * Constructs the layer, chaining the base constructor and seeding its own state.
      * @ghidraAddress 0x187484
      */
     ColetteThemeLayer();

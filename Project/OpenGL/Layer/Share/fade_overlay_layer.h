@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The full-screen fade overlay layer, @c FadeOverlayLayer.
+ * The full-screen fade overlay layer, @c FadeOverlayLayer.
  */
 
 #pragma once
@@ -13,7 +13,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The full-screen fade overlay: a black quad whose alpha animates between transparent and
+ * The full-screen fade overlay: a black quad whose alpha animates between transparent and
  * opaque to fade the screen in and out.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
@@ -24,35 +24,35 @@ class C_SPRITE_INSTANCING_2D;
 class FadeOverlayLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide fade overlay layer, created on first use.
+     * The process-wide fade overlay layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x17f9c0
      */
     static FadeOverlayLayer *shared();
 
     /**
-     * @brief Lazily creates the overlay's sprite instancer on first use: creates a one-quad
+     * Lazily creates the overlay's sprite instancer on first use: creates a one-quad
      * instancer, registers it in the global scene tree, makes it visible, and seeds its order.
      * @ghidraAddress 0x17fa24
      */
     void EnsureInstancer();
 
     /**
-     * @brief Begins the fade-in animation, easing the overlay to fully opaque over @p flDuration.
+     * Begins the fade-in animation, easing the overlay to fully opaque over @p flDuration.
      * @param flDuration The fade duration; a non-positive value snaps to opaque immediately.
      * @ghidraAddress 0x17fa78
      */
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Begins the fade-out animation, easing the overlay to transparent over @p flDuration.
+     * Begins the fade-out animation, easing the overlay to transparent over @p flDuration.
      * @param flDuration The fade duration; a non-positive value snaps to transparent immediately.
      * @ghidraAddress 0x17faa0
      */
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Advances the fade tween by one frame and draws the full-screen quad at the current
+     * Advances the fade tween by one frame and draws the full-screen quad at the current
      * alpha, scaled to the game-system viewport.
      * @param flDelta The elapsed frame time.
      * @ghidraAddress 0x17fac0
@@ -60,7 +60,7 @@ public:
     void Render(float flDelta);
 
     /**
-     * @brief The overlay's current fade alpha, in the unit interval.
+     * The overlay's current fade alpha, in the unit interval.
      * @return The current fade alpha, in the unit interval.
      * @ghidraAddress 0x17fbf8
      */
@@ -70,7 +70,7 @@ public:
 
 private:
     /**
-     * @brief Emits one black full-screen quad into the instancer at the current slot: clears its
+     * Emits one black full-screen quad into the instancer at the current slot: clears its
      * position and anchor, sets its size to @p size, sets its colour to black at @p nAlpha, and
      * bumps the slot count.
      * @param size The quad size (the viewport width and height).

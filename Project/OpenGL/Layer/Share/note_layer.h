@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The note particle layer, @c NoteLayer.
+ * The note particle layer, @c NoteLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The shared particle active index.
+ * The shared particle active index.
  *
  * It is reset when the layer is constructed and advanced as particles spawn; the spawners scan the
  * pool from it for a free slot, and @c NoteLayer::Update resets it once the frame's particles have
@@ -25,7 +25,7 @@ class C_SPRITE_INSTANCING_2D;
 extern int g_nParticleActiveIndex;
 
 /**
- * @brief The note particle layer.
+ * The note particle layer.
  *
  * A process-wide singleton, built on first access, owning a pooled-particle system drawn through
  * three sprite batches: a 256-slot particle pool, the per-batch instancers, counts, and capacities,
@@ -37,15 +37,15 @@ extern int g_nParticleActiveIndex;
  */
 class NoteLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of pooled particles. */
+    /** The number of pooled particles. */
     static constexpr int kParticleCount = 256;
-    /** @brief The number of sprite batches the particles are drawn through. */
+    /** The number of sprite batches the particles are drawn through. */
     static constexpr int kBatchCount = 3;
-    /** @brief The number of scrolling animation phases the layer advances each frame. */
+    /** The number of scrolling animation phases the layer advances each frame. */
     static constexpr int kScrollPhaseCount = 3;
 
     /**
-     * @brief Advances the scroll phases and emits every live particle's sprites for the frame.
+     * Advances the scroll phases and emits every live particle's sprites for the frame.
      *
      * Advances the three scrolling animation phases (each wrapped into its range), derives the
      * frame's rotation and a triangle-wave global fade, and reads the play colour to pick the two
@@ -59,7 +59,7 @@ public:
     void Update(float flDelta);
 
     /**
-     * @brief Emits one particle sprite of the given type into its batch, if the batch has room.
+     * Emits one particle sprite of the given type into its batch, if the batch has room.
      *
      * Looks the type up in the descriptor table for its anchor, size, and UV-table index and the
      * per-type batch index, then appends a sprite at @p pPosition with the given scale (applied to
@@ -76,14 +76,14 @@ public:
         int nType, const S_VECTOR2 *pPosition, int nAlpha, float flScale, float flRotation);
 
     /**
-     * @brief The process-wide note particle layer, created on first use.
+     * The process-wide note particle layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x188904
      */
     static NoteLayer *shared();
 
     /**
-     * @brief Builds the three gm_parts1 particle sprite batches on first use.
+     * Builds the three gm_parts1 particle sprite batches on first use.
      *
      * Loads the atlas, creates each batch sized to its seeded capacity, attaches them under the
      * background layer, makes them visible, flags additive blend on the outer two, seeds two
@@ -94,7 +94,7 @@ public:
     void CreateSpriteBatches();
 
     /**
-     * @brief Spawns a particle from the pool with a position, scale, and kind.
+     * Spawns a particle from the pool with a position, scale, and kind.
      *
      * Scans the pool from the shared active index for a free slot; on finding one it stores the
      * particle kind (7 for @p nType 1, else 6), position, and scale, and advances the active index.
@@ -109,7 +109,7 @@ public:
     void SpawnParticle(float flX, float flY, float flScaleX, float flScaleY, int nType);
 
     /**
-     * @brief Spawns a long-note head/tail particle into the pool with a resolved sprite kind and
+     * Spawns a long-note head/tail particle into the pool with a resolved sprite kind and
      * rotation.
      *
      * Resolves the particle sprite kind from the note colour and end type (a head, @p nEndType 0,
@@ -145,24 +145,24 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the header and particle
+     * Constructs the layer: chains the base constructor, clears the header and particle
      * pool, resets the shared active index, and seeds each sprite batch's capacity from the seed
      * tables.
      * @ghidraAddress 0x188850
      */
     NoteLayer();
 
-    /** @brief One pooled particle (28 bytes): its active flag, kind, position, rotation, and scale.
+    /** One pooled particle (28 bytes): its active flag, kind, position, rotation, and scale.
      */
     struct Particle {
-        bool bActive = {}; // +0x00: whether the slot holds a live particle.
+        bool bActive = {}; /*!< Whether the slot holds a live particle. +0x00 */
         // unsigned char aReserved01[3] = {}; // +0x01
-        int nKind = {};        // +0x04: the particle kind (0 through 11).
-        float flX = {};        // +0x08: the particle X.
-        float flY = {};        // +0x0c: the particle Y.
-        float flRotation = {}; // +0x10: the particle rotation, in radians.
-        float flScaleX = {};   // +0x14: the particle X scale.
-        float flScaleY = {};   // +0x18: the particle Y scale.
+        int nKind = {};        /*!< The particle kind (0 through 11). +0x04 */
+        float flX = {};        /*!< The particle X. +0x08 */
+        float flY = {};        /*!< The particle Y. +0x0c */
+        float flRotation = {}; /*!< The particle rotation, in radians. +0x10 */
+        float flScaleX = {};   /*!< The particle X scale. +0x14 */
+        float flScaleY = {};   /*!< The particle Y scale. +0x18 */
     };
 
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the particle atlas.

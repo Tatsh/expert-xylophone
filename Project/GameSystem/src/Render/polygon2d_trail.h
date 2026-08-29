@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The 2D polygon-mesh "trail" (ribbon), @c Polygon2dTrail.
+ * The 2D polygon-mesh "trail" (ribbon), @c Polygon2dTrail.
  */
 
 #pragma once
@@ -12,7 +12,7 @@ class C_DRAW_POLYGON_2D;
 } // namespace ne
 
 /**
- * @brief A polygon-mesh trail (a ribbon strip that follows a moving point).
+ * A polygon-mesh trail (a ribbon strip that follows a moving point).
  *
  * Holds the strip's vertex list, its cached total length, and the mesh node that draws it. The
  * trailing @c // +0xNN comments document the original member offsets for reference only. The vertex
@@ -21,7 +21,7 @@ class C_DRAW_POLYGON_2D;
 class Polygon2dTrail {
 public:
     /**
-     * @brief Constructs a trail over a caller-owned vertex buffer, clearing its derived state.
+     * Constructs a trail over a caller-owned vertex buffer, clearing its derived state.
      *
      * Records the strip's vertex count and the buffer that holds its points, and zeroes the cached
      * length and the mesh pointer; @c Init later builds the mesh from them. The binary inlines this
@@ -33,14 +33,14 @@ public:
     Polygon2dTrail(int nVertexCount, S_VECTOR2 *pVertices);
 
     /**
-     * @brief Builds the trail's mesh: creates the polygon-mesh node, registers it, seeds every
+     * Builds the trail's mesh: creates the polygon-mesh node, registers it, seeds every
      * vertex to the strip's first point (white, zero alpha), and caches the strip's total length.
      * @ghidraAddress 0x11c744
      */
     void Init();
 
     /**
-     * @brief Advances the trail's visible head along the strip by one frame's worth of travel.
+     * Advances the trail's visible head along the strip by one frame's worth of travel.
      *
      * Adds @p flDeltaTime to the reveal progress (finishing and deactivating once it passes the
      * reveal length, or waiting while it is still negative), then walks the strip's segments from
@@ -53,7 +53,7 @@ public:
     void Update(int nDeltaTime);
 
     /**
-     * @brief Begins the trail's reveal animation over @p nDuration, after a @p nStartOffset delay.
+     * Begins the trail's reveal animation over @p nDuration, after a @p nStartOffset delay.
      *
      * Activates the trail, seeds the reveal progress to @c -nStartOffset (so the reveal begins once
      * the progress climbs back to zero) and the reveal length to @p nDuration, resets the head-walk
@@ -65,7 +65,7 @@ public:
     void Start(int nDuration, int nStartOffset);
 
     /**
-     * @brief Resets the trail to its idle, hidden state.
+     * Resets the trail to its idle, hidden state.
      *
      * Deactivates the trail and clears every mesh vertex back to the strip's first point in
      * transparent white, leaving no visible ribbon.
@@ -74,7 +74,7 @@ public:
     void Reset();
 
     /**
-     * @brief Hides the trail's mesh node without disturbing its vertices (clears the mesh's visible
+     * Hides the trail's mesh node without disturbing its vertices (clears the mesh's visible
      * flag). Used by the owner's idle per-frame path.
      */
     void HideMesh();

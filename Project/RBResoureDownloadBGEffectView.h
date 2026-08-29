@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The animated background-effect view shown behind the resource-download flow for the wide
+ * The animated background-effect view shown behind the resource-download flow for the wide
  * iPad idiom.
  *
  * @c RBResourceDownloadViewController creates one, calls @c setupView to build its
@@ -17,7 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Animated rainbow-and-particle background for the resource-download screen.
+ * Animated rainbow-and-particle background for the resource-download screen.
  *
  * A concrete @c RBMenuBGEffectView that seeds the inherited rainbow and ring image base paths,
  * then populates the effect with @c RBResourceDownloadBGEffectPartView particle layers.
@@ -25,12 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBResoureDownloadBGEffectView : RBMenuBGEffectView
 
 /**
- * @brief Build the rainbow layer and the particle layers for the current bounds.
+ * Build the rainbow layer and the particle layers for the current bounds.
  * @ghidraAddress 0x19c40
  */
 - (void)setupView;
 /**
- * @brief Create and attach one @c RBResourceDownloadBGEffectPartView per effect slot.
+ * Create and attach one @c RBResourceDownloadBGEffectPartView per effect slot.
  * @ghidraAddress 0x19c90
  */
 - (void)setupParticle;

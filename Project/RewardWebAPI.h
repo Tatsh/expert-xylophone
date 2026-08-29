@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Reconstructed interface for the Applilink reward SDK's @c RewardWebAPI transport.
+ * Reconstructed interface for the Applilink reward SDK's @c RewardWebAPI transport.
  *
  * @c RewardWebAPI is the reward network's high-level web API. Every method builds a parameter
  * dictionary and dispatches a single asynchronous request through
@@ -19,12 +19,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Reward network high-level web API.
+ * Reward network high-level web API.
  */
 @interface RewardWebAPI : NSObject
 
 /**
- * @brief Post the application-install event at a priority.
+ * Post the application-install event at a priority.
  *
  * Builds the @c appli_id and UDID parameters, signs them, and posts to
  * @c /reward/app/install/regist.php. On a successful response the priority-@c 0 path retries at
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   callback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Check whether the reward login session is still valid.
+ * Check whether the reward login session is still valid.
  *
  * When a reward login is not needed the callback is invoked immediately with @c NO and no error;
  * otherwise it queries @c /reward/auth/checkLoginStatus.php and reports the @c login_status flag.
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)checkLoginWithBlock:(nullable void (^)(BOOL valid, NSError *_Nullable error))block;
 
 /**
- * @brief Start a reward login for a user identifier at a priority.
+ * Start a reward login for a user identifier at a priority.
  *
  * Builds the @c user_id and UDID parameters, signs them, and posts to @c /reward/auth/login.php. On
  * a successful response the priority-@c 0 path retries at priority @c 1 when three-kind UDIDs are
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                     callback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Fetch the advertisable application list for a campaign at an offset.
+ * Fetch the advertisable application list for a campaign at an offset.
  *
  * Requests the JSON-format @c /reward/app/index.php list. The shipped build sends only the
  * @c format parameter and ignores @p campaignId, @p company, @p offset, and @p limit.
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  NSError *_Nullable error))callback;
 
 /**
- * @brief Fetch the advertisable application-identifier list for a list type.
+ * Fetch the advertisable application-identifier list for a list type.
  *
  * Queries @c /reward/app/install/appliid/index.php with the @c type parameter.
  * @param type The list type; @c 1 requests every identifier, @c 2 the install-post list.
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                NSError *_Nullable error))callback;
 
 /**
- * @brief Fetch the all-install flag.
+ * Fetch the all-install flag.
  *
  * Queries the JSON-format @c /reward/app/checkAllInstall.php; on success caches the flag under
  * @c appInstallFlg and reports it, or @c -1 when the flag is absent.
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      NSError *_Nullable error))callback;
 
 /**
- * @brief Fetch the pre-info display flag.
+ * Fetch the pre-info display flag.
  *
  * Queries the JSON-format @c /reward/app/preInfoForDisplay.php; on success caches the flag under
  * @c appInstallFlg and reports it, or @c -1 when the flag is absent.
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)getPreInfoWithCallback:(nullable void (^)(NSInteger flg, NSError *_Nullable error))callback;
 
 /**
- * @brief Post the list of installed companion applications to the reward network.
+ * Post the list of installed companion applications to the reward network.
  *
  * Posts up to the first ten identifiers to @c /reward/app/install/report/regist.php; on success any
  * remaining identifiers are posted recursively.
@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    callback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
- * @brief Fetch the reward banner info.
+ * Fetch the reward banner info.
  *
  * Queries @c /reward/banner/detail.php with the user-agent parameters.
  * @param block Invoked with the banner info dictionary and an optional error.
@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                NSError *_Nullable error))block;
 
 /**
- * @brief Sign a parameter dictionary in place.
+ * Sign a parameter dictionary in place.
  *
  * Sorts the keys case-insensitively, joins each @c key=value pair (expanding array values into
  * repeated pairs), appends the @c ApplilinkCore.signatureKey, takes the SHA-256 of the
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setSignatureWithParameters:(nullable NSMutableDictionary *)parameters;
 
 /**
- * @brief Store a keyed-archived value in @c NSUserDefaults with an expiry.
+ * Store a keyed-archived value in @c NSUserDefaults with an expiry.
  * @param key The user-defaults key.
  * @param value The value to archive.
  * @param expiration The lifetime, in seconds, from now; @c 0 stores a one-second lifetime.

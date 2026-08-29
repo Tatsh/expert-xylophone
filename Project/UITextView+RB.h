@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief @c UITextView first-responder suppression.
+ * @c UITextView first-responder suppression.
  *
  * The application uses text views only to display
  * scrollable prose, never to accept input, so the category refuses first-responder status and the
@@ -18,7 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief First-responder suppression for every text view in the application.
+ * First-responder suppression for every text view in the application.
  *
  * The category adds no state and overrides a single @c UIResponder query, so it takes effect on
  * every @c UITextView the application creates and the keyboard never appears.
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UITextView (RB)
 
 /**
- * @brief Whether the receiver will accept first-responder status.
+ * Whether the receiver will accept first-responder status.
  * @return Always @c NO.
  * @ghidraAddress 0x366f0
  */

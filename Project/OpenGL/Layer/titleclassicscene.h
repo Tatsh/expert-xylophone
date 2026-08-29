@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The theme-0 title-screen scene layer, @c TitleClassicScene.
+ * The theme-0 title-screen scene layer, @c TitleClassicScene.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ class C_SPRITE_INSTANCING_2D;
 namespace rb {
 
 /**
- * @brief The theme-0 (Classic) title-screen scene layer: the animated title/logo screen shown
+ * The theme-0 (Classic) title-screen scene layer: the animated title/logo screen shown
  * before the music list.
  *
  * A @c rb::BaseScene-derived per-frame task created by @c CreateTitleLayerForTheme for theme 0. Its
@@ -32,17 +32,17 @@ namespace rb {
  */
 class TitleClassicScene : public BaseScene {
 public:
-    /** @brief The number of cached title textures the layer builds. */
+    /** The number of cached title textures the layer builds. */
     static constexpr int kTextureCount = 7;
-    /** @brief The number of sprite instancers the layer builds. */
+    /** The number of sprite instancers the layer builds. */
     static constexpr int kSpriteSlotCount = 8;
-    /** @brief The number of scrolling star layers the title animates. */
+    /** The number of scrolling star layers the title animates. */
     static constexpr int kStarLayerCount = 2;
-    /** @brief The number of counter-rotating rings the title animates. */
+    /** The number of counter-rotating rings the title animates. */
     static constexpr int kRingCount = 2;
 
     /**
-     * @brief Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
+     * Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
      * zero-clears the presentation state (seeding the fade base to 1.0 and the trailing index to
      * -1).
      * @ghidraAddress 0x1514b4
@@ -50,7 +50,7 @@ public:
     TitleClassicScene();
 
     /**
-     * @brief Destroys the layer: releases its cached textures and sprite instancers, then runs the
+     * Destroys the layer: releases its cached textures and sprite instancers, then runs the
      * task-node base destructor.
      *
      * The binary emits a non-deleting destructor body (@c 0x151580) and a deleting variant
@@ -61,7 +61,7 @@ public:
     ~TitleClassicScene() override;
 
     /**
-     * @brief The per-frame task callback: dispatches on the layer state.
+     * The per-frame task callback: dispatches on the layer state.
      *
      * State 0 loads the title resources and starts the BGM, state 1 waits for the start music,
      * state 2 renders and animates the title, and state 3 finishes and opens the music list.
@@ -72,26 +72,26 @@ public:
 
 private:
     /**
-     * @brief Releases the cached textures and flags each owned sprite instancer for the scene
+     * Releases the cached textures and flags each owned sprite instancer for the scene
      * walker to delete.
      * @ghidraAddress 0x1515cc
      */
     void ReleaseResources();
 
     /**
-     * @brief State 0: loads the title textures and sprite instancers and starts the title BGM.
+     * State 0: loads the title textures and sprite instancers and starts the title BGM.
      * @ghidraAddress 0x1516bc
      */
     void LoadResources();
 
     /**
-     * @brief State 1: waits for the start music, then advances to the render state.
+     * State 1: waits for the start music, then advances to the render state.
      * @ghidraAddress 0x1518c8
      */
     void StartMusic();
 
     /**
-     * @brief State 2: renders and animates the title screen for the frame.
+     * State 2: renders and animates the title screen for the frame.
      *
      * Clears the eight instancers, ticks the start-prompt, star, and ring clocks, emits the whole
      * title screen (background, start prompt, two scrolling star layers, two counter-rotating
@@ -105,20 +105,20 @@ private:
     void RenderFrame(int nElapsedMs);
 
     /**
-     * @brief State 3: finishes the title screen and opens the music list.
+     * State 3: finishes the title screen and opens the music list.
      * @ghidraAddress 0x152450
      */
     void FinishAndOpenList();
 
     /**
-     * @brief Advances the title fade tween by @p nDeltaFrames.
+     * Advances the title fade tween by @p nDeltaFrames.
      * @param nDeltaFrames The elapsed frames this tick.
      * @ghidraAddress 0x152548
      */
     void AdvanceFadeValue(int nDeltaFrames);
 
     /**
-     * @brief Advances the hidden-swipe sequence on a directional swipe or secret-button tap, firing
+     * Advances the hidden-swipe sequence on a directional swipe or secret-button tap, firing
      * the secret sound effect and latching the completion flag when the sequence completes.
      * @param iSwipeEvent The swipe or button event id.
      * @ghidraAddress 0x152cc8
@@ -126,7 +126,7 @@ private:
     void AdvanceSwipeState(int iSwipeEvent);
 
     /**
-     * @brief Emits a full-texture quad (such as the background) into a title sprite instancer slot.
+     * Emits a full-texture quad (such as the background) into a title sprite instancer slot.
      *
      * Resolves the instancer for the sprite kind and, while it has room, derives the quad's anchor,
      * size, and UV span from the bound texture's image size, allocated size, and retina scale, then
@@ -146,7 +146,7 @@ private:
                                        float flRotation);
 
     /**
-     * @brief Emits one title-screen sprite into its instancer slot.
+     * Emits one title-screen sprite into its instancer slot.
      *
      * Sprite kind 0 draws a full-texture quad (as @c RenderTitleBackgroundFullQuad does). Kinds 1
      * through 8 take their anchor, size, and UV rectangle from the per-kind title layout table for
@@ -168,7 +168,7 @@ private:
                          float flRotation);
 
     /**
-     * @brief Emits a plain coloured quad (no atlas lookup) into a title sprite instancer slot.
+     * Emits a plain coloured quad (no atlas lookup) into a title sprite instancer slot.
      *
      * Resolves the instancer for the quad kind and, while it has room, writes the caller's
      * position, size, and anchor with a solid grey-scale tint modulated by the alpha, then bumps
@@ -219,13 +219,13 @@ private:
 } // namespace rb
 
 /**
- * @brief The capacity (maximum sprite count) of each of the eight title-screen sprite instancers.
+ * The capacity (maximum sprite count) of each of the eight title-screen sprite instancers.
  * @ghidraAddress 0x309454
  */
 extern const unsigned int g_aTitleSpriteCapacity[rb::TitleClassicScene::kSpriteSlotCount];
 
 /**
- * @brief The cached-texture index each of the eight title-screen instancers binds (slot 7 binds
+ * The cached-texture index each of the eight title-screen instancers binds (slot 7 binds
  * none).
  * @ghidraAddress 0x309384
  */

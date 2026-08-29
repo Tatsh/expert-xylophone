@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The device hardware-identity singleton.
+ * The device hardware-identity singleton.
  *
  * It resolves the running device's machine model (via
  * @c sysctlbyname("hw.machine")) to an enumerated hardware type and exposes both the raw model
@@ -14,7 +14,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- * @brief The enumerated device hardware types, indexed against the @c hw.machine model table.
+ * The enumerated device hardware types, indexed against the @c hw.machine model table.
  *
  * Each case corresponds to one @c hw.machine string; @c SystemHardwareTypeUnknown is stored when no
  * known model matches.
@@ -40,12 +40,12 @@ typedef NS_ENUM(NSInteger, SystemHardwareType) {
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A singleton that reports the running device's hardware model and type.
+ * A singleton that reports the running device's hardware model and type.
  */
 @interface SystemHardware : NSObject
 
 /**
- * @brief The raw @c hw.machine model string of the running device (for example @c iPhone3,1).
+ * The raw @c hw.machine model string of the running device (for example @c iPhone3,1).
  *
  * This is populated the first time the hardware is resolved; it is @c nil until then.
  * @ghidraAddress 0x18d40 (getter)
@@ -54,14 +54,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSString *hardwareName;
 
 /**
- * @brief Returns the shared hardware singleton, creating it on first use.
+ * Returns the shared hardware singleton, creating it on first use.
  * @return The shared @c SystemHardware instance.
  * @ghidraAddress 0x18b14
  */
 + (instancetype)getInstance;
 
 /**
- * @brief Resolves the device model by querying @c sysctlbyname("hw.machine") and matching it
+ * Resolves the device model by querying @c sysctlbyname("hw.machine") and matching it
  * against the known model table, caching both the model string and the derived hardware type.
  *
  * This runs only when the hardware type is still unresolved.
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)initHardware;
 
 /**
- * @brief Returns the device's hardware type, resolving it lazily on first access.
+ * Returns the device's hardware type, resolving it lazily on first access.
  * @return The matched @c SystemHardwareType, or @c SystemHardwareTypeUnknown when no known model
  * matches.
  * @ghidraAddress 0x18cb0
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SystemHardwareType)getHardwareType;
 
 /**
- * @brief Returns the device's raw @c hw.machine model string, resolving it lazily on first access.
+ * Returns the device's raw @c hw.machine model string, resolving it lazily on first access.
  * @return The model string.
  * @ghidraAddress 0x18cf4
  */

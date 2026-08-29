@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The base popup view.
+ * The base popup view.
  *
  * It is a @c UIControl subclass that fills its host view with a dimmed
  * backdrop and fades itself in and out. A concrete popup subclass builds its own chrome inside the
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Base popup view presented over another view, dimming it and fading itself in and out.
+ * Base popup view presented over another view, dimming it and fading itself in and out.
  *
  * The control fills its superview and is dismissed by a touch anywhere on the dimmed backdrop.
  * Subclasses lay their own content out inside @c baseView and @c contentView, then present the
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBPopupView : UIControl
 
 /**
- * @brief Create the popup with the given frame.
+ * Create the popup with the given frame.
  *
  * Calls through to @c super, clears the backdrop colour, makes the control fill and follow its
  * superview, and registers the dismiss handler for a touch-up on the backdrop.
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Fade the popup in, marking it animating for the duration of the transition.
+ * Fade the popup in, marking it animating for the duration of the transition.
  *
  * Does nothing while a show or hide animation is already running.
  * @ghidraAddress 0x19b8fc
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showAnimation;
 
 /**
- * @brief Fade the popup out with the cancel sound effect, then remove it from its superview.
+ * Fade the popup out with the cancel sound effect, then remove it from its superview.
  *
  * Does nothing while a show or hide animation is already running.
  * @ghidraAddress 0x19ba70
@@ -52,24 +52,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideAnimation;
 
 /**
- * @brief Touch-up handler that dismisses the popup.
+ * Touch-up handler that dismisses the popup.
  * @param sender The control that sent the action.
  * @ghidraAddress 0x19bc00
  */
 - (void)tap:(nullable id)sender;
 
 /**
- * @brief The base panel that hosts the popup chrome a subclass builds.
+ * The base panel that hosts the popup chrome a subclass builds.
  */
 @property(strong, nonatomic, nullable) UIView *baseView;
 
 /**
- * @brief The content view into which a subclass lays its own content.
+ * The content view into which a subclass lays its own content.
  */
 @property(strong, nonatomic, nullable) UIView *contentView;
 
 /**
- * @brief Whether a show or hide animation is currently running.
+ * Whether a show or hide animation is currently running.
  */
 @property(assign, nonatomic) BOOL animating;
 

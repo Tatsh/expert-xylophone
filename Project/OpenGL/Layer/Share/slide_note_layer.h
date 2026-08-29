@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The slide-note render layer, @c SlideNoteLayer.
+ * The slide-note render layer, @c SlideNoteLayer.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief One slide-note trail record: the per-note trail state the layer animates and draws.
+ * One slide-note trail record: the per-note trail state the layer animates and draws.
  *
  * A 44-byte record seeded by @c Create with the trail's colour, its two endpoints, and its
  * per-endpoint flags. The trailing @c // +0xNN comments document the byte offsets within the
@@ -44,7 +44,7 @@ struct SlideNoteTrail {
 };
 
 /**
- * @brief The slide-note render layer: animates and draws the slide (long-note) trails.
+ * The slide-note render layer: animates and draws the slide (long-note) trails.
  *
  * A @c PlayFieldLayerBase subclass holding three sprite batches and a pool of slide-trail records.
  * The trailing @c // +0xNN comments document the original member offsets for reference only; the
@@ -53,25 +53,25 @@ struct SlideNoteTrail {
  */
 class SlideNoteLayer : public PlayFieldLayerBase {
 public:
-    /** @brief The number of sprite batches the layer owns. */
+    /** The number of sprite batches the layer owns. */
     static constexpr int kBatchCount = 3;
-    /** @brief The number of slide-trail records the layer pools. */
+    /** The number of slide-trail records the layer pools. */
     static constexpr int kTrailCount = 80;
     /**
-     * @brief The number of player colours a trail may take (the valid colour range is
+     * The number of player colours a trail may take (the valid colour range is
      * @c [0, kPlayerColorMax)).
      */
     static constexpr int kPlayerColorMax = 2;
 
     /**
-     * @brief Returns the slide-note layer singleton, constructing it on first use.
+     * Returns the slide-note layer singleton, constructing it on first use.
      * @return The shared slide-note layer.
      * @ghidraAddress 0x95a90
      */
     static SlideNoteLayer *shared();
 
     /**
-     * @brief Spawns a slide-note trail into the pool, seeding its colour, endpoints, and flags.
+     * Spawns a slide-note trail into the pool, seeding its colour, endpoints, and flags.
      *
      * Claims the first inactive pooled trail from the shared active-trail cursor and seeds it: the
      * kind, colour, the animated and target endpoints, the per-trail flag bytes, the alpha/scale
@@ -105,7 +105,7 @@ public:
                 unsigned char nFlagE);
 
     /**
-     * @brief Advances and renders every active slide trail for one frame.
+     * Advances and renders every active slide trail for one frame.
      *
      * Resets the batch counts, advances the shared pulse clock (wrapped to its period) and the
      * 0-to-29 frame counter (from which it derives a triangular fade factor and a scale-pulse
@@ -121,7 +121,7 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Constructs (and resets) the layer: chains the base constructor, clears the built flag
+     * Constructs (and resets) the layer: chains the base constructor, clears the built flag
      * and the invalid-clock sentinel, zeroes every slide-trail record, clears the three sprite
      * batches and their counts, and resets the shared active-trail count.
      * @ghidraAddress 0x95a18
@@ -129,7 +129,7 @@ public:
     SlideNoteLayer();
 
     /**
-     * @brief Builds the three slide-note sprite batches under the background render object (once).
+     * Builds the three slide-note sprite batches under the background render object (once).
      *
      * Loads the gm_parts1 atlas, creates each batch, attaches it, makes it visible, binds the
      * atlas, and resets its count; batches 0 and 2 use additive blending, and on the newer hardware
@@ -139,7 +139,7 @@ public:
     void BuildSprites();
 
     /**
-     * @brief Emits one trail sprite of the given type into its batch.
+     * Emits one trail sprite of the given type into its batch.
      *
      * Looks up the sprite type's batch, anchor, size, and UV-table index from the layout table,
      * then appends a sprite at @p pPosition with the given alpha, rotation, and scale. The
@@ -177,7 +177,7 @@ private:
 };
 
 /**
- * @brief The number of active slide-note trails, reset by the layer constructor.
+ * The number of active slide-note trails, reset by the layer constructor.
  * @ghidraAddress 0x3dc650
  */
 extern int g_nActiveSlideTrailCount;

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The tutorial-progression manager singleton.
+ * The tutorial-progression manager singleton.
  *
  * It tracks which guided tutorial the player is
  * currently in and how far they have advanced, expressed as a single monotonically increasing
@@ -22,7 +22,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The tutorial-progression status codes.
+ * The tutorial-progression status codes.
  *
  * The value is a single cursor that walks forward through the guided tutorials. The music-select
  * walkthrough occupies the low range, the in-play walkthrough the next range, and the customise
@@ -49,14 +49,14 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 };
 
 /**
- * @brief The tutorial-progression manager singleton.
+ * The tutorial-progression manager singleton.
  */
 @interface RBTutorialManager : NSObject
 
 #pragma mark Singleton
 
 /**
- * @brief The shared tutorial manager, created on first use with its status set to
+ * The shared tutorial manager, created on first use with its status set to
  *        @c RBTutorialStatusNone.
  * @ghidraAddress 0x356b8
  * @return The shared @c RBTutorialManager.
@@ -66,19 +66,19 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 #pragma mark Status queries
 
 /**
- * @brief Whether the player is inside any tutorial, taken from the singleton's @c isTutorial flag.
+ * Whether the player is inside any tutorial, taken from the singleton's @c isTutorial flag.
  * @ghidraAddress 0x35724
  * @return @c YES while a tutorial is running.
  */
 + (BOOL)isTutorial;
 /**
- * @brief The singleton's current tutorial status code.
+ * The singleton's current tutorial status code.
  * @ghidraAddress 0x35d6c
  * @return The current @c RBTutorialStatus.
  */
 + (RBTutorialStatus)getCurrentStatus;
 /**
- * @brief Map a tutorial status through the persisted status table.
+ * Map a tutorial status through the persisted status table.
  * @param status The tutorial status to look up.
  * @return The persisted status recorded for @p status.
  * @ghidraAddress 0x35cfc
@@ -88,20 +88,20 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 #pragma mark Music-select tutorial
 
 /**
- * @brief Whether the music-select walkthrough still needs to be shown: only while the player has no
+ * Whether the music-select walkthrough still needs to be shown: only while the player has no
  *        recorded plays and @c RBUserSettingData has not stored the music-select "seen" flag.
  * @ghidraAddress 0x3578c
  * @return @c YES when the walkthrough should start.
  */
 + (BOOL)needStartTutorialMusicselect;
 /**
- * @brief Begin the music-select walkthrough by advancing the status to
+ * Begin the music-select walkthrough by advancing the status to
  *        @c RBTutorialStatusMusicSelectStart.
  * @ghidraAddress 0x35820
  */
 + (void)startTutorialMusicselect;
 /**
- * @brief Whether the cursor is currently within the music-select walkthrough range.
+ * Whether the cursor is currently within the music-select walkthrough range.
  * @ghidraAddress 0x35838
  * @return @c YES while in the music-select walkthrough.
  */
@@ -110,14 +110,14 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 #pragma mark In-play tutorial
 
 /**
- * @brief Whether the in-play walkthrough still needs to be shown: only while the player has no
+ * Whether the in-play walkthrough still needs to be shown: only while the player has no
  *        recorded plays and the cursor is at @c RBTutorialStatusPlayStart.
  * @ghidraAddress 0x358ec
  * @return @c YES when the walkthrough should start.
  */
 + (BOOL)needStartTutorialPlay;
 /**
- * @brief Whether the cursor is currently within the in-play walkthrough range.
+ * Whether the cursor is currently within the in-play walkthrough range.
  * @ghidraAddress 0x3597c
  * @return @c YES while in the in-play walkthrough.
  */
@@ -126,7 +126,7 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 #pragma mark Customise tutorial
 
 /**
- * @brief Whether the customise walkthrough still needs to be shown: only while the player has no
+ * Whether the customise walkthrough still needs to be shown: only while the player has no
  *        recorded plays, @c RBExperienceData reports nothing unlocked, and @c RBUserSettingData has
  *        not stored the customise "seen" flag.
  * @ghidraAddress 0x35a40
@@ -134,13 +134,13 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
  */
 + (BOOL)needStartTutorialCustomize;
 /**
- * @brief Begin the customise walkthrough by advancing the status to
+ * Begin the customise walkthrough by advancing the status to
  *        @c RBTutorialStatusCustomizeStart.
  * @ghidraAddress 0x35b24
  */
 + (void)startTutorialCustomize;
 /**
- * @brief Whether the cursor is currently within the customise walkthrough range, only when the
+ * Whether the cursor is currently within the customise walkthrough range, only when the
  *        Colette theme is active.
  * @ghidraAddress 0x35b3c
  * @return @c YES while in the customise walkthrough.
@@ -150,14 +150,14 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 #pragma mark Store tutorial
 
 /**
- * @brief Whether the store walkthrough still needs to be shown: only while the player has no
+ * Whether the store walkthrough still needs to be shown: only while the player has no
  *        recorded plays and @c RBUserSettingData has not stored the store "seen" flag.
  * @ghidraAddress 0x35c50
  * @return @c YES when the walkthrough should start.
  */
 + (BOOL)needStartTutorialStore;
 /**
- * @brief Begin the store walkthrough by advancing the status to @c RBTutorialStatusStoreStart.
+ * Begin the store walkthrough by advancing the status to @c RBTutorialStatusStoreStart.
  * @ghidraAddress 0x35ce4
  */
 + (void)startTutorialStore;
@@ -165,7 +165,7 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 #pragma mark Status mutation
 
 /**
- * @brief Record @p updateStatus as the new tutorial status: persist it into @c RBUserSettingData,
+ * Record @p updateStatus as the new tutorial status: persist it into @c RBUserSettingData,
  *        store it on the singleton, apply the per-status side effects (setting or clearing the
  *        @c isTutorial flag, and advancing to @c RBTutorialStatusDone at the end of the customise
  *        walkthrough), and report the milestone statuses to the server.
@@ -175,7 +175,7 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 + (void)updateStatus:(RBTutorialStatus)updateStatus;
 
 /**
- * @brief Record the type and item identifier of an item unlocked during the customise walkthrough,
+ * Record the type and item identifier of an item unlocked during the customise walkthrough,
  *        allocating the pair store on first use and resetting it on each subsequent call.
  * @param unlockedItemInfo The unlocked item's type.
  * @param itemId The unlocked item's identifier.
@@ -186,46 +186,46 @@ typedef NS_ENUM(unsigned int, RBTutorialStatus) {
 #pragma mark Properties
 
 /**
- * @brief The singleton's current tutorial status code.
+ * The singleton's current tutorial status code.
  * @ghidraAddress 0x3643c (getter)
  * @ghidraAddress 0x3644c (setter)
  */
 @property(nonatomic, assign) RBTutorialStatus currentStatus;
 /**
- * @brief Whether a tutorial is currently running.
+ * Whether a tutorial is currently running.
  * @ghidraAddress 0x3645c (getter)
  * @ghidraAddress 0x3646c (setter)
  */
 @property(nonatomic, assign) BOOL isTutorial;
 /**
- * @brief Whether tutorial input is currently accepted.
+ * Whether tutorial input is currently accepted.
  * @ghidraAddress 0x3647c (getter)
  * @ghidraAddress 0x3648c (setter)
  */
 @property(nonatomic, assign) BOOL isInputable;
 /**
- * @brief The view presenting the active tutorial overlay, held weakly.
+ * The view presenting the active tutorial overlay, held weakly.
  * @ghidraAddress 0x3649c (getter)
  * @ghidraAddress 0x364bc (setter)
  */
 @property(nonatomic, weak, nullable) UIView *tutorialView;
 
 /**
- * @brief The pending unlocked-item info: a flat `{itemInfo, itemId}` pair queued by
+ * The pending unlocked-item info: a flat `{itemInfo, itemId}` pair queued by
  * @c +setUnlockedItemInfo:itemId:.
  * @ghidraAddress 0x364d0 (getter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *unlockItemInfo;
 
 /**
- * @brief A copy of the pending unlocked-item info pair.
+ * A copy of the pending unlocked-item info pair.
  * @return A copy of the queued `{itemInfo, itemId}` array.
  * @ghidraAddress 0x36308
  */
 + (nullable NSArray *)getUnlockedItemInfo;
 
 /**
- * @brief Clear the pending unlocked-item info.
+ * Clear the pending unlocked-item info.
  * @ghidraAddress 0x363a8
  */
 + (void)resetUnlockedItemInfo;

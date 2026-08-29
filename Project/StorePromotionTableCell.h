@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The phone-layout table cell that hosts the promotion banner carousel (a
+ * The phone-layout table cell that hosts the promotion banner carousel (a
  * @c StorePromotionView) or the sample-play controls.
  *
  * The cell owns no state of its own; it exists only to relay its own
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The phone-layout promotion / sample-controls table cell.
+ * The phone-layout promotion / sample-controls table cell.
  *
  * The binary class declares no own ivars, properties, protocols, or class methods; its only method
  * is a @c -layoutSubviews override. The hosting @c RBStorePageViewController builds the cell with
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface StorePromotionTableCell : UITableViewCell
 
 /**
- * @brief Lay out the cell, then size the hosted promotion view to the cell's bounds.
+ * Lay out the cell, then size the hosted promotion view to the cell's bounds.
  *
  * After the superclass layout runs, the cell looks up the promotion subview by its tag in the
  * content view; if present, it sets that subview's frame to the content view's bounds and forwards

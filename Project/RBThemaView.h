@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The theme-picker popup.
+ * The theme-picker popup.
  *
  * It is an @c RBMusicMenuPopupView subclass that lets the player switch
  * the UI theme (@c RBUserSettingData.thema: Classic, Limelight, or Colette). It builds a paging
@@ -22,7 +22,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The theme-selection popup presented over the music menu, paging one full-page artwork per
+ * The theme-selection popup presented over the music menu, paging one full-page artwork per
  * unlocked theme.
  */
 @interface RBThemaView : RBMusicMenuPopupView <UIScrollViewDelegate>
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Lifecycle
 
 /**
- * @brief Create the theme popup, select the theme popup type, build its content, and mark the
+ * Create the theme popup, select the theme popup type, build its content, and mark the
  * control as exclusively touched.
  * @param frame The view's frame rectangle.
  * @return The initialised view, or @c nil.
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the theme popup content: the paging scroll view, one full-page artwork per unlocked
+ * Build the theme popup content: the paging scroll view, one full-page artwork per unlocked
  * theme, the optional Colette gradation overlay, and the OK button; then scroll to the current
  * theme's page.
  * @ghidraAddress 0x107234
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Layout
 
 /**
- * @brief Re-run the theme selection from the scroll view's current offset after a layout pass.
+ * Re-run the theme selection from the scroll view's current offset after a layout pass.
  * @ghidraAddress 0x1071a8
  */
 - (void)layoutSubviews;
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Actions
 
 /**
- * @brief OK-button handler: play the decide sound, disable the button, fade the popup out, then
+ * OK-button handler: play the decide sound, disable the button, fade the popup out, then
  * apply the selected theme, persist the settings, and reset the game.
  * @param yesButtonTouch The control that sent the action.
  * @ghidraAddress 0x108434
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Scroll view delegate
 
 /**
- * @brief Snap the paged offset to the nearest theme page, update the selected theme, and enable
+ * Snap the paged offset to the nearest theme page, update the selected theme, and enable
  * the OK button only when the selection differs from the saved theme.
  * @param scrollViewDidScroll The theme scroll view.
  * @ghidraAddress 0x108740
@@ -76,21 +76,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Properties
 
-/** @brief The paging scroll view that holds the per-theme artwork pages. */
+/** The paging scroll view that holds the per-theme artwork pages. */
 @property(strong, nonatomic, nullable) UIScrollView *scrollView;
-/** @brief The Classic theme's full-page artwork. */
+/** The Classic theme's full-page artwork. */
 @property(strong, nonatomic, nullable) UIImageView *classicView;
-/** @brief The Limelight theme's full-page artwork. */
+/** The Limelight theme's full-page artwork. */
 @property(strong, nonatomic, nullable) UIImageView *limelightView;
-/** @brief The Colette theme's full-page artwork. */
+/** The Colette theme's full-page artwork. */
 @property(strong, nonatomic, nullable) UIImageView *coletteView;
-/** @brief The OK button that commits the selected theme. */
+/** The OK button that commits the selected theme. */
 @property(strong, nonatomic, nullable) UIButton *okButton;
-/** @brief The currently selected theme (an @c RBUserSettingDataTheme value). */
+/** The currently selected theme (an @c RBUserSettingDataTheme value). */
 @property(assign, nonatomic) int thema;
-/** @brief The number of unlocked themes, driving the scroll view's content width. */
+/** The number of unlocked themes, driving the scroll view's content width. */
 @property(assign, nonatomic) int unlockedThemaCount;
-/** @brief The owning settings view, held weakly. */
+/** The owning settings view, held weakly. */
 @property(weak, nonatomic, nullable) RBSettingView *settingView;
 
 @end

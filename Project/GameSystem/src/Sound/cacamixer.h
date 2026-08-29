@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The Core Audio voice mixer, @c caCAMixer.
+ * The Core Audio voice mixer, @c caCAMixer.
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 class caSource;
 
 /**
- * @brief The Core Audio voice mixer: a spatial-mixer AudioUnit and its array of playback voices.
+ * The Core Audio voice mixer: a spatial-mixer AudioUnit and its array of playback voices.
  *
  * The former free engine functions that took the mixer as their first argument are its instance
  * methods. Only the members those methods touch are modelled; the 32-bit offset comments are
@@ -22,7 +22,7 @@ class caSource;
 class caCAMixer {
 public:
     /**
-     * @brief Binds a sound to voice @p nBus and prepares it to play, returning its play handle.
+     * Binds a sound to voice @p nBus and prepares it to play, returning its play handle.
      *
      * Reuses the voice only when it is free or finished: stores the source, bumps the generation,
      * builds the signed-16-bit LPCM stream format from the source's rate and channel count, applies
@@ -38,7 +38,7 @@ public:
     unsigned int EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVolume);
 
     /**
-     * @brief Binds @p pSource to the first free or finished voice and prepares it, returning its
+     * Binds @p pSource to the first free or finished voice and prepares it, returning its
      *        play handle, or @c 0xffffffff when every voice is busy.
      * @param pSource The sound to bind.
      * @param nVolume The gain-table index.
@@ -48,28 +48,28 @@ public:
     unsigned int FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume);
 
     /**
-     * @brief Moves the prepared or paused voice named by @p hVoice to playing.
+     * Moves the prepared or paused voice named by @p hVoice to playing.
      * @param hVoice The raw handle (voice index in bits 16+, generation in the low 16).
      * @return @c 1 when the voice matched and started, @c 0 otherwise.
      * @ghidraAddress 0x4b28c
      */
     unsigned int StartVoice(unsigned int hVoice);
     /**
-     * @brief Marks the voice named by @p hVoice finished (stopped).
+     * Marks the voice named by @p hVoice finished (stopped).
      * @param hVoice The play handle of the voice to stop.
      * @return @c 1 when the voice matched, @c 0 otherwise.
      * @ghidraAddress 0x4b2e4
      */
     unsigned int StopVoice(unsigned int hVoice);
     /**
-     * @brief Pauses the voice named by @p hVoice.
+     * Pauses the voice named by @p hVoice.
      * @param hVoice The play handle of the voice to pause.
      * @return @c 1 when the voice matched, @c 0 otherwise.
      * @ghidraAddress 0x4b32c
      */
     unsigned int PauseVoice(unsigned int hVoice);
     /**
-     * @brief Returns the playback state of the voice named by @p hVoice, or @c -1 when the handle
+     * Returns the playback state of the voice named by @p hVoice, or @c -1 when the handle
      *        does not resolve to a live voice.
      * @param hVoice The play handle of the voice to query.
      * @return The voice's playback state, or @c -1 when the handle does not resolve.
@@ -77,7 +77,7 @@ public:
      */
     int GetVoiceState(unsigned int hVoice);
     /**
-     * @brief Frees the voice named by @p hVoice (marks it finished and drops its source) so a later
+     * Frees the voice named by @p hVoice (marks it finished and drops its source) so a later
      *        @c FindFreeVoiceAndEnqueue can recycle it. Always returns @c 1.
      * @param hVoice The play handle of the voice to free.
      * @return Always @c 1.
@@ -86,7 +86,7 @@ public:
     unsigned int StopAndClearVoice(unsigned int hVoice);
 
     /**
-     * @brief Detaches @p pSource from every voice that currently references it.
+     * Detaches @p pSource from every voice that currently references it.
      *
      * Clears the bound-source pointer (leaving the voice state untouched) so no active voice reads
      * the buffer's PCM data after it is freed. Called before a sound's data is released.
@@ -96,7 +96,7 @@ public:
     void ClearVoicesUsingBuffer(caSource *pSource);
 
     /**
-     * @brief Installs the per-voice render callback on the mixer AudioUnit for voice @p nBus, once.
+     * Installs the per-voice render callback on the mixer AudioUnit for voice @p nBus, once.
      *
      * The callback (@c RenderVoiceAudioCallback) is bound with the voice as its reference so the
      * render loop can pull PCM for it; it is installed only once per voice.
@@ -106,7 +106,7 @@ public:
     void InstallVoiceRenderCallback(int nBus);
 
     /**
-     * @brief Applies the gain-table entry @p nVolume to voice @p nBus's mixer bus.
+     * Applies the gain-table entry @p nVolume to voice @p nBus's mixer bus.
      *
      * Sets the spatial-mixer gain parameter (id 3, output scope) to the looked-up gain value. The
      * binary's "pan" naming is a misnomer: parameter 3 on the spatial mixer is the master gain.
@@ -118,7 +118,7 @@ public:
     bool ApplyVoicePanParam(int nVolume, int nBus);
 
     /**
-     * @brief Sets the master output gain to the volume-table entry @p nVolume.
+     * Sets the master output gain to the volume-table entry @p nVolume.
      *
      * A thin forwarder to @c ApplyVoicePanParam on bus 0, which the spatial mixer treats as the
      * master output-scope gain.
@@ -128,13 +128,13 @@ public:
     void SetAllVolume(int nVolume);
 
     /**
-     * @brief Builds the AUGraph: a 3D spatial mixer feeding the RemoteIO output unit.
+     * Builds the AUGraph: a 3D spatial mixer feeding the RemoteIO output unit.
      * @return @c true when every Core Audio call succeeded.
      * @ghidraAddress 0x4acd0
      */
     bool BuildAudioUnitGraph();
     /**
-     * @brief Builds the graph and, if that succeeds, configures it for @p nVoiceCount buses.
+     * Builds the graph and, if that succeeds, configures it for @p nVoiceCount buses.
      * @param nVoiceCount The number of mixer buses/voices.
      * @return @c true when the graph both built and configured, @c false otherwise.
      * @ghidraAddress 0x4ac94
@@ -142,14 +142,14 @@ public:
     bool GraphSetup(int nVoiceCount);
 
     /**
-     * @brief Tears the mixer down: stops and disposes the AUGraph, then deletes every voice slot
+     * Tears the mixer down: stops and disposes the AUGraph, then deletes every voice slot
      * and the voice array.
      * @ghidraAddress 0x4affc
      */
     void Terminate();
 
     /**
-     * @brief Sizes the mixer to @p nVoiceCount buses, allocates the voice slots, sets the output
+     * Sizes the mixer to @p nVoiceCount buses, allocates the voice slots, sets the output
      *        stream format, and initialises the graph.
      * @param nVoiceCount The number of mixer buses/voices (must be below 4096).
      * @return @c true on success, @c false on an oversized count or a Core Audio failure.
@@ -158,7 +158,7 @@ public:
     bool ConfigureAudioUnitGraph(int nVoiceCount);
 
     /**
-     * @brief Starts the graph (once) and applies the default master gain.
+     * Starts the graph (once) and applies the default master gain.
      *
      * The compiler emits this both inlined at @c 0x4af6c and as an out-of-line thunk at @c 0x4aff8;
      * both collapse to this one method.
@@ -167,7 +167,7 @@ public:
      */
     void Start();
     /**
-     * @brief Stops the graph when it is running.
+     * Stops the graph when it is running.
      * @ghidraAddress 0x4afc4
      */
     void Stop();

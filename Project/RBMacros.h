@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The shared preprocessor helpers, and the build-configurable endpoint defaults.
+ * The shared preprocessor helpers, and the build-configurable endpoint defaults.
  *
  * The @c ARRAY_SIZE helper is a convenience for the reconstructed sources rather than a macro
  * recovered from the binary: a compiled image retains no macro definitions, so it corresponds to no
@@ -19,14 +19,14 @@
 
 /**
  * @def ARRAY_SIZE
- * @brief The number of elements in a fixed-size C array.
+ * The number of elements in a fixed-size C array.
  * @param array A fixed-size C array (not a decayed pointer).
  */
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 
 /**
  * @def RB_API_SCHEME
- * @brief The URL scheme every secure API request is built with.
+ * The URL scheme every secure API request is built with.
  *
  * Only worth changing for a plaintext test server.
  */
@@ -36,7 +36,7 @@
 
 /**
  * @def RB_API_HOST
- * @brief The hostname every secure API request is built against.
+ * The hostname every secure API request is built against.
  *
  * This host is also added to the in-app link allow-list in @c RBWebView.m, so links to a configured
  * server load inside the web view rather than being handed to Safari.
@@ -47,7 +47,7 @@
 
 /**
  * @def RB_API_BASE_PATH
- * @brief The common CGI base path every endpoint is built under.
+ * The common CGI base path every endpoint is built under.
  *
  * The companion to @c RB_API_HOST: an endpoint is the scheme, host, this path, and the per-endpoint
  * leaf, so a replacement server has to serve this prefix unless it is overridden too. Keep the
@@ -59,7 +59,7 @@
 
 /**
  * @def RB_APPLILINK_APP_ID
- * @brief The application identifier passed to Konami's Applilink SDK.
+ * The application identifier passed to Konami's Applilink SDK.
  */
 #ifndef RB_APPLILINK_APP_ID
 #define RB_APPLILINK_APP_ID "10"
@@ -67,7 +67,7 @@
 
 /**
  * @def RB_APPLILINK_ENV
- * @brief The Applilink server environment selector.
+ * The Applilink server environment selector.
  *
  * The SDK compares this against its own environment keys to pick a base URL: @c "0" is production,
  * @c "1" staging, @c "2" and @c "3" sandbox, and @c "4" development.
@@ -78,7 +78,7 @@
 
 /**
  * @def RB_APPLILINK_URL_PRODUCTION
- * @brief The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "0".
+ * The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "0".
  */
 #ifndef RB_APPLILINK_URL_PRODUCTION
 #define RB_APPLILINK_URL_PRODUCTION "https://www.applilink.jp"
@@ -86,7 +86,7 @@
 
 /**
  * @def RB_APPLILINK_URL_STAGING
- * @brief The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "1".
+ * The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "1".
  */
 #ifndef RB_APPLILINK_URL_STAGING
 #define RB_APPLILINK_URL_STAGING "https://st.es.i-revoinf.jp"
@@ -94,7 +94,7 @@
 
 /**
  * @def RB_APPLILINK_URL_DEVELOPMENT
- * @brief The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "4".
+ * The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "4".
  */
 #ifndef RB_APPLILINK_URL_DEVELOPMENT
 #define RB_APPLILINK_URL_DEVELOPMENT "https://dev.es.i-revoinf.jp"
@@ -102,7 +102,7 @@
 
 /**
  * @def RB_APPLILINK_URL_SANDBOX
- * @brief The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "2" or @c "3".
+ * The Applilink base URL selected when @c RB_APPLILINK_ENV is @c "2" or @c "3".
  */
 #ifndef RB_APPLILINK_URL_SANDBOX
 #define RB_APPLILINK_URL_SANDBOX "https://sandbox.applilink.jp"

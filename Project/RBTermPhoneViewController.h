@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief The phone-layout terms-of-use view controller.
+ * The phone-layout terms-of-use view controller.
  *
  * It is an @c RBBaseViewController subclass pushed
  * onto the navigation stack (from the store pack and note detail screens and from the music menu's
@@ -24,7 +24,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief The phone-layout terms-of-use view controller presented on the navigation stack, showing a
+ * The phone-layout terms-of-use view controller presented on the navigation stack, showing a
  * downloaded list of terms and, on selection, each term's body or external link.
  */
 @interface RBTermPhoneViewController : RBBaseViewController <UIAlertViewDelegate>
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Lifecycle
 
 /**
- * @brief Create the controller: allocate the term-body cache, select the agreement view type, and
+ * Create the controller: allocate the term-body cache, select the agreement view type, and
  * build the navigation-bar title label and custom "back" left bar-button item.
  * @return The initialised controller, or @c nil.
  * @ghidraAddress 0x16f3a4
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)init;
 
 /**
- * @brief Save the last-read terms timestamp, build the content (dimming overlay, loading spinner,
+ * Save the last-read terms timestamp, build the content (dimming overlay, loading spinner,
  * terms list scroll view, and term-body container), and start the terms-list download.
  * @ghidraAddress 0x16f718
  */
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Configuration
 
 /**
- * @brief Configure the controller for the store terms viewer (sets @c viewType to the store value).
+ * Configure the controller for the store terms viewer (sets @c viewType to the store value).
  * @ghidraAddress 0x16f6d4
  */
 - (void)setViewTypeStore;
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Networking
 
 /**
- * @brief If the terms list is already populated, reveal it; otherwise start the loading spinner and
+ * If the terms list is already populated, reveal it; otherwise start the loading spinner and
  * download the terms list for the current region, parsing the JSON response into @c termsList.
  * @ghidraAddress 0x170020
  */
@@ -66,14 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Presentation
 
 /**
- * @brief Reveal the terms list: hide the term body and lay a titled button per term into the terms
+ * Reveal the terms list: hide the term body and lay a titled button per term into the terms
  * list scroll view, then fade the list in.
  * @ghidraAddress 0x170878
  */
 - (void)showTermsList;
 
 /**
- * @brief Handle a term-button tap: open the term's external URL if it has one, otherwise push the
+ * Handle a term-button tap: open the term's external URL if it has one, otherwise push the
  * term-detail controller for its body.
  * @param sender The tapped term button.
  * @ghidraAddress 0x1713dc
@@ -83,13 +83,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Loading animation
 
 /**
- * @brief Show the dimming overlay (when enabled) and start the loading spinner.
+ * Show the dimming overlay (when enabled) and start the loading spinner.
  * @ghidraAddress 0x1718f0
  */
 - (void)startLoadAnimation;
 
 /**
- * @brief Hide the dimming overlay (when enabled) and stop the loading spinner.
+ * Hide the dimming overlay (when enabled) and stop the loading spinner.
  * @ghidraAddress 0x1719f0
  */
 - (void)endLoadAnimation;
@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Navigation
 
 /**
- * @brief Handle the custom "back" bar-button tap: restore the navigation bar chrome for the current
+ * Handle the custom "back" bar-button tap: restore the navigation bar chrome for the current
  * view type (playing the cancel sound effect for the agreement type) and pop the controller.
  * @param sender The tapped bar-button item.
  * @ghidraAddress 0x171aa4
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)pushBarBtnBack:(nullable id)sender;
 
 /**
- * @brief Dismiss the controller without animation, restoring the navigation bar for the agreement
+ * Dismiss the controller without animation, restoring the navigation bar for the agreement
  * view type first.
  * @ghidraAddress 0x171c68
  */
@@ -113,29 +113,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Properties
 
-/** @brief Whether this is the first terms request, gating the alert-driven dismiss. */
+/** Whether this is the first terms request, gating the alert-driven dismiss. */
 @property(assign, nonatomic) BOOL isFirstRequest;
-/** @brief Whether a show or hide animation is currently running. */
+/** Whether a show or hide animation is currently running. */
 @property(assign, nonatomic) BOOL isAnimating;
-/** @brief Whether the dimming overlay is shown while loading. */
+/** Whether the dimming overlay is shown while loading. */
 @property(assign, nonatomic) BOOL isUseGrayView;
-/** @brief The view type: the agreement overlay (0) or the store terms viewer (1). */
+/** The view type: the agreement overlay (0) or the store terms viewer (1). */
 @property(assign, nonatomic) int viewType;
-/** @brief The scroll view holding one button per term. */
+/** The scroll view holding one button per term. */
 @property(assign, nonatomic, nullable) UIScrollView *termsListView;
-/** @brief The reusable pool of term buttons. */
+/** The reusable pool of term buttons. */
 @property(strong, nonatomic, nullable) NSMutableArray *buttons;
-/** @brief The container view for a single term's body. */
+/** The container view for a single term's body. */
 @property(assign, nonatomic, nullable) UIView *termView;
-/** @brief The list of term descriptors downloaded from the server. */
+/** The list of term descriptors downloaded from the server. */
 @property(strong, nonatomic, nullable) NSArray *termsList;
-/** @brief The parsed per-term body cache, keyed by the term id string. */
+/** The parsed per-term body cache, keyed by the term id string. */
 @property(strong, nonatomic, nullable) NSMutableDictionary *terms;
-/** @brief The in-flight terms list download. */
+/** The in-flight terms list download. */
 @property(strong, nonatomic, nullable) Downloader *downloader;
-/** @brief The dimming overlay covering the content while loading. */
+/** The dimming overlay covering the content while loading. */
 @property(assign, nonatomic, nullable) UIView *grayView;
-/** @brief The loading spinner shown during network activity. */
+/** The loading spinner shown during network activity. */
 @property(assign, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
 
 @end

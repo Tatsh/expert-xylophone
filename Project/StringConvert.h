@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Katakana normalisation helpers used to build a searchable reading (yomigana) key from a
+ * Katakana normalisation helpers used to build a searchable reading (yomigana) key from a
  * song's katakana title.
  *
  * The transforms fold full-width and half-width forms together, expand the
@@ -17,12 +17,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Katakana reading normalisation helpers.
+ * Katakana reading normalisation helpers.
  */
 @interface StringConvert : NSObject
 
 /**
- * @brief Build a normalised katakana reading key from an arbitrary katakana string.
+ * Build a normalised katakana reading key from an arbitrary katakana string.
  *
  * Folds full-width and half-width forms together, applies the @c ヴ, DJ, and Korsk spelling
  * rewrites, then walks the string character by character: prolonged-sound marks are resolved
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)convertYomigana:(nullable NSString *)string;
 
 /**
- * @brief Expand the @c ヴ (vu) katakana digraphs into their @c バ-row equivalents.
+ * Expand the @c ヴ (vu) katakana digraphs into their @c バ-row equivalents.
  * @param string The katakana string to rewrite.
  * @return @p string with @c ヴァ→バ, @c ヴィ→ビ, @c ヴ→ブ, @c ヴェ→ベ, and @c ヴォ→ボ applied;
  * returns @p string unchanged when it is @c nil or empty.
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)convertFromVToB:(nullable NSString *)string;
 
 /**
- * @brief Spell out the "DJ" loanword reading in katakana.
+ * Spell out the "DJ" loanword reading in katakana.
  * @param string The katakana string to rewrite.
  * @return @p string with @c ディージェー and @c ディージェイ rewritten to @c ディイジエイ; returns
  * @p string unchanged when it is @c nil or empty.
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)convertDJ:(nullable NSString *)string;
 
 /**
- * @brief Spell out the "Korsk" loanword reading in katakana.
+ * Spell out the "Korsk" loanword reading in katakana.
  * @param string The katakana string to rewrite.
  * @return @p string with @c コースケ rewritten to @c コウスケ; returns @p string unchanged when it
  * is @c nil or empty.
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)convertKorsk:(nullable NSString *)string;
 
 /**
- * @brief Resolve a prolonged-sound mark to the vowel of its preceding character.
+ * Resolve a prolonged-sound mark to the vowel of its preceding character.
  * @param string A single-character string looked up in the macron-to-vowel table.
  * @return The mapped vowel character, or @p string unchanged when it is @c nil, empty, or has no
  * table entry.
@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)convertFromMacronToVowel:(nullable NSString *)string;
 
 /**
- * @brief Map a small katakana character onto its large base form.
+ * Map a small katakana character onto its large base form.
  * @param string A single-character string looked up in the small-to-large kana table.
  * @return The mapped large character, or @p string unchanged when it is @c nil, empty, or has no
  * table entry.
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)convertFromLowerToUpper:(nullable NSString *)string;
 
 /**
- * @brief Map a voiced katakana character onto its voiceless base form.
+ * Map a voiced katakana character onto its voiceless base form.
  * @param string A single-character string looked up in the voiced-to-voiceless kana table.
  * @return The mapped voiceless character, or @p string unchanged when it is @c nil, empty, or has
  * no table entry.
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)convertFromVoiceToVoiceless:(nullable NSString *)string;
 
 /**
- * @brief Apply a Core Foundation string transform to a mutable copy of a string.
+ * Apply a Core Foundation string transform to a mutable copy of a string.
  * @param string The source string; a mutable copy is transformed in place.
  * @param transform A @c CFStringTransform identifier (for example
  * @c kCFStringTransformFullwidthHalfwidth).
