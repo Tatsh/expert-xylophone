@@ -1,6 +1,7 @@
 /**
  * @file
- * Shared engine data tables, layout metrics, localised UI strings, and palette colours, seeded at
+ * @brief Shared engine data tables, layout metrics, localised UI strings, and palette colours,
+ * seeded at
  * startup and read from the Objective-C application code.
  */
 

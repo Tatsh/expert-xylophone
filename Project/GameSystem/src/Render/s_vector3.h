@@ -1,6 +1,6 @@
 /**
  * @file
- * The three-component float vector value type, @c S_VECTOR3.
+ * @brief The three-component float vector value type, @c S_VECTOR3.
  */
 
 #pragma once

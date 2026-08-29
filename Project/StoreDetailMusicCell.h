@@ -1,6 +1,8 @@
-/** @file
- * A single tune row in the phone-layout pack detail table: artwork, name, artist, per-difficulty
- * levels, an iTunes link button, a sequence-extension icon, and the sample-play state.
+/**
+ * @file
+ * @brief A single tune row in the phone-layout pack detail table: artwork, name, artist,
+ * per-difficulty levels, an iTunes link button, a sequence-extension icon, and the sample-play
+ * state.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreDetailMusicCell, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

@@ -1,7 +1,8 @@
-/** @file
- * A store music metadata model describing a single purchasable tune: its identifier, display name,
- * artist, the item, artwork, sample, and iTunes URLs, the three per-difficulty levels, and the list
- * of associated extend-note identifiers. Instances are built from a store catalogue entry
+/**
+ * @file
+ * @brief A store music metadata model describing a single purchasable tune: its identifier, display
+ * name, artist, the item, artwork, sample, and iTunes URLs, the three per-difficulty levels, and
+ * the list of associated extend-note identifiers. Instances are built from a store catalogue entry
  * dictionary and are handed to @c RBMusicManager to record a purchase.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class StoreMusicInfo, image base

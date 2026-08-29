@@ -1,6 +1,6 @@
 /**
  * @file
- * The background sprite manager, @c BackgroundSpriteManager.
+ * @brief The background sprite manager, @c BackgroundSpriteManager.
  */
 
 #pragma once

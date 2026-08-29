@@ -1,6 +1,9 @@
-/** @file
- * The animated pastel speech-bubble layer drawn beside the tutorial spotlight by
- * @c RBMenuTutorialView. It is a @c CALayer that builds four weak child layers (head, body, and the
+/**
+ * @file
+ * @brief The animated pastel speech-bubble layer drawn beside the tutorial spotlight by
+ * @c RBMenuTutorialView.
+ *
+ * It is a @c CALayer that builds four weak child layers (head, body, and the
  * left and right tails) from clipped regions of the tutorial message artwork atlas, laid out around
  * a resolution-dependent display rate, and offers a wave and a jump keyframe animation over those
  * child layers. @c RBMenuTutorialView only ever drives @c setupView: and @c stopAnimation; the two

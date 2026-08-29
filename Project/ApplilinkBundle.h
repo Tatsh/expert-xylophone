@@ -1,5 +1,7 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkBundle resource loader.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkBundle resource
+ * loader.
  *
  * @c ApplilinkBundle locates and caches the SDK's @c ApplilinkNetworkResources.bundle, the
  * localised resource bundle that ships the SDK's strings and images. It has no instance state (no

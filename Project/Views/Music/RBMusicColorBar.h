@@ -1,5 +1,8 @@
-/** @file
- * The rival-alpha slider bar hosted by @c RBMusicColorView on its alpha page. It draws a
+/**
+ * @file
+ * @brief The rival-alpha slider bar hosted by @c RBMusicColorView on its alpha page.
+ *
+ * It draws a
  * horizontal track (the base view) with a draggable grip image, and reports the grip's position
  * along the track as a normalised value in the unit interval. A tap or pan anywhere on the track
  * moves the grip and, when the hosting colour view is attached, pushes the new value into that

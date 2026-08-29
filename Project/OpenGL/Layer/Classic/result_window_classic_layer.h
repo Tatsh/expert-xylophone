@@ -1,6 +1,6 @@
 /**
  * @file
- * The Classic-theme result-window layer, @c ResultWindowClassicLayer.
+ * @brief The Classic-theme result-window layer, @c ResultWindowClassicLayer.
  */
 
 #pragma once

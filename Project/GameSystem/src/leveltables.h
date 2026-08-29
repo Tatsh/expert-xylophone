@@ -1,6 +1,6 @@
 /**
  * @file
- * The level-threshold tables manager, @c LevelTables, and the player-level table helpers.
+ * @brief The level-threshold tables manager, @c LevelTables, and the player-level table helpers.
  */
 
 #pragma once

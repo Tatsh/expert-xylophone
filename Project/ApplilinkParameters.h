@@ -1,5 +1,7 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkParameters request object.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkParameters request
+ * object.
  *
  * @c ApplilinkParameters is the request-parameters model KONAMI's Applilink advert SDK passes
  * around: it carries the advert model, advert location, vertical alignment, and request code for a

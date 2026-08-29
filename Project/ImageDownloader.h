@@ -1,5 +1,8 @@
-/** @file
- * An asynchronous image-fetch wrapper built on @c RBHttpUtil. Given an image URL it downloads the
+/**
+ * @file
+ * @brief An asynchronous image-fetch wrapper built on @c RBHttpUtil.
+ *
+ * Given an image URL it downloads the
  * bytes, decodes them into a @c UIImage (optionally choosing an @2x Retina variant), and reports
  * completion either through caller-supplied blocks or, when no block is set, to a delegate via
  * @c performSelector:withObject:withObject: dispatched on the main queue. It also carries an

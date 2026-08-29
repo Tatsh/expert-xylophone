@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c AnalysisNetworkCore.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c AnalysisNetworkCore.
  *
  * @c AnalysisNetworkCore is the advert-analytics core of the Applilink SDK: a stateless class
  * (no ivars, only class methods) that posts analytics events to the Applilink server. It handles

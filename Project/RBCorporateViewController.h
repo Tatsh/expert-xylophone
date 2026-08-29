@@ -1,5 +1,8 @@
-/** @file
- * The corporate/legal information view controller. It is an @c RBBaseViewController subclass pushed
+/**
+ * @file
+ * @brief The corporate/legal information view controller.
+ *
+ * It is an @c RBBaseViewController subclass pushed
  * onto the navigation stack that presents Konami's corporate web page (@c
  * https://www.konami.com/ja/) inside an @c RBWebView. It builds a custom "back" left bar-button
  * item, shows a centred activity indicator while the page loads, and acts as the web view's

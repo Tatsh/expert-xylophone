@@ -1,5 +1,8 @@
-/** @file
- * A singleton that fires the game's telemetry and progression calls at the secure API host. Each
+/**
+ * @file
+ * @brief A singleton that fires the game's telemetry and progression calls at the secure API host.
+ *
+ * Each
  * class method builds a parameter dictionary (region, music, difficulty, score, unlock, or tutorial
  * fields), serialises it to a JSON or query body, wraps it in a @c Downloader aimed at the matching
  * @c NetworkUtil endpoint, retains the connection in a live-request array, and starts it with the

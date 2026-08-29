@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the KONAMI Applilink SDK's @c ApplilinkPasteBoard.
+/**
+ * @file
+ * @brief Reconstructed interface for the KONAMI Applilink SDK's @c ApplilinkPasteBoard.
  *
  * @c ApplilinkPasteBoard mirrors the advertising UDID records into named, persistent
  * @c UIPasteboard slots so they survive an app reinstall. Each slot stores an

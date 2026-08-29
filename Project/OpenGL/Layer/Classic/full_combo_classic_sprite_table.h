@@ -1,6 +1,6 @@
 /**
  * @file
- * The Classic full-combo sprite-type descriptor table.
+ * @brief The Classic full-combo sprite-type descriptor table.
  */
 
 #pragma once

@@ -1,6 +1,6 @@
 /**
  * @file
- * The Core Audio voice mixer, @c caCAMixer.
+ * @brief The Core Audio voice mixer, @c caCAMixer.
  */
 
 #pragma once

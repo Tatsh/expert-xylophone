@@ -1,5 +1,8 @@
-/** @file
- * The staff-credits popup view. It is an @c RBMusicMenuPopupView configured with the credits popup
+/**
+ * @file
+ * @brief The staff-credits popup view.
+ *
+ * It is an @c RBMusicMenuPopupView configured with the credits popup
  * type, presenting the scrolling credits artwork centred in the popup's content view.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBCreditsView, image base

@@ -1,6 +1,6 @@
 /**
  * @file
- * The Reflec gauge layer, @c ReflecGaugeLayer.
+ * @brief The Reflec gauge layer, @c ReflecGaugeLayer.
  */
 
 #pragma once

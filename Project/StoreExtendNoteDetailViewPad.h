@@ -1,6 +1,9 @@
-/** @file
- * The pad note-detail overlay view, shown over a dimming cover to present a single extend note's
- * detail, sample, and purchase controls. It is the pad-layout counterpart to
+/**
+ * @file
+ * @brief The pad note-detail overlay view, shown over a dimming cover to present a single extend
+ * note's detail, sample, and purchase controls.
+ *
+ * It is the pad-layout counterpart to
  * @c RBStoreExtendNoteDetailViewController.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreExtendNoteDetailViewPad,

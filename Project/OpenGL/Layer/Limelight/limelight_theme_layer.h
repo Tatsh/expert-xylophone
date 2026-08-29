@@ -1,6 +1,6 @@
 /**
  * @file
- * The Limelight-theme layer, @c LimelightThemeLayer.
+ * @brief The Limelight-theme layer, @c LimelightThemeLayer.
  */
 
 #pragma once

@@ -1,6 +1,6 @@
 /**
  * @file
- * The Limelight result-window parts-data tables and the shared UV-palette table.
+ * @brief The Limelight result-window parts-data tables and the shared UV-palette table.
  */
 
 #pragma once

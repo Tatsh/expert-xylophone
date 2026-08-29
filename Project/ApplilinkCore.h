@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink SDK's @c ApplilinkCore.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink SDK's @c ApplilinkCore.
  *
  * @c ApplilinkCore is the Applilink advert SDK's central controller: a stateless facade whose whole
  * surface is class (@c +) methods backed by file-scope statics (the class has no instance ivars).

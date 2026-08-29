@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink recommend advert SDK's @c RecommendAdAreaView.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend advert SDK's @c RecommendAdAreaView.
  *
  * @c RecommendAdAreaView is the @c UIWebView subclass that renders an interstitial recommend
  * advert area (advert type 5) loaded from a cached HTML file on disk. It acts as its own

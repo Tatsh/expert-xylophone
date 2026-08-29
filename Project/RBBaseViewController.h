@@ -1,5 +1,8 @@
-/** @file
- * Shared base class for the application's full-screen view controllers. It is a thin
+/**
+ * @file
+ * @brief Shared base class for the application's full-screen view controllers.
+ *
+ * It is a thin
  * @c UIViewController subclass that hides the status bar and drives every autorotation decision
  * from a single rule: when the region uses the iPad (wide) layout and background music is playing,
  * the interface is locked to the orientation that is already on screen; otherwise all orientations

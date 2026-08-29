@@ -1,5 +1,8 @@
-/** @file
- * A map pin model. It is an @c MKAnnotation adopter that carries a coordinate, a title, a subtitle,
+/**
+ * @file
+ * @brief A map pin model.
+ *
+ * It is an @c MKAnnotation adopter that carries a coordinate, a title, a subtitle,
  * and the spot's model name so @c RBSearchMapView can pick the correct pin image and open the spot
  * in the system Maps app.
  *

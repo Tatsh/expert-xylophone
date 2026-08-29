@@ -1,5 +1,8 @@
-/** @file
- * @c UITextView first-responder suppression. The application uses text views only to display
+/**
+ * @file
+ * @brief @c UITextView first-responder suppression.
+ *
+ * The application uses text views only to display
  * scrollable prose, never to accept input, so the category refuses first-responder status and the
  * keyboard never appears.
  *

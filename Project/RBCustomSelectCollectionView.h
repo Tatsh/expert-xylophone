@@ -1,6 +1,9 @@
-/** @file
- * A single customize category's item grid, hosted by @c RBCustomSelectView. Each instance shows one
- * customization category (theme background music, tap shot, explosion, frame, background, note,
+/**
+ * @file
+ * @brief A single customize category's item grid, hosted by @c RBCustomSelectView.
+ *
+ * Each instance shows one customization category (theme background music, tap shot, explosion,
+ * frame, background, note,
  * gauge, or timing) inside a framed background. Most categories present a paged
  * @c RBCollectionView of @c RBCustomSelectCollectionCell items with a @c UIPageControl; the note
  * and gauge categories instead lay out fixed image buttons, and the shot, explosion, and timing

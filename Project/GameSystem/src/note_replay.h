@@ -1,6 +1,6 @@
 /**
  * @file
- * The replay/ghost application helper for the note play field.
+ * @brief The replay/ghost application helper for the note play field.
  */
 
 #pragma once

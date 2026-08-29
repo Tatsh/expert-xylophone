@@ -1,6 +1,9 @@
-/** @file
- * A dashed-polyline plot view with filled circular per-point markers. It draws a polyline through a
- * series of boxed numeric values, one dashed segment between each adjacent pair, with a filled
+/**
+ * @file
+ * @brief A dashed-polyline plot view with filled circular per-point markers.
+ *
+ * It draws a polyline through a series of boxed numeric values, one dashed segment between each
+ * adjacent pair, with a filled
  * circle at every point, and labels the top and bottom of the plot with the current maximum and
  * minimum values. It is the circular-marker sibling of @c GraphView (identical layout and drawing;
  * @c GraphCircleView additionally emits an ARC @c .cxx_destruct, matching its distinct compilation

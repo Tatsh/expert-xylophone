@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink reward SDK's @c RewardWebAPI transport.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink reward SDK's @c RewardWebAPI transport.
  *
  * @c RewardWebAPI is the reward network's high-level web API. Every method builds a parameter
  * dictionary and dispatches a single asynchronous request through

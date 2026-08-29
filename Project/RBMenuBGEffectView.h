@@ -1,5 +1,8 @@
-/** @file
- * Animated rainbow-and-particle background effect container view. It builds a stack of rainbow
+/**
+ * @file
+ * @brief Animated rainbow-and-particle background effect container view.
+ *
+ * It builds a stack of rainbow
  * (@c "00_texture/re_NN") and ring (@c "00_texture/ring_NN") @c UIImageView layers, hosts a pool of
  * @c RBMenuBGEffectPartView particle layers, and drives them with staggered, infinitely repeating
  * Core Animation keyframe animations. Concrete subclasses (for example

@@ -1,6 +1,6 @@
 /**
  * @file
- * Miscellaneous engine-runtime free functions the application layer calls: the sound-effect
+ * @brief Miscellaneous engine-runtime free functions the application layer calls: the sound-effect
  * backend, customize-asset paths, the texture cache, the global scene tree, and the media timer.
  */
 

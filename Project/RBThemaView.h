@@ -1,5 +1,8 @@
-/** @file
- * The theme-picker popup. It is an @c RBMusicMenuPopupView subclass that lets the player switch
+/**
+ * @file
+ * @brief The theme-picker popup.
+ *
+ * It is an @c RBMusicMenuPopupView subclass that lets the player switch
  * the UI theme (@c RBUserSettingData.thema: Classic, Limelight, or Colette). It builds a paging
  * @c UIScrollView inside the popup's content view holding one full-page artwork per unlocked
  * theme (@c 05_theme/thema_classic, @c 05_theme/thema_limelight, and @c 05_theme/thema_colette),

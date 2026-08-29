@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine touch tracker, @c TouchManager.
+ * @brief The engine touch tracker, @c TouchManager.
  */
 
 #pragma once

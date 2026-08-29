@@ -1,6 +1,6 @@
 /**
  * @file
- * The slide-note judge-result layer, @c SlideNoteResultLayer.
+ * @brief The slide-note judge-result layer, @c SlideNoteResultLayer.
  */
 
 #pragma once

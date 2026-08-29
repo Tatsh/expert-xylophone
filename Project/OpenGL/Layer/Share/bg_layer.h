@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's shared background layer.
+ * @brief The engine's shared background layer.
  */
 
 #pragma once

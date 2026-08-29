@@ -1,5 +1,8 @@
-/** @file
- * @c UIImageView flash-effect helpers used by the menu and music-select buttons. A flash effect
+/**
+ * @file
+ * @brief @c UIImageView flash-effect helpers used by the menu and music-select buttons.
+ *
+ * A flash effect
  * adds a forever-repeating, auto-reversing opacity pulse to the receiver's layer (under the
  * @c "FLUSH_ANIM" animation key) to advertise unseen or selectable content; removing it strips that
  * animation. A "fast" convenience starts the pulse with a shorter period, and a default convenience

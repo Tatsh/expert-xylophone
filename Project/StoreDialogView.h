@@ -1,5 +1,8 @@
-/** @file
- * The store's modal download dialog. It is a @c UIView subclass showing a spinning activity
+/**
+ * @file
+ * @brief The store's modal download dialog.
+ *
+ * It is a @c UIView subclass showing a spinning activity
  * indicator, a status message label, a download progress bar, and an abort button; it is presented
  * over the store tabs while a store download runs. @c RBStoreTabController owns one and shows or
  * hides it over the dimming cover view. The abort button forwards to the dialog's delegate through

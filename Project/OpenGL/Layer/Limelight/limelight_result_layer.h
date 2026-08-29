@@ -1,6 +1,6 @@
 /**
  * @file
- * The Limelight-theme result-window layer, @c LimelightResultLayer.
+ * @brief The Limelight-theme result-window layer, @c LimelightResultLayer.
  */
 
 #pragma once

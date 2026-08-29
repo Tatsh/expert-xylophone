@@ -1,6 +1,6 @@
 /**
  * @file
- * The cached device, locale, filesystem-path, and version accessors seeded at startup.
+ * @brief The cached device, locale, filesystem-path, and version accessors seeded at startup.
  */
 
 #pragma once

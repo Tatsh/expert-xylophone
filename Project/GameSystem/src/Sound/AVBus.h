@@ -1,6 +1,6 @@
 /**
  * @file
- * An AVFoundation sound-effect voice, @c AVBus.
+ * @brief An AVFoundation sound-effect voice, @c AVBus.
  */
 
 #import <Foundation/Foundation.h>

@@ -1,6 +1,6 @@
 /**
  * @file
- * The bounds-damage effect layer, @c DamageEffectLayer.
+ * @brief The bounds-damage effect layer, @c DamageEffectLayer.
  */
 
 #pragma once

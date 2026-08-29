@@ -1,5 +1,8 @@
-/** @file
- * A single button in the in-game settings menu overlay. It is a @c UIControl that hosts an inner
+/**
+ * @file
+ * @brief A single button in the in-game settings menu overlay.
+ *
+ * It is a @c UIControl that hosts an inner
  * @c UIButton styled with a themed, resizable background and foreground image for one menu entry
  * (how-to-play, customise, theme, map search, information, Applilink, or terms), plus a hidden
  * flashing effect image and effect-text image used to advertise unseen content.

@@ -1,6 +1,9 @@
-/** @file
- * The judge-timing (delay-frame) slider control used on the customise screen (created by
- * @c RBCustomSelectCollectionView). It is a custom @c UISlider drawn as a track sprite (the base
+/**
+ * @file
+ * @brief The judge-timing (delay-frame) slider control used on the customise screen (created by
+ * @c RBCustomSelectCollectionView).
+ *
+ * It is a custom @c UISlider drawn as a track sprite (the base
  * view) with a small grip sprite, plus a row of digit-image views that render the signed timing
  * value as a numeric readout of a fixed digit count.
  *

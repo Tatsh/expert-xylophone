@@ -1,6 +1,6 @@
 /**
  * @file
- * The Colette-theme full-combo layer, @c FullComboColetteLayer.
+ * @brief The Colette-theme full-combo layer, @c FullComboColetteLayer.
  */
 
 #pragma once

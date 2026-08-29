@@ -1,6 +1,6 @@
 /**
  * @file
- * The 3D polygon-mesh draw node, @c ne::C_DRAW_POLYGON_3D.
+ * @brief The 3D polygon-mesh draw node, @c ne::C_DRAW_POLYGON_3D.
  */
 
 #pragma once

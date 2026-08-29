@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink SDK's @c ApplilinkIndicator.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink SDK's @c ApplilinkIndicator.
  *
  * @c ApplilinkIndicator is the Applilink advert SDK's loading indicator: a dimming @c UIView
  * overlay that hosts a large white @c UIActivityIndicatorView and is shown while an advert screen

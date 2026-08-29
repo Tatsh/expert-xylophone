@@ -1,5 +1,6 @@
-/** @file
- * A single campaign store item: one entry of the server campaign unlock list, describing an
+/**
+ * @file
+ * @brief A single campaign store item: one entry of the server campaign unlock list, describing an
  * unlockable tune or reward, the granted-experience payload, and the acquisition-button state its
  * cell should display. Instances are built from a server campaign-list dictionary and re-evaluated
  * with @c termCheck after each acquisition step.

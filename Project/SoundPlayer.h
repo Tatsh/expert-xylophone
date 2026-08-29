@@ -1,6 +1,9 @@
-/** @file
- * A single mixer-voice wrapper around a decoded @c SoundData asset. It tracks a playback cursor
- * into the asset and streams frames into a caller-supplied buffer list on demand, driven by the
+/**
+ * @file
+ * @brief A single mixer-voice wrapper around a decoded @c SoundData asset.
+ *
+ * It tracks a playback cursor into the asset and streams frames into a caller-supplied buffer list
+ * on demand, driven by the
  * owning @c SoundManager graph's per-element render callback.
  *
  * The voice keeps three flags — playing, stopped, and looping — alongside the asset and the play

@@ -1,5 +1,7 @@
-/** @file
- * The pad two-up store list's pack tile: a single purchasable song pack rendered as a tile with a
+/**
+ * @file
+ * @brief The pad two-up store list's pack tile: a single purchasable song pack rendered as a tile
+ * with a
  * jacket, name, comment, price, an owned-state overlay button, and "new" and "sequence-extension"
  * corner badges. It reports a tap to its delegate through the @c StorePackViewDelegate protocol.
  * The same delegate type is shared by the pack detail surfaces (@c RBStoreDetailViewController and

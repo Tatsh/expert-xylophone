@@ -1,5 +1,8 @@
-/** @file
- * The in-app store tab controller. Despite the @c Controller suffix it is a @c UITabBarController
+/**
+ * @file
+ * @brief The in-app store tab controller.
+ *
+ * Despite the @c Controller suffix it is a @c UITabBarController
  * subclass (via @c RBBaseTabBarController) that hosts the store's four tabs: the song-pack store,
  * the extend-note store, the purchase-management screen, and the campaign screen, each wrapped in
  * its own @c RBNavigationController. It also owns the modal download dialog and the dimming cover

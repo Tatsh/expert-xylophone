@@ -1,6 +1,6 @@
 /**
  * @file
- * The on-disk RBFF chart-note record, @c RbffChartNote.
+ * @brief The on-disk RBFF chart-note record, @c RbffChartNote.
  */
 
 #pragma once

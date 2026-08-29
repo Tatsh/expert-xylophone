@@ -1,6 +1,6 @@
 /**
  * @file
- * The Colette-theme layer, @c ColetteThemeLayer.
+ * @brief The Colette-theme layer, @c ColetteThemeLayer.
  */
 
 #pragma once

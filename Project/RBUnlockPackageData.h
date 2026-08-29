@@ -1,6 +1,9 @@
-/** @file
- * One unlock package within the unlock catalogue: an identifier, a display order, a title, and the
- * list of item entries it grants. Parsed from a catalogue dictionary by @c RBUnlockData.
+/**
+ * @file
+ * @brief One unlock package within the unlock catalogue: an identifier, a display order, a title,
+ * and the list of item entries it grants.
+ *
+ * Parsed from a catalogue dictionary by @c RBUnlockData.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockPackageData, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

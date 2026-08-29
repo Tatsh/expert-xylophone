@@ -1,6 +1,7 @@
 /**
  * @file
- * The theme-2 Colette title screen's per-window sprite-animation keyframe tables, consumed by
+ * @brief The theme-2 Colette title screen's per-window sprite-animation keyframe tables, consumed
+ * by
  * @c rb::TitleColetteScene::RenderSprites.
  *
  * Each curve table is a flat run of (time, value) knot pairs. A window's loop slices its table per

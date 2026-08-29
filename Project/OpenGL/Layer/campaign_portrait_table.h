@@ -1,6 +1,6 @@
 /**
  * @file
- * The Hinabita campaign portrait layer's anchor and animation-curve tables for
+ * @brief The Hinabita campaign portrait layer's anchor and animation-curve tables for
  * @c rb::TitleColetteScene.
  */
 

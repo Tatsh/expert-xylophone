@@ -1,5 +1,8 @@
-/** @file
- * The "other" (miscellaneous) options sub-view of the music-select detail panel. It is the last
+/**
+ * @file
+ * @brief The "other" (miscellaneous) options sub-view of the music-select detail panel.
+ *
+ * It is the last
  * page of @c RBMusicView's paged setting scroll and presents up to four mutually-related play-mode
  * toggles: pastel-versus, ghost style, full-just-reflec, and full-combo. Each toggle is a container
  * @c UIView holding a labelled base image, a movable highlight image, and a slider bar image, and a

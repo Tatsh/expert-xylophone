@@ -1,6 +1,6 @@
 /**
  * @file
- * The phone-layout anchor-position record type and its runtime-filled tables.
+ * @brief The phone-layout anchor-position record type and its runtime-filled tables.
  */
 
 #pragma once

@@ -1,6 +1,9 @@
-/** @file
- * The pad two-up store list's table cell, holding a left and a right @c StorePackView pack tile
- * side by side across the cell's content view. Its @c initWithStyle:reuseIdentifier: builds both
+/**
+ * @file
+ * @brief The pad two-up store list's table cell, holding a left and a right @c StorePackView pack
+ * tile side by side across the cell's content view.
+ *
+ * Its @c initWithStyle:reuseIdentifier: builds both
  * tiles at fixed frames and adds them to the content view; @c prepareForReuse and @c dealloc reset
  * the tiles. Used by @c RBStorePageViewController.
  *

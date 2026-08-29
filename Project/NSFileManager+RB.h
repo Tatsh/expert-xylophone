@@ -1,6 +1,7 @@
-/** @file
- * @c NSFileManager convenience helpers used throughout the game: existence and directory checks,
- * directory creation, a free-space guard, and cached accessors for the standard on-device
+/**
+ * @file
+ * @brief @c NSFileManager convenience helpers used throughout the game: existence and directory
+ * checks, directory creation, a free-space guard, and cached accessors for the standard on-device
  * directories.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c NSFileManager(RB), image base

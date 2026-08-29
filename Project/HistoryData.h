@@ -1,6 +1,9 @@
-/** @file
- * A single play-history entry: the tune, difficulty, score, judgement tallies, achievement rate,
- * play date, and play count for one recorded play. The class copies its fields from a score-like
+/**
+ * @file
+ * @brief A single play-history entry: the tune, difficulty, score, judgement tallies, achievement
+ * rate, play date, and play count for one recorded play.
+ *
+ * The class copies its fields from a score-like
  * source, derives its achievement rate through @c History, and shifts the play date into the
  * device's local time zone.
  *

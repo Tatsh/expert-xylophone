@@ -1,6 +1,9 @@
-/** @file
- * The phone-layout table cell that hosts the promotion banner carousel (a @c StorePromotionView)
- * or the sample-play controls. The cell owns no state of its own; it exists only to relay its own
+/**
+ * @file
+ * @brief The phone-layout table cell that hosts the promotion banner carousel (a
+ * @c StorePromotionView) or the sample-play controls.
+ *
+ * The cell owns no state of its own; it exists only to relay its own
  * bounds to a tag-identified promotion subview during layout, so the carousel tracks the cell's
  * width as the table lays out.
  *

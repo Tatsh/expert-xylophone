@@ -1,7 +1,8 @@
-/** @file
- * @c UIImage convenience factories and image-processing helpers used across the game: themed and
- * localised named-asset loading (with an @c NSCache texture cache), rectangular cropping, a bottom
- * reflection (an alpha-gradient mask), and a per-channel @c CIColorMatrix tint.
+/**
+ * @file
+ * @brief @c UIImage convenience factories and image-processing helpers used across the game: themed
+ * and localised named-asset loading (with an @c NSCache texture cache), rectangular cropping, a
+ * bottom reflection (an alpha-gradient mask), and a per-channel @c CIColorMatrix tint.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c UIImage(RB), image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

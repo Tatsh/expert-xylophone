@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkWebAPI transport layer.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkWebAPI transport layer.
  *
  * @c ApplilinkWebAPI is the SDK's low-level HTTP transport: it assembles @c GET and @c POST
  * @c NSMutableURLRequest objects from a base URL and a parameter dictionary (percent-joining each

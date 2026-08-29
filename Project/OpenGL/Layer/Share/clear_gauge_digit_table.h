@@ -1,6 +1,6 @@
 /**
  * @file
- * The clear-gauge percentage label and digit glyph descriptor tables.
+ * @brief The clear-gauge percentage label and digit glyph descriptor tables.
  */
 
 #pragma once

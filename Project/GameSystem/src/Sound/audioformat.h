@@ -1,6 +1,6 @@
 /**
  * @file
- * Shared audio-format descriptor builders for the sound engine.
+ * @brief Shared audio-format descriptor builders for the sound engine.
  */
 
 #ifndef AUDIOFORMAT_H

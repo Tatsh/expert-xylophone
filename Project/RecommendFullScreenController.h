@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink recommend advert SDK's
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend advert SDK's
  * @c RecommendFullScreenController.
  *
  * @c RecommendFullScreenController is the full-screen (interstitial) advert view controller the

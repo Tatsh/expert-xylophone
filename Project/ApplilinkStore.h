@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkStore.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkStore.
  *
  * @c ApplilinkStore is the SDK's App Store product-page facade: a @c dispatch_once singleton that
  * drives an @c ApplilinkViewController, which in turn presents and dismisses the native App Store

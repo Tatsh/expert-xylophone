@@ -1,5 +1,8 @@
-/** @file
- * The extend-note catalogue list model. It fetches the extend-note catalogue from the server in
+/**
+ * @file
+ * @brief The extend-note catalogue list model.
+ *
+ * It fetches the extend-note catalogue from the server in
  * pages, resolves each entry against StoreKit, caches the parsed @c StoreExtendNoteInfo records,
  * and reports load progress to its delegate. It also drives the optional-products request used to
  * open a single extend-note pack from an external launch.

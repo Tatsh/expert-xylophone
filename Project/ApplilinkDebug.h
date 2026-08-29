@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink recommend SDK's @c ApplilinkDebug.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend SDK's @c ApplilinkDebug.
  *
  * @c ApplilinkDebug is the Applilink advert-SDK debug console's facade. It is a stateless utility
  * class: every member is a class method and the class holds no instance state. Each method is a

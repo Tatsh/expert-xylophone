@@ -1,6 +1,6 @@
 /**
  * @file
- * The play-field clear-gauge layer, @c ClearGaugeLayer.
+ * @brief The play-field clear-gauge layer, @c ClearGaugeLayer.
  */
 
 #pragma once

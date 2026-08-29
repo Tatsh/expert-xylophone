@@ -1,6 +1,7 @@
-/** @file
- * A single music-file download job: the source URL, the destination file path, and the display
- * name recorded when the download completes.
+/**
+ * @file
+ * @brief A single music-file download job: the source URL, the destination file path, and the
+ * display name recorded when the download completes.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreDownloadTask, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

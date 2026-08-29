@@ -1,6 +1,9 @@
-/** @file
- * A small @c NSCoding-conforming data model wrapping a single push-notification payload
- * dictionary. Instances are archived and unarchived under the coder key @c notificationList and
+/**
+ * @file
+ * @brief A small @c NSCoding-conforming data model wrapping a single push-notification payload
+ * dictionary.
+ *
+ * Instances are archived and unarchived under the coder key @c notificationList and
  * are queued in the app delegate's pending push list.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBNotificationData, image base

@@ -1,6 +1,9 @@
-/** @file
- * The foundational HTTP request wrapper the @c Downloader façade drives. It builds a mutable
- * @c NSURLRequest (GET, POST, or a download-to-file GET), stamps the common @c User-Agent,
+/**
+ * @file
+ * @brief The foundational HTTP request wrapper the @c Downloader façade drives.
+ *
+ * It builds a mutable @c NSURLRequest (GET, POST, or a download-to-file GET), stamps the common
+ * @c User-Agent,
  * @c Accept-Language, and optional @c Content-Type headers on it, and runs it through an
  * @c NSURLSession. As the session delegate it accumulates the response body, tracks progress,
  * verifies an optional body hash against the response's @c code header, and reports proceed,

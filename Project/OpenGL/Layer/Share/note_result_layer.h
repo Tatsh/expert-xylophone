@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-result effect layer, @c NoteResultLayer.
+ * @brief The note-result effect layer, @c NoteResultLayer.
  */
 
 #pragma once

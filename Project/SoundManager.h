@@ -1,5 +1,8 @@
-/** @file
- * A low-level sound-effect mixer manager singleton. Unlike @c AudioManager (which drives the
+/**
+ * @file
+ * @brief A low-level sound-effect mixer manager singleton.
+ *
+ * Unlike @c AudioManager (which drives the
  * engine's cached voice player and streamed bus mixer), this manager owns a small @c AUGraph of
  * its own: an embedded three-dimensional mixer node feeding a remote-I/O output node. It keeps a
  * pool of decoded @c SoundData assets and a bank of @c SoundPlayer voices, one per mixer input

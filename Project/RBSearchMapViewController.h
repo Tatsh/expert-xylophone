@@ -1,5 +1,8 @@
-/** @file
- * The arcade-locator map screen. It is an @c RBBaseViewController subclass that hosts an
+/**
+ * @file
+ * @brief The arcade-locator map screen.
+ *
+ * It is an @c RBBaseViewController subclass that hosts an
  * @c RBSearchMapView (the treasure-map view) full-screen. It installs a custom navigation bar with
  * a back button and a "current location" button, shows the map once the view has appeared, and
  * toggles the map's user-tracking mode when the location button is tapped. As the map's

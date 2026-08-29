@@ -1,5 +1,8 @@
-/** @file
- * The campaign store page controller. It is the root controller of the store's campaign tab,
+/**
+ * @file
+ * @brief The campaign store page controller.
+ *
+ * It is the root controller of the store's campaign tab,
  * hosted by @c RBStoreTabController through its @c campaignNavCtrl. The page fetches the campaign
  * unlock list from the server, presents it in a table (phone) or a pad detail overlay, and drives
  * the serial-code, terms, item-info, sample-play, and download flows for each campaign item.

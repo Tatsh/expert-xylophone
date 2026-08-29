@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c AnalysisNetwork.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c AnalysisNetwork.
  *
  * @c AnalysisNetwork is the SDK-gated front door to the advert-analytics layer: a stateless class
  * (no ivars, a single class method) that guards the underlying @c AnalysisNetworkCore request

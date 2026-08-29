@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink recommend advert SDK's @c ShadeView.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend advert SDK's @c ShadeView.
  *
  * @c ShadeView is the translucent full-screen @c UIView subclass that dims the screen behind an
  * interstitial advert (see @c RecommendFullScreenController). It paints a semi-transparent dark

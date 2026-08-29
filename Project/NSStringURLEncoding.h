@@ -1,5 +1,8 @@
-/** @file
- * The Applilink ad SDK's URL percent-encoding helper class. Despite the name, this is a standalone
+/**
+ * @file
+ * @brief The Applilink ad SDK's URL percent-encoding helper class.
+ *
+ * Despite the name, this is a standalone
  * @c NSObject subclass (not a category on @c NSString) that exposes two class methods wrapping the
  * CoreFoundation percent-escape APIs.
  *

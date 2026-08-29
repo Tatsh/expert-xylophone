@@ -1,5 +1,8 @@
-/** @file
- * The in-game settings menu overlay. It slides a rounded panel of themed menu buttons down over the
+/**
+ * @file
+ * @brief The in-game settings menu overlay.
+ *
+ * It slides a rounded panel of themed menu buttons down over the
  * music-select screen, letting the player open the how-to-play, customise, theme, map search,
  * notification, terms, and Applilink sub-screens, or dismiss the panel.
  *

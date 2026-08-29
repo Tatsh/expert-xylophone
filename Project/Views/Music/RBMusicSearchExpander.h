@@ -1,5 +1,8 @@
-/** @file
- * The music-search synonym expander. It maintains a mutable dictionary that maps a search term to
+/**
+ * @file
+ * @brief The music-search synonym expander.
+ *
+ * It maintains a mutable dictionary that maps a search term to
  * the set of extra words the music-select search should also match, persisting it as a JSON file
  * (@c SearchExpandDict.txt) in the application-support directory and seeding it from the bundled
  * copy on first run.

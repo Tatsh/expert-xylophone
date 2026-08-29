@@ -1,6 +1,9 @@
-/** @file
- * The phone-layout pack detail controller pushed onto the store's navigation stack by
- * @c RBStorePageViewController. It shows a pack's artwork and purchase button in a table header,
+/**
+ * @file
+ * @brief The phone-layout pack detail controller pushed onto the store's navigation stack by
+ * @c RBStorePageViewController.
+ *
+ * It shows a pack's artwork and purchase button in a table header,
  * one row per contained tune (with sample playback), and trailing copyright and terms-of-use rows,
  * and it drives the buy or download action through its delegate.
  *

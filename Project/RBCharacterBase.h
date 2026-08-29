@@ -1,5 +1,8 @@
-/** @file
- * A lightweight two-dimensional kinematic model for an animated menu character. It carries a
+/**
+ * @file
+ * @brief A lightweight two-dimensional kinematic model for an animated menu character.
+ *
+ * It carries a
  * position, a per-frame velocity, and an acceleration, plus an optional axis-aligned boundary box
  * and the flags that decide how the boundary is enforced. Each @c update step advances the
  * position by the velocity and then, when limiting is enabled, clamps the position back inside the

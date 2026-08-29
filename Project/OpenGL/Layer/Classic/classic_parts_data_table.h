@@ -1,6 +1,6 @@
 /**
  * @file
- * The Classic result-window parts-data tables.
+ * @brief The Classic result-window parts-data tables.
  */
 
 #pragma once

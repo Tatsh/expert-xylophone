@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's piecewise-linear animation curve, @c FloatCurve, and its sampling helpers.
+ * @brief The engine's piecewise-linear animation curve, @c FloatCurve, and its sampling helpers.
  */
 
 #pragma once

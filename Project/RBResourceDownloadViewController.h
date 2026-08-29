@@ -1,5 +1,8 @@
-/** @file
- * The full-screen resource-download flow. It is the view controller the app delegate presents to
+/**
+ * @file
+ * @brief The full-screen resource-download flow.
+ *
+ * It is the view controller the app delegate presents to
  * refresh the downloadable game-asset bundle: it asks the server for the current resource version
  * and item URL, compares that against the installed version, downloads the asset archive to the
  * Caches directory, unzips it into the image-asset directory, and verifies the extracted file list

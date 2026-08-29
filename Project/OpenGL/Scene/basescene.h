@@ -1,6 +1,6 @@
 /**
  * @file
- * The scene base, @c rb::BaseScene (RTTI @c N2rb9BaseSceneE).
+ * @brief The scene base, @c rb::BaseScene (RTTI @c N2rb9BaseSceneE).
  */
 
 #pragma once

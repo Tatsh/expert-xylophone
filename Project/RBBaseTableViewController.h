@@ -1,5 +1,8 @@
-/** @file
- * Shared base class for the application's grouped table screens. It is a @c UITableViewController
+/**
+ * @file
+ * @brief Shared base class for the application's grouped table screens.
+ *
+ * It is a @c UITableViewController
  * subclass that hides the status bar, paints the table's background white, and drives every
  * autorotation decision from a single rule: when the region uses the iPad (wide) layout and
  * background music is playing, the interface is locked to the orientation that is already on

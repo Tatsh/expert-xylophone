@@ -1,6 +1,6 @@
 /**
  * @file
- * The long-note sprite-type layout table.
+ * @brief The long-note sprite-type layout table.
  */
 
 #pragma once

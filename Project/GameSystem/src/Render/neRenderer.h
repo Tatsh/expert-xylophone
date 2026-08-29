@@ -1,6 +1,6 @@
 /**
  * @file
- * The reference-counted projection viewport and camera node, @c ne::Viewport and
+ * @brief The reference-counted projection viewport and camera node, @c ne::Viewport and
  * @c ne::CameraNode, and the render-camera installation and factory helpers.
  */
 

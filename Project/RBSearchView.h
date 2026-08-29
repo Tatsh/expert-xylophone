@@ -1,5 +1,8 @@
-/** @file
- * The music-search popup overlay. It is an @c RBMusicMenuPopupView subclass (popup type
+/**
+ * @file
+ * @brief The music-search popup overlay.
+ *
+ * It is an @c RBMusicMenuPopupView subclass (popup type
  * @c RBMusicMenuPopupViewTypeSearch) that the pad build of @c RBMenuView presents over the
  * music-menu screen; it hosts an @c RBSearchMapView inside the base popup's content view and a
  * current-position button that recentres the map. As the map's delegate it tracks the user's

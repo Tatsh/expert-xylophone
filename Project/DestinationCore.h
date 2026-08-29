@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c DestinationCore endpoint helper.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c DestinationCore endpoint helper.
  *
  * @c DestinationCore is a stateless class that registers a click-through destination with the
  * Applilink advert server. Its single public class method assembles a parameter dictionary (the

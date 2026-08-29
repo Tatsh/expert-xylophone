@@ -1,6 +1,6 @@
 /**
  * @file
- * The score-digit number layer, @c NumberLayer.
+ * @brief The score-digit number layer, @c NumberLayer.
  */
 
 #pragma once

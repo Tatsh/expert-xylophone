@@ -1,6 +1,9 @@
-/** @file
- * The shared base tab bar controller for the store screens. It is a @c UITabBarController subclass
- * that supplies the store's status-bar and rotation policy; @c RBStoreTabController derives from
+/**
+ * @file
+ * @brief The shared base tab bar controller for the store screens.
+ *
+ * It is a @c UITabBarController subclass that supplies the store's status-bar and rotation policy;
+ * @c RBStoreTabController derives from
  * it. The class adds no ivars, properties, or protocols of its own: it only overrides the standard
  * @c UIViewController and @c UITabBarController status-bar, appearance, and rotation methods so
  * the store tabs adopt the region-dependent rotation lock and hidden status bar.

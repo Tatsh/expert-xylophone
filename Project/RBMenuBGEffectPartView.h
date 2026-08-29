@@ -1,5 +1,8 @@
-/** @file
- * A single animated particle layer of an @c RBMenuBGEffectView background. Concrete subclasses (for
+/**
+ * @file
+ * @brief A single animated particle layer of an @c RBMenuBGEffectView background.
+ *
+ * Concrete subclasses (for
  * example @c RBResourceDownloadBGEffectPartView) seed the three artwork paths in their @c init; the
  * base class builds a sprite @c UIImageView from those paths and drives its per-cycle spawn
  * position, alpha, size, and image with a looping @c UIView animation.

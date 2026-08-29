@@ -1,6 +1,6 @@
 /**
  * @file
- * The shared GL ES 1.1 render-state backend, @c neGLESRenderer.
+ * @brief The shared GL ES 1.1 render-state backend, @c neGLESRenderer.
  */
 
 #pragma once

@@ -1,5 +1,8 @@
-/** @file
- * The Game Center wrapper singleton. It gates access to the GameKit APIs behind an availability
+/**
+ * @file
+ * @brief The Game Center wrapper singleton.
+ *
+ * It gates access to the GameKit APIs behind an availability
  * check (the @c GKLocalPlayer class must exist and the system version must be at least 4.1), then
  * authenticates the local player through @c -[GKLocalPlayer setAuthenticateHandler:]. Leaderboard
  * score submission is performed elsewhere (see the free function that builds a @c GKScore from the

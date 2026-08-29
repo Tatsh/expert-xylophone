@@ -1,5 +1,6 @@
-/** @file
- * Minimal reconstructed interface for the Applilink recommend SDK's @c RecommendAdId.
+/**
+ * @file
+ * @brief Minimal reconstructed interface for the Applilink recommend SDK's @c RecommendAdId.
  *
  * @c RecommendAdId is the recommend network's advertising-identifier record: it persists the
  * advertising identifier keyed by country code and category id, and resolves the identifier used

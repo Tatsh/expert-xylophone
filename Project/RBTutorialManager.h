@@ -1,5 +1,8 @@
-/** @file
- * The tutorial-progression manager singleton. It tracks which guided tutorial the player is
+/**
+ * @file
+ * @brief The tutorial-progression manager singleton.
+ *
+ * It tracks which guided tutorial the player is
  * currently in and how far they have advanced, expressed as a single monotonically increasing
  * status code. The class methods answer whether a given tutorial (the music-select walkthrough,
  * the in-play walkthrough, the customise walkthrough, or the store walkthrough) still needs to be

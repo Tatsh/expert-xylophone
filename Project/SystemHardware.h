@@ -1,5 +1,8 @@
-/** @file
- * The device hardware-identity singleton. It resolves the running device's machine model (via
+/**
+ * @file
+ * @brief The device hardware-identity singleton.
+ *
+ * It resolves the running device's machine model (via
  * @c sysctlbyname("hw.machine")) to an enumerated hardware type and exposes both the raw model
  * string and that type. The lookup runs lazily on first access and is cached for the lifetime of
  * the process.

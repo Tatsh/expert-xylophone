@@ -1,6 +1,9 @@
-/** @file
- * The full-screen news HUD overlay the music menu shows when a fresh news item is available. The
- * music-menu hub (@c RBMenuView) creates one over itself, hands it the news image URL and the
+/**
+ * @file
+ * @brief The full-screen news HUD overlay the music menu shows when a fresh news item is
+ * available.
+ *
+ * The music-menu hub (@c RBMenuView) creates one over itself, hands it the news image URL and the
  * item's information identifier, and the HUD dims the screen, spins a loading indicator, downloads
  * the image through an @c ImageDownloader, and pops the finished image in with a scale keyframe
  * animation. Tapping the HUD, or a failed download, fades it back out and removes it; a successful

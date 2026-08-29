@@ -1,5 +1,8 @@
-/** @file
- * The phone build's full-screen news / information page view controller. It is the phone-side
+/**
+ * @file
+ * @brief The phone build's full-screen news / information page view controller.
+ *
+ * It is the phone-side
  * counterpart of the @c RBNotificationPageView popup: instead of a popup over the music menu, the
  * phone build pushes this @c RBBaseViewController onto its navigation stack. It builds a themed
  * navigation bar with a custom back button, hosts an @c RBWebView loading the news web-info URL

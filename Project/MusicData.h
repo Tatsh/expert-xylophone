@@ -1,5 +1,8 @@
-/** @file
- * The catalogue entry for a single tune. A @c MusicData instance carries the tune identifier, its
+/**
+ * @file
+ * @brief The catalogue entry for a single tune.
+ *
+ * A @c MusicData instance carries the tune identifier, its
  * per-difficulty levels, its tempo bounds, the localised title and artist strings (with their
  * hiragana readings, romanisations, sort keys, and initials), and the packaged asset archive it
  * was loaded from. It decrypts and vends the audio, note-sheet, artwork, and pre-rendered

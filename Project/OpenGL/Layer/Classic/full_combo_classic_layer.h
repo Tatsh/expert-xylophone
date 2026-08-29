@@ -1,6 +1,6 @@
 /**
  * @file
- * The Classic-theme full-combo layer, @c FullComboClassicLayer.
+ * @brief The Classic-theme full-combo layer, @c FullComboClassicLayer.
  */
 
 #pragma once

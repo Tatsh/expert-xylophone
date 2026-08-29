@@ -1,6 +1,6 @@
 /**
  * @file
- * The RBFF chart-stream cursor and its header helpers.
+ * @brief The RBFF chart-stream cursor and its header helpers.
  */
 
 #pragma once

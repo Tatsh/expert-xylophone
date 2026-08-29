@@ -1,5 +1,8 @@
-/** @file
- * The Applilink recommend-network advert facade. A thin, class-method-only wrapper over the
+/**
+ * @file
+ * @brief The Applilink recommend-network advert facade.
+ *
+ * A thin, class-method-only wrapper over the
  * Applilink recommend SDK (@c RecommendCore): every entry point first asks the SDK whether it may
  * run and then either forwards to the shared @c RecommendCore or reports a localised error back to
  * the caller.

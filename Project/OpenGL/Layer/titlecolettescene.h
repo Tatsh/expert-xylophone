@@ -1,6 +1,6 @@
 /**
  * @file
- * The theme-2 (Colette) parts-based title-screen scene, @c rb::TitleColetteScene.
+ * @brief The theme-2 (Colette) parts-based title-screen scene, @c rb::TitleColetteScene.
  */
 
 #pragma once

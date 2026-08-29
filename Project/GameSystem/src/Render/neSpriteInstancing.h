@@ -1,6 +1,6 @@
 /**
  * @file
- * The batched sprite draw node, @c ne::C_SPRITE_INSTANCING_2D.
+ * @brief The batched sprite draw node, @c ne::C_SPRITE_INSTANCING_2D.
  */
 
 #pragma once

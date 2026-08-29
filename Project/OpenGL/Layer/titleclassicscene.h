@@ -1,6 +1,6 @@
 /**
  * @file
- * The theme-0 title-screen scene layer, @c TitleClassicScene.
+ * @brief The theme-0 title-screen scene layer, @c TitleClassicScene.
  */
 
 #pragma once

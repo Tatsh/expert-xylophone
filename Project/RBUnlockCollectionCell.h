@@ -1,5 +1,8 @@
-/** @file
- * A single unlockable-item cell inside an @c RBUnlockCollectionView. It layers the item's artwork,
+/**
+ * @file
+ * @brief A single unlockable-item cell inside an @c RBUnlockCollectionView.
+ *
+ * It layers the item's artwork,
  * a lock/unlock frame, a dimming overlay for unaffordable items, a "new" badge, an unlocked-state
  * overlay, and a point-cost label, and carries the item's model data. Setting @c itemData
  * asynchronously loads the item's artwork (downloading a music item's cover through an

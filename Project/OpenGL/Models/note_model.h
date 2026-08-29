@@ -1,6 +1,6 @@
 /**
  * @file
- * A live play-field note, @c NoteModel.
+ * @brief A live play-field note, @c NoteModel.
  */
 
 #pragma once

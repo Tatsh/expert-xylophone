@@ -1,5 +1,8 @@
-/** @file
- * The per-difficulty numeric score readout hosted by @c RBMusicView. It renders a fixed four-digit
+/**
+ * @file
+ * @brief The per-difficulty numeric score readout hosted by @c RBMusicView.
+ *
+ * It renders a fixed four-digit
  * score as a row of image glyphs: one @c UIImageView per digit, laid out left to right, with the
  * leading (insignificant) zeros drawn at half opacity. The glyph set is chosen from the user's
  * theme and, on the themed layouts, from the selected difficulty grade.

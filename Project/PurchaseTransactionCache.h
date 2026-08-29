@@ -1,5 +1,8 @@
-/** @file
- * A lightweight per-transaction receipt cache. It snapshots the product identifier, transaction
+/**
+ * @file
+ * @brief A lightweight per-transaction receipt cache.
+ *
+ * It snapshots the product identifier, transaction
  * identifier, and transaction date of a StoreKit payment transaction so that the purchase manager
  * can carry them through the asynchronous server-side receipt verification, and it holds the
  * receipt data and the response digest gathered during that verification.

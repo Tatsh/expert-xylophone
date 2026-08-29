@@ -1,5 +1,7 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c RotateStoreProductViewController.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c
+ * RotateStoreProductViewController.
  *
  * @c RotateStoreProductViewController is a thin @c SKStoreProductViewController subclass that the
  * SDK's @c ApplilinkViewController presents to show the native App Store product page. It exists

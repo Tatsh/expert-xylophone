@@ -1,5 +1,8 @@
-/** @file
- * Builds the play-result share image posted to Twitter. It owns an off-screen RGBA bitmap context,
+/**
+ * @file
+ * @brief Builds the play-result share image posted to Twitter.
+ *
+ * It owns an off-screen RGBA bitmap context,
  * composites the background, the title and artist images, the difficulty, level, mode, and line
  * badges, and one or two score columns (the local player and, in a rival battle, the opponent),
  * then returns the finished @c UIImage. The two score columns are held as a pair of

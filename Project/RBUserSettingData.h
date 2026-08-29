@@ -1,5 +1,8 @@
-/** @file
- * The persisted user-settings singleton. It holds every player-adjustable option: the selected
+/**
+ * @file
+ * @brief The persisted user-settings singleton.
+ *
+ * It holds every player-adjustable option: the selected
  * theme, the per-theme customise items (BGM, shot, explosion, frame, background, and note types,
  * gauge and ghost styles, shot volume, and background brightness), the play options (difficulty,
  * difficulty level, game type, speed type, play and player colours, rival alpha, CPU level, and the

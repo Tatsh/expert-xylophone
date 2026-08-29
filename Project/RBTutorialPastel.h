@@ -1,5 +1,8 @@
-/** @file
- * The animated pastel speech-bubble view shown beside the tutorial spotlight. It is a @c UIView
+/**
+ * @file
+ * @brief The animated pastel speech-bubble view shown beside the tutorial spotlight.
+ *
+ * It is a @c UIView
  * that builds four @c UIImageView children (head, body, and the left and right tails) from clipped
  * regions of the tutorial message artwork atlas, laid out around a resolution-dependent display
  * rate, and offers a wave and a jump keyframe animation driven through those children's layers.

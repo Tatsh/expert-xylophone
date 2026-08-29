@@ -1,5 +1,8 @@
-/** @file
- * The ranking leaderboard table view. It is a @c UITableView subclass that loads a scored ranking
+/**
+ * @file
+ * @brief The ranking leaderboard table view.
+ *
+ * It is a @c UITableView subclass that loads a scored ranking
  * for a given player scope (friend or total) from Game Center and renders one @c RBRankingTableCell
  * per entry. It also serves as its own @c UITableViewDataSource and @c UITableViewDelegate.
  *

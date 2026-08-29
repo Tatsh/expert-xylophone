@@ -1,6 +1,6 @@
 /**
  * @file
- * The just-reflec effect layer, @c JustReflecEffectLayer.
+ * @brief The just-reflec effect layer, @c JustReflecEffectLayer.
  */
 
 #pragma once

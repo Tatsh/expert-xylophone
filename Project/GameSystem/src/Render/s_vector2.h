@@ -1,6 +1,6 @@
 /**
  * @file
- * The two-component float vector value type, @c S_VECTOR2.
+ * @brief The two-component float vector value type, @c S_VECTOR2.
  */
 
 #pragma once

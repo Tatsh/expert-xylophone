@@ -1,6 +1,6 @@
 /**
  * @file
- * The parts-based title-screen scene layer, @c TitleLimelightScene.
+ * @brief The parts-based title-screen scene layer, @c TitleLimelightScene.
  */
 
 #pragma once

@@ -1,5 +1,8 @@
-/** @file
- * The push-notification prompt overlay. It is a @c UIView that slides a themed banner
+/**
+ * @file
+ * @brief The push-notification prompt overlay.
+ *
+ * It is a @c UIView that slides a themed banner
  * (@c bgView with a two-line @c messageLabel) down from above the top edge of the music-menu
  * screen, auto-hides itself after a delay, and — when tapped — routes the banner's URL through
  * @c RBUrlSchemeManager or hands an @c http URL back to its delegate. @c RBMenuView owns one

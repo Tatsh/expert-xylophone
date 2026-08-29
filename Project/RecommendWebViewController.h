@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink recommend SDK's @c RecommendWebViewController.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend SDK's @c RecommendWebViewController.
  *
  * @c RecommendWebViewController is the advert-screen web view controller that @c RecommendCore
  * presents. It is a thin subclass of @c RewardWebViewController: it inherits the whole web-view

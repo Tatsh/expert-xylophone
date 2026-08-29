@@ -1,5 +1,8 @@
-/** @file
- * The catalogue entry for a purchased extend (special) note pack. A @c MusicDataExtend instance
+/**
+ * @file
+ * @brief The catalogue entry for a purchased extend (special) note pack.
+ *
+ * A @c MusicDataExtend instance
  * pairs a base tune identifier with the extend audio archive it draws its special chart from: it
  * records the base @c MusicID, the extend archive's own @c ExtMusicID, the special-chart level, an
  * optional comment, and the packaged archive path. Its @c sheetSpecial and @c sheetSpecialLight

@@ -1,5 +1,8 @@
-/** @file
- * The extend-note store page controller. It is the root controller of the store's extend-note tab
+/**
+ * @file
+ * @brief The extend-note store page controller.
+ *
+ * It is the root controller of the store's extend-note tab
  * and is an @c RBBaseViewController subclass owned through @c RBStoreTabController's
  * @c extendNoteNavCtrl. It lists the purchasable extend-note packs, drives their purchase,
  * restore, and download flows, and hosts the pad-layout note-detail overlay.

@@ -1,6 +1,9 @@
-/** @file
- * The experience/unlock item picker hosted by @c RBCustomView on the themed (Limelight and Colette)
- * layouts. It shows the player's lime-point balance, an optional Applilink reward banner button,
+/**
+ * @file
+ * @brief The experience/unlock item picker hosted by @c RBCustomView on the themed (Limelight and
+ * Colette) layouts.
+ *
+ * It shows the player's lime-point balance, an optional Applilink reward banner button,
  * and one horizontal @c RBUnlockCollectionView per unlock package stacked in a scroll view. Tapping
  * an item opens the @c RBCustomInfoPopupView confirmation popup; confirming spends the points,
  * records the unlock in @c RBExperienceData, reports it to the server, and, for music items,

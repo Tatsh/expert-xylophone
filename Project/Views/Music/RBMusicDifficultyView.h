@@ -1,5 +1,8 @@
-/** @file
- * The difficulty-selector sub-view hosted by the music-select detail panel. It is the setting page
+/**
+ * @file
+ * @brief The difficulty-selector sub-view hosted by the music-select detail panel.
+ *
+ * It is the setting page
  * that holds the per-difficulty buttons (basic, medium, hard, and, when the song has an extended
  * chart, the extended button). Each button carries a difficulty icon, a selected-state flash
  * overlay, and a difficulty-level number image. Tapping a button plays the themed voice, records

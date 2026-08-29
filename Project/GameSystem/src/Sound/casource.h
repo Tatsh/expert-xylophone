@@ -1,6 +1,6 @@
 /**
  * @file
- * A decoded one-shot sound buffer, @c caSource.
+ * @brief A decoded one-shot sound buffer, @c caSource.
  */
 
 #pragma once

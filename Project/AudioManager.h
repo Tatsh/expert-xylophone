@@ -1,7 +1,10 @@
-/** @file
- * The game's central audio manager singleton. It owns two engine-side sound subsystems reached
- * through the C++ audio bridge: a @c caPlayerMgr voice player (the @c sePlayer subsystem, which
- * plays cached one-shot sound effects and short voices) and an @c AudioSourceSlot bus manager (the
+/**
+ * @file
+ * @brief The game's central audio manager singleton.
+ *
+ * It owns two engine-side sound subsystems reached through the C++ audio bridge: a @c caPlayerMgr
+ * voice player (the @c sePlayer subsystem, which plays cached one-shot sound effects and short
+ * voices) and an @c AudioSourceSlot bus manager (the
  * @c seAVPlayer subsystem, which streams grouped sources through mixer buses). On top of those it
  * layers ObjC @c AVAudioPlayer instances for the looping background music and the currently playing
  * voice line, together with fade-in and fade-out timing, an interruption and suspend or resume

@@ -1,6 +1,6 @@
 /**
  * @file
- * The play-field main-frame layer, @c MainFrameLayer.
+ * @brief The play-field main-frame layer, @c MainFrameLayer.
  */
 
 #pragma once

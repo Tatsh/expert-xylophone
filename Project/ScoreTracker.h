@@ -1,6 +1,6 @@
 /**
  * @file
- * The per-play score and judgement tracker, @c ScoreTracker.
+ * @brief The per-play score and judgement tracker, @c ScoreTracker.
  */
 
 #pragma once

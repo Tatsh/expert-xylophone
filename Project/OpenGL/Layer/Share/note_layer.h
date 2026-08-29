@@ -1,6 +1,6 @@
 /**
  * @file
- * The note particle layer, @c NoteLayer.
+ * @brief The note particle layer, @c NoteLayer.
  */
 
 #pragma once

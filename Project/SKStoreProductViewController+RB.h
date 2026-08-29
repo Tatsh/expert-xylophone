@@ -1,5 +1,8 @@
-/** @file
- * @c SKStoreProductViewController status-bar preference. The application presents the App Store
+/**
+ * @file
+ * @brief @c SKStoreProductViewController status-bar preference.
+ *
+ * The application presents the App Store
  * product sheet full screen, so the category overrides the controller's status-bar preference to
  * hide it.
  *

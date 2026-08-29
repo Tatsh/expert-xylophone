@@ -1,6 +1,6 @@
 /**
  * @file
- * The texture-cache control singleton node, @c TextureCacheControl.
+ * @brief The texture-cache control singleton node, @c TextureCacheControl.
  */
 
 #pragma once

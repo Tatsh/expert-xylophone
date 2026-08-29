@@ -1,6 +1,6 @@
 /**
  * @file
- * The one-shot voice-player subsystem, @c caPlayerMgr.
+ * @brief The one-shot voice-player subsystem, @c caPlayerMgr.
  */
 
 #pragma once

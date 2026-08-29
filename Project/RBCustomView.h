@@ -1,5 +1,8 @@
-/** @file
- * The customize popup view. It is an @c RBMusicMenuPopupView configured with the customize popup
+/**
+ * @file
+ * @brief The customize popup view.
+ *
+ * It is an @c RBMusicMenuPopupView configured with the customize popup
  * type, hosting the customize item picker (@c RBCustomSelectView) and, on the themed layouts, the
  * experience/unlock picker (@c RBUnlockView), a set/unlock mode-toggle button pair with a framed
  * gradient backdrop and a flashing effect overlay, and the reward list (@c RBRewardListView) that

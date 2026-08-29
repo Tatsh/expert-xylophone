@@ -1,7 +1,10 @@
-/** @file
- * The delegate protocol adopted by the store page to receive pack-list load results from its
- * @c RBStorePackList model. This is a minimal stub declaring only the surface
- * @c RBStorePageViewController relies on; the full model class is reconstructed separately.
+/**
+ * @file
+ * @brief The delegate protocol adopted by the store page to receive pack-list load results from
+ * its @c RBStorePackList model.
+ *
+ * This is a minimal stub declaring only the surface @c RBStorePageViewController relies on; the
+ * full model class is reconstructed separately.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (protocol @c StorePackListDelegate, image
  * base 0x100000000). Ghidra addresses are offsets relative to the image base.

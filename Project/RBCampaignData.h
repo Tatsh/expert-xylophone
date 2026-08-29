@@ -1,5 +1,8 @@
-/** @file
- * The campaign and bonus-event data singleton. It parses the campaign descriptor served with the
+/**
+ * @file
+ * @brief The campaign and bonus-event data singleton.
+ *
+ * It parses the campaign descriptor served with the
  * store payload, tracking the active campaign name, whether a campaign is currently running,
  * whether the running campaign is the March 2017 "hinabita" collaboration, the store skin colours
  * and images, and the campaign message list. Store banner and strap images are fetched

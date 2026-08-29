@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink recommend SDK's @c RecommendDebug.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend SDK's @c RecommendDebug.
  *
  * @c RecommendDebug is the recommend network's debug-override store. It is a stateless utility
  * class: every member is a class method and the class holds no instance state. When debug mode is

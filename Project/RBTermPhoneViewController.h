@@ -1,5 +1,8 @@
-/** @file
- * The phone-layout terms-of-use view controller. It is an @c RBBaseViewController subclass pushed
+/**
+ * @file
+ * @brief The phone-layout terms-of-use view controller.
+ *
+ * It is an @c RBBaseViewController subclass pushed
  * onto the navigation stack (from the store pack and note detail screens and from the music menu's
  * terms row on the phone build, where the pad build overlays @c RBTermView instead). It builds a
  * navigation-bar title label and a custom "back" left bar-button item, downloads the terms list for

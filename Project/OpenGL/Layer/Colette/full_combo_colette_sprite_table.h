@@ -1,6 +1,6 @@
 /**
  * @file
- * The Colette full-combo sprite-type descriptor table.
+ * @brief The Colette full-combo sprite-type descriptor table.
  */
 
 #pragma once

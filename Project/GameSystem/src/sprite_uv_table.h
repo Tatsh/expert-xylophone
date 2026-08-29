@@ -1,6 +1,6 @@
 /**
  * @file
- * The shared sprite UV atlas table, indexed by a sprite's atlas-frame number.
+ * @brief The shared sprite UV atlas table, indexed by a sprite's atlas-frame number.
  */
 
 #pragma once

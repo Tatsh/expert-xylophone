@@ -1,6 +1,6 @@
 /**
  * @file
- * The note manager / note-effect manager, @c NoteEffectMgr.
+ * @brief The note manager / note-effect manager, @c NoteEffectMgr.
  */
 
 #pragma once

@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkNetwork umbrella class.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkNetwork umbrella class.
  *
  * @c ApplilinkNetwork is the SDK's public entry-point facade: every one of its members is a class
  * method that forwards to the SDK's internal collaborators (@c ApplilinkConsts for the persisted

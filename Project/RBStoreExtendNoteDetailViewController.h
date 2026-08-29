@@ -1,5 +1,7 @@
-/** @file
- * The phone extend-note detail view controller, pushed onto the store navigation stack to present
+/**
+ * @file
+ * @brief The phone extend-note detail view controller, pushed onto the store navigation stack to
+ * present
  * a single extend note's detail, sample, and purchase controls.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class

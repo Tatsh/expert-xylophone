@@ -1,6 +1,6 @@
 /**
  * @file
- * The Classic-theme play-field background layer.
+ * @brief The Classic-theme play-field background layer.
  */
 
 #pragma once

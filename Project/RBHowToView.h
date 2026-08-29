@@ -1,5 +1,8 @@
-/** @file
- * The how-to-play help popup view. It is an @c RBMusicMenuPopupView configured with the default
+/**
+ * @file
+ * @brief The how-to-play help popup view.
+ *
+ * It is an @c RBMusicMenuPopupView configured with the default
  * popup type, presenting the paged how-to-play instruction artwork in a horizontally paging scroll
  * view with a page control.
  *

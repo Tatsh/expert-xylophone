@@ -1,5 +1,8 @@
-/** @file
- * The store pack-list model. It fetches the server pack catalogue one genre page at a time through
+/**
+ * @file
+ * @brief The store pack-list model.
+ *
+ * It fetches the server pack catalogue one genre page at a time through
  * a
  * @c Downloader, parses the JSON into @c StorePackInfo records grouped into @c StorePackListGenre
  * genres, resolves each pack's StoreKit product through an @c SKProductsRequest, and reports load

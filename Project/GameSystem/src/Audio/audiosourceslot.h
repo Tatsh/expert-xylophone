@@ -1,6 +1,6 @@
 /**
  * @file
- * The AVFoundation sound-effect source manager, @c AudioSourceSlot.
+ * @brief The AVFoundation sound-effect source manager, @c AudioSourceSlot.
  */
 
 #pragma once

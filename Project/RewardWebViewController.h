@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink reward SDK's @c RewardWebViewController.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink reward SDK's @c RewardWebViewController.
  *
  * @c RewardWebViewController is the reward advert SDK's in-application web-view host: a
  * @c UIViewController that owns a base @c UIView, a @c UIWebView, an optional @c UINavigationBar

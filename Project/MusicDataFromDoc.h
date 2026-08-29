@@ -1,6 +1,9 @@
-/** @file
- * A @c MusicData subclass that represents a single user-supplied tune loaded from the app's
- * Documents directory rather than from the shipped catalogue. The stored @c musicName (inherited
+/**
+ * @file
+ * @brief A @c MusicData subclass that represents a single user-supplied tune loaded from the app's
+ * Documents directory rather than from the shipped catalogue.
+ *
+ * The stored @c musicName (inherited
  * from @c MusicData) names the audio file and @c plyName names the companion note sheet; both are
  * resolved against the Documents directory on demand. Most catalogue metadata is fixed: the tune
  * identifier is 1, every difficulty is 0, and both tempo bounds are 100 BPM. The class also renders

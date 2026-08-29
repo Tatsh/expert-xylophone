@@ -1,5 +1,8 @@
-/** @file
- * The embedded treasure-map view. It is a @c UIView subclass wrapping an @c MKMapView that
+/**
+ * @file
+ * @brief The embedded treasure-map view.
+ *
+ * It is a @c UIView subclass wrapping an @c MKMapView that
  * @c RBSearchView hosts inside the search popup. It owns its own @c CLLocationManager, tracks the
  * user's location, downloads a spot list and campaign master from the game server, drops annotation
  * pins for nearby spots, and opens a tapped spot in the system Maps app. Tracking-state changes are

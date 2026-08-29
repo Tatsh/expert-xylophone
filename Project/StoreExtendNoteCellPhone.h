@@ -1,5 +1,8 @@
-/** @file
- * The phone-layout single-product extend-note table cell. Each row shows one purchasable
+/**
+ * @file
+ * @brief The phone-layout single-product extend-note table cell.
+ *
+ * Each row shows one purchasable
  * extend-note item: a jacket drawn as a shadowed @c CALayer, a name label, an artist label, a
  * level label, a right-aligned purchased/price label, and a "new" corner badge. The jacket artwork
  * itself is supplied by @c RBStoreExtendPageViewController, which sets @c artworkLayer.contents

@@ -1,6 +1,7 @@
 /**
  * @file
- * The binary-resident part-layout tables for the parts-based title screen, @c TitleLimelightScene.
+ * @brief The binary-resident part-layout tables for the parts-based title screen,
+ * @c TitleLimelightScene.
  */
 
 #pragma once

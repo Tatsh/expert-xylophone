@@ -1,6 +1,9 @@
-/** @file
- * A single extend-note product view embedded in a pad pack-table cell (the left or right half of a
- * two-product row). It lays out the tune artwork, its name, artist, comment, and difficulty level,
+/**
+ * @file
+ * @brief A single extend-note product view embedded in a pad pack-table cell (the left or right
+ * half of a two-product row).
+ *
+ * It lays out the tune artwork, its name, artist, comment, and difficulty level,
  * and a purchased/price overlay label, on top of the tappable background inherited from
  * @c StoreTableCellViewBase. Its selections are reported through the base
  * @c StoreTableCellViewBaseDelegate protocol.

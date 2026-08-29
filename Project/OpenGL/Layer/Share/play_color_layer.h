@@ -1,6 +1,6 @@
 /**
  * @file
- * The play-colour gauge-parts layer, @c PlayColorLayer.
+ * @brief The play-colour gauge-parts layer, @c PlayColorLayer.
  */
 
 #pragma once

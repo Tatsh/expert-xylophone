@@ -1,6 +1,7 @@
-/** @file
- * URL builders for the game's secure API host (@c https://akx.s.konaminet.jp): assembles request
- * paths under @c /akx/main/cgi/ and wraps them in an HTTPS @c NSURL.
+/**
+ * @file
+ * @brief URL builders for the game's secure API host (@c https://akx.s.konaminet.jp): assembles
+ * request paths under @c /akx/main/cgi/ and wraps them in an HTTPS @c NSURL.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class NetworkUtil, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

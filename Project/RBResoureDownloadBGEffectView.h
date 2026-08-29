@@ -1,6 +1,9 @@
-/** @file
- * The animated background-effect view shown behind the resource-download flow for the wide
- * iPad idiom. @c RBResourceDownloadViewController creates one, calls @c setupView to build its
+/**
+ * @file
+ * @brief The animated background-effect view shown behind the resource-download flow for the wide
+ * iPad idiom.
+ *
+ * @c RBResourceDownloadViewController creates one, calls @c setupView to build its
  * rainbow and particle layers, and drives it with @c startAnimation and @c stopAnimation (both
  * inherited from @c RBMenuBGEffectView).
  *

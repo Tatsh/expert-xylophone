@@ -1,6 +1,6 @@
 /**
  * @file
- * The number-effect play-field layer, @c NumberEffectLayer.
+ * @brief The number-effect play-field layer, @c NumberEffectLayer.
  *
  * A @c PlayFieldLayerBase-derived singleton layer that draws the play-field number glyphs through
  * four gm_parts2 sprite instancers, fading them through a @c LinearTween channel and driving the

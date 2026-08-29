@@ -1,5 +1,8 @@
-/** @file
- * The erosion-mark score updater. This object drives the "please confirm your erosion-mark scores"
+/**
+ * @file
+ * @brief The erosion-mark score updater.
+ *
+ * This object drives the "please confirm your erosion-mark scores"
  * flow: it presents an editable basic/medium/hard score dialog (either a modern
  * @c UIAlertController with three text fields backed by wheel pickers, or a legacy
  * @c RBErosionMarkUpdaterScoreView plus @c UIAlertView fallback on pre-@c UIAlertController

@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkViewController.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkViewController.
  *
  * @c ApplilinkViewController is the SDK's @c UIViewController that owns and presents the native App
  * Store product page through a @c RotateStoreProductViewController (a rotation-forcing

@@ -1,6 +1,6 @@
 /**
  * @file
- * The long-note layer, @c LongNoteLayer.
+ * @brief The long-note layer, @c LongNoteLayer.
  */
 
 #pragma once

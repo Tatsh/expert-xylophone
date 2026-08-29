@@ -1,6 +1,6 @@
 /**
  * @file
- * The Colette-theme result-window layer, @c ResultWindowColetteLayer.
+ * @brief The Colette-theme result-window layer, @c ResultWindowColetteLayer.
  */
 
 #pragma once

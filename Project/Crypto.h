@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the KONAMI Applilink SDK's @c Crypto helper.
+/**
+ * @file
+ * @brief Reconstructed interface for the KONAMI Applilink SDK's @c Crypto helper.
  *
  * @c Crypto encrypts and decrypts the SDK's persisted payloads with AES-128 in ECB mode and PKCS#7
  * padding, using CommonCrypto, and derives the SHA-1 and SHA-256 hashes the SDK keys those payloads

@@ -1,5 +1,8 @@
-/** @file
- * The song-pack store page controller. It is the root controller of the store's first tab (the
+/**
+ * @file
+ * @brief The song-pack store page controller.
+ *
+ * It is the root controller of the store's first tab (the
  * pack store) and is an @c RBBaseViewController subclass owned through @c RBStoreTabController's
  * @c mainNavCtrl. It lists purchasable song packs in a table (three sections on the phone, a
  * two-up single section on the pad), drives the pack detail, promotion, genre-select, and sample

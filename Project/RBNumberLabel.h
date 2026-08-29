@@ -1,6 +1,9 @@
-/** @file
- * A control that renders a numeric value using image-based digit glyphs from the customize screen's
- * unlock artwork. It has no text layer: @c drawRect: splits the current @c number into decimal
+/**
+ * @file
+ * @brief A control that renders a numeric value using image-based digit glyphs from the customize
+ * screen's unlock artwork.
+ *
+ * It has no text layer: @c drawRect: splits the current @c number into decimal
  * digits and draws a themed glyph image per digit, bottom-aligned and laid out right to left, with
  * the glyph set and formatting chosen by @c imageType. Setting either property redraws the control.
  *

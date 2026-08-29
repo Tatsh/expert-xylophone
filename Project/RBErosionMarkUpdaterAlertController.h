@@ -1,5 +1,8 @@
-/** @file
- * A @c UIAlertController subclass that pins its rotation to a caller-supplied orientation mask.
+/**
+ * @file
+ * @brief A @c UIAlertController subclass that pins its rotation to a caller-supplied orientation
+ * mask.
+ *
  * The erosion-mark score-correction dialog uses it so the alert honours the same
  * layout-dependent rotation rules the rest of the application enforces: the plain (phone) layout
  * allows every orientation, while the wide (iPad) layout is constrained to the portrait

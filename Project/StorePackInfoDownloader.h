@@ -1,5 +1,8 @@
-/** @file
- * A downloader that fetches a single store pack's detailed music info. It wraps a @c Downloader
+/**
+ * @file
+ * @brief A downloader that fetches a single store pack's detailed music info.
+ *
+ * It wraps a @c Downloader
  * (itself a façade over @c RBHttpUtil) to GET the pack-detail JSON from the @c v3/packinfo/
  * endpoint, hands the parsed dictionary to its @c StorePackInfo to populate the contained-tune
  * metadata, and reports completion, progress, or failure to its delegate. It is created and driven

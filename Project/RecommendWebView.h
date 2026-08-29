@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink recommend advert SDK's @c RecommendWebView.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend advert SDK's @c RecommendWebView.
  *
  * @c RecommendWebView is the @c UIView container that hosts a recommend advert. Unlike
  * @c RecommendAdWebView (which is the @c UIWebView that actually renders the advert and drives its

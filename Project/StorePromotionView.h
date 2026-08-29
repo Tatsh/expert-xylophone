@@ -1,6 +1,9 @@
-/** @file
- * The rotating store promotion banner carousel and the delegate protocol it uses to report a pack
- * tap and the currently previewing sample tune. The view hosts a paging scroll view of banner
+/**
+ * @file
+ * @brief The rotating store promotion banner carousel and the delegate protocol it uses to report
+ * a pack tap and the currently previewing sample tune.
+ *
+ * The view hosts a paging scroll view of banner
  * tiles (each a @c BannerView built from a promotion dictionary), advances them on a timer,
  * downloads each banner image and sample tune, and previews the sample through @c RBBGMManager.
  *

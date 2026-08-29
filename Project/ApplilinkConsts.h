@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkConsts helper.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkConsts helper.
  *
  * @c ApplilinkConsts is the SDK's constants and capability class: it exposes the SDK version, the
  * per-environment base URL, and the advert identifiers, and it gates every advert request behind an

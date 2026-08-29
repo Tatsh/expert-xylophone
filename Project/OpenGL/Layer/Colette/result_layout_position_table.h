@@ -1,6 +1,6 @@
 /**
  * @file
- * The result-window layout position bank shared by the Colette result renderers.
+ * @brief The result-window layout position bank shared by the Colette result renderers.
  */
 
 #pragma once

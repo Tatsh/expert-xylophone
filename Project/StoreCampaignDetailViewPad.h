@@ -1,5 +1,8 @@
-/** @file
- * The pad-layout campaign item detail view. It is a self-contained @c UIView overlay (the pad
+/**
+ * @file
+ * @brief The pad-layout campaign item detail view.
+ *
+ * It is a self-contained @c UIView overlay (the pad
  * counterpart to @c RBCampaignDetailViewController) that draws a bound campaign item's artwork,
  * name, artist, difficulty levels, acquisition button, external link, audio sample control, and a
  * scrolling detail pane carrying the banner, description, and copyright.

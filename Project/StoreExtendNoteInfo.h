@@ -1,5 +1,6 @@
-/** @file
- * A store extend-note model describing one purchasable extend-note pack item: the numeric
+/**
+ * @file
+ * @brief A store extend-note model describing one purchasable extend-note pack item: the numeric
  * extend-note and pack identifiers, its price, its comment, its download URLs, and the StoreKit
  * product backing it. It is a specialisation of @c StoreMusicInfo — the tune metadata (identifier,
  * name, artist, artwork, sample, iTunes URLs, and per-difficulty levels) is inherited — and adds

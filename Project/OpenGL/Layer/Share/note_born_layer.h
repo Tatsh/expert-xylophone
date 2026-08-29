@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-spawn ("born") effect layer, @c NoteBornLayer.
+ * @brief The note-spawn ("born") effect layer, @c NoteBornLayer.
  */
 
 #pragma once

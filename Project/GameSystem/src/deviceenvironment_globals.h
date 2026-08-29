@@ -1,6 +1,6 @@
 /**
  * @file
- * The cached device, locale, filesystem-path, and version globals that
+ * @brief The cached device, locale, filesystem-path, and version globals that
  * @c InitializeDeviceEnvironment seeds once at startup and the accessors in @c deviceenvironment.h
  * read.
  */

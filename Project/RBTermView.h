@@ -1,5 +1,8 @@
-/** @file
- * The terms-of-service overlay popup. It is an @c RBMusicMenuPopupView subclass (popup type
+/**
+ * @file
+ * @brief The terms-of-service overlay popup.
+ *
+ * It is an @c RBMusicMenuPopupView subclass (popup type
  * @c RBMusicMenuPopupViewTypeTerms) presented over the music menu on the pad build. It downloads
  * the terms list from the server, lays a button per term into a scrolling list inside the popup's
  * content view, and — when a term is tapped — either opens its external URL or fetches and shows

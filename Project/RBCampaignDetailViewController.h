@@ -1,5 +1,8 @@
-/** @file
- * The phone campaign item detail page, pushed from the campaign list. It shows one campaign item's
+/**
+ * @file
+ * @brief The phone campaign item detail page, pushed from the campaign list.
+ *
+ * It shows one campaign item's
  * artwork, name, artist, difficulty levels, banner, description, and copyright, and drives its
  * acquisition (info download, terms description, application-update prompt, or serial-code entry)
  * through the shared unlock flow. It plays the item's audio sample, opens the item's external link,

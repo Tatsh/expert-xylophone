@@ -1,5 +1,8 @@
-/** @file
- * A single store promotion banner tile: an image with an associated pack and optional sample tune.
+/**
+ * @file
+ * @brief A single store promotion banner tile: an image with an associated pack and optional
+ * sample tune.
+ *
  * Used by the store promotion carousel (@c StorePromotionView) inside its paging scroll view.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c BannerView, image base

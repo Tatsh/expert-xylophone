@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's 4x4 column-major matrix arithmetic helpers.
+ * @brief The engine's 4x4 column-major matrix arithmetic helpers.
  */
 
 #pragma once

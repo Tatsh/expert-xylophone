@@ -1,5 +1,8 @@
-/** @file
- * The draggable page slider that pages the music-menu grid. It is a @c UIControl subclass drawn as
+/**
+ * @file
+ * @brief The draggable page slider that pages the music-menu grid.
+ *
+ * It is a @c UIControl subclass drawn as
  * a rounded translucent track (the gauge view) with a small image grip that the player drags, and
  * a floating index label that shows the target page while dragging. It maps a horizontal touch to
  * an integer page in the inclusive range @c barMin ... @c barMax and reports each change to its

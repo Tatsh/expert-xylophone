@@ -1,6 +1,6 @@
 /**
  * @file
- * The parsed chart note record, @c RbffNoteRecord.
+ * @brief The parsed chart note record, @c RbffNoteRecord.
  */
 
 #pragma once

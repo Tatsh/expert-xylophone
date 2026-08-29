@@ -1,5 +1,8 @@
-/** @file
- * The pad-layout pack detail panel shown over the store's dimming cover. It is the pad counterpart
+/**
+ * @file
+ * @brief The pad-layout pack detail panel shown over the store's dimming cover.
+ *
+ * It is the pad counterpart
  * to the phone @c RBStoreDetailViewController: a single self-drawn @c UIView that lays out a pack's
  * artwork, name, comment, copyright, purchase button, up to four tune rows (each a
  * @c StorePackMusicView), an artist-site button, and a trailing terms label, and drives the pack's

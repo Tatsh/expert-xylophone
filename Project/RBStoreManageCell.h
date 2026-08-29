@@ -1,5 +1,8 @@
-/** @file
- * A purchased-tune row cell for the store manage page. It carries the download or delete action
+/**
+ * @file
+ * @brief A purchased-tune row cell for the store manage page.
+ *
+ * It carries the download or delete action
  * button whose tag encodes the tune's section and row.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBStoreManageCell, image base

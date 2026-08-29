@@ -1,6 +1,6 @@
 /**
  * @file
- * The non-phone anchor-box record type and its runtime-filled tables.
+ * @brief The non-phone anchor-box record type and its runtime-filled tables.
  */
 
 #pragma once

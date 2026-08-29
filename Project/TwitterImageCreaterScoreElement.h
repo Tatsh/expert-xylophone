@@ -1,7 +1,9 @@
-/** @file
- * A small value object holding one score row's fields for the Twitter share image: the score,
- * achievement rate, per-judgement note counts, maximum combo, and the tune name. One instance
- * represents a single side (the local player or a rival) of the two-column result layout drawn by
+/**
+ * @file
+ * @brief A small value object holding one score row's fields for the Twitter share image: the
+ * score, achievement rate, per-judgement note counts, maximum combo, and the tune name. One
+ * instance represents a single side (the local player or a rival) of the two-column result layout
+ * drawn by
  * @c TwitterImageCreater.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class TwitterImageCreaterScoreElement,

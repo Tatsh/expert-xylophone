@@ -1,6 +1,6 @@
 /**
  * @file
- * The iOS texture-loading helper class, @c neTextureForiOS.
+ * @brief The iOS texture-loading helper class, @c neTextureForiOS.
  */
 
 #pragma once

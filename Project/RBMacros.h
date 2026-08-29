@@ -1,5 +1,6 @@
-/** @file
- * The shared preprocessor helpers, and the build-configurable endpoint defaults.
+/**
+ * @file
+ * @brief The shared preprocessor helpers, and the build-configurable endpoint defaults.
  *
  * The @c ARRAY_SIZE helper is a convenience for the reconstructed sources rather than a macro
  * recovered from the binary: a compiled image retains no macro definitions, so it corresponds to no

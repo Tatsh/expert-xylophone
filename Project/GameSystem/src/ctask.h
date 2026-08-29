@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's global priority-sorted listener list and its intrusive node, @c ne::C_TASK.
+ * @brief The engine's global priority-sorted listener list and its intrusive node, @c ne::C_TASK.
  */
 
 #pragma once

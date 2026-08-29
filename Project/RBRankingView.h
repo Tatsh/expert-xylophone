@@ -1,5 +1,8 @@
-/** @file
- * The ranking (leaderboard) popup view. It is an @c RBMusicMenuPopupView configured with the
+/**
+ * @file
+ * @brief The ranking (leaderboard) popup view.
+ *
+ * It is an @c RBMusicMenuPopupView configured with the
  * ranking popup type, presenting two overlaid @c RBRankingTableView leaderboards — a friend-scope
  * board and a total-scope board — inside the popup's content view, with a pair of tab buttons that
  * switch between them.

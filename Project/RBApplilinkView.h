@@ -1,5 +1,8 @@
-/** @file
- * The Applilink campaign overlay presented over the music menu. It is an @c RBMusicMenuPopupView
+/**
+ * @file
+ * @brief The Applilink campaign overlay presented over the music menu.
+ *
+ * It is an @c RBMusicMenuPopupView
  * subclass (popup type @c RBMusicMenuPopupViewTypeApplilink) that @c RBMenuView presents; it hosts
  * the @c RecommendNetwork companion-application advert area inside its own rounded web target
  * view, showing a large spinner until the advert area has loaded. As the advert area's delegate it

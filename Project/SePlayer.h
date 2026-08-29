@@ -1,10 +1,13 @@
-/** @file
- * A self-contained OpenAL one-shot sound-effect player. Each instance owns its own OpenAL device
- * and context, a single buffer, and a single source. On initialisation it decodes an audio file to
- * signed 16-bit PCM through Core Audio (@c ExtAudioFile) and hands the samples to the buffer with
- * the @c alBufferDataStatic extension (which references the samples in place rather than copying
- * them), then wires the buffer to the source as a non-looping one-shot. @c -sePlay triggers a
- * playback and @c -terminate tears the whole OpenAL graph down and frees the decoded samples.
+/**
+ * @file
+ * @brief A self-contained OpenAL one-shot sound-effect player.
+ *
+ * Each instance owns its own OpenAL device and context, a single buffer, and a single source. On
+ * initialisation it decodes an audio file to signed 16-bit PCM through Core Audio (@c ExtAudioFile)
+ * and hands the samples to the buffer with the @c alBufferDataStatic extension (which references
+ * the samples in place rather than copying them), then wires the buffer to the source as a
+ * non-looping one-shot. @c -sePlay triggers a playback and @c -terminate tears the whole OpenAL
+ * graph down and frees the decoded samples.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class SePlayer, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

@@ -1,6 +1,6 @@
 /**
  * @file
- * The chart lane-assignment tracker, @c NoteLaneTracker.
+ * @brief The chart lane-assignment tracker, @c NoteLaneTracker.
  */
 
 #pragma once

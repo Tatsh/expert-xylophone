@@ -1,6 +1,9 @@
-/** @file
- * The shot-volume slider control used on the customise screen (created by
- * @c RBCustomSelectCollectionView when the customise item is the shot type). It is a custom
+/**
+ * @file
+ * @brief The shot-volume slider control used on the customise screen (created by
+ * @c RBCustomSelectCollectionView when the customise item is the shot type).
+ *
+ * It is a custom
  * @c UISlider drawn as a track sprite (the base view) overlaid by a gauge sprite whose width
  * fills in proportion to the value.
  *

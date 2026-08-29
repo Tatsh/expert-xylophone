@@ -1,6 +1,6 @@
 /**
  * @file
- * The xorshift128 pseudo-random number generator, @c Random.
+ * @brief The xorshift128 pseudo-random number generator, @c Random.
  */
 
 #pragma once

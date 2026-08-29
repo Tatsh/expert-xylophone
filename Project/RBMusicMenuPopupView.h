@@ -1,5 +1,8 @@
-/** @file
- * The base music-menu popup view. It is a @c UIControl subclass that builds a themed, framed popup
+/**
+ * @file
+ * @brief The base music-menu popup view.
+ *
+ * It is a @c UIControl subclass that builds a themed, framed popup
  * (a title bar, a background panel, an optional gradation overlay, and a rounded content view)
  * sized for the current theme and iPad idiom. The concrete popups — the credits, how-to-play,
  * customize, theme, search, ranking, information, and terms popups — subclass it, select a popup

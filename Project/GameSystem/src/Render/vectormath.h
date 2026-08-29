@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's two- and three-component vector arithmetic helpers.
+ * @brief The engine's two- and three-component vector arithmetic helpers.
  */
 
 #pragma once

@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's MD5 and SHA-256 digest helpers.
+ * @brief The engine's MD5 and SHA-256 digest helpers.
  */
 
 #pragma once

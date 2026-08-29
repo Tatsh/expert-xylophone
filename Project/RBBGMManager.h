@@ -1,5 +1,8 @@
-/** @file
- * The background-music manager singleton. It is a thin façade over @c AudioManager that owns the
+/**
+ * @file
+ * @brief The background-music manager singleton.
+ *
+ * It is a thin façade over @c AudioManager that owns the
  * game's non-tune background music: the shared loop played behind the menus, and the dedicated
  * title-screen and result-screen loops. It loads a track's bundled @c .m4a asset into the audio
  * manager, plays, pauses, and stops it with a fade duration, and keeps two flags that track

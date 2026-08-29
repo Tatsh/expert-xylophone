@@ -1,6 +1,7 @@
-/** @file
- * The header view shown at the top of the phone-layout pack detail table: the pack artwork with its
- * reflection, the pack name and comment labels, the "new" marker, and the purchase button.
+/**
+ * @file
+ * @brief The header view shown at the top of the phone-layout pack detail table: the pack artwork
+ * with its reflection, the pack name and comment labels, the "new" marker, and the purchase button.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreDetailHeaderView, image
  * base 0x100000000). Ghidra addresses are offsets relative to the image base.

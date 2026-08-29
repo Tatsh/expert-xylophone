@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine media-time stamp, @c C_TIME.
+ * @brief The engine media-time stamp, @c C_TIME.
  */
 
 #pragma once

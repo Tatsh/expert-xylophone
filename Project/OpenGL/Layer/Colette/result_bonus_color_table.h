@@ -1,6 +1,6 @@
 /**
  * @file
- * The result-window bonus colour palette shared by the Colette result renderers.
+ * @brief The result-window bonus colour palette shared by the Colette result renderers.
  */
 
 #pragma once

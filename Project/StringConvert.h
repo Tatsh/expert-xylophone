@@ -1,6 +1,9 @@
-/** @file
- * Katakana normalisation helpers used to build a searchable reading (yomigana) key from a song's
- * katakana title. The transforms fold full-width and half-width forms together, expand the
+/**
+ * @file
+ * @brief Katakana normalisation helpers used to build a searchable reading (yomigana) key from a
+ * song's katakana title.
+ *
+ * The transforms fold full-width and half-width forms together, expand the
  * @c ヴ (vu) digraphs, spell out a couple of loanword readings, collapse the prolonged-sound mark,
  * and map small kana and voiced kana onto their large and voiceless base forms so that titles with
  * cosmetic kana variations sort and match consistently.

@@ -1,5 +1,8 @@
-/** @file
- * A thin block-and-delegate façade over @c RBHttpUtil: it builds a GET, POST, or file-download
+/**
+ * @file
+ * @brief A thin block-and-delegate façade over @c RBHttpUtil.
+ *
+ * It builds a GET, POST, or file-download
  * request, starts it, and dispatches the proceed/success/failure events either to caller-supplied
  * blocks or, when no block is set, to a delegate on the main thread. It also re-exposes the
  * underlying connection's response accessors (data, header, progress, and error messages).

@@ -1,6 +1,10 @@
-/** @file
- * The in-game news / information page overlay presented over the music menu on the pad build. It
- * is an @c RBMusicMenuPopupView subclass (popup type @c RBMusicMenuPopupViewTypeInformation) that
+/**
+ * @file
+ * @brief The in-game news / information page overlay presented over the music menu on the pad
+ * build.
+ *
+ * It is an @c RBMusicMenuPopupView subclass (popup type @c RBMusicMenuPopupViewTypeInformation)
+ * that
  * @c RBMenuView presents; it hosts an @c RBWebView loading the news web-info URL inside the base
  * popup's content view. As the web view's delegate it intercepts the @c reflecbeat deep links
  * (@c twitter, @c openurl, and the @c rbplus://store pack routes), forwards store navigations to

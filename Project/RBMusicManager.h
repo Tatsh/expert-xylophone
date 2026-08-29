@@ -1,5 +1,8 @@
-/** @file
- * The music-catalogue manager singleton. It owns the three lists that together make up the tune
+/**
+ * @file
+ * @brief The music-catalogue manager singleton.
+ *
+ * It owns the three lists that together make up the tune
  * catalogue: the fixed set of preinstalled music identifiers, the array of purchased-music
  * dictionaries decoded from the persisted @c mulist file, and a lazily built and cached array of
  * @c MusicData catalogue entries assembled from both. It vends catalogue entries by identifier,

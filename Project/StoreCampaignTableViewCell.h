@@ -1,5 +1,8 @@
-/** @file
- * The campaign store list cell. It renders a campaign item's banner artwork over a shared pack
+/**
+ * @file
+ * @brief The campaign store list cell.
+ *
+ * It renders a campaign item's banner artwork over a shared pack
  * background, with a rounded, shadowed jacket placeholder that fades in once the banner download
  * finishes.
  *

@@ -1,6 +1,6 @@
 /**
  * @file
- * The note chain-link block, @c NoteChainLink.
+ * @brief The note chain-link block, @c NoteChainLink.
  */
 
 #pragma once

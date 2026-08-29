@@ -1,6 +1,6 @@
 /**
  * @file
- * The judge-effect layer, @c JudgeEffectLayer.
+ * @brief The judge-effect layer, @c JudgeEffectLayer.
  */
 
 #pragma once

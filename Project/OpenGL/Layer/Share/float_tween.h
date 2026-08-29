@@ -1,6 +1,6 @@
 /**
  * @file
- * The delayed linear value tween, @c FloatTween.
+ * @brief The delayed linear value tween, @c FloatTween.
  */
 
 #pragma once

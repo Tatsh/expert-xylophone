@@ -1,6 +1,6 @@
 /**
  * @file
- * The shared base class for the play-field theme layers.
+ * @brief The shared base class for the play-field theme layers.
  */
 
 #pragma once

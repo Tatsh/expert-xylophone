@@ -1,5 +1,8 @@
-/** @file
- * The application delegate: owns the main window, root view controller, and navigation controller,
+/**
+ * @file
+ * @brief The application delegate.
+ *
+ * Owns the main window, root view controller, and navigation controller,
  * brings up the audio and game engine at launch, seeds the GameSystem from the persisted user
  * settings, drives the app lifecycle (resign/foreground/background/terminate), registers for remote
  * and local notifications, bridges StoreKit purchases via RBPurchaseManager, and holds the news /

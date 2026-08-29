@@ -1,6 +1,9 @@
-/** @file
- * A paged collection-view layout that arranges equal-sized item cells into a grid of whole
- * screen-pages, scrolling horizontally one page at a time. Unlike @c UICollectionViewFlowLayout,
+/**
+ * @file
+ * @brief A paged collection-view layout that arranges equal-sized item cells into a grid of whole
+ * screen-pages, scrolling horizontally one page at a time.
+ *
+ * Unlike @c UICollectionViewFlowLayout,
  * this is a direct @c UICollectionViewLayout subclass that reimplements the grid metrics itself:
  * it derives a column and row count from the page (collection-view bounds) size, the per-item
  * size, the inter-item and line spacing, and a per-page content inset, then distributes any

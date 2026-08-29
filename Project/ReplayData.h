@@ -1,6 +1,9 @@
-/** @file
- * The archived record of a single play: its tune, difficulty, seed, judgement tallies, score,
- * achievement rate, play date, owning user, tamper hash, and the per-note replay events that let
+/**
+ * @file
+ * @brief The archived record of a single play: its tune, difficulty, seed, judgement tallies,
+ * score, achievement rate, play date, owning user, tamper hash, and the per-note replay events.
+ *
+ * The replay events let
  * the game reconstruct a ghost. The class encodes and decodes itself through @c NSCoding, and its
  * class-level helpers persist the archive to and from an on-disk, Blowfish-enciphered ZIP file
  * under the documents directory.

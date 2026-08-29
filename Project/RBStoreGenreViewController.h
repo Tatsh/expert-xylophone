@@ -1,5 +1,8 @@
-/** @file
- * The genre-select list controller presented from the store page. It shows the pack store's genres
+/**
+ * @file
+ * @brief The genre-select list controller presented from the store page.
+ *
+ * It shows the pack store's genres
  * in a single-section @c UITableView, one row per genre, and forwards the chosen genre back to the
  * hosting @c RBStorePageViewController (through @c switchToGenre: and @c hideGenreSelect:) when a
  * row is tapped. It is pushed on the phone and hosted in a popover on the pad, and sizes its

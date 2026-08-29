@@ -1,5 +1,9 @@
-/** @file
- * The play-colour and rival-alpha selector sub-view hosted by the music-select detail panel. It is
+/**
+ * @file
+ * @brief The play-colour and rival-alpha selector sub-view hosted by the music-select detail
+ * panel.
+ *
+ * It is
  * the setting page that lets the player pick the play colour (colour @c 0, colour @c 1, or the
  * "both" random slot) and, on the alpha page, the rival ghost's opacity. It builds three colour
  * buttons, each stacking a base, selected-state, name, "you", and rival image, plus a pair of

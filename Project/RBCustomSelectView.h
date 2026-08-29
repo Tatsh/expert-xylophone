@@ -1,5 +1,8 @@
-/** @file
- * The customize item picker hosted by @c RBCustomView. It fills the popup content view with a
+/**
+ * @file
+ * @brief The customize item picker hosted by @c RBCustomView.
+ *
+ * It fills the popup content view with a
  * vertically scrolling stack of per-category item grids (@c RBCustomSelectCollectionView): the
  * theme background music, tap shot, explosion, frame, background, note, gauge, and timing
  * categories, followed by a preview button that starts the game preview.

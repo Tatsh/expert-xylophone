@@ -1,6 +1,6 @@
 /**
  * @file
- * The slide-note sprite-type layout table.
+ * @brief The slide-note sprite-type layout table.
  */
 
 #pragma once

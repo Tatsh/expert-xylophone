@@ -1,6 +1,6 @@
 /**
  * @file
- * The slide-note render layer, @c SlideNoteLayer.
+ * @brief The slide-note render layer, @c SlideNoteLayer.
  */
 
 #pragma once

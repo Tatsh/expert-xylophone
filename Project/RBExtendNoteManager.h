@@ -1,5 +1,8 @@
-/** @file
- * The extend-note catalogue manager singleton. Extend notes are the purchasable special (@c SP)
+/**
+ * @file
+ * @brief The extend-note catalogue manager singleton.
+ *
+ * Extend notes are the purchasable special (@c SP)
  * charts that augment an existing tune: each is delivered as its own packaged archive and described
  * by a purchased-extend-note dictionary. This manager owns the array of those dictionaries decoded
  * from the persisted @c nolist file, lazily builds and caches an array of @c MusicDataExtend

@@ -1,6 +1,9 @@
-/** @file
- * The Applilink reward-network advert facade. A thin public wrapper over the private
- * @c RewardCore singleton and the @c ApplilinkConsts / @c ApplilinkNetworkError helpers: it opens
+/**
+ * @file
+ * @brief The Applilink reward-network advert facade.
+ *
+ * A thin public wrapper over the private @c RewardCore singleton and the @c ApplilinkConsts /
+ * @c ApplilinkNetworkError helpers: it opens
  * and closes the advert screen and forwards the ad-status, all-install-flag, and ad-display-status
  * queries.
  *

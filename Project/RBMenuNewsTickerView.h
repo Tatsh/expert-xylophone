@@ -1,6 +1,9 @@
-/** @file
- * The scrolling news-ticker banner shown on the music-menu footer. It is a @c UIView subclass that
- * marquees a line of news text and, when that text carries an @c rbplus:// link, taps through to
+/**
+ * @file
+ * @brief The scrolling news-ticker banner shown on the music-menu footer.
+ *
+ * It is a @c UIView subclass that marquees a line of news text and, when that text carries an
+ * @c rbplus:// link, taps through to
  * the store, a campaign, a sequence, or an in-app web page.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBMenuNewsTickerView, image base

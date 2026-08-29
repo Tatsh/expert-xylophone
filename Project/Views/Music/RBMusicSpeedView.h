@@ -1,6 +1,9 @@
-/** @file
- * The high-SPEED (scroll-speed) setting sub-view of the music-detail setting scroll hosted by
- * @c RBMusicView. It draws a horizontal bar image (@c sliderView) and layers a transparent
+/**
+ * @file
+ * @brief The high-SPEED (scroll-speed) setting sub-view of the music-detail setting scroll hosted
+ * by @c RBMusicView.
+ *
+ * It draws a horizontal bar image (@c sliderView) and layers a transparent
  * @c barBase container over it carrying the selected-step marker (@c selectedImage). A tap on the
  * bar - the only gesture the view installs - maps to one of eleven SPEED steps, writes the result
  * back into the shared @c RBUserSettingData.speedType, plays the themed change sound effect, and

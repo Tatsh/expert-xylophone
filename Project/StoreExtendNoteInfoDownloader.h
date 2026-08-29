@@ -1,5 +1,8 @@
-/** @file
- * A downloader that fetches a store extend note's detailed info. It wraps a @c Downloader (itself a
+/**
+ * @file
+ * @brief A downloader that fetches a store extend note's detailed info.
+ *
+ * It wraps a @c Downloader (itself a
  * façade over @c RBHttpUtil) to GET the extend-note-detail JSON from the extend-note-info endpoint,
  * hands the parsed dictionary to its @c StoreExtendNoteInfo to populate the tune metadata, and
  * reports completion, progress, or failure to its delegate. It is created and driven by

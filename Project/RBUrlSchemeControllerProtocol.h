@@ -1,6 +1,9 @@
-/** @file
- * The protocol a per-host deep-link handler class must adopt to be dispatched to by
- * @c RBUrlSchemeManager. Handler classes are named @c RBUrlScheme<Host>Controller and are resolved
+/**
+ * @file
+ * @brief The protocol a per-host deep-link handler class must adopt to be dispatched to by
+ * @c RBUrlSchemeManager.
+ *
+ * Handler classes are named @c RBUrlScheme<Host>Controller and are resolved
  * by name at run time.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (protocol RBUrlSchemeControllerProtocol,

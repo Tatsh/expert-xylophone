@@ -1,5 +1,8 @@
-/** @file
- * The phone-layout single-pack table cell. Each row shows one purchasable song pack: a jacket
+/**
+ * @file
+ * @brief The phone-layout single-pack table cell.
+ *
+ * Each row shows one purchasable song pack: a jacket
  * drawn as a shadowed @c CALayer, a name label, a price label, a right-aligned "installed" label
  * that stands in for the owned-state overlay, and "new" and "sequence-extension" corner badges.
  * The jacket artwork itself is supplied by @c RBStorePageViewController, which sets

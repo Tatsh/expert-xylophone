@@ -1,5 +1,7 @@
-/** @file
- * A collection-view cell that presents a single music entry in a paged music grid.
+/**
+ * @file
+ * @brief A collection-view cell that presents a single music entry in a paged music grid.
+ *
  * @c RBMusicGridLayout registers this class as its decoration view.
  *
  * The cell layers a frame-bonus background image, an artwork image view, per-difficulty clear-rank

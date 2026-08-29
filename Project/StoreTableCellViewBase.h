@@ -1,6 +1,9 @@
-/** @file
- * The shared base view for a store table cell's product tile: a tappable background image view
- * carrying a "new" corner badge, a delegate selection callback, and a product-list index. Its
+/**
+ * @file
+ * @brief The shared base view for a store table cell's product tile: a tappable background image
+ * view carrying a "new" corner badge, a delegate selection callback, and a product-list index.
+ *
+ * Its
  * concrete subclasses fill in the tile content — @c StoreExtendNoteView for an extend-note
  * product and @c StorePackView for a song pack.
  *

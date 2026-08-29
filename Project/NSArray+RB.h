@@ -1,5 +1,8 @@
-/** @file
- * @c NSArray property-list deserialisation helper. Decode an XML property-list payload held in an
+/**
+ * @file
+ * @brief @c NSArray property-list deserialisation helper.
+ *
+ * Decode an XML property-list payload held in an
  * @c NSData into an immutable @c NSArray, selecting the Core Foundation parser that matches the
  * running iOS version.
  *

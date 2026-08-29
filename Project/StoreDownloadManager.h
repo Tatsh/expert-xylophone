@@ -1,5 +1,7 @@
-/** @file
- * Runs a batch of @c StoreDownloadTask jobs sequentially, downloading each task's URL, writing the
+/**
+ * @file
+ * @brief Runs a batch of @c StoreDownloadTask jobs sequentially, downloading each task's URL,
+ * writing the
  * body to that task's file path, and reporting start, progress, completion, and failure to its
  * delegate.
  *

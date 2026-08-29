@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink advert SDK's @c ApplilinkMessage helper.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink advert SDK's @c ApplilinkMessage helper.
  *
  * @c ApplilinkMessage is the SDK's stateless localised-message helper: it resolves a message key
  * into the corresponding localised string from the reward bundle's @c "Message" table, supplying a

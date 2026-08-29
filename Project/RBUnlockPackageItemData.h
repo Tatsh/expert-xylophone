@@ -1,6 +1,9 @@
-/** @file
- * A single item entry within an unlock package: its type, identifier, display name, asset path, and
- * point cost. Parsed from an entry dictionary in the unlock catalogue and sorted by point value by
+/**
+ * @file
+ * @brief A single item entry within an unlock package: its type, identifier, display name, asset
+ * path, and point cost.
+ *
+ * Parsed from an entry dictionary in the unlock catalogue and sorted by point value by
  * @c RBUnlockPackageData.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockPackageItemData, image base

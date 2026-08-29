@@ -1,6 +1,9 @@
-/** @file
- * The downloadable-resource state helper. It is a stateless @c NSObject utility whose class methods
- * answer whether the installed downloadable game-asset bundle needs refreshing: it verifies the
+/**
+ * @file
+ * @brief The downloadable-resource state helper.
+ *
+ * It is a stateless @c NSObject utility whose class methods answer whether the installed
+ * downloadable game-asset bundle needs refreshing: it verifies the
  * extracted asset file list, decides whether an offline launch may proceed, and, given a server
  * response, decides how an online launch must proceed.
  *

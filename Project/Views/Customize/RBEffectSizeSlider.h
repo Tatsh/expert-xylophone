@@ -1,6 +1,9 @@
-/** @file
- * The explosion (bounds-effect-size) slider control used on the customise screen (created by
- * @c RBCustomSelectCollectionView). It is a custom @c UISlider drawn as a track sprite (the base
+/**
+ * @file
+ * @brief The explosion (bounds-effect-size) slider control used on the customise screen (created
+ * by @c RBCustomSelectCollectionView).
+ *
+ * It is a custom @c UISlider drawn as a track sprite (the base
  * view) with a small grip sprite, plus a row of digit-image views that render the effect-size
  * value as a fixed-point numeric readout of the form @c N.M (a whole digit, a decimal point, and a
  * fractional digit).

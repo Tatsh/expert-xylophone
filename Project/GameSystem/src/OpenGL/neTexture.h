@@ -1,6 +1,6 @@
 /**
  * @file
- * The reference-counted GL texture, @c ne::C_TEXTURE, and the texture cache.
+ * @brief The reference-counted GL texture, @c ne::C_TEXTURE, and the texture cache.
  */
 
 #pragma once

@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-sheet-layer geometry helpers, @c SheetLayer.
+ * @brief The note-sheet-layer geometry helpers, @c SheetLayer.
  */
 
 #pragma once

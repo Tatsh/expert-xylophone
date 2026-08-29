@@ -1,5 +1,8 @@
-/** @file
- * The application's main window. @c neWindow is a trivial @c UIWindow subclass that hosts the game
+/**
+ * @file
+ * @brief The application's main window.
+ *
+ * @c neWindow is a trivial @c UIWindow subclass that hosts the game
  * engine's render surface. It overrides the four touch-phase entry points with empty bodies so that
  * UIKit does not route touches through the normal responder chain: the engine's GL view reads input
  * directly, and the window itself must not forward or act on touches.

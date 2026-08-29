@@ -1,5 +1,8 @@
-/** @file
- * The Core Data stack singleton for the app. It owns two independent stacks: the score stack that
+/**
+ * @file
+ * @brief The Core Data stack singleton for the app.
+ *
+ * It owns two independent stacks: the score stack that
  * backs the @c ScoreData records and the history stack that backs the @c History records. Each
  * stack lazily builds its managed object context, managed object model, and persistent store
  * coordinator on first access and caches them.

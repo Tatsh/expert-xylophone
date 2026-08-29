@@ -1,6 +1,6 @@
 /**
  * @file
- * The play-field bounds effect layer, @c BoundsEffectLayer.
+ * @brief The play-field bounds effect layer, @c BoundsEffectLayer.
  */
 
 #pragma once

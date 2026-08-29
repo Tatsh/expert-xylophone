@@ -1,6 +1,6 @@
 /**
  * @file
- * Optional @c os_log runtime diagnostics, gated behind the @c RBPDBG build flag.
+ * @brief Optional @c os_log runtime diagnostics, gated behind the @c RBPDBG build flag.
  *
  * None of this is part of the original binary: it is compiled in only when the build defines
  * @c RBPDBG (the CMake option of that name, which is enable-able in any build configuration and is

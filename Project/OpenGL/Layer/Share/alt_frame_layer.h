@@ -1,6 +1,6 @@
 /**
  * @file
- * The alternate play-field frame layer, @c AltFrameLayer.
+ * @brief The alternate play-field frame layer, @c AltFrameLayer.
  */
 
 #pragma once

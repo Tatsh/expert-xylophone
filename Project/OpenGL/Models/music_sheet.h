@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-chart reader/parser, @c CMusicSheet2.
+ * @brief The note-chart reader/parser, @c CMusicSheet2.
  */
 
 #pragma once

@@ -1,6 +1,6 @@
 /**
  * @file
- * The AVFoundation sound-effect voice mixer, @c AVSeMixer.
+ * @brief The AVFoundation sound-effect voice mixer, @c AVSeMixer.
  */
 
 #pragma once

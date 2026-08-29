@@ -1,6 +1,6 @@
 /**
  * @file
- * The global game-system singleton, @c GameSystem.
+ * @brief The global game-system singleton, @c GameSystem.
  */
 
 #pragma once

@@ -1,5 +1,6 @@
-/** @file
- * Reconstructed interface for the Applilink SDK's @c ApplilinkViewDelegate protocol.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink SDK's @c ApplilinkViewDelegate protocol.
  *
  * The advert-list lifecycle delegate: the advert area and web views notify it as the list starts,
  * appears, disappears, or fails to load or link. Every callback is optional and every sender

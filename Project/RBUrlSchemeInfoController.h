@@ -1,5 +1,8 @@
-/** @file
- * Deep-link handler for the @c info host of the game's custom URL scheme. It is one of the per-host
+/**
+ * @file
+ * @brief Deep-link handler for the @c info host of the game's custom URL scheme.
+ *
+ * It is one of the per-host
  * handler classes resolved by name and dispatched to by @c RBUrlSchemeManager, and it adopts
  * @c RBUrlSchemeControllerProtocol. Its @c -action:query: turns the routed action into a
  * @c \<action\>RbAction: selector and forwards the query to that handler; @c -webRbAction: builds

@@ -1,6 +1,10 @@
-/** @file
- * A small @c NSCoding-conforming singleton holding the per-event bonus multipliers awarded during
- * play: the clear, full-combo, and per-miss bonuses, the per-rank bonuses, and the first-play,
+/**
+ * @file
+ * @brief A small @c NSCoding-conforming singleton holding the per-event bonus multipliers awarded
+ * during play.
+ *
+ * The multipliers are the clear, full-combo, and per-miss bonuses, the per-rank bonuses, and the
+ * first-play,
  * pastel, early-play, and hot-music campaign bonuses. The instance persists itself to and from the
  * user defaults, keyed by its own class name, and seeds sensible defaults on a fresh install.
  *

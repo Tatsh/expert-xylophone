@@ -1,6 +1,7 @@
-/** @file
- * Reconstructed interface for the KONAMI Applilink SDK's @c ApplilinkURLConnection HTTP request
- * wrapper.
+/**
+ * @file
+ * @brief Reconstructed interface for the KONAMI Applilink SDK's @c ApplilinkURLConnection HTTP
+ * request wrapper.
  *
  * @c ApplilinkURLConnection is a thin asynchronous @c NSURLConnection wrapper used throughout the
  * Applilink reward-network SDK (for example by @c ApplilinkWebAPI, @c ApplilinkNetwork, and

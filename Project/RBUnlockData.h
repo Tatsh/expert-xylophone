@@ -1,6 +1,7 @@
-/** @file
- * A singleton data model describing the unlock catalogue: the catalogue version string and the
- * ordered list of unlock packages, held separately for the default theme and the Colette theme.
+/**
+ * @file
+ * @brief A singleton data model describing the unlock catalogue: the catalogue version string and
+ * the ordered list of unlock packages, held separately for the default theme and the Colette theme.
  * The model parses its contents from a server-supplied dictionary keyed by @c Version and
  * @c Package, building an array of @c RBUnlockPackageData entries sorted by their display order,
  * and vends the package list appropriate to the player's currently selected theme.

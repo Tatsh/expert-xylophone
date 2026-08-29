@@ -1,6 +1,6 @@
 /**
  * @file
- * The shot (tap) sound sub-manager, @c ShotSoundManager.
+ * @brief The shot (tap) sound sub-manager, @c ShotSoundManager.
  */
 
 #pragma once

@@ -1,5 +1,8 @@
-/** @file
- * The playlist-creation screen's view controller. It is an @c RBBaseViewController subclass that
+/**
+ * @file
+ * @brief The playlist-creation screen's view controller.
+ *
+ * It is an @c RBBaseViewController subclass that
  * presents a single-line text field over a white view so the player can name a new playlist. The
  * navigation bar carries a "done" button that trims the entered name and, when non-empty, adds the
  * playlist through @c RBPlaylistManager before popping, plus a "Return" button that pops without

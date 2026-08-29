@@ -1,5 +1,8 @@
-/** @file
- * The reward list hosted by @c RBCustomView. It slides in over the customize picker and, on demand,
+/**
+ * @file
+ * @brief The reward list hosted by @c RBCustomView.
+ *
+ * It slides in over the customize picker and, on demand,
  * opens the @c RewardNetwork companion-application advert screen inside its own rounded web target
  * view, showing a spinner until the list has loaded.
  *

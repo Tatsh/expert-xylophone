@@ -1,5 +1,8 @@
-/** @file
- * Blowfish-in-CBC codec used to encipher and decipher the game's on-disk save and music data.
+/**
+ * @file
+ * @brief Blowfish-in-CBC codec used to encipher and decipher the game's on-disk save and music
+ * data.
+ *
  * This is textbook Blowfish with a single deviation in the round function (see @c BFCodec.m) run in
  * cipher-block-chaining mode with a fixed default IV and a self-describing length trailer.
  *

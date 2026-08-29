@@ -1,5 +1,8 @@
-/** @file
- * The OpenGL ES drawing surface. It is a @c UIView subclass backed by an @c EAGLContext and the
+/**
+ * @file
+ * @brief The OpenGL ES drawing surface.
+ *
+ * It is a @c UIView subclass backed by an @c EAGLContext and the
  * engine's GL ES interface: it owns the framebuffer and renderbuffer, reports the front-buffer
  * size, and drives the begin-render / present cycle for each frame. On layout it resizes the
  * renderbuffer from its layer and notifies its delegate.

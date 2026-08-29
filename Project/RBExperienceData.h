@@ -1,6 +1,9 @@
-/** @file
- * The archivable unlock, campaign-point, and reward singleton. It tracks which cosmetic items
- * (background music, shots, explosions, frames, backgrounds, tunes, and themes) the player has
+/**
+ * @file
+ * @brief The archivable unlock, campaign-point, and reward singleton.
+ *
+ * It tracks which cosmetic items (background music, shots, explosions, frames, backgrounds, tunes,
+ * and themes) the player has
  * unlocked, the running campaign point totals for the two active themes, and the reward
  * application identifiers granted by installed companion applications. The instance persists
  * itself to and from the user defaults, keyed by its own class name, enciphering the point and

@@ -1,6 +1,6 @@
 /**
  * @file
- * One lane's occupancy record, @c NoteLaneSlot.
+ * @brief One lane's occupancy record, @c NoteLaneSlot.
  */
 
 #pragma once

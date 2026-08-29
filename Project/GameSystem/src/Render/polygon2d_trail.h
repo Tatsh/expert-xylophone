@@ -1,6 +1,6 @@
 /**
  * @file
- * The 2D polygon-mesh "trail" (ribbon), @c Polygon2dTrail.
+ * @brief The 2D polygon-mesh "trail" (ribbon), @c Polygon2dTrail.
  */
 
 #pragma once

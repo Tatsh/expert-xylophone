@@ -1,5 +1,8 @@
-/** @file
- * The score-history manager for the play-record log. This class vends only class-level helpers
+/**
+ * @file
+ * @brief The score-history manager for the play-record log.
+ *
+ * This class vends only class-level helpers
  * that fetch, create, validate, hash, delete, and aggregate the Core Data records of the
  * @c History entity against a managed object context. Each fetched record is validated against its
  * stored tamper hash and reset when the hash does not match, then wrapped in a @c HistoryData

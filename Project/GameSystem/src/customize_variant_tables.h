@@ -1,8 +1,8 @@
 /**
  * @file
- * The binary-resident customize-asset variant-name tables, indexed by variant to build a customize
- * asset's on-disk path. Each is an array of @c NSString* variant tokens living in the binary's
- * read-only data; only the arrays are referenced, so they are declared @c extern here.
+ * @brief The binary-resident customize-asset variant-name tables, indexed by variant to build a
+ * customize asset's on-disk path. Each is an array of @c NSString* variant tokens living in the
+ * binary's read-only data; only the arrays are referenced, so they are declared @c extern here.
  */
 
 #pragma once

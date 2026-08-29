@@ -1,6 +1,7 @@
-/** @file
- * The two-button modal dialog @c RBErosionMarkUpdater presents when it offers to correct a stored
- * score for the tune Erosion Mark (tune ID 99999344) recorded under version 4.4.0.
+/**
+ * @file
+ * @brief The two-button modal dialog @c RBErosionMarkUpdater presents when it offers to correct a
+ * stored score for the tune Erosion Mark (tune ID 99999344) recorded under version 4.4.0.
  *
  * It is only reached on systems that predate @c UIAlertController: @c RBErosionMarkUpdater builds
  * this panel under @c NSClassFromString(@@"UIAlertController")==nil and otherwise presents

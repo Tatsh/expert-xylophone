@@ -1,5 +1,8 @@
-/** @file
- * A single row in the ranking leaderboard table. It is a @c UITableViewCell subclass that draws a
+/**
+ * @file
+ * @brief A single row in the ranking leaderboard table.
+ *
+ * It is a @c UITableViewCell subclass that draws a
  * rounded, optionally top- or bottom-cornered background split into three columns (rank, name, and
  * score) and holds the three labels for those columns.
  *

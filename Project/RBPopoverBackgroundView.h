@@ -1,5 +1,8 @@
-/** @file
- * A custom popover chrome for the music-select popover. It is a @c UIPopoverBackgroundView subclass
+/**
+ * @file
+ * @brief A custom popover chrome for the music-select popover.
+ *
+ * It is a @c UIPopoverBackgroundView subclass
  * that draws the game's own arrow-and-body artwork (the @c 01_music_select/sel_popover_* image set)
  * instead of the system default: it overrides the required geometry class methods
  * (@c arrowHeight, @c arrowBase, and @c contentViewInsets), tracks the arrow offset and direction

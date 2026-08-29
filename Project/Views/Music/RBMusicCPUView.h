@@ -1,5 +1,8 @@
-/** @file
- * The CPU-rival LEVEL setting sub-view. It is the third page of the music-detail setting scroll
+/**
+ * @file
+ * @brief The CPU-rival LEVEL setting sub-view.
+ *
+ * It is the third page of the music-detail setting scroll
  * hosted by @c RBMusicView: a horizontal slider bar over which a draggable marker selects the CPU
  * rival's LEVEL (zero through nine). A tap or the marker's animated glide seeds the shared
  * @c RBUserSettingData.cpuLevel through the hosting @c RBMusicView.

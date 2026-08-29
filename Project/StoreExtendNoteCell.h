@@ -1,6 +1,9 @@
-/** @file
- * The pad two-up extend-note table cell, holding a left and a right @c StoreExtendNoteView
- * product view side by side across the cell's content view. Its @c initWithStyle:reuseIdentifier:
+/**
+ * @file
+ * @brief The pad two-up extend-note table cell, holding a left and a right @c StoreExtendNoteView
+ * product view side by side across the cell's content view.
+ *
+ * Its @c initWithStyle:reuseIdentifier:
  * builds both views at fixed frames and adds them to the content view. Used by
  * @c RBStoreExtendPageViewController on the pad layout (the phone layout uses
  * @c StoreExtendNoteCellPhone instead).

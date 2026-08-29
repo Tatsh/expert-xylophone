@@ -1,7 +1,10 @@
-/** @file
- * A single image-based button on the music-menu footer: the settings, ranking, store, and the
- * three playlist-editing (add, delete, finish) buttons. Each wraps an inner @c UIButton whose
- * background and icon artwork are chosen by the button's type, and carries two overlay image views
+/**
+ * @file
+ * @brief A single image-based button on the music-menu footer: the settings, ranking, store, and
+ * the three playlist-editing (add, delete, finish) buttons.
+ *
+ * Each wraps an inner @c UIButton whose background and icon artwork are chosen by the button's
+ * type, and carries two overlay image views
  * that play a repeating flash effect to advertise unseen content.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBMenuButton, image base

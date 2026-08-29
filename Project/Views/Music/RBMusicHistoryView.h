@@ -1,5 +1,8 @@
-/** @file
- * The play-history panel hosted by @c RBMusicView. It shows the recent-play achievement-rate graph
+/**
+ * @file
+ * @brief The play-history panel hosted by @c RBMusicView.
+ *
+ * It shows the recent-play achievement-rate graph
  * for the currently selected tune and difficulty, revealing and hiding itself with a fade
  * animation. The panel builds its plotted data from the @c History Core Data records through the
  * shared @c RBCoreDataManager context.

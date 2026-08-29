@@ -1,5 +1,8 @@
-/** @file
- * The base popup view. It is a @c UIControl subclass that fills its host view with a dimmed
+/**
+ * @file
+ * @brief The base popup view.
+ *
+ * It is a @c UIControl subclass that fills its host view with a dimmed
  * backdrop and fades itself in and out. A concrete popup subclass builds its own chrome inside the
  * @c baseView and @c contentView the base panel provides, and dismisses the popup by tapping the
  * dimmed backdrop.

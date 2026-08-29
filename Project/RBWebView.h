@@ -1,6 +1,9 @@
-/** @file
- * A @c UIWebView subclass used to present remote HTML content (news, store, and campaign pages)
- * inside the game. It owns a translucent "gray" cover view and a centred activity indicator that
+/**
+ * @file
+ * @brief A @c UIWebView subclass used to present remote HTML content (news, store, and campaign
+ * pages) inside the game.
+ *
+ * It owns a translucent "gray" cover view and a centred activity indicator that
  * are shown while a page is loading, and it acts as its own delegate so it can drive those loading
  * affordances and enforce a small allow-list of navigation hosts.
  *

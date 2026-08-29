@@ -1,6 +1,6 @@
 /**
  * @file
- * The Limelight-theme full-combo layer, @c FullComboLimelightLayer.
+ * @brief The Limelight-theme full-combo layer, @c FullComboLimelightLayer.
  */
 
 #pragma once

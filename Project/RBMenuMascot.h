@@ -1,6 +1,9 @@
-/** @file
- * The animated mascot character that wanders across the music-menu screen. It is a @c UIView
- * subclass that plays a sprite-frame animation on an inner @c UIImageView (a random normal or, on
+/**
+ * @file
+ * @brief The animated mascot character that wanders across the music-menu screen.
+ *
+ * It is a @c UIView subclass that plays a sprite-frame animation on an inner @c UIImageView (a
+ * random normal or, on
  * the Hinabita 2017-03 campaign, a rare frame set), drifts left and right under a simple gravity
  * model, bounces off the screen edges, and hops when tapped. During the campaign it instead shows a
  * scrolling speech-bubble ticker of campaign messages and, when a message carries a link, taps

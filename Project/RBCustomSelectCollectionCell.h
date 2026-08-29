@@ -1,5 +1,8 @@
-/** @file
- * A customize item cell shown in an @c RBCustomSelectCollectionView grid. It hosts a single image
+/**
+ * @file
+ * @brief A customize item cell shown in an @c RBCustomSelectCollectionView grid.
+ *
+ * It hosts a single image
  * button whose image is loaded asynchronously, plus a hidden selected-state overlay that flashes
  * when the cell's item becomes the current selection.
  *

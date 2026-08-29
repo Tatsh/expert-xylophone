@@ -1,5 +1,8 @@
-/** @file
- * The sort-order selector for the store manage page. Presented as a pushed controller on the phone
+/**
+ * @file
+ * @brief The sort-order selector for the store manage page.
+ *
+ * Presented as a pushed controller on the phone
  * and inside a popover on the pad, it lists the tune list's sort orders in a table and reports the
  * chosen order back to its owning @c RBStoreManageViewController.
  *

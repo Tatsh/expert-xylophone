@@ -1,5 +1,8 @@
-/** @file
- * A single particle layer of the resource-download background effect. Its @c init seeds the three
+/**
+ * @file
+ * @brief A single particle layer of the resource-download background effect.
+ *
+ * Its @c init seeds the three
  * artwork paths that its @c RBMenuBGEffectPartView base animates.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class

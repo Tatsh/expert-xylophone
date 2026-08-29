@@ -1,6 +1,6 @@
 /**
  * @file
- * The Limelight-theme background-effect layer, @c LimelightEffectLayer.
+ * @brief The Limelight-theme background-effect layer, @c LimelightEffectLayer.
  */
 
 #pragma once

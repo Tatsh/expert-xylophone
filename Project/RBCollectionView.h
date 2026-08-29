@@ -1,6 +1,9 @@
-/** @file
- * A @c UICollectionView subclass that brackets its layout pass with callbacks to an auxiliary
- * delegate. Just before it lays its subviews out it sends @c -willLayoutSubviews:, then it runs the
+/**
+ * @file
+ * @brief A @c UICollectionView subclass that brackets its layout pass with callbacks to an
+ * auxiliary delegate.
+ *
+ * Just before it lays its subviews out it sends @c -willLayoutSubviews:, then it runs the
  * inherited @c UICollectionView layout, and finally it sends @c -didLayoutSubviews:. The host views
  * (@c RBUnlockCollectionView and @c RBCustomSelectCollectionView) use the trailing callback to size
  * their page control from the freshly laid-out content.

@@ -1,5 +1,8 @@
-/** @file
- * @c UIAlertView convenience factories used across the game. Every method builds a
+/**
+ * @file
+ * @brief @c UIAlertView convenience factories used across the game.
+ *
+ * Every method builds a
  * @c UIAlertView with fixed (localized or hard-coded) titles, messages, and buttons, and — except
  * for the handful of "create" variants — immediately shows it. A few variants also tag the alert
  * so the shared delegate can tell them apart.

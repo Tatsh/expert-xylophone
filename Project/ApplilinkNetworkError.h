@@ -1,5 +1,7 @@
-/** @file
- * Reconstructed interface for the Applilink recommend SDK's @c ApplilinkNetworkError factory.
+/**
+ * @file
+ * @brief Reconstructed interface for the Applilink recommend SDK's @c ApplilinkNetworkError
+ * factory.
  *
  * @c ApplilinkNetworkError is the SDK's @c NSError factory: it owns the Applilink error domain and
  * a cached table that maps each Applilink error code to a localised message, then builds an

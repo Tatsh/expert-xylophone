@@ -1,5 +1,7 @@
-/** @file
- * A rounded store action button with a configurable gradient fill and a distinct disabled colour.
+/**
+ * @file
+ * @brief A rounded store action button with a configurable gradient fill and a distinct disabled
+ * colour.
  *
  * Shared across the store user interface (the campaign detail and extend-note detail pages hold
  * @c downloadBtn and @c linkBtn instances of it). Reconstructed from Ghidra project rb458, program

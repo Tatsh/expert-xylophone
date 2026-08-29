@@ -1,6 +1,8 @@
-/** @file
- * @c NSString convenience helpers used across the game: a URL query-component percent-encoder and a
- * family of font-based sizing and drawing helpers that re-implement the pre-iOS-7
+/**
+ * @file
+ * @brief @c NSString convenience helpers used across the game: a URL query-component
+ * percent-encoder and a family of font-based sizing and drawing helpers that re-implement the
+ * pre-iOS-7
  * @c NSString(UIStringDrawing) API on top of the modern attributed-string measurement and drawing
  * methods (@c sizeWithAttributes:, @c boundingRectWithSize:options:attributes:context:,
  * @c drawInRect:withAttributes:, and @c drawAtPoint:withAttributes:).

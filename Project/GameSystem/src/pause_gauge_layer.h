@@ -1,6 +1,6 @@
 /**
  * @file
- * The pause-gauge play-field layer, @c PauseGaugeLayer.
+ * @brief The pause-gauge play-field layer, @c PauseGaugeLayer.
  */
 
 #pragma once

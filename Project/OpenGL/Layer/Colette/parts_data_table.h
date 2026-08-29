@@ -1,6 +1,6 @@
 /**
  * @file
- * The result-window parts-data record type and its runtime-filled Colette tables.
+ * @brief The result-window parts-data record type and its runtime-filled Colette tables.
  */
 
 #pragma once

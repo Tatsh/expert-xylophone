@@ -1,6 +1,6 @@
 /**
  * @file
- * The boot logo scene, @c rb::LogoScene (RTTI @c N2rb9LogoSceneE).
+ * @brief The boot logo scene, @c rb::LogoScene (RTTI @c N2rb9LogoSceneE).
  */
 
 #pragma once

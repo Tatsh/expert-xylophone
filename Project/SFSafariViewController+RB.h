@@ -1,5 +1,8 @@
-/** @file
- * @c SFSafariViewController status-bar preference. The application presents the in-app browser
+/**
+ * @file
+ * @brief @c SFSafariViewController status-bar preference.
+ *
+ * The application presents the in-app browser
  * full screen, so the category overrides the controller's status-bar preference to hide it.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category

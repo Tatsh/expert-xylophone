@@ -1,5 +1,8 @@
-/** @file
- * A decoded audio asset used by the game's sound engine. On construction the object resolves a
+/**
+ * @file
+ * @brief A decoded audio asset used by the game's sound engine.
+ *
+ * On construction the object resolves a
  * sound file (from the application's document directory or main bundle, trying the @c .mp3, @c
  * .wav, and @c .m4a extensions in turn), opens it with @c ExtAudioFile, and configures a signed
  * 16-bit interleaved PCM client format. In buffered mode the whole file is decoded up front into a

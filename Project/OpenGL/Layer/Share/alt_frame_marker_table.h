@@ -1,6 +1,7 @@
 /**
  * @file
- * The alternate play-field frame's lane-marker layout tables, seeded at load time and read by the
+ * @brief The alternate play-field frame's lane-marker layout tables, seeded at load time and read
+ * by the
  * alt-frame layer's build and render passes.
  */
 

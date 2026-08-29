@@ -1,6 +1,6 @@
 /**
  * @file
- * The note chain-connector layer, @c ChainConnectorLayer.
+ * @brief The note chain-connector layer, @c ChainConnectorLayer.
  */
 
 #pragma once

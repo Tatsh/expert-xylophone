@@ -1,6 +1,6 @@
 /**
  * @file
- * The full-screen fade overlay layer, @c FadeOverlayLayer.
+ * @brief The full-screen fade overlay layer, @c FadeOverlayLayer.
  */
 
 #pragma once

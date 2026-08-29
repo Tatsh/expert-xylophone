@@ -1,5 +1,8 @@
-/** @file
- * The horizontal experience-item picker for a single unlock package. Each package in the unlock
+/**
+ * @file
+ * @brief The horizontal experience-item picker for a single unlock package.
+ *
+ * Each package in the unlock
  * catalogue is rendered as one of these views inside the @c RBUnlockView scroll view; it stacks a
  * framed backdrop, the package title, and a paged @c RBCollectionView of @c RBUnlockCollectionCell
  * items, and reports taps back to its delegate.

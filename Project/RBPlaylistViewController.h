@@ -1,5 +1,8 @@
-/** @file
- * The playlist screen's view controller. It is an @c RBBaseTableViewController subclass that
+/**
+ * @file
+ * @brief The playlist screen's view controller.
+ *
+ * It is an @c RBBaseTableViewController subclass that
  * presents one of three related list surfaces selected by its @c playlistType and @c playlistNode
  * mode fields: the playlist root menu (all, new, level, and append rows plus the user's saved
  * playlists), the level-select node, and the add-to-playlist picker driven by a music set. Row

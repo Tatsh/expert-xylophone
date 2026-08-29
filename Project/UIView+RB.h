@@ -1,6 +1,9 @@
-/** @file
- * @c UIView flash-effect machinery and frame-geometry conveniences used across the menu and
- * music-select screens. The flash machinery drives the forever-repeating, auto-reversing @c opacity
+/**
+ * @file
+ * @brief @c UIView flash-effect machinery and frame-geometry conveniences used across the menu and
+ * music-select screens.
+ *
+ * The flash machinery drives the forever-repeating, auto-reversing @c opacity
  * pulse (installed on the receiver's layer under the @c "FLUSH_ANIM" key) that advertises unseen or
  * selectable content: a plain single-pulse variant and a twelve-step multi-pulse variant that also
  * spins the layer through a full @c transform.rotation.z turn. Alongside it sit an @c "ALPHA_ANIM"

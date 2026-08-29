@@ -1,5 +1,8 @@
-/** @file
- * The shared base table cell for the store list screens. It carries two @c StoreTableCellViewBase
+/**
+ * @file
+ * @brief The shared base table cell for the store list screens.
+ *
+ * It carries two @c StoreTableCellViewBase
  * product tiles (a left and a right slot) and, on construction, gives itself the store list's dark
  * neutral-grey background on both the cell and its content view and suppresses the selection
  * highlight. It does not build the tiles itself; the concrete subclasses do that. @c dealloc clears

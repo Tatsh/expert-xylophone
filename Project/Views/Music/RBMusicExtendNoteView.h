@@ -1,5 +1,8 @@
-/** @file
- * The extend-note (追加ノート) badge shown for a tune in the music-select screen. When a tune has a
+/**
+ * @file
+ * @brief The extend-note (追加ノート) badge shown for a tune in the music-select screen.
+ *
+ * When a tune has a
  * purchased extend (special) note pack, @c RBMusicView builds one of these to advertise it: a
  * tappable difficulty button carrying the special-chart frame and its level-number glyph, plus a
  * translucent caption panel showing the pack's comment. The view looks its pack up through

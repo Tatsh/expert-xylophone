@@ -1,8 +1,10 @@
-/** @file
- * A store pack model describing one purchasable song pack: its identifier, its StoreKit product,
- * the display metadata read from the catalogue entry dictionary, and the tunes it contains.
- * Instances are built either from a @c SKProduct, from a bare pack identifier, or from a server
- * catalogue entry dictionary, and are handed to @c RBStorePageViewController and its detail views.
+/**
+ * @file
+ * @brief A store pack model describing one purchasable song pack: its identifier, its StoreKit
+ * product, the display metadata read from the catalogue entry dictionary, and the tunes it
+ * contains. Instances are built either from a @c SKProduct, from a bare pack identifier, or from a
+ * server catalogue entry dictionary, and are handed to @c RBStorePageViewController and its detail
+ * views.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StorePackInfo, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

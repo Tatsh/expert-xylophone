@@ -1,6 +1,6 @@
 /**
  * @file
- * The tutorial-guide layer, @c TutorialGuideLayer.
+ * @brief The tutorial-guide layer, @c TutorialGuideLayer.
  */
 
 #pragma once

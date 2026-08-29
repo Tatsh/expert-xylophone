@@ -1,6 +1,9 @@
-/** @file
- * The terms-of-service agreement popup. It is an @c RBMusicMenuPopupView subclass (popup type
- * @c RBMusicMenuPopupViewTypeTerms) presented at first run and whenever the terms change; it shows
+/**
+ * @file
+ * @brief The terms-of-service agreement popup.
+ *
+ * It is an @c RBMusicMenuPopupView subclass (popup type @c RBMusicMenuPopupViewTypeTerms)
+ * presented at first run and whenever the terms change; it shows
  * the terms body in a scrolling text view, gates the Agree button until the reader scrolls to the
  * bottom, and POSTs the acceptance to the server through @c Downloader.
  *

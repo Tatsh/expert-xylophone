@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-burst explosion effect layer, @c ExplosionEffectLayer.
+ * @brief The note-burst explosion effect layer, @c ExplosionEffectLayer.
  */
 
 #pragma once

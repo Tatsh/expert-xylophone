@@ -1,5 +1,8 @@
-/** @file
- * The application's root navigation controller. It is a thin @c UINavigationController subclass
+/**
+ * @file
+ * @brief The application's root navigation controller.
+ *
+ * It is a thin @c UINavigationController subclass
  * that keeps the navigation bar opaque and hidden, forces the status bar hidden, and forwards its
  * autorotation decisions to whichever view controller is currently visible.
  *

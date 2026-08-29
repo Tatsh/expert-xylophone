@@ -1,6 +1,6 @@
 /**
  * @file
- * The world-space batched sprite draw node, @c ne::C_SPRITE_INSTANCING_3D.
+ * @brief The world-space batched sprite draw node, @c ne::C_SPRITE_INSTANCING_3D.
  */
 
 #pragma once

@@ -1,5 +1,8 @@
-/** @file
- * The user-playlist manager singleton. It owns an ordered list of user-created playlists, each a
+/**
+ * @file
+ * @brief The user-playlist manager singleton.
+ *
+ * It owns an ordered list of user-created playlists, each a
  * mutable dictionary of a stable identifier (@c PLID), a display name (@c NAME), and a list of the
  * tune identifiers it contains (@c LIST). It vends and mutates playlists and their tune lists by
  * index, and persists the whole list as a property list at @c Documents/playlist.

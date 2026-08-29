@@ -1,5 +1,8 @@
-/** @file
- * The music-menu hub view. It is the @c UIView that hosts the whole music-select screen: the paged
+/**
+ * @file
+ * @brief The music-menu hub view.
+ *
+ * It is the @c UIView that hosts the whole music-select screen: the paged
  * music grid (an @c RBCollectionView driven by an @c RBMusicGridLayout of @c RBMusicCell items),
  * the menu chrome (the settings, ranking, and store buttons, the playlist add, delete, and finish
  * buttons, the random button, the wandering mascot, the scrolling news ticker, the page slider,

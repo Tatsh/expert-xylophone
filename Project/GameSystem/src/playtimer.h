@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine play-timing singleton, @c PlayTimer.
+ * @brief The engine play-timing singleton, @c PlayTimer.
  */
 
 #pragma once

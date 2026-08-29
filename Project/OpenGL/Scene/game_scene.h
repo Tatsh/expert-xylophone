@@ -1,6 +1,6 @@
 /**
  * @file
- * The gameplay scene, @c rb::GameScene (RTTI @c N2rb9GameSceneE).
+ * @brief The gameplay scene, @c rb::GameScene (RTTI @c N2rb9GameSceneE).
  */
 
 #pragma once

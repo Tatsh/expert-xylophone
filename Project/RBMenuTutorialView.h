@@ -1,5 +1,8 @@
-/** @file
- * The first-run tutorial overlay shown over the menu. It dims the whole screen with four grey
+/**
+ * @file
+ * @brief The first-run tutorial overlay shown over the menu.
+ *
+ * It dims the whole screen with four grey
  * quadrant layers plus four grey centre layers that together punch a rectangular "spotlight" hole
  * around the control the current tutorial step points at, draws the tutorial message artwork and a
  * pastel speech bubble beside the hole, and animates a bouncing cursor or a pulsing touch marker on

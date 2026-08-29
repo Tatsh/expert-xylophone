@@ -1,7 +1,8 @@
-/** @file
- * A single tune row inside the pad-layout pack detail panel (@c StorePackDetailViewPad): a jacket,
- * a name, an artist, difficulty levels, an iTunes-link button, a sample-playback button, and an
- * optional cross-sell badge that offers to jump to the extend-note store.
+/**
+ * @file
+ * @brief A single tune row inside the pad-layout pack detail panel (@c StorePackDetailViewPad): a
+ * jacket, a name, an artist, difficulty levels, an iTunes-link button, a sample-playback button,
+ * and an optional cross-sell badge that offers to jump to the extend-note store.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StorePackMusicView, image base
  * 0x100000000). Ghidra addresses are offsets relative to the image base.

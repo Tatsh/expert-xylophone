@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-trail layer, @c NoteTrailLayer.
+ * @brief The note-trail layer, @c NoteTrailLayer.
  */
 
 #pragma once

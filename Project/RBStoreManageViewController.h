@@ -1,5 +1,8 @@
-/** @file
- * The purchase-management store page. It is the root controller of the store's manage tab, an
+/**
+ * @file
+ * @brief The purchase-management store page.
+ *
+ * It is the root controller of the store's manage tab, an
  * @c RBBaseViewController subclass owned through @c RBStoreTabController's @c manageNavCtrl. The
  * page lists every purchased tune in a grouped @c UITableView, lets the player re-download or
  * delete a tune (and its extend notes), and offers a "sort" selector that reorders the list by

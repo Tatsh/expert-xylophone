@@ -1,6 +1,6 @@
 /**
  * @file
- * The player-field score layer, @c PlayerFieldLayer.
+ * @brief The player-field score layer, @c PlayerFieldLayer.
  */
 
 #pragma once

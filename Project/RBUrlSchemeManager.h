@@ -1,5 +1,8 @@
-/** @file
- * Router for the game's custom-scheme and push-notification deep links. Given a URL, it derives a
+/**
+ * @file
+ * @brief Router for the game's custom-scheme and push-notification deep links.
+ *
+ * Given a URL, it derives a
  * per-host handler class named @c RBUrlScheme<Host>Controller, verifies it conforms to
  * @c RBUrlSchemeControllerProtocol, and dispatches the URL's last path component and parsed query
  * string to that handler.

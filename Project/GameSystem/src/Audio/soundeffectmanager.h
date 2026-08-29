@@ -1,6 +1,6 @@
 /**
  * @file
- * The themed sound-effect manager, @c SoundEffectManager.
+ * @brief The themed sound-effect manager, @c SoundEffectManager.
  */
 
 #pragma once

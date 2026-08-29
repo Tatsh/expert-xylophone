@@ -1,5 +1,8 @@
-/** @file
- * A stateless factory of Core Animation builders for the app's user-interface effects. Every entry
+/**
+ * @file
+ * @brief A stateless factory of Core Animation builders for the app's user-interface effects.
+ *
+ * Every entry
  * point is a class method that assembles and returns a keyframe animation (or a grouped pair of
  * them) already configured to persist after it finishes: each is built with
  * @c removedOnCompletion set to @c NO and @c fillMode set to @c kCAFillModeForwards. A companion

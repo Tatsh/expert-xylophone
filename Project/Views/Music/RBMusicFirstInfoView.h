@@ -1,5 +1,8 @@
-/** @file
- * The one-shot "how to select a tune" hint overlay for the music-select screen. It is a
+/**
+ * @file
+ * @brief The one-shot "how to select a tune" hint overlay for the music-select screen.
+ *
+ * It is a
  * full-screen @c UIView with a black background at 0.7 alpha, carrying a close button and the
  * layered @c 11_info hint artwork, that fades itself in after a short delay and fades out and
  * removes itself when tapped.

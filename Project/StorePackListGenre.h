@@ -1,6 +1,9 @@
-/** @file
- * A store genre model describing one pack-list genre: its display name, identifier, and the pack
- * identifiers it accumulates as catalogue pages are fetched. Used by the pack store's genre list
+/**
+ * @file
+ * @brief A store genre model describing one pack-list genre: its display name, identifier, and the
+ * pack identifiers it accumulates as catalogue pages are fetched.
+ *
+ * Used by the pack store's genre list
  * (@c RBStoreGenreViewController) and the store page (@c RBStorePageViewController), and populated
  * by @c RBStorePackList.
  *

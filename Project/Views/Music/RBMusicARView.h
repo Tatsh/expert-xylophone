@@ -1,6 +1,9 @@
-/** @file
- * The per-difficulty achievement-rate readout hosted by @c RBMusicView on the music-select
- * screen. It renders the achievement rate as a row of image glyphs: a trailing percent sign, one
+/**
+ * @file
+ * @brief The per-difficulty achievement-rate readout hosted by @c RBMusicView on the music-select
+ * screen.
+ *
+ * It renders the achievement rate as a row of image glyphs: a trailing percent sign, one
  * fractional (tenths) digit, a decimal point, and the integer digits, laid out from a fixed pool of
  * six @c UIImageView subviews.
  *

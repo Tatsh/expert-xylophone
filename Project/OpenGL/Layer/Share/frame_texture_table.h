@@ -1,6 +1,6 @@
 /**
  * @file
- * The play-field frame texture-name table, indexed by frame type.
+ * @brief The play-field frame texture-name table, indexed by frame type.
  */
 
 #pragma once

@@ -1,6 +1,6 @@
 /**
  * @file
- * One Core Audio mixer playback voice, @c caVoice.
+ * @brief One Core Audio mixer playback voice, @c caVoice.
  */
 
 #pragma once

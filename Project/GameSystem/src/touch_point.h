@@ -1,6 +1,6 @@
 /**
  * @file
- * The per-touch slot record, @c TouchPoint, tracked by @c TouchManager.
+ * @brief The per-touch slot record, @c TouchPoint, tracked by @c TouchManager.
  */
 
 #pragma once

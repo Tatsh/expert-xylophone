@@ -1,6 +1,6 @@
 /**
  * @file
- * The event-notification effect layer, @c EventEffectLayer.
+ * @brief The event-notification effect layer, @c EventEffectLayer.
  */
 
 #pragma once

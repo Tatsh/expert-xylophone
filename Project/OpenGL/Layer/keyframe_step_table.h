@@ -1,6 +1,6 @@
 /**
  * @file
- * The keyframe step-table lookup helper.
+ * @brief The keyframe step-table lookup helper.
  */
 
 #pragma once

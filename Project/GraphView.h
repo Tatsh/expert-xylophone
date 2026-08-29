@@ -1,5 +1,8 @@
-/** @file
- * A lightweight line-and-dot plot view. It draws a polyline through a series of boxed numeric
+/**
+ * @file
+ * @brief A lightweight line-and-dot plot view.
+ *
+ * It draws a polyline through a series of boxed numeric
  * values, one dashed segment between each adjacent pair, with a filled dot at every point, and
  * labels the top and bottom of the plot with the current maximum and minimum values. It is hosted
  * by @c RBMusicHistoryView, which feeds it the recent-play achievement-rate history.

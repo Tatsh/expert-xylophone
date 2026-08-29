@@ -1,5 +1,8 @@
-/** @file
- * @c UIColor palette shared across the whole UI of REFLEC BEAT plus. The binary builds a fixed
+/**
+ * @file
+ * @brief @c UIColor palette shared across the whole UI of REFLEC BEAT plus.
+ *
+ * The binary builds a fixed
  * table of cached @c UIColor objects once at start-up (see @c InitializeUIColorPalette below) into
  * a run of global slots, and screens read those slots directly. This category recovers that table:
  * @c rbPaletteColorAtIndex: returns a palette entry, and @c RBPaletteIndex names each slot. The

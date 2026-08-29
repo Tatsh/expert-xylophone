@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's five-float linear-interpolation channel, @c LinearTween.
+ * @brief The engine's five-float linear-interpolation channel, @c LinearTween.
  *
  * A recurring engine idiom: a start value, an end value, a duration, the elapsed time, and the
  * current interpolated value, embedded directly in a UI layer as a value type. Many layers advance

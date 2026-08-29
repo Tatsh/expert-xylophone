@@ -1,5 +1,7 @@
-/** @file
- * A store artwork image view that lazily downloads its image from a URL and fades it in once the
+/**
+ * @file
+ * @brief A store artwork image view that lazily downloads its image from a URL and fades it in
+ * once the
  * download finishes.
  *
  * The view is a @c UIImageView subclass that hosts two child image views: a @c backgroundView that

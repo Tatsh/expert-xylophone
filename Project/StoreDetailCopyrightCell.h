@@ -1,6 +1,9 @@
-/** @file
- * The trailing copyright and terms rows in the phone-layout pack detail table, each a single
- * multi-line label. @c RBStoreDetailViewController dequeues this cell for both the copyright row
+/**
+ * @file
+ * @brief The trailing copyright and terms rows in the phone-layout pack detail table, each a
+ * single multi-line label.
+ *
+ * @c RBStoreDetailViewController dequeues this cell for both the copyright row
  * and the terms-of-use row, reusing the one class for both.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreDetailCopyrightCell, image

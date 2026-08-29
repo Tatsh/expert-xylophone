@@ -1,5 +1,8 @@
-/** @file
- * A lightweight per-tune sort record for the store manage screens. Each instance holds the yomigana
+/**
+ * @file
+ * @brief A lightweight per-tune sort record for the store manage screens.
+ *
+ * Each instance holds the yomigana
  * readings used to collate a tune by artist and by title, the tune's pack name, its identifier, and
  * the raw catalogue dictionary it was built from. Instances are created while
  * @c -[RBStoreManageViewController sortList:] partitions the purchased-tune list into the alphabet

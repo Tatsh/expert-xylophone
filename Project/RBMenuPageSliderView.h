@@ -1,5 +1,8 @@
-/** @file
- * The popup wrapper that hosts the music-menu page slider. It is an @c RBPopupView subclass that
+/**
+ * @file
+ * @brief The popup wrapper that hosts the music-menu page slider.
+ *
+ * It is an @c RBPopupView subclass that
  * allocates and embeds a single @c RBMenuPageSlider, exposes it through the @c slider property, and
  * forwards the popup's show/reset lifecycle to it. @c RBMenuView creates one lazily in
  * @c showPageSlider: and slides it in over the search bar.

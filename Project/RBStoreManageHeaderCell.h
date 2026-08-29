@@ -1,5 +1,8 @@
-/** @file
- * The section-header cell for the store manage page's grouped tune table. It shows the kana
+/**
+ * @file
+ * @brief The section-header cell for the store manage page's grouped tune table.
+ *
+ * It shows the kana
  * section title and an expand/collapse indicator, and forwards a tap to the target's toggle
  * action.
  *

@@ -1,6 +1,6 @@
 /**
  * @file
- * The theme-marker layer, @c ThemaMarkerLayer.
+ * @brief The theme-marker layer, @c ThemaMarkerLayer.
  */
 
 #pragma once

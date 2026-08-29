@@ -1,5 +1,8 @@
-/** @file
- * StoreKit in-app-purchase manager. Wraps @c SKPaymentQueue to buy and restore products, tracks the
+/**
+ * @file
+ * @brief StoreKit in-app-purchase manager.
+ *
+ * Wraps @c SKPaymentQueue to buy and restore products, tracks the
  * set of owned product identifiers, and verifies each purchase or restore against the game server
  * before the entitlement is granted.
  *

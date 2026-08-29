@@ -1,6 +1,9 @@
-/** @file
- * The unlock-confirmation popup presented over the customize screen when the player taps a locked
- * item in the unlock picker. It dims the whole screen and floats a rounded, framed panel showing
+/**
+ * @file
+ * @brief The unlock-confirmation popup presented over the customize screen when the player taps a
+ * locked item in the unlock picker.
+ *
+ * It dims the whole screen and floats a rounded, framed panel showing
  * the item's artwork, its lime-point cost, and yes/no buttons that confirm or cancel the unlock.
  * Music items additionally download and overlay a themed frame image around the artwork.
  *

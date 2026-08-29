@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-glow (combo/aura) effect layer, @c NoteGlowLayer.
+ * @brief The note-glow (combo/aura) effect layer, @c NoteGlowLayer.
  */
 
 #pragma once

@@ -1,5 +1,8 @@
-/** @file
- * The music-select detail view. It is the panel that slides down over the music grid when a song is
+/**
+ * @file
+ * @brief The music-select detail view.
+ *
+ * It is the panel that slides down over the music grid when a song is
  * chosen: it shows the jacket, the music and artist name images, the BPM, the per-difficulty score,
  * rank, full-combo, and achievement-rate readouts, and it hosts the paged setting scroll (the
  * difficulty, colour, and CPU sub-views), the decide, double-play, history, random, and pastel

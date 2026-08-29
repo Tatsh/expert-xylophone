@@ -1,5 +1,8 @@
-/** @file
- * The application's root view controller. It hosts the OpenGL ES game view (@c neGLView) and the
+/**
+ * @file
+ * @brief The application's root view controller.
+ *
+ * It hosts the OpenGL ES game view (@c neGLView) and the
  * music-select menu (@c RBMenuView), drives the game task/draw loop from a @c CADisplayLink, and
  * owns the transitions into the preview and gameplay screens. It also implements the Twitter
  * (Social framework) posting flow, the playlist popover presentation, the corporate-logo button,
