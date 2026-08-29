@@ -54,6 +54,7 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
         "NS_ENUM(type,name)=enum name : type"
         "NS_OPTIONS(type,name)=enum name : type"
         "NS_CLOSED_ENUM(type,name)=enum name : type")
+    set(DOXYGEN_EXCLUDE "${CMAKE_SOURCE_DIR}/Project/bf_init_bytes.inc")
     find_package(Doxygen REQUIRED)
     doxygen_add_docs(docs README.md Project ALL)
 endif()
