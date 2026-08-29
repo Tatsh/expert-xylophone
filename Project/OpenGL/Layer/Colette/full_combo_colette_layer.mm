@@ -16,15 +16,11 @@
 #include "sprite_uv_table.h"
 #include "vectormath.h"
 
-// The process-wide Colette full-combo layer, created lazily by shared().
 static FullComboColetteLayer *g_pFullComboColetteLayer = nullptr; // @ghidraAddress 0x3dc668
 
-// The shared sprite-UV atlas the descriptor entries index by uvIndex.
 extern const SpriteUvEntry g_aSpriteUvTable[]; // @ghidraAddress 0x2efcc8
 
-// The Colette full-combo sprite-type descriptor table (declared in
-// full_combo_colette_sprite_table.h): read-only ROM data transcribed from the binary at
-// 0x3005f0, giving each type its batch group, anchor, size, and UV-table index.
+// @ghidraAddress 0x3005f0
 const ColetteFullComboSpriteType g_aColetteFullComboSpriteTypes[kColetteFullComboSpriteTypeCount] =
     {
         {2, 23.0f, 23.5f, 46.0f, 47.0f, 63},    // 0
@@ -134,25 +130,21 @@ const ColetteFullComboSpriteType g_aColetteFullComboSpriteTypes[kColetteFullComb
 
 namespace {
 
-// The layout size the constructor seeds.
 constexpr float kLayoutWidth = 384.0f;
 constexpr float kLayoutHeight = 1098.0f;
 
-// The atlas the layer loads into all three of its texture fields (@ghidraAddress 0x3ceaa8).
+// @ghidraAddress 0x3ceaa8
 constexpr const char *kTextureName = "00_texture/gm_parts2";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x2ff050).
+// @ghidraAddress 0x2ff050
 constexpr unsigned int kSlotCapacities[] = {32, 256, 32};
 
-// The per-slot texture-field selector (@ghidraAddress 0x2ff05c): the index into the layer's three
-// texture fields for each slot.
+// @ghidraAddress 0x2ff05c
 constexpr int kSlotTextureField[] = {0, 1, 2};
 
-// The slot that receives additive blend mode, and that mode's identifier.
 constexpr int kAdditiveBlendSlot = 1;
 constexpr int kAdditiveBlendMode = 1;
 
-// The two texture-environment parameter slots the builder seeds (to 1 each), and that value.
 constexpr int kTexParamSlotHigh = 1;
 constexpr int kTexParamSlotLow = 0;
 constexpr int kTexParamEnabled = 1;
@@ -161,8 +153,6 @@ constexpr int kTexParamEnabled = 1;
 
 /** @ghidraAddress 0x9b118 */
 FullComboColetteLayer::FullComboColetteLayer() {
-    // The base constructor runs first; the remaining state is already zero-cleared by the member
-    // initialisers, so only the layout size is seeded here.
     m_flWidth = kLayoutWidth;
     m_flHeight = kLayoutHeight;
 }
@@ -170,8 +160,6 @@ FullComboColetteLayer::FullComboColetteLayer() {
 /** @ghidraAddress 0x9b18c */
 FullComboColetteLayer *FullComboColetteLayer::shared() {
     if (g_pFullComboColetteLayer == nullptr) {
-        // The binary allocates the raw 0x68-byte object and runs its initialiser, which chains the
-        // base-layer constructor and seeds the layer's state.
         g_pFullComboColetteLayer = new FullComboColetteLayer();
     }
     return g_pFullComboColetteLayer;
@@ -183,8 +171,6 @@ void FullComboColetteLayer::InitializeBackgroundSpriteLayers() {
         return;
     }
 
-    // The sprites hang beneath the shared background layer's render object rather than the global
-    // scene root.
     BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
     ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
 
@@ -194,9 +180,6 @@ void FullComboColetteLayer::InitializeBackgroundSpriteLayers() {
 
     ne::C_TEXTURE *const apTextureFields[] = {m_pTexture0, m_pTexture1, m_pTexture2};
 
-    // Build one sprite instancer per slot, attach it under the background render object, make it
-    // visible, bind its mapped atlas, clear its sprite count, put the middle slot in additive
-    // blend, and enable each slot's two texture-environment parameters.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
         m_apSprites[nSlot] = pSprite;
@@ -236,7 +219,6 @@ void FullComboColetteLayer::CreateSprite(int nType,
     const ColetteFullComboSpriteType &spriteType = g_aColetteFullComboSpriteTypes[nType];
     const unsigned int nGroup = spriteType.nGroup;
 
-    // Skip the sprite when the group's batch is already full.
     const int nIndex = m_aSpriteCounts[nGroup];
     if (nIndex >= static_cast<int>(kSlotCapacities[nGroup])) {
         return;
@@ -274,61 +256,52 @@ bool FullComboColetteLayer::IsAnyEffectActive() const {
     return false;
 }
 
-// The number of frames the layer has run for, bumped once per frame that advanced the clock at all
-// (@ghidraAddress 0x3dc660). Only the strobing fourth mote fan reads it.
+// @ghidraAddress 0x3dc660
 static int g_nColetteFullComboFrameCount = 0;
 
 namespace {
 
-// The number of play sides the effect can run on, one per player colour.
 constexpr int kSideCount = 2;
 
-// The frame time above which the frame counter advances (@ghidraAddress 0x2ee878). At a
-// millisecond clock every real frame clears it, so the counter is effectively a frame tally.
+// At a millisecond clock every real frame clears this, so the counter is a frame tally.
+// @ghidraAddress 0x2ee878
 constexpr double kFrameCountThreshold = 0.001;
 
-// The animation clock past which an effect record retires (@ghidraAddress 0x2feff0), and the window
-// inside which it fires its themed voice cue exactly once (@ghidraAddress 0x2feff4 and 0x2f8540).
-// Unlike the Classic and Limelight layers this window is closed at both ends.
+// @ghidraAddress 0x2feff0
+// @ghidraAddress 0x2feff4
+// @ghidraAddress 0x2f8540
 constexpr float kEffectDuration = 2000.0f;
 constexpr float kVoiceCueClockMin = 500.0f;
 constexpr float kVoiceCueClockMax = 1000.0f;
 
-// The bias the letters and the banner sample their curves at (@ghidraAddress 0x2feff8).
+// @ghidraAddress 0x2feff8
 constexpr float kLetterClockBias = -500.0f;
 
-// The themed voice cue the effect announces itself with.
 constexpr int kFullComboVoiceId = 9;
 
-// The game types that leave the rival's side silent. The binary's bitwise test,
-// (gameType | 2) == 2, admits exactly game types 0 and 2 — the single-player modes.
+// The binary's (gameType | 2) == 2 test admits game types 0 and 2, the single-player modes.
 constexpr int kSinglePlayerGameTypeMask = 2;
 
-// The game type whose letters mirror onto the other side.
 constexpr int kVersusGameType = 1;
 
-// The half-turn rotation a mirrored side takes, in radians (@ghidraAddress 0x2fe894), and the
-// double-precision half turn the first mote fan adds to its curve-driven rotation
-// (@ghidraAddress 0x2f85a0).
+// @ghidraAddress 0x2fe894
+// @ghidraAddress 0x2f85a0
 constexpr float kMirrorRotation = 3.1415927f;
 constexpr double kMirrorRotationExact = 3.141592653589793;
 
-// The unit-interval-to-byte alpha scale (@ghidraAddress 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kAlphaScale = 255.0f;
 
-// The rotation each side's flare pair takes, indexed by whether the side is the local player's
-// (@ghidraAddress 0x2ff068).
+// @ghidraAddress 0x2ff068
 constexpr float kSideRotation[kSideCount] = {3.1415927f, 0.0f};
 
-// The centred flare pair's screen position (@ghidraAddress 0x2f8550 and 0x2fefFC). The layer
-// converts each to a layout-relative offset by subtracting its own size.
+// @ghidraAddress 0x2f8550
+// @ghidraAddress 0x2fefFC
 constexpr float kFlareScreenX = 384.0f;
 constexpr float kFlareScreenY = 1105.0f;
 
-// How far the letters' and banner's centre line is inset from each near lane row.
 constexpr int kLetterRowInset = 232;
 
-// The sprite count of each group, and the keyframe-pair counts of their curves.
 constexpr int kFanACount = 2;
 constexpr int kFanBCount = 9;
 constexpr int kFanCCount = 21;
@@ -338,28 +311,23 @@ constexpr int kThreePointCurve = 3;
 constexpr int kTwoPointCurve = 2;
 constexpr int kFourPointCurve = 4;
 
-// Each group's first sprite kind, indexed by side; every group's kind advances by one per sprite.
+// Each group's first sprite kind, indexed by side; kinds advance by one per sprite.
 constexpr int kFanAKindBase[kSideCount] = {0x3b, 0xf};
 constexpr int kFanBKindBase[kSideCount] = {0x3d, 0x11};
 constexpr int kFanDKindBase[kSideCount] = {0x5b, 0x2f};
 constexpr int kFlareBackKind[kSideCount] = {0xd, 0xb};
 constexpr int kFlareFrontKind[kSideCount] = {0xe, 0xc};
 
-// The fixed alpha the back flare draws at; it never fades.
 constexpr unsigned int kFlareBackAlpha = 0x7f;
 
-// The banner's sprite kind, and the offset added to the letter loop's counter to give its kind. The
-// letter loop counts from -10 up to 0, so its kinds run 1 through 10 rather than 0 through 9.
+// The letter loop counts from -10 up to 0, so its kinds run 1 through 10 rather than 0 through 9.
 constexpr int kBannerKind = 0;
 constexpr int kLetterKindBias = 0xb;
 
-// The strobe the fourth mote fan runs on: it draws for the first three frames of every six.
 constexpr int kFanDStrobePeriod = 6;
 constexpr int kFanDStrobeOnFrames = 3;
 
-// Each mote fan's layout, as a screen X and the inset of its row above the near lane's bottom. The
-// binary rebuilds these on the stack every frame from g_nPlayfieldNearRowBottom and
-// g_nPlayfieldCentreSplit.
+// Each mote fan's layout: a screen X and the inset of its row above the near lane's bottom.
 struct MoteLayout {
     float flScreenX;
     int nRowInset;
@@ -367,8 +335,8 @@ struct MoteLayout {
 
 constexpr MoteLayout kFanALayout[kFanACount] = {{12.0f, 60}, {0.0f, 120}};
 
-// Entries 4 and 5 sit on the 30-inset row, not the 60-inset one their neighbours use: the binary
-// reuses the earlier row value there. Faithful, not a transcription slip.
+// Entries 4 and 5 reuse the earlier 30-inset row rather than their neighbours' 60, as the binary
+// does.
 constexpr MoteLayout kFanBLayout[kFanBCount] = {
     {-234.0f, 30},
     {-234.0f, 30},
@@ -403,8 +371,8 @@ constexpr MoteLayout kFanDLayout[kFanDCount] = {
     {0.0f, 120},
 };
 
-// The ten letters' offsets from the centre line (@ghidraAddress 0x2ff000). The binary copies this
-// block into a guarded one-shot at 0x3dc670 before the letter loop reads it.
+// @ghidraAddress 0x2ff000
+// @ghidraAddress 0x3dc670
 constexpr S_VECTOR2 kLetterOffsets[kLetterCount] = {
     {-203.0f, -10.0f},
     {-160.0f, -10.0f},
@@ -740,13 +708,10 @@ constexpr float kBannerScaleYPairs[] = {0.0f, 0.0f, 166.66667f, 1.5f, 250.0f, 1.
 // @ghidraAddress 0x3005e0
 constexpr float kBannerAlphaPairs[] = {250.0f, 1.0f, 500.0f, 0.0f};
 
-// The truncation the binary applies before handing a curve value to CreateSprite.
 inline unsigned int ScaleToAlpha(float flValue) {
     return static_cast<unsigned int>(static_cast<int>(flValue * kAlphaScale));
 }
 
-// Each mote fan's row sits a fixed inset above the near lane's bottom, shifted by the field's
-// centre split.
 inline float MoteRowY(int nRowInset) {
     return static_cast<float>((g_nPlayfieldNearRowBottom - nRowInset) - g_nPlayfieldCentreSplit);
 }
@@ -759,8 +724,6 @@ void FullComboColetteLayer::Update(float flDelta) {
     m_aSpriteCounts[1] = 0;
     m_aSpriteCounts[2] = 0;
 
-    // With nothing playing the layer clears the instancers outright and leaves. Neither the Classic
-    // nor the Limelight layer has this early out.
     if (!IsAnyEffectActive()) {
         for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
             m_apSprites[nSlot]->SetSpriteCount(0);
@@ -787,9 +750,8 @@ void FullComboColetteLayer::Update(float flDelta) {
             effect.m_bActive = false;
         }
 
-        // Announce the full combo once, inside a half-second window. The rival's side stays silent
-        // in the single-player modes. Like the Limelight layer, this one does not first check
-        // whether a voice is already playing.
+        // The rival's side stays silent in the single-player modes, and the binary does not first
+        // check whether a voice is already playing.
         if (!effect.m_bVoiceFired && flClock > kVoiceCueClockMin && flClock < kVoiceCueClockMax) {
             effect.m_bVoiceFired = true;
             const int nRivalSide = (pGameSystem->GetPlayColor() == 0) ? 1 : 0;
@@ -805,8 +767,7 @@ void FullComboColetteLayer::Update(float flDelta) {
 
         const int nPlayColor = pGameSystem->GetPlayColor();
 
-        // Each lane row sits on the near lane's slope, scaled by the sheet's half inset. The binary
-        // re-reads the game system on every iteration of this two-element loop.
+        // The binary re-reads the game system on every iteration of this two-element loop.
         const float aRowSlope[kSideCount] = {g_flPlayfieldNearLaneSlope,
                                              g_flPlayfieldNearLaneSlopeNeg};
         float aRowBaseY[kSideCount] = {};
@@ -818,9 +779,6 @@ void FullComboColetteLayer::Update(float flDelta) {
         const bool bOwnSide = nPlayColor == nSide;
         const float flRowBaseY = aRowBaseY[bOwnSide ? 1 : 0];
 
-        // The first mote fan is the only one that carries its own horizontal offset and a
-        // curve-driven rotation. On the rival's side the whole offset position is point-reflected
-        // and the rotation takes an extra half turn, computed at double precision.
         for (int nMote = 0; nMote < kFanACount; ++nMote) {
             const float flScaleX =
                 CalculateCurveInterpolation(kFanAScaleXPairs[nMote], kThreePointCurve, flClock);
@@ -851,9 +809,6 @@ void FullComboColetteLayer::Update(float flDelta) {
                          flRotation);
         }
 
-        // The remaining three fans share one shape: each mote rises along its own vertical offset
-        // curve from a fixed screen position, and the rival's side is point-reflected and turned a
-        // half turn.
         const auto EmitMoteFan = [&](float flCurveClock,
                                      const MoteLayout *pLayout,
                                      int nCount,
@@ -886,8 +841,7 @@ void FullComboColetteLayer::Update(float flDelta) {
             }
         };
 
-        // The second fan alone runs on the same half-second-delayed clock as the letters and the
-        // banner; the other three sample the raw effect clock.
+        // The second fan alone runs on the letters' half-second-delayed clock.
         EmitMoteFan(flClock + kLetterClockBias,
                     kFanBLayout,
                     kFanBCount,
@@ -897,11 +851,8 @@ void FullComboColetteLayer::Update(float flDelta) {
                     kFanBAlphaPairs,
                     kFanBOffsetYPairs);
 
-        // The third fan reuses the first fan's kind base rather than continuing from the second's.
-        // The binary seeds that register once, before the first fan, and never refreshes it. The
-        // descriptor table shows the intent was to continue: it holds runs of exactly 2, 9, 21, and
-        // 12 identical entries at kinds 59, 61, 70, and 91, which tile perfectly only if this fan
-        // starts at 70. It starts at 59. Faithful to the binary, not a reconstruction slip.
+        // The third fan reuses the first fan's kind base rather than continuing from the second's,
+        // because the binary seeds that register once and never refreshes it.
         EmitMoteFan(flClock,
                     kFanCLayout,
                     kFanCCount,
@@ -911,7 +862,6 @@ void FullComboColetteLayer::Update(float flDelta) {
                     kFanCAlphaPairs,
                     kFanCOffsetYPairs);
 
-        // The fourth fan strobes: it draws for the first three frames of every six.
         if (g_nColetteFullComboFrameCount % kFanDStrobePeriod < kFanDStrobeOnFrames) {
             EmitMoteFan(flClock,
                         kFanDLayout,
@@ -923,8 +873,6 @@ void FullComboColetteLayer::Update(float flDelta) {
                         kFanDOffsetYPairs);
         }
 
-        // The centred flare pair. The back flare holds a fixed alpha and only animates its scale;
-        // the front flare fades on its own curve.
         const float flFlareOffsetY = kFlareScreenY - m_flHeight;
         const float flFlareX = kFlareScreenX - m_flWidth;
         const float flFlareRotation = kSideRotation[bOwnSide ? 1 : 0];
@@ -933,8 +881,7 @@ void FullComboColetteLayer::Update(float flDelta) {
             CalculateCurveInterpolation(kFlareBackScaleXPairs, kThreePointCurve, flClock);
         const float flBackScaleY =
             CalculateCurveInterpolation(kFlareBackScaleYPairs, kThreePointCurve, flClock);
-        // Only the back flare mirrors its X. Both land on zero because the screen X equals the
-        // layer's own width, so the difference never shows; the asymmetry is the binary's.
+        // Only the back flare mirrors its X, as the binary has it; both land on zero anyway.
         S_VECTOR2 backPosition{bOwnSide ? flFlareX : -flFlareX,
                                flRowBaseY + (bOwnSide ? flFlareOffsetY : -flFlareOffsetY)};
         CreateSprite(kFlareBackKind[nSide],
@@ -959,9 +906,6 @@ void FullComboColetteLayer::Update(float flDelta) {
                      flFrontScaleY,
                      flFlareRotation);
 
-        // The letters and the banner hang off a centre line that spans both near lane rows, inset
-        // from each and shifted by the field's centre split, and they run half a second behind the
-        // mote fans. They mirror only in the versus game type.
         const S_VECTOR2 aCentreBase[kSideCount] = {
             {0.0f,
              static_cast<float>((g_nPlayfieldNearRowTop + kLetterRowInset) -
@@ -975,8 +919,6 @@ void FullComboColetteLayer::Update(float flDelta) {
         const float flLetterRotation = bLetterMirrored ? kMirrorRotation : 0.0f;
         const S_VECTOR2 centreBase = aCentreBase[bOwnSide ? 1 : 0];
 
-        // The FULLCOMBO! letters. The binary counts its loop from -10 up to 0 and adds 11, so the
-        // kinds run 1 through 10 rather than 0 through 9.
         for (int nLetter = 0; nLetter < kLetterCount; ++nLetter) {
             const float flScale = CalculateCurveInterpolation(
                 kLetterScalePairs[nLetter], kFourPointCurve, flLetterClock);
@@ -997,8 +939,7 @@ void FullComboColetteLayer::Update(float flDelta) {
                          flLetterRotation);
         }
 
-        // The banner behind them, combined with a zero offset the binary still runs through the
-        // vector helpers.
+        // The binary still runs the banner's zero offset through the vector helpers.
         const float flBannerScaleX =
             CalculateCurveInterpolation(kBannerScaleXPairs, kFourPointCurve, flLetterClock);
         const float flBannerScaleY =

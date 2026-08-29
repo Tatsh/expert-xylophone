@@ -3,7 +3,6 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// Child-layer indices into the clip-rectangle and position tables.
 enum {
     kPastelLayerIndexHead = 0,
     kPastelLayerIndexBody = 1,
@@ -12,15 +11,11 @@ enum {
     kPastelLayerIndexCount = 4,
 };
 
-// The layer's square side length before the display-rate scale is applied.
 static const CGFloat kPastelLayerBaseSize = 200.0;
 
-// Display-rate values selected by the iPad idiom: half on the compact layout, unity otherwise.
 static const CGFloat kPastelDisplayRateCompact = 0.5;
 static const CGFloat kPastelDisplayRateFull = 1.0;
 
-// Per-child layout metrics, in display-rate units. Each child's frame origin is derived from these
-// bases and its own clip size.
 static const CGFloat kPastelRightAnchorX = 95.0;
 static const CGFloat kPastelRightAnchorY = 120.0;
 static const CGFloat kPastelRightPositionX = 107.0;
@@ -30,9 +25,7 @@ static const CGFloat kPastelBodyAnchorY = 172.0;
 static const CGFloat kPastelHeadAnchorX = 100.0;
 static const CGFloat kPastelHeadAnchorY = 76.0;
 
-// The retina clip rectangles cut out of the message artwork atlas, indexed by child. On the compact
-// iPad idiom every field is halved. The runtime seeds an identical table shared with the sibling
-// RBTutorialPastel class at load time (Ghidra 0x1b81d8, backing store 0x1003df3e0).
+// Retina clips; halved on the compact idiom (Ghidra 0x1b81d8, backing store 0x1003df3e0).
 static const CGRect kPastelClipRects[] = {
     {{361.0, 274.0}, {136.0, 96.0}}, // head
     {{499.0, 274.0}, {48.0, 56.0}},  // body
@@ -40,8 +33,7 @@ static const CGRect kPastelClipRects[] = {
     {{525.0, 332.0}, {24.0, 22.0}},  // right tail
 };
 
-// The child layout points (Ghidra backing store 0x1003df460). Declared by the class but unused by
-// the shipped app, which drives the children through setupView: only.
+// Unused by the shipped app, which drives the children through setupView: only (0x1003df460).
 static const CGPoint kPastelPositions[] = {
     {101.0, 172.0}, // head
     {100.0, 76.0},  // body
@@ -49,11 +41,8 @@ static const CGPoint kPastelPositions[] = {
     {95.0, 120.0},  // right tail
 };
 
-// Half-width and half-height factors for centre-anchored child frames.
 static const CGFloat kPastelHalf = 0.5;
 
-// Wave-animation timing and value constants. The key times reach the code as doubles read out of
-// one dense pool run, and several of the animations share the same slot.
 static const NSTimeInterval kWaveDuration = 2.5;
 static const CGFloat kWavePositionXDrift = -12.5;
 static const CGFloat kWavePositionYDrift = -8.5;
@@ -80,7 +69,6 @@ static const double kWaveRightKeyTime10 = 0.733;
 static const double kWaveHeadKeyTime1 = 0.133;
 static const double kWaveHeadKeyTime2 = 0.166;
 
-// Jump-animation timing and value constants.
 static const CGFloat kJumpDelayThreshold = 0.001;
 static const CGFloat kJumpRotationSwing = 0.7853981633974483; // +45 degrees, in radians (+pi/4).
 static const CGFloat kJumpRotationRest = 0.2617993877991494;  // +15 degrees, in radians.
@@ -93,13 +81,11 @@ static const double kJumpKeyTime4 = 0.725;
 static const double kJumpKeyTime5 = 0.825;
 static const double kJumpKeyTime6 = 0.875;
 
-// Animation keys used when adding the grouped animations to each child layer.
 static NSString *const kPastelAnimationKeyBase = @"base";
 static NSString *const kPastelAnimationKeyRight = @"right";
 static NSString *const kPastelAnimationKeyLeft = @"left";
 static NSString *const kPastelAnimationKeyHead = @"head";
 
-// Layer key paths.
 static NSString *const kKeyPathPositionX = @"position.x";
 static NSString *const kKeyPathPositionY = @"position.y";
 static NSString *const kKeyPathRotation = @"transform.rotation";
@@ -141,7 +127,6 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 #pragma mark Setup
 
 - (void)setupView:(UIImage *)image {
-    // Right tail.
     CGRect rightClip = [self getClipList:kPastelLayerIndexRight];
     CALayer *right = [CALayer layer];
     right.contents = (__bridge id)[image clipImageWithRect:rightClip].CGImage;
@@ -155,7 +140,6 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     [self addSublayer:right];
     self.rightLayer = right;
 
-    // Left tail.
     CGRect leftClip = [self getClipList:kPastelLayerIndexLeft];
     CALayer *left = [CALayer layer];
     left.contents = (__bridge id)[image clipImageWithRect:leftClip].CGImage;
@@ -167,7 +151,6 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     [self addSublayer:left];
     self.leftLayer = left;
 
-    // Body.
     CGRect bodyClip = [self getClipList:kPastelLayerIndexBody];
     CALayer *body = [CALayer layer];
     body.contents = (__bridge id)[image clipImageWithRect:bodyClip].CGImage;
@@ -180,7 +163,6 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     [self addSublayer:body];
     self.bodyLayer = body;
 
-    // Head.
     CGRect headClip = [self getClipList:kPastelLayerIndexHead];
     CALayer *head = [CALayer layer];
     head.contents = (__bridge id)[image clipImageWithRect:headClip].CGImage;
@@ -236,8 +218,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     positionY.removedOnCompletion = NO;
     positionY.fillMode = kCAFillModeForwards;
 
-    // The third member of the group, so it rotates the layer itself rather than a tail. It is the
-    // only animation here the binary leaves without a fill mode.
+    // The only animation here the binary leaves without a fill mode.
     CAKeyframeAnimation *baseRotation = [CAKeyframeAnimation animationWithKeyPath:kKeyPathRotation];
     baseRotation.repeatCount = 1.0;
     baseRotation.values = @[ @0, @0, @(kWaveRotationTilt), @(kWaveRotationTilt) ];
@@ -440,8 +421,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
         [self.headLayer addAnimation:headPosition forKey:kPastelAnimationKeyHead];
         [self addAnimation:basePosition forKey:kPastelAnimationKeyBase];
     } else {
-        // The binary passes an empty global block for animations: and does all of the work in the
-        // completion handler, so the delay behaves as a plain wait rather than as a tween.
+        // The animations block is empty, so the delay behaves as a plain wait rather than a tween.
         [UIView animateWithDuration:delay
             delay:0.0
             options:0
@@ -460,8 +440,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 
 #pragma mark Teardown
 
-// Remove every running animation from a layer and each of its sublayers, but only when the layer
-// actually has animations to clear. The binary open-codes this block once per layer.
+// The binary open-codes this block once per layer.
 static void RBPastelStopAnimationsOnLayer(CALayer *layer) {
     if (layer.animationKeys != nil && layer.animationKeys.count != 0) {
         for (CALayer *sublayer in layer.sublayers) {

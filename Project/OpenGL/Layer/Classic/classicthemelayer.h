@@ -163,8 +163,7 @@ private:
     // +0x3e..+0x3f is alignment padding before the animation clock.
     // unsigned char m_aPad3e[2] = {}; // +0x3e
     float m_flClock = {}; // +0x40: the theme animation clock, advanced each frame.
-    // +0x44..+0x57: the eased reveal-progress channel; its current value scales the emitted
-    // sprites.
+    // +0x44..+0x57: the eased reveal-progress channel.
     LinearTween m_easeChannel;                 // +0x44
     int m_aScoreValues[kScoreValueCount] = {}; // +0x58: the per-side score display values.
 };

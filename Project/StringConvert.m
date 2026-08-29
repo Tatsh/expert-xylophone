@@ -1,29 +1,14 @@
-//
-//  StringConvert.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class StringConvert). Verified against
-//  the arm64 disassembly (the katakana literals are CFString constants that the decompiler renders
-//  as unprintable placeholders, so their code points were read from the binary).
-//
-
 #import "StringConvert.h"
 
 #import "engineglobals.h"
 
-// Prolonged-sound mark (U+30FC, @c ー): when it follows a character it is replaced by that
-// character's vowel rather than kept verbatim.
+// Prolonged-sound mark, U+30FC.
 static NSString *const kProlongedSoundMark = @"ー";
 
-// Regular-expression pattern that matches a single character in the full katakana range
-// @c [ァ-ン]; only matching characters are folded and appended to the reading key.
 static NSString *const kKatakanaRangePattern = @"[ァ-ン]";
 
-// Format used to materialise a plain copy of the accumulator on the empty-result path.
 static NSString *const kIdentityFormat = @"%@";
 
-// Number of table lookups to skip at the start of the walk: the first character has no predecessor,
-// so the prolonged-sound-mark resolution only applies from the second character onward.
 static const NSInteger kNoPreviousIndex = -1;
 
 @implementation StringConvert
@@ -64,11 +49,7 @@ static const NSInteger kNoPreviousIndex = -1;
         }
         ++index;
     }
-    // Nothing in the reading was katakana, so fall back to the string as it came in rather than to
-    // the empty accumulator. The binary retains its argument into x25 at 0x2a1e0 and formats that
-    // register here, not the result it just failed to fill. Returning the empty string instead is
-    // what made the music list unsortable: every name that yields no katakana compares equal to
-    // every other, so the order is arbitrary and the artist and title orderings are identical.
+    // The binary formats its retained argument here, not the accumulator it failed to fill.
     if (result.length == 0) {
         return [NSString stringWithFormat:kIdentityFormat, string];
     }

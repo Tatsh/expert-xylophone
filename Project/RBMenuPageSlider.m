@@ -1,63 +1,43 @@
-//
-//  RBMenuPageSlider.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuPageSlider). The
-//  initialiser's soft-float track, grip, and label geometry, and the theme-dependent colours, were
-//  recovered from the arm64 disassembly (the decompiler folds the CGRect components into
-//  pseudo-variables). This is the draggable UIControl page slider wrapped by RBMenuPageSliderView.
-//
-
 #import "RBMenuPageSlider.h"
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The page range always starts at page one.
 static const NSUInteger kSliderMinPage = 1;
 
-// The grip texture lives in this atlas; its clip rectangle is g_pGripTextureClipRect scaled by the
-// reference screen height.
 static NSString *const kSliderGripTextureName = @"00_texture/gm_parts1";
 
-// The normalised grip-texture clip rectangle (x, y, width, height) is scaled by this reference
-// screen height, matching the binary's g_fltReferenceScreenHeight (0x100309164).
+// @ghidraAddress 0x309164 (g_fltReferenceScreenHeight)
 static const CGFloat kReferenceScreenHeight = 1024.0;
 
-// The normalised grip-texture clip rectangle (x, y, width, height), matching the binary's
-// g_pGripTextureClipRect (0x1002ef738). It is scaled by the reference screen height, and
-// additionally halved for the default (non-wide) iPad idiom.
+// @ghidraAddress 0x2ef738 (g_pGripTextureClipRect)
 static const CGFloat kGripTextureClipRect[] = {0.001953125, 0.08984375, 0.09375, 0.09375};
 
-// The slider row height (grip and track height basis): 20 points for the default iPad idiom, 40
-// for the wide variant. Mirrors the binary's lazily-initialised g_dSliderRowHeight (0x1003df4f8).
+// @ghidraAddress 0x3df4f8 (g_dSliderRowHeight)
 static const CGFloat kSliderRowHeightNarrow = 20.0;
 static const CGFloat kSliderRowHeightWide = 40.0;
 
-// The grip sprite is drawn at this fraction of its source texture size (0x1002ec720).
+// @ghidraAddress 0x2ec720
 static const CGFloat kSliderGripScale = 0.4;
 
-// The control's corner radius is the row height times this factor (0x100310630).
+// @ghidraAddress 0x310630
 static const CGFloat kSliderControlCornerFactor = 0.9;
 
-// The gauge track's vertical inset is the grip height times this factor, halved (0x100310628).
+// @ghidraAddress 0x310628
 static const CGFloat kSliderGaugeInsetFactor = 1.85;
 
-// The gauge track's height is the grip height times this factor (0x1003010f8).
+// @ghidraAddress 0x3010f8
 static const CGFloat kSliderGaugeHeightFactor = 0.15;
 
-// The index label's point size by device idiom.
 static const CGFloat kSliderIndexFontSizeNarrow = 10.0;
 static const CGFloat kSliderIndexFontSizeWide = 16.0;
 
-// The translucent alpha shared by the gauge fill and the index-label background (0x1002ec6a0).
+// @ghidraAddress 0x2ec6a0
 static const CGFloat kSliderTranslucentAlpha = 0.8;
 
-// The index label's initial placeholder text, sized to fit before being cleared.
 static NSString *const kSliderIndexLabelSizingText = @"00";
 
-// The clip-rect components.
 enum {
     kClipRectX = 0,
     kClipRectY = 1,

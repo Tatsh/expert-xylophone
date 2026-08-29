@@ -124,8 +124,6 @@ private:
      */
     AltFrameLayer();
 
-    // The number of textures the layer binds across its batches: the frame atlas and the shared
-    // parts atlas.
     static constexpr int kTextureSlotCount = 2;
 
     // unsigned char m_aReserved08[8] = {}; // +0x08: untouched by the constructor and never read.

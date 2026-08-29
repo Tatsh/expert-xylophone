@@ -1,15 +1,3 @@
-//
-//  RBMusicSpeedView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicSpeedView). Verified
-//  against the arm64 disassembly: -SetupView's per-theme, per-idiom slider and container
-//  geometry was recovered from the soft-float register moves and constant-pool loads that the
-//  decompiler folds into pseudo-variables, and the marker-glide animation was confirmed against the
-//  block literal the decompiler emits. This is an Objective-C++ file because -SelectSpeed: reaches
-//  the C++ SoundEffectManager engine singleton.
-//
-
 #import "RBMusicSpeedView.h"
 
 #include <cmath>
@@ -20,43 +8,32 @@
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
 
-// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
+// @ghidraAddress 0x2eedc0
 extern const double g_dMascotMessageAnimDuration;
 
-// The number of speed steps the bar is divided into. The marker glides across ten equal slots and
-// SPEED is clamped to zero through ten.
 constexpr int kSpeedSlotCount = 10;
 constexpr int kSpeedMax = 10;
 
-// The themed sound-effect slot played when the SPEED changes.
 constexpr int kSoundEffectSpeedChange = 2;
 
-// The sentinel stored in m_PrevSound before any speed-change sound effect has played.
 constexpr unsigned int kNoSoundHandle = 0xffffffff;
 
-// The Limelight and Colette theme identifiers; every other theme uses the default (Classic) layout.
 constexpr int kThemeLimelight = 1;
 constexpr int kThemeColette = 2;
 
-// The slider-type variant written by -initWithFrame:MusicSelectedBase:. The initialiser always
-// seeds the default; the field is otherwise unused by this view.
+// Seeded by the initialiser; the field is otherwise unused by this view.
 constexpr int kSliderTypeDefault = 0;
 
-// The full flexible autoresizing mask (all four margins plus flexible width and height).
 constexpr UIViewAutoresizing kAutoresizingFlexibleAll =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// The slider bar and speed marker image names.
 static NSString *const kSliderBarImageName = @"02_music_detail/det_spd_bar_1";
 static NSString *const kSpeedMarkerImageName = @"02_music_detail/det_spd_bar_2";
 
-// The slider bar frame per (theme, idiom). The iPad idiom bar is centred horizontally
-// within the view at a themed top inset and keeps the bar image's natural size; every default
-// combination uses a fixed constant-pool rectangle. Decoded from the constant pool at 0x100301198
-// (274), 0x1002ec6e0 (50), 0x1002eeef0 (54), 0x1002fcfd8 (280), 0x100301158 (36), and 0x1002ee948
-// (60), plus the 15.0 and 27.0 inline immediate values.
+// Decoded from the constant pool at 0x100301198 (274), 0x1002ec6e0 (50), 0x1002eeef0 (54),
+// 0x1002fcfd8 (280), 0x100301158 (36), and 0x1002ee948 (60).
 constexpr CGFloat kSliderBarDefaultX = 15.0;
 constexpr CGFloat kSliderBarDefaultY = 27.0;
 constexpr CGFloat kSliderBarDefaultWidth = 274.0;
@@ -68,10 +45,9 @@ constexpr CGFloat kSliderBarColetteDefaultWidth = 280.0;
 constexpr CGFloat kSliderBarColetteDefaultHeight = 30.0;
 constexpr CGFloat kSliderBarColetteWideTopInset = 60.0;
 
-// The bar-container frame per (theme, idiom). Decoded from the constant pool at 0x1003011b0
-// (41), 0x1002eeee8 (43), 0x100302480 (402), 0x1003011b8 (220), 0x1003011c8 (82), 0x1002ec6e0 (50),
-// 0x1002eeec0 (38), 0x1003011a0 (261), and 0x1002ef170 (56), plus the 19.0, 27.0, and 9.0
-// inline immediate values.
+// Decoded from the constant pool at 0x1003011b0 (41), 0x1002eeee8 (43), 0x100302480 (402),
+// 0x1003011b8 (220), 0x1003011c8 (82), 0x1002ec6e0 (50), 0x1002eeec0 (38), 0x1003011a0 (261),
+// and 0x1002ef170 (56).
 constexpr CGFloat kBarBaseColetteWideX = 43.0;
 constexpr CGFloat kBarBaseColetteWideY = 41.0;
 constexpr CGFloat kBarBaseColetteWideWidth = 402.0;
@@ -89,11 +65,8 @@ constexpr CGFloat kBarBaseDefaultY = 9.0;
 constexpr CGFloat kBarBaseDefaultWidth = 261.0;
 constexpr CGFloat kBarBaseDefaultHeight = 56.0;
 
-// Half a bar, used to centre the marker within the container and to centre the wide slider bar.
 constexpr CGFloat kHalf = 0.5;
 
-// The tap dead-zone at each end of the bar, per (theme, idiom): a tap within this margin of
-// the left edge selects SPEED zero, and one within it of the right edge selects SPEED ten.
 constexpr CGFloat kTapDeadZoneLimelightWide = 30.0;
 constexpr CGFloat kTapDeadZoneLimelightDefault = 20.0;
 constexpr CGFloat kTapDeadZoneColetteWide = 25.0;
@@ -102,8 +75,6 @@ constexpr CGFloat kTapDeadZoneWide = 27.0;
 constexpr CGFloat kTapDeadZoneDefault = 20.0;
 
 @interface RBMusicSpeedView () {
-    // Named exactly as in the binary's ivar list. The previous speed-change sound-effect play
-    // handle, or kNoSoundHandle when none has played.
     unsigned int m_PrevSound; // +0x8
 }
 @end
@@ -140,9 +111,6 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
     CGRect sliderFrame;
     if (thema == kThemeColette) {
         if (isPad) {
-            // The Colette wide bar is centred horizontally at a fixed top inset and keeps the bar
-            // image's natural size. The binary reads the view's frame and the slider view's frame
-            // to derive the centred origin.
             CGFloat selfWidth = self.frame.size.width;
             CGSize sliderSize = self.sliderView.frame.size;
             sliderFrame = CGRectMake((selfWidth - sliderSize.width) * kHalf,
@@ -216,7 +184,6 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
     self.selectedImage.autoresizingMask = kAutoresizingFlexibleAll;
     [self.barBase addSubview:self.selectedImage];
 
-    // The marker's origin is truncated to whole pixels.
     CGRect markerFrame = self.selectedImage.frame;
     markerFrame.origin.x = static_cast<int>(markerFrame.origin.x);
     markerFrame.origin.y = static_cast<int>(markerFrame.origin.y);
@@ -245,9 +212,7 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
         speed = kSpeedMax;
     } else {
         CGFloat stepWidth = (barWidth - (deadZone + deadZone)) / kSpeedSlotCount;
-        // The binary narrows the quotient to float and rounds it to nearest with ties away from
-        // zero (fcvt s0,d0 then fcvtas w2,s0), so a tap snaps to the closest tick rather than to
-        // the slot it landed in.
+        // The binary narrows to float and rounds to nearest, ties away from zero.
         speed =
             static_cast<int>(std::lroundf(static_cast<float>((location.x - deadZone) / stepWidth)));
     }
@@ -282,8 +247,7 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
                          }];
 
         SoundEffectManager *soundManager = SoundEffectManager::GetInstance();
-        // The sound only replays when the previous handle is idle; either way the decide button is
-        // refreshed below (the binary jumps to the shared tail, not past it).
+        // The binary jumps to the shared tail, so the decide button is refreshed either way.
         if (m_PrevSound == kNoSoundHandle || !soundManager->IsPlaying(m_PrevSound)) {
             m_PrevSound = soundManager->PlayThemedSoundEffect(kSoundEffectSpeedChange);
         }

@@ -104,18 +104,13 @@ C_DRAW_POLYGON_3D::C_DRAW_POLYGON_3D(unsigned int nDrawMode,
     m_aTexEnvParams[3] = kDefaultTexParams[3];
 }
 
-// The deleting-destructor variant at 0x287b0 (the D0 vtable thunk the compiler emits for
-// `delete pMesh`: it runs this destructor, then frees the object) shares this reconstruction; it is
-// a compiler artifact with no distinct source function.
 /** @ghidraAddress 0x286c0 */
 /** @ghidraAddress 0x287b0 */
 C_DRAW_POLYGON_3D::~C_DRAW_POLYGON_3D() {
-    // Release the bound texture.
     if (m_pTexture != nullptr) {
         m_pTexture->Release();
         m_pTexture = nullptr;
     }
-    // Free the heap arrays.
     delete[] static_cast<unsigned char *>(m_pVertexArray);
     m_pVertexArray = nullptr;
     delete[] m_pColorArray;
@@ -129,7 +124,6 @@ C_DRAW_POLYGON_3D::~C_DRAW_POLYGON_3D() {
     delete[] static_cast<float *>(m_pBoneScale);
     m_pBoneScale = nullptr;
 
-    // Delete the GL buffer objects this mesh owns.
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     if (!m_bVertexBufferExternal) {
         pRenderer->DeleteBuffer(m_dwVertexVbo);
@@ -145,8 +139,6 @@ void C_DRAW_POLYGON_3D::AllocateBuffers() {
     unsigned int nStride = 0;
     m_nVertexStride = 0;
 
-    // Build the interleaved vertex stride and per-attribute byte offsets from the format bits. A 3D
-    // position occupies three floats.
     if ((m_nVertexFormat & kVertexHasPosition) != 0) {
         nStride = kPositionStride;
         m_nVertexStride = static_cast<int>(nStride);
@@ -179,15 +171,12 @@ void C_DRAW_POLYGON_3D::AllocateBuffers() {
         m_pBoneScale = new float[nMaxUnits];
     }
 
-    // Allocate the interleaved vertex buffer; gen a GL vertex VBO and mark dirty unless
-    // caller-owned.
     m_pVertexArray = new unsigned char[static_cast<unsigned int>(m_nVertexCount) * nStride];
     if (!m_bVertexBufferExternal) {
         pRenderer->GenBuffer(&m_dwVertexVbo);
         m_bVertexDirty = true;
     }
 
-    // Allocate the 16-bit index buffer; gen a GL index VBO and mark dirty unless caller-owned.
     m_pIndexArray = new unsigned short[static_cast<unsigned int>(m_nIndexCount)];
     if (!m_bIndexBufferExternal) {
         pRenderer->GenBuffer(&m_dwIndexVbo);
@@ -220,7 +209,6 @@ void C_DRAW_POLYGON_3D::SetPos(int nIndex, S_VECTOR3 position) {
     assert(nIndex >= 0 && nIndex < m_nVertexCount);
     auto *pVertex = static_cast<unsigned char *>(m_pVertexArray) +
                     (m_nPositionOffset + m_nVertexStride * nIndex);
-    // The vertex field lives at a byte offset in the interleaved buffer; view it as floats.
     auto *pPosition = reinterpret_cast<float *>(pVertex);
     pPosition[0] = position.x;
     pPosition[1] = position.y;
@@ -263,9 +251,7 @@ void C_DRAW_POLYGON_3D::SetUV(int nIndex, float flU, float flV) {
     assert(nIndex >= 0 && nIndex < m_nVertexCount);
     auto *pVertex =
         static_cast<unsigned char *>(m_pVertexArray) + (m_nUvOffset + m_nVertexStride * nIndex);
-    // The UV field lives at a byte offset in the interleaved buffer; view it as shorts.
     auto *pUv = reinterpret_cast<short *>(pVertex);
-    // The U maps directly and the V is flipped, both to signed 16-bit fixed point.
     pUv[0] = static_cast<short>(static_cast<int>(flU * kUvFixedPointScale));
     pUv[1] = static_cast<short>(static_cast<int>((1.0 - static_cast<double>(flV)) *
                                                  static_cast<double>(kUvFixedPointScale)));
@@ -302,8 +288,6 @@ void C_DRAW_POLYGON_3D::SetIndex(int nIndex, unsigned short wValue) {
 }
 
 void C_DRAW_POLYGON_3D::PremultiplyVertexColors() {
-    // Each source colour in m_pColorArray is premultiplied by its own alpha (normalised by 255) and
-    // written into the interleaved vertex buffer's colour slot; the alpha byte is stored unscaled.
     auto *pVertexBytes = static_cast<unsigned char *>(m_pVertexArray);
     for (int nVertex = 0; nVertex < m_nVertexCount; ++nVertex) {
         const S_RGBA &source = m_pColorArray[nVertex];
@@ -317,8 +301,6 @@ void C_DRAW_POLYGON_3D::PremultiplyVertexColors() {
 }
 
 void C_DRAW_POLYGON_3D::LoadBoneMatrices(neGLESRenderer *pRenderer) {
-    // One palette matrix per supported vertex unit: translate to the bone's position, then apply
-    // its rotation and scale about that origin.
     const int nBoneCount = pRenderer->GetMaxPaletteMatrices();
     const auto *pTranslate = static_cast<const S_VECTOR2 *>(m_pBoneTranslate);
     const auto *pRotation = static_cast<const float *>(m_pBoneRotation);
@@ -343,17 +325,14 @@ void C_DRAW_POLYGON_3D::LoadBoneMatrices(neGLESRenderer *pRenderer) {
 
 /** @ghidraAddress 0x28964 */
 void C_DRAW_POLYGON_3D::Render() {
-    // A mesh with fewer than one triangle's worth of indices draws nothing.
     if (static_cast<int>(m_nDrawIndexCount) < kMinDrawIndexCount) {
         return;
     }
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
-    // The 3D mesh is drawn through the active view camera (the global at 0x3cff10, read by the ldr
-    // at 0x2899c), not the orthographic projection at 0x3cff08.
+    // The 3D mesh draws through the active view camera, not the orthographic projection.
+    // @ghidraAddress 0x3cff10
     SetCurrentCamera(pRenderer, g_pActiveViewCamera);
 
-    // Build the model matrix (translate, then optional Z rotation and uniform scale) into the local
-    // matrix and compose it under the parent world matrix.
     float *pLocal = GetLocalMatrix();
     MakeTranslationMatrix(pLocal, m_flTranslateX, m_flTranslateY, m_flTranslateZ);
     if (m_flRotationZ != 0.0f) {
@@ -369,8 +348,6 @@ void C_DRAW_POLYGON_3D::Render() {
     float *pWorld = GetWorldMatrix();
     MultiplyMatrix4x4(pWorld, GetParent()->GetWorldMatrix(), pLocal);
 
-    // The 3D path additionally composes the world matrix with the current model node's view matrix
-    // (the step the 2D renderer lacks) before loading it.
     float modelMatrix[16];
     std::memcpy(modelMatrix, pWorld, sizeof(modelMatrix));
     ComposeMatrices(modelMatrix, g_pCurrentModelNode->GetViewMatrix());
@@ -378,8 +355,6 @@ void C_DRAW_POLYGON_3D::Render() {
 
     const auto *pVertexBytes = static_cast<const unsigned char *>(m_pVertexArray);
     if (m_bVertexBufferExternal) {
-        // Externally-owned buffer: attributes reference client memory directly. Refresh
-        // premultiplied colours when the colour is dirty.
         if (m_bColorDirty) {
             m_bColorDirty = false;
             PremultiplyVertexColors();
@@ -425,8 +400,6 @@ void C_DRAW_POLYGON_3D::Render() {
                 pVertexBytes + m_nMatrixIndexOffset, m_nBoneComponentCount, m_nVertexStride);
         }
     } else {
-        // Internally-owned VBO: (re)upload the vertex data on first draw, then reset the attribute
-        // pointers to the bound buffer's defaults.
         pRenderer->BindArrayBuffer(m_dwVertexVbo);
         if (m_bVertexDirty) {
             m_bVertexDirty = false;
@@ -483,8 +456,6 @@ void C_DRAW_POLYGON_3D::Render() {
         }
     }
 
-    // Reset the remaining render state: enable blending with the mesh's blend mode and force every
-    // other capability off.
     pRenderer->SetGlEnableState(kEnableAlphaTest, 0);
     pRenderer->SetGlEnableState(kEnableBlend, 1);
     pRenderer->SetBlendFunc(
@@ -493,8 +464,6 @@ void C_DRAW_POLYGON_3D::Render() {
         pRenderer->SetGlEnableState(static_cast<unsigned int>(nState), 0);
     }
 
-    // Bind the index buffer (uploading it on first draw for an internally-owned VBO) and issue the
-    // indexed draw.
     if (m_bIndexBufferExternal) {
         pRenderer->BindIndexBuffer(0);
     } else {
@@ -505,8 +474,6 @@ void C_DRAW_POLYGON_3D::Render() {
                 m_pIndexArray, m_nIndexCount * sizeof(unsigned short), m_bIndexBufferExternal);
         }
     }
-    // The VBO arm draws from the bound element buffer at offset zero; only an externally owned
-    // index buffer passes the client pointer.
     pRenderer->DrawIndexedPrimitives(static_cast<int>(m_nDrawMode),
                                      static_cast<int>(m_nDrawIndexCount),
                                      m_bIndexBufferExternal ? m_pIndexArray : nullptr);

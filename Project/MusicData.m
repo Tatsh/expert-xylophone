@@ -151,7 +151,8 @@ static UIImage *DoubleResolutionImageFromData(NSData *data) {
                          orientation:UIImageOrientationUp];
 }
 
-// The binary spells this out as colorWithRed:0 green:0 blue:0 alpha:1, which is exactly +blackColor.
+// The binary spells this out as colorWithRed:0 green:0 blue:0 alpha:1, which is exactly
+// +blackColor.
 static UIColor *BlackTintColor(void) {
     return UIColor.blackColor;
 }

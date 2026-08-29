@@ -116,7 +116,6 @@ private:
      */
     DamageEffectLayer();
 
-    // One pooled per-hit effect record (20 bytes): an active flag, colour, position, and timer.
     struct EffectRecord {
         bool bActive = {}; /*!< Whether the record holds a live effect. +0x00 */
         // unsigned char aReserved01[3] = {}; // +0x01

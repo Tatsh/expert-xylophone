@@ -1,11 +1,3 @@
-//
-//  result_bonus_color_table.mm
-//  REFLEC BEAT plus
-//
-//  The result-window bonus colour palette. Read-only ROM data reconstructed from Ghidra project
-//  rb458, program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "result_bonus_color_table.h"
 
 /** @ghidraAddress 0x2fe7d0 */

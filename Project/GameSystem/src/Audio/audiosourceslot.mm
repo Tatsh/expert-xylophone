@@ -1,11 +1,3 @@
-//
-//  audiosourceslot.mm
-//  REFLEC BEAT plus
-//
-//  The AVFoundation sound-effect source manager (AudioSourceSlot). Reconstructed from Ghidra
-//  project rb458, program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "audiosourceslot.h"
 
 #include <cstring>
@@ -13,13 +5,10 @@
 #import "avsemixer.h"
 
 namespace {
-// The source array is grown by this many slots when it is full; the manager starts with this many.
 constexpr int kSourceSlotGrowStep = 20;
-// A play handle carries a validity flag; when it is clear the handle resolves to no bus.
 constexpr unsigned int kPlayHandleValidBit = 0x10000000;
 constexpr unsigned int kPlayHandleBusMask = 0x0fffffff;
 
-// Decodes an external play handle into the mixer's bus handle, or 0xffffffff when it is invalid.
 unsigned int DecodePlayHandle(unsigned int handle) {
     return (handle & kPlayHandleValidBit) != 0 ? (handle & kPlayHandleBusMask) : 0xffffffff;
 }
@@ -64,8 +53,6 @@ int AudioSourceSlot::FindFreeSlotIndex() {
             return nIndex;
         }
     }
-    // No free slot: grow the array by a fixed step, zeroing the new tail, and return the first new
-    // index.
     const int nOldCount = m_nSourceCount;
     m_nSourceCount = nOldCount + kSourceSlotGrowStep;
     auto **pGrown = new SourceRecord *[m_nSourceCount];
@@ -90,7 +77,6 @@ unsigned int AudioSourceSlot::AddSource(id source, bool bLoop) {
 
 /** @ghidraAddress 0x4a728 */
 int AudioSourceSlot::RegisterSourceForKey(id source, NSString *callName, bool bLoop) {
-    // Only register when the source is present and the call name is not already mapped.
     if (source == nil || m_pKeyMap[callName] != nil) {
         return 0;
     }
@@ -108,7 +94,6 @@ int AudioSourceSlot::RemoveSourceByIndex(int index) {
     if (pRecord == nullptr) {
         return 0;
     }
-    // Detach the record from any voice still playing it, then release its object references.
     m_pMixer->RemoveSourceFromBuses(pRecord);
     pRecord->Clear();
     return 1;
@@ -128,9 +113,7 @@ unsigned int AudioSourceSlot::AcquireBusForSourceIndex(int index, int volume) {
     if (index >= m_nSourceCount || m_pSourceArray[index] == nullptr) {
         return 0xffffffff;
     }
-    // The volume reaches the mixer without this routine ever touching it: 0x4a954 never writes w2,
-    // so the caller's third argument falls straight through into the AcquireBusForSource call at
-    // 0x4a978. The mixer keys a voice by the record itself; tag the returned handle valid.
+    // The binary never writes the volume here. @ghidraAddress 0x4a978
     return m_pMixer->AcquireBusForSource(m_pSourceArray[index], static_cast<unsigned int>(volume)) |
            kPlayHandleValidBit;
 }

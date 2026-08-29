@@ -1,61 +1,38 @@
-//
-//  MusicDataFromDoc.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class MusicDataFromDoc). Verified
-//  against the arm64 disassembly (the variadic stringWithFormat: path builder and the image
-//  drawInRect:/graphics-context maths are dropped or garbled by the decompiler).
-//
-
 #import "MusicDataFromDoc.h"
 
 #import <UIKit/UIKit.h>
 
-// The Documents-directory path builder format: directory, a separator, then the file name.
 static NSString *const kDocumentPathFormat = @"%@/%@";
 
-// File-name suffixes stripped before a title or sheet name is rendered, and their common length.
 static NSString *const kAudioFileSuffix = @".m4a";
 static NSString *const kSheetFileSuffix = @".ply";
 static const NSUInteger kFileSuffixLength = 4;
 
-// The fixed catalogue metadata reported for a Documents-backed tune.
 static const int kDocumentMusicID = 1;
 static const int kDocumentDifficulty = 0;
 static const int kDocumentBPM = 100;
 
-// Image scale factors passed to the graphics context.
 static const CGFloat kImageScaleSingle = 1.0f;
 static const CGFloat kImageScaleDouble = 2.0f;
 
-// Greyscale fill luminance values: white text and black text.
 static const CGFloat kLuminanceWhite = 1.0f;
 static const CGFloat kLuminanceBlack = 0.0f;
 
-// The opaque alpha component used for every rendered fill.
 static const CGFloat kFillAlpha = 1.0f;
 
-// The point size of the font used to render the title into artwork.
 static const CGFloat kArtworkFontSize = 20.0f;
-// The edge length in points of the square artwork canvas.
 // @ghidraAddress 0x2ee970 (g_dArtworkCanvasSize)
 static const CGFloat kArtworkCanvasSize = 180.0f;
 
-// The point size of the font used to render the title strip.
 static const CGFloat kMusicNameFontSize = 18.0f;
-// The height in points of the title strip canvas.
 static const CGFloat kMusicNameImageHeight = 18.0f;
 
-// The point size of the font used to render the artist strip.
 static const CGFloat kArtistNameFontSize = 13.0f;
-// The height in points of the artist strip canvas.
 static const CGFloat kArtistNameImageHeight = 14.0f;
 
-// The maximum width in points of a name-strip canvas.
 // @ghidraAddress 0x2fcfd8 (g_dNameImageMaxWidth)
 static const CGFloat kNameImageMaxWidth = 280.0f;
 
-// The factor that centres drawn text within its canvas.
 static const CGFloat kCenterFactor = 0.5f;
 
 @implementation MusicDataFromDoc
@@ -67,9 +44,8 @@ static const CGFloat kCenterFactor = 0.5f;
     return [super init];
 }
 
-// The binary's -dealloc (0x67498) only chains to [super dealloc]; under ARC that chaining is
-// automatic, so no override is reconstructed. The strong plyName ivar is released by the
-// compiler-generated .cxx_destruct (0x67e70).
+// The binary's -dealloc (0x67498) only chains to super and .cxx_destruct (0x67e70) releases
+// plyName, both of which ARC does, so neither is reconstructed.
 
 #pragma mark - Path resolution
 

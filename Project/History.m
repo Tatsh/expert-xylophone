@@ -1,49 +1,26 @@
-//
-//  History.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class History). Verified against the
-//  arm64 disassembly (the Core Data fetch-predicate format strings are variadic and dropped by the
-//  decompiler, and the tamper-hash buffer folds the play date and play count into the score words
-//  half-word by half-word through the soft-float path, which the decompiler garbles).
-//
-
 #import "History.h"
 
-// Collaborator classes reached from the class-level helpers. Their headers are not yet
-// reconstructed in this tree (the same speculative-import style ScoreData.m and HistoryData.m
-// already use); they resolve once those classes land.
 #import "HistoryData.h"
 #import "RBScoreHash.h"
 #import "enginecrypto.h"
 
-// The Core Data entity name backing this class.
 static NSString *const kHistoryEntityName = @"History";
 
-// The sort key that orders history records by play date.
 static NSString *const kHistorySortKey = @"playDate";
 
-// Fetch-predicate format strings.
 static NSString *const kPredicateTuneIDAndDifficulty = @"tuneID == %d AND diff == %d";
 static NSString *const kPredicatePlayDateAfter = @"playDate > %@";
 static NSString *const kPredicatePlayDateInRange = @"%@ <= playDate AND playDate < %@";
 
-// The play-date window, in seconds, subtracted before the single-date fetch so that records from
-// the previous day are included.
 // @ghidraAddress 0x2fcf30 (g_dHistoryFetchWindow)
 static const NSTimeInterval kHistoryFetchWindow = -86400.0;
 
-// The default fetch limit applied when the caller passes zero.
 static const NSUInteger kDefaultFetchLimit = 100;
 
-// The fetch limit applied when clearing the most recent records.
 static const NSUInteger kDeleteFetchLimit = 20;
 
-// The smallest tune identifier a history record may be created for.
 static const unsigned int kMinimumTuneID = 100000000;
 
-// The width, in bits, of the half-words the play date and play count are folded into the score
-// words by.
 static const int kHalfWordShift = 16;
 
 @implementation History

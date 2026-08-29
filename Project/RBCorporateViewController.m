@@ -1,43 +1,25 @@
-//
-//  RBCorporateViewController.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCorporateViewController). This
-//  is a plain Objective-C (.m) file: it presents Konami's corporate web page in an RBWebView and
-//  never reaches the C++ engine. The -viewDidLoad spinner centring was read from the arm64
-//  disassembly, where the decompiler folds the soft-float register moves into pseudo doubles.
-//
-
 #import "RBCorporateViewController.h"
 
 #import "RBWebView.h"
 #import "UIAlertView+RB.h"
 
-// The alert tag stamped on the network-error alert this controller presents.
 static const NSInteger kNetworkErrorAlertTag = 1000;
 
-// The activity-indicator style: the classic small grey spinner.
 static const UIActivityIndicatorViewStyle kIndicatorStyle = UIActivityIndicatorViewStyleGray;
 
-// The corporate page loaded into the web view.
 // @ghidraAddress 0x33c03a
 static NSString *const kCorporatePageURL = @"https://www.konami.com/ja/";
 
-// The JavaScript injected once the page finishes loading to suppress the iOS touch callout.
 // @ghidraAddress 0x33c055
 static NSString *const kSuppressTouchCalloutScript =
     @"document.documentElement.style.webkitTouchCallout='none';";
 
-// The loading spinner's autoresizing mask, transcribed verbatim from the binary's raw flag value.
 // @ghidraAddress 0x310460 (g_dwRBWebViewIndicatorAutoresizingMask)
 static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing)0x2d;
 
-// The web view's autoresizing mask (flexible in every dimension), transcribed verbatim from the
-// binary's raw flag value.
 // @ghidraAddress 0x310450 (g_dwAutoresizingMaskFlexibleAll)
 static const UIViewAutoresizing kWebViewAutoresizingMask = (UIViewAutoresizing)0x3f;
 
-// The spinner is centred on the view by halving each of the view's bounds dimensions.
 static const CGFloat kHalf = 0.5;
 
 @implementation RBCorporateViewController
@@ -59,15 +41,13 @@ static const CGFloat kHalf = 0.5;
     return self;
 }
 
-// The binary's -dealloc only chains to super; under ARC that teardown is automatic, so no explicit
-// -dealloc is needed.
+// The binary's -dealloc only chains to super, which ARC does automatically.
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     self.view.backgroundColor = UIColor.whiteColor;
 
-    // The loading spinner, centred on the view and animating from the outset.
     UIActivityIndicatorView *indicator =
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:kIndicatorStyle];
     [indicator startAnimating];

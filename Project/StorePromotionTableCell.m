@@ -2,8 +2,7 @@
 
 #import "StorePromotionView.h"
 
-// The tag the hosting RBStorePageViewController assigns to the promotion carousel subview it adds
-// to this cell's content view. Matched here to locate the carousel during layout.
+// The tag RBStorePageViewController assigns to the promotion carousel it adds to this cell.
 static const NSInteger kTagPromotionView = 10101;
 
 @implementation StorePromotionTableCell

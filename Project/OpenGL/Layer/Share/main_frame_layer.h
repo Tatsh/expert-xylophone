@@ -182,36 +182,28 @@ private:
      */
     MainFrameLayer();
 
-    // +0x08: the frame atlas for the current frame type; +0x10 the shared gm_parts2 overlay atlas.
-    // BuildSprites releases and reloads both.
+    // +0x08 the frame atlas for the current frame type, +0x10 the shared gm_parts2 overlay atlas.
     ne::C_TEXTURE *m_pFrameTexture = {};
     ne::C_TEXTURE *m_pOverlayTexture = {};
-    // +0x18: the frame border's 16-vertex 3D mesh, whose vertices Build3dVertices lays out and
-    // whose per-vertex alpha follows the fade channel.
+    // +0x18: the border's 16-vertex mesh; its per-vertex alpha follows the fade channel.
     ne::C_DRAW_POLYGON_3D *m_pFrameMesh3d = {};
-    // +0x20: the marker's 8-vertex 3D mesh. Its visibility follows the fade alpha: it is hidden
-    // once the alpha falls to the invisibility epsilon.
+    // +0x20: the marker's 8-vertex mesh, hidden once the alpha falls to the invisibility epsilon.
     ne::C_DRAW_POLYGON_3D *m_pMarkerMesh3d = {};
-    // +0x28: the frame's 2D polygon mesh (a C_RENDER, so SetMainFrameEnabled toggles its
-    // visibility; SetMainFrameOverlayLayout fills its 24 vertices through
-    // C_DRAW_POLYGON_2D::SetPos).
+    // +0x28: the frame's 24-vertex 2D mesh; a C_RENDER, so its visibility can be toggled.
     ne::C_DRAW_POLYGON_2D *m_pFrameMesh2d = {};
     // +0x30..+0x37: further layout state, still being worked out.
     // unsigned char m_aReserved30[8] = {}; // +0x30
     // +0x38, +0x40: the two instancers EmitMainFrameSprite fills, indexed by MainFrameInstancer.
-    // [MainFrameInstancerFrame] is the frame mesh whose first slot carries the frame texture.
     ne::C_SPRITE_INSTANCING_2D *m_apInstancers[2] = {};
-    int m_nFrameType = {};  // +0x48: the frame type, seeded to 0x20 and set by
-                            //        SetMainFrameType (which rebuilds on change).
-    int m_nDifficulty = {}; // +0x4c: the difficulty index shown on the frame.
-    int m_nMarker = {};     // +0x50: the frame marker, seeded to 5.
-    bool m_bReady = {};     // +0x54: cleared when the frame type changes (rebuild flag).
+    int m_nFrameType = {};  // +0x48: seeded to 0x20.
+    int m_nDifficulty = {}; // +0x4c
+    int m_nMarker = {};     // +0x50: seeded to 5.
+    bool m_bReady = {};     // +0x54: cleared when the frame type changes.
     // unsigned char m_aReserved55[3] = {}; // +0x55
-    LinearTween m_fadeChannel; // +0x58: the frame alpha fade channel.
+    LinearTween m_fadeChannel; // +0x58
     bool m_bFadeDone = {};     // +0x6c: set when the fade snaps to its endpoint.
     // unsigned char m_aReserved6d[3] = {}; // +0x6d
-    // +0x70, +0x74: the viewport size the current layout and 3D mesh were built for; the per-frame
-    // step rebuilds both when the viewport changes.
+    // +0x70, +0x74: the viewport size the current layout and 3D mesh were built for.
     float m_flLayoutWidth = {};
     float m_flLayoutHeight = {};
 };

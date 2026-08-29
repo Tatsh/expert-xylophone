@@ -1,11 +1,3 @@
-//
-//  shotsoundmanager.mm
-//  REFLEC BEAT plus
-//
-//  The shot (tap) sound sub-manager (ShotSoundManager). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "shotsoundmanager.h"
 
 #import <Foundation/Foundation.h>
@@ -15,7 +7,6 @@
 
 namespace {
 
-// The shot slot names, substituted into "Sounds/00_Share/SHOT/SD_SHOT_<slot>_<variant>.m4a".
 static NSString *const kSlotNames[] = {
     @"DEFAULT1", @"DEFAULT2",    @"DEFAULT3",  @"HOCKEY",     @"VOLLEYBALL", @"TENNIS",
     @"BASEBALL", @"TABLETENNIS", @"ELECTRO1",  @"ELECTRO2",   @"ELECTRO3",   @"ELECTRO4",
@@ -24,21 +15,17 @@ static NSString *const kSlotNames[] = {
     @"LIGHT",    @"FIREWORKS",   @"QRISPY",    @"SOTA",       @"96",         @"PERCUSSION2",
     @"JAPAN2",   @"PAWAPURO",    @"JINGLEBELL"};
 
-// The judgement variant names, substituted as the second path component.
 static NSString *const kVariantNames[] = {@"JUST", @"GREAT", @"GOOD", @"RIVAL"};
 
-// The idle sentinel for the pending retrigger priority: no shot is pending at this value.
+// No shot is pending at this priority value.
 constexpr int kIdlePriority = 5;
-// The retrigger cooldown period, in milliseconds (one frame at 30 fps).
+// In milliseconds: one frame at 30 fps.
 constexpr float kRetriggerPeriod = 33.333332f; // 0x42055555 at 0x1cd564/0x1cd5a4
-// The playback channel the timer retriggers the pending shot on.
 constexpr int kRetriggerChannel = 1;
-// The playback group index shot sounds load and play on.
 constexpr int kShotGroup = 0;
-// The scale converting the unit-interval shot volume to the audio manager's integer volume range.
+// Converts the unit-interval shot volume to the audio manager's integer range.
 constexpr float kVolumeScale = 127.0f;
 
-// Returns the localised path to a shot sound file in the bundle, or nil when it does not exist.
 NSString *ShotPath(NSString *slotName, NSString *variantName) {
     NSString *relative =
         [NSString stringWithFormat:@"Sounds/00_Share/SHOT/SD_SHOT_%@_%@", slotName, variantName];
@@ -81,9 +68,8 @@ void ShotSoundManager::LoadSlotVariants(int slot) {
     }
     AudioManager *audio = AudioManager.sharedManager;
     for (int variant = 0; variant < kVariantCount; ++variant) {
-        // Variant zero is the shared JUST sound; once the bank-wide load has run it is already
-        // registered, so it is skipped here, matching the binary's shared-flag guard at
-        // 0x1cd050-0x1cd058.
+        // Variant zero is the shared JUST sound, already registered by the bank-wide load
+        // (0x1cd050-0x1cd058).
         if (variant == 0 && m_bSharedLoaded) {
             continue;
         }
@@ -124,7 +110,6 @@ void ShotSoundManager::SetVolume(float flVolume) {
 /** @ghidraAddress 0x1cd364 */
 unsigned int ShotSoundManager::PlaySlot(unsigned long uChannel, int iSlot, int iVariant) {
     AudioManager *audio = AudioManager.sharedManager;
-    // Stop and clear any sound still playing on this channel.
     const unsigned int nActive = m_aChannelHandle[uChannel];
     if (nActive != 0xffffffff) {
         if ([audio isPlayingSe:nActive]) {
@@ -132,10 +117,9 @@ unsigned int ShotSoundManager::PlaySlot(unsigned long uChannel, int iSlot, int i
         }
         m_aChannelHandle[uChannel] = 0xffffffff;
     }
-    // Refresh the volume from the current game-system shot volume setting.
     const float flVolume = GameSystem::GetGameSystem()->GetShotVolume() * kVolumeScale;
     m_flVolume = flVolume;
-    // Play only when the slot's variant is loaded (variant zero also requires the shared load).
+    // Play only when the slot's variant is loaded; variant zero also accepts the shared load.
     if (!m_aSlotLoaded[iSlot] && (iVariant != 0 || !m_bSharedLoaded)) {
         return m_aChannelHandle[uChannel];
     }
@@ -158,16 +142,13 @@ void ShotSoundManager::SetPendingRetrigger(int nSlot, int nPriority) {
 /** @ghidraAddress 0x1cd538 */
 void ShotSoundManager::UpdateRetriggerTimer(float flDeltaTime) {
     if (m_flRetriggerTimer > 0.0f) {
-        // A retrigger is cooling down: clamp it to one frame and count it down.
         if (m_flRetriggerTimer > kRetriggerPeriod) {
             m_flRetriggerTimer = kRetriggerPeriod;
         }
         m_flRetriggerTimer -= flDeltaTime;
     } else if (m_nPendingVariant != kIdlePriority) {
-        // The cooldown has elapsed and a shot is pending: play it and restart the cooldown.
         PlaySlot(kRetriggerChannel, m_nPendingSlot, m_nPendingVariant);
         m_flRetriggerTimer = kRetriggerPeriod;
     }
-    // The pending state returns to idle for the next frame.
     m_nPendingVariant = kIdlePriority;
 }

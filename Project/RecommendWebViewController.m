@@ -1,31 +1,19 @@
-//
-//  RecommendWebViewController.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458.
-//  See RecommendWebViewController.h for the class overview.
-//
-
 #import "RecommendWebViewController.h"
 
 #import <UIKit/UIKit.h>
 
 #import "RecommendCore.h"
 
-// The redirect outcome returned by -[RecommendCore redirectViewContollerWithRequest:] that means
-// the request's URL was rewritten in place (a "change destination" link), so the advert web view
-// must be reloaded with the rewritten request.
+// The -[RecommendCore redirectViewContollerWithRequest:] outcome meaning the request's URL was
+// rewritten in place.
 static const int kRecommendRedirectReloadRequest = 2;
 
 @interface RecommendWebViewController ()
 
-// Overrides the private redirect hook inherited from RewardWebViewController so advert clicks route
-// through RecommendCore instead of RewardCore.
+// Overrides the private redirect hook inherited from RewardWebViewController.
 - (int)redirectWithRequest:(NSURLRequest *)request;
 
-// An empty override the binary defines to suppress the superview-detach behaviour on this
-// controller. It shadows the inherited -[UIResponder] chain rather than -[UIView
-// removeFromSuperview].
+// Shadows the inherited responder-chain method rather than -[UIView removeFromSuperview].
 - (void)removeFromSuperview;
 
 @end
@@ -57,8 +45,6 @@ static const int kRecommendRedirectReloadRequest = 2;
 
 #pragma mark - Redirect handling
 
-// Routes the advert redirect through RecommendCore. When the core rewrites the request in place,
-// the web view is reloaded with the rewritten request.
 - (int)redirectWithRequest:(NSURLRequest *)request {
     /** @ghidraAddress 0x203048 */
     int outcome = [[RecommendCore sharedInstance] redirectViewContollerWithRequest:request];
@@ -70,8 +56,7 @@ static const int kRecommendRedirectReloadRequest = 2;
 
 #pragma mark - View teardown
 
-// An empty override: RecommendWebViewController deliberately suppresses the inherited
-// -removeFromSuperview so a teardown invoked on the controller does not detach its own view.
+// Deliberately empty; the binary defines it to suppress the inherited behaviour.
 - (void)removeFromSuperview {
     /** @ghidraAddress 0x20310c */
 }

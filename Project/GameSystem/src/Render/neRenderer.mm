@@ -10,7 +10,6 @@
 #import "s_vector3.h"
 #import "vectormath.h"
 
-// The reference-counted projection and view-camera slots the render path reads each frame.
 ne::Viewport *g_pCurrentAppliedCamera = nullptr; // @ghidraAddress 0x3cff00
 ne::Viewport *g_pCurrentProjection = nullptr;    // @ghidraAddress 0x3cff08
 ne::Viewport *g_pActiveViewCamera = nullptr;     // @ghidraAddress 0x3cff10
@@ -19,8 +18,7 @@ ne::CameraNode *g_pCurrentModelNode = nullptr;   // @ghidraAddress 0x3cff18
 /** @ghidraAddress 0x2991c */
 ne::Viewport::Viewport(
     float flWidth, float flHeight, int nViewX, int nViewY, int nViewW, int nViewH) {
-    // The binary redundantly sets the projection matrix to identity first; MakeOrthoMatrix
-    // overwrites it entirely. The field of view and aspect stay zero for an ortho viewport.
+    // The binary sets the projection to identity first; MakeOrthoMatrix overwrites it entirely.
     m_nRefCount = 1;
     m_nViewX = nViewX;
     m_nViewY = nViewY;
@@ -68,8 +66,7 @@ ne::Viewport *CreatePerspectiveViewport(float fovY,
 
 /** @ghidraAddress 0x29900 */
 void ne::Viewport::Release() {
-    // The binary decrements the count before its now-redundant null check, so this runs on a live
-    // viewport; the viewport is destroyed once the last reference is dropped.
+    // The binary decrements the count before its now-redundant null check.
     const int nCount = ReleaseRef();
     if (nCount == 0) {
         delete this;
@@ -78,8 +75,6 @@ void ne::Viewport::Release() {
 
 /** @ghidraAddress 0x29a80 */
 void ne::Viewport::ApplyToRenderer(neGLESRenderer *pRenderer) {
-    // The engine matrix-mode index for the projection matrix (SetMatrixMode maps 1 to
-    // GL_PROJECTION).
     constexpr int kMatrixModeProjection = 1;
     pRenderer->SetViewport(GetViewX(), GetViewY(), GetViewWidth(), GetViewHeight());
     pRenderer->SetMatrixMode(kMatrixModeProjection, GetProjectionMatrix());
@@ -123,15 +118,12 @@ void SetActiveViewCamera(ne::Viewport *pViewport) {
 /** @ghidraAddress 0x21ed4 */
 ne::CameraNode::CameraNode() {
     m_nRefCount = 1;
-    // The binary writes the identity rows inline; SetMatrixIdentity is the de-inlined equivalent.
     SetMatrixIdentity(m_mView);
     SetMatrixIdentity(m_mInverseView);
 }
 
 /** @ghidraAddress 0x21f74 */
 ne::CameraNode::CameraNode(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp) : ne::CameraNode() {
-    // Build the view matrix, then derive the inverse-view (camera-to-world) matrix by inverting a
-    // copy of it.
     MakeLookAtMatrix(m_mView, pEye, pTarget, pUp);
     std::memcpy(m_mInverseView, m_mView, sizeof(m_mView));
     InvertMatrix4x4(m_mInverseView);
@@ -139,7 +131,6 @@ ne::CameraNode::CameraNode(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp) 
 
 /** @ghidraAddress 0x21fe0 */
 ne::CameraNode::CameraNode(const float *pViewMatrix) : ne::CameraNode() {
-    // The supplied matrix becomes the view matrix; its inverse becomes the inverse-view matrix.
     std::memcpy(m_mView, pViewMatrix, sizeof(m_mView));
     std::memcpy(m_mInverseView, pViewMatrix, sizeof(m_mInverseView));
     InvertMatrix4x4(m_mInverseView);
@@ -182,9 +173,6 @@ void ne::CameraNode::TransformVector4(float *pVec4) {
 
 /** @ghidraAddress 0x29ff4 */
 void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VECTOR3 *pRayDir) {
-    // Build the near-plane point in view space from the normalised screen coordinates: half the
-    // vertical field of view gives the view frustum's extent at unit depth, x is scaled by the
-    // aspect ratio, y is flipped, and the point sits one unit down the -Z axis.
     const float flTanHalfFov = static_cast<float>(std::tan(g_pActiveViewCamera->GetFovY() * 0.5f));
     S_VECTOR3 nearPoint;
     nearPoint.x =
@@ -192,8 +180,6 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
     nearPoint.y = (pScreen->y - 0.5f) * -2.0f * flTanHalfFov;
     nearPoint.z = -1.0f;
 
-    // Transform the ray origin (the camera position) and the near point into world space through
-    // the current model node's inverse-view (camera-to-world) matrix.
     float invViewMatrix[16];
     std::memcpy(invViewMatrix, g_pCurrentModelNode->GetInverseViewMatrix(), sizeof(invViewMatrix));
     pRayOrigin->x = 0.0f;
@@ -202,7 +188,6 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
     TransformPointByMatrix(pRayOrigin, invViewMatrix);
     TransformPointByMatrix(&nearPoint, invViewMatrix);
 
-    // The ray direction is the normalised vector from the origin to the near point.
     *pRayDir = nearPoint;
     SubtractVector3(pRayDir, pRayOrigin);
     NormalizeVector3(pRayDir);
@@ -210,11 +195,9 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
 
 /** @ghidraAddress 0x29abc */
 void ne::Viewport::ProjectWorldToScreen(float *pVec4) {
-    // The matrix helper only reads its matrix argument, so casting away the accessor's constness is
-    // safe here.
+    // The helper only reads its matrix argument, so dropping constness is safe.
     MultiplyVector4ByMatrixInPlace(pVec4, const_cast<float *>(GetProjectionMatrix()));
-    // Perspective divide, then map clip space into the pixel rectangle; the Y axis is negated so
-    // the origin is top-left.
+    // The Y axis is negated so the origin is top-left.
     const float x = pVec4[0];
     const float y = pVec4[1];
     const float w = pVec4[3];

@@ -14,59 +14,44 @@
 #import "UIImage+RB.h"
 #import "engineglobals.h"
 
-// The localised store-loading title, reused from the store page. @ghidraAddress 0x3cfca8.
+// @ghidraAddress 0x3cfca8
 
-// The number of tune rows the panel always lays out, matching the pack tune-slot count.
 static const NSInteger kMusicRowCount = 4;
 
-// The sentinel stored in the playing-tune index when no sample is playing.
 static const int kNoSamplePlaying = -1;
 
-// The two tune rows per layout column, so a row's column is its index modulo this.
 static const NSInteger kMusicRowsPerColumn = 2;
 
-// Image asset names.
 static NSString *const kStorePackBgImageName = @"09_store/store_pack_bg_2";
 static NSString *const kStoreButtonNormalImageName = @"09_store/store_btn_normal_2";
 static NSString *const kStoreButtonClickedImageName = @"09_store/store_btn_clicked_2";
 static NSString *const kStoreButtonDisabledImageName = @"09_store/store_btn_disabled";
 static NSString *const kStoreWebButtonImageName = @"09_store/store_web";
 
-// The terms-and-precautions label, a fixed Japanese literal decoded from the binary's UTF-16 data.
 // @ghidraAddress 0x358e20
 static NSString *const kTermLabelText = @"規約等および各種注意事項";
 
-// The buy-button title format ("BUY (%@)" catalogue key with one price argument).
-// @ghidraAddress 0x3cfb78; reached through the engine bridge global.
-// (See g_pLocalizedBuyFormat in neEngineBridge.h.)
+// @ghidraAddress 0x3cfb78
 
 #ifdef ENABLE_PATCHES
-// The bracket the buy format wraps its price in, used to cut the price away from the title.
 static NSString *const kBuyFormatPriceBracket = @"(";
 #endif
 
-// Container geometry (in points).
 static const CGFloat kPackViewWidth = 650.0;
 static const CGFloat kPackViewHeight = 226.0;
 
-// Jacket artwork frame.
 static const CGFloat kArtworkOriginX = 18.0;
 static const CGFloat kArtworkOriginY = 35.0;
 static const CGFloat kArtworkSide = 160.0;
 
-// Pack name label frame.
 static const CGFloat kNameOriginX = 195.0;
 static const CGFloat kNameOriginY = 32.0;
 static const CGFloat kNameHeight = 28.0;
 
-// Pack comment label frame.
 static const CGFloat kCommentOriginY = 76.0;
 static const CGFloat kSideLabelWidth = 420.0;
 static const CGFloat kCommentHeight = 90.0;
 
-// Copyright text-view frame. It shares the pack name's left edge, clearing the artwork, which ends
-// at kArtworkOriginX + kArtworkSide. Its y and the purchase button's sit in neighbouring pool
-// slots, 0x301838 and 0x301840, so the two are easy to swap.
 // @ghidraAddress 0x301838 (origin y)
 // @ghidraAddress 0x3011b8 (width)
 // @ghidraAddress 0x2ec6e0 (height)
@@ -75,7 +60,6 @@ static const CGFloat kCopyrightOriginY = 157.0;
 static const CGFloat kCopyrightWidth = 220.0;
 static const CGFloat kCopyrightHeight = 50.0;
 
-// Purchase button frame.
 // @ghidraAddress 0x2fedd0 (origin x)
 // @ghidraAddress 0x301840 (origin y)
 // @ghidraAddress 0x2ec6c0 (width)
@@ -84,44 +68,34 @@ static const CGFloat kButtonOriginY = 167.0;
 static const CGFloat kButtonWidth = 140.0;
 static const CGFloat kButtonHeight = 30.0;
 
-// Tune-row layout (in points): each row is a fixed-size tile, stepped horizontally per column and
-// vertically per row-pair from a fixed top offset.
 static const CGFloat kMusicRowStepX = 325.0;
 static const CGFloat kMusicRowStepY = 212.0;
 static const CGFloat kMusicRowTopOffset = 226.0;
 static const CGFloat kMusicRowWidth = 325.0;
 static const CGFloat kMusicRowHeight = 212.0;
 
-// Web (artist-site) button vertical origin and its right-aligned x anchor.
 static const CGFloat kWebButtonOriginY = 12.0;
 static const CGFloat kWebButtonRightAnchor = 630.0;
 
-// Loading label width, height, and the vertical offsets of the spinner and loading label about the
-// panel centre.
 static const CGFloat kLoadingLabelWidth = 200.0;
 static const CGFloat kLoadingLabelHeight = 24.0;
 static const CGFloat kIndicatorCenterYOffset = -15.0;
 static const CGFloat kLoadingLabelCenterYOffset = 15.0;
 
-// The bottom copyright-strip label frame and its font.
 static const CGFloat kTermStripOriginX = 10.0;
 static const CGFloat kTermLabelFontSize = 12.0;
 
-// Stretchable-image cap sizes.
 static const NSInteger kPackBgCap = 4;
 static const NSInteger kButtonBgCap = 6;
 
-// Font point sizes.
 static const CGFloat kNameFontSize = 22.0;
 static const CGFloat kCommentFontSize = 13.0;
 static const CGFloat kCopyrightFontSize = 10.0;
 static const CGFloat kButtonTitleFontSize = 16.0;
 static const CGFloat kLoadingLabelFontSize = 18.0;
 
-// Name-label auto-shrink minimum scale factor.
 static const CGFloat kNameMinimumScaleFactor = 18.0;
 
-// Shadow and layer parameters.
 static const CGFloat kPanelShadowRadius = 8.0;
 static const CGFloat kPanelShadowOpacity = 0.5;
 static const CGFloat kArtworkBorderWidth = 1.0;
@@ -130,7 +104,6 @@ static const CGFloat kArtworkShadowRadius = 2.0;
 static const CGFloat kArtworkShadowOpacity = 0.6;
 static const CGFloat kTitleShadowOffsetY = -1.0;
 
-// White / alpha colour components.
 static const CGFloat kCommentTextWhite = 50.0f / 255.0f;
 static const CGFloat kDisabledTitleWhite = 158.0f / 255.0f;
 static const CGFloat kLoadedBackgroundWhite = 0.863f;
@@ -138,19 +111,12 @@ static const CGFloat kTermStripBackgroundWhite = 0.863f;
 static const CGFloat kLoadingShadowAlpha = 0.4f;
 static const CGFloat kTermLinkGreenBlue = 0.47843137254901963;
 
-// The purchase-button title-shadow alpha, shared for the normal and disabled states.
 static const CGFloat kButtonTitleShadowAlpha = 0.6f;
 
-// The centre-scaling divisor used to place the spinner and loading label at the panel centre.
 static const CGFloat kCenterScale = 0.5;
 
 @implementation StorePackDetailViewPad {
-    // The index of the tune whose sample is currently playing, or @c kNoSamplePlaying (-1) when
-    // none is. This ivar has no property and keeps the binary's literal name (no leading
-    // underscore).
     int samplePlaying;
-    // Whether @c showPackInfo has already populated the subviews. This ivar has no property and
-    // keeps the binary's literal name (no leading underscore).
     BOOL isInfoLoaded;
 }
 
@@ -264,8 +230,7 @@ static const CGFloat kCenterScale = 0.5;
                        kMusicRowWidth,
                        kMusicRowHeight);
         [self.musicViews addObject:[[StorePackMusicView alloc] initWithFrame:rowFrame]];
-        // Rows 0 and 1 use the light tune-cell background; rows 2 and 3 use the dark one.
-        [self.musicViews[i] setBG:(i > 1)];
+        [self.musicViews[i] setBG:(i > 1)]; // Rows 2 and 3 take the dark tune-cell background.
         [self.musicViews[i].buttonLink addTarget:self
                                           action:@selector(handleLink:)
                                 forControlEvents:UIControlEventTouchUpInside];
@@ -313,8 +278,7 @@ static const CGFloat kCenterScale = 0.5;
     [self.packView addSubview:webButton];
     self.artistSiteButton = webButton;
 
-    // The binary reuses the pack-view width constant (650) for both this strip's y-origin and its
-    // width.
+    // The binary reuses the pack-view width for both this strip's y-origin and its width.
     UIView *termStrip = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, kPackViewWidth, kPackViewWidth, kButtonHeight)];
     termStrip.backgroundColor = [UIColor colorWithWhite:kTermStripBackgroundWhite alpha:1.0];
@@ -473,12 +437,8 @@ static const CGFloat kCenterScale = 0.5;
 /** @ghidraAddress 0xf8714 */
 - (void)setButtonTextBuy {
 #ifdef ENABLE_PATCHES
-    // No StoreKit product backs a pack in a patched build, so there is no price to substitute and
-    // the format would draw "BUY ((null))". The title becomes the format's leading word on its own,
-    // taken up to the bracket the price sits in so a localised format loses its price the same way.
-    // A pack the catalogue prices at nothing is still offered, because -detailViewStartPurchase:
-    // grants one without StoreKit; any other pack costs money that a patched build cannot take, so
-    // its button is disabled rather than left to raise the purchases-disabled alert.
+    // A patched build has no StoreKit price to substitute, so the title is cut back to the
+    // format's leading word and only a catalogue-free pack stays enabled.
     NSString *title = g_pLocalizedBuyFormat;
     const NSRange bracket = [title rangeOfString:kBuyFormatPriceBracket];
     if (bracket.location != NSNotFound) {

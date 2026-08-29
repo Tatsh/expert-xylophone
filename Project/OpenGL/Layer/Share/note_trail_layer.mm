@@ -10,27 +10,21 @@
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
 
-// The process-wide note-trail layer, created lazily by shared().
 static NoteTrailLayer *g_pNoteTrailLayer = nullptr; // @ghidraAddress 0x3def20
 
-// A shared note-trail counter the constructor resets.
 static int g_nNoteTrailCounter = 0; // @ghidraAddress 0x3def18
 
 namespace {
 
-// The atlas the note trails draw from (@ghidraAddress 0x3ceaa0).
+// @ghidraAddress 0x3ceaa0
 constexpr const char *kTextureName = "00_texture/gm_parts1";
 
-// The additive blend-mode identifier the trail batch uses.
 constexpr int kAdditiveBlendMode = 1;
 
-// The two texture-environment parameter slots the builder seeds (to 1 each), and that value.
 constexpr int kTexParamSlotHigh = 1;
 constexpr int kTexParamSlotLow = 0;
 constexpr int kTexParamEnabled = 1;
 
-// The result-queue spin/rotation constants. Phase A wraps to (0, 3000] and drives the sprite
-// rotation (phaseA*2 * pi / 3000); phase B wraps to [0, 400/3) and selects the spin frame.
 constexpr float kSpinPhaseAWrap = 3000.0f;                   // @ghidraAddress 0x2fcf80
 constexpr float kSpinPhaseAStep = -3000.0f;                  // @ghidraAddress 0x2fcf84
 constexpr float kSpinPhaseBWrap = 133.33333f;                // @ghidraAddress 0x2fcf88 (400/3)
@@ -38,24 +32,18 @@ constexpr float kSpinPhaseBStep = -133.33333f;               // @ghidraAddress 0
 constexpr double kRotationHalfTurn = 3.14159265358979323846; // @ghidraAddress 0x2f85a0 (pi)
 constexpr double kRotationPeriod = 3000.0;                   // @ghidraAddress 0x2fcfa0
 
-// The fixed result-mark anchor and size every result sprite uses.
 constexpr float kResultAnchor = 58.0f; // @ghidraAddress 0x2fcf90
 constexpr float kResultSize = 116.0f;  // @ghidraAddress 0x2fcf94
 
-// The number of spin frames (sprite types 0..3) judge-0 marks cycle through, and the fixed sprite
-// types the other two judges emit.
 constexpr int kSpinFrameCount = 4;
 constexpr int kJudge1SpriteType = 4;
 constexpr int kJudge2SpriteType = 5;
 
-// The UV-table index each of the six result sprite types samples (@ghidraAddress 0x30e300).
+// @ghidraAddress 0x30e300
 constexpr int kResultUvIndex[NoteTrailLayer::kResultSpriteTypeCount] = {83, 84, 85, 86, 87, 88};
 
 } // namespace
 
-// The shared sprite-UV atlas the result sprite types index. Read-only ROM data transcribed from
-// the binary; the entry count is set by the span up to the next table (the highest index any
-// call site uses is 0x5e).
 // @ghidraAddress 0x2ef668
 extern const SpriteUvEntry g_aScoreGaugeUvTable[];
 const SpriteUvEntry g_aScoreGaugeUvTable[] = {
@@ -171,7 +159,6 @@ NoteTrailLayer::NoteTrailLayer() {
 /** @ghidraAddress 0x184708 */
 NoteTrailLayer *NoteTrailLayer::shared() {
     if (g_pNoteTrailLayer == nullptr) {
-        // The binary allocates the raw 0x2b0-byte object and runs the constructor.
         g_pNoteTrailLayer = new NoteTrailLayer();
     }
     return g_pNoteTrailLayer;
@@ -183,8 +170,7 @@ void NoteTrailLayer::LoadNoteTrailSprites() {
         return;
     }
 
-    // The sprite hangs beneath the shared background layer's render object rather than the global
-    // scene root.
+    // The sprite hangs beneath the background layer's render object, not the global scene root.
     BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
     ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
 
@@ -209,7 +195,6 @@ void NoteTrailLayer::Create(int nJudge, float flX, float flY) {
     assert(nJudge >= 0);
     assert(nJudge < kJudgeMax);
 
-    // Claim the first free queue slot; drop the mark when the queue is full.
     for (int nSlot = g_nNoteTrailCounter; nSlot < kMaxResults; ++nSlot) {
         ResultMark &mark = m_aResults[nSlot];
         if (!mark.bActive) {
@@ -227,7 +212,6 @@ void NoteTrailLayer::Create(int nJudge, float flX, float flY) {
 void NoteTrailLayer::Update(float flDeltaSeconds) {
     m_nSpriteCount = 0;
 
-    // Advance the rotation spin phase, wrapping it down into (0, 3000].
     m_flSpinPhaseA += flDeltaSeconds;
     while (m_flSpinPhaseA > kSpinPhaseAWrap) {
         m_flSpinPhaseA += kSpinPhaseAStep;
@@ -235,8 +219,6 @@ void NoteTrailLayer::Update(float flDeltaSeconds) {
     const float flRotation = static_cast<float>(static_cast<double>(m_flSpinPhaseA * 2.0f) *
                                                 kRotationHalfTurn / kRotationPeriod);
 
-    // Advance the frame-select spin phase, wrapping it down into [0, 400/3), and derive the spin
-    // frame (0 through 3).
     m_flSpinPhaseB += flDeltaSeconds;
     while (m_flSpinPhaseB >= kSpinPhaseBWrap) {
         m_flSpinPhaseB += kSpinPhaseBStep;
@@ -248,10 +230,8 @@ void NoteTrailLayer::Update(float flDeltaSeconds) {
         nSpinFrame = kSpinFrameCount - 1;
     }
 
-    // Every result sprite is scaled by the game system's scaled sheet radius.
     const float flScale = GameSystem::GetGameSystem()->GetSheetRadiusScaled();
 
-    // Emit each queued mark's sprite, then clear the queue.
     for (int nSlot = 0; nSlot < kMaxResults; ++nSlot) {
         ResultMark &mark = m_aResults[nSlot];
         if (nSlot >= g_nNoteTrailCounter) {
@@ -263,7 +243,6 @@ void NoteTrailLayer::Update(float flDeltaSeconds) {
         }
         mark.bActive = false;
 
-        // Judge 0 shows the current spin frame; judges 1 and 2 show their fixed graphics.
         unsigned int nSpriteType;
         if (mark.nJudge == 0) {
             nSpriteType = static_cast<unsigned int>(nSpinFrame);
@@ -276,7 +255,6 @@ void NoteTrailLayer::Update(float flDeltaSeconds) {
         CreateSprite(nSpriteType, &mark.position, 0xff, flRotation, flScale, flScale);
     }
 
-    // Publish the frame's sprite count to the batch and reset the queue.
     m_pSprite->SetSpriteCount(m_nSpriteCount);
     g_nNoteTrailCounter = 0;
 }

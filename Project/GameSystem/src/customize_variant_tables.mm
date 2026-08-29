@@ -1,18 +1,5 @@
-//
-//  customize_variant_tables.mm
-//  REFLEC BEAT plus
-//
-//  The customize-asset variant-name tables declared in customize_variant_tables.h, transcribed
-//  verbatim from the binary's read-only data. BuildCustomizeAssetPathString (0x54ee0) indexes the
-//  table matching the asset category to pick the variant token for the asset's path.
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
-//  the program image base.
-//
-
 #import "customize_variant_tables.h"
 
-// The BGM (category 0) variant-name table: 36 asset tokens followed by their 36 uppercase
-// display keys.
 // @ghidraAddress 0x359c50
 NSString *const g_aCustomizeBgmVariants[] = {
     @"classic",
@@ -89,8 +76,7 @@ NSString *const g_aCustomizeBgmVariants[] = {
     @"CUSTOM_MAXMAXIMIZER2",
 };
 
-// The shot-sound (category 1) variant-name table: 33 asset tokens, the four judge-sound
-// names, then the 33 uppercase display keys.
+// The 33 asset tokens, the four judge-sound names, then the 33 uppercase display keys.
 // @ghidraAddress 0x359e90
 NSString *const g_aCustomizeShotVariants[] = {
     @"default1",    @"default2",    @"default3",    @"hockey",     @"volleyball", @"tennis",
@@ -107,7 +93,6 @@ NSString *const g_aCustomizeShotVariants[] = {
     @"PERCUSSION2", @"JAPAN2",      @"PAWAPURO",    @"JINGLEBELL",
 };
 
-// The explosion (category 2) variant-name table.
 // @ghidraAddress 0x35a0c0
 NSString *const g_aCustomizeExplosionVariants[] = {
     @"classic", @"limelight", @"flame", @"ice",  @"plasma",  @"tornado", @"fireworks",
@@ -115,7 +100,6 @@ NSString *const g_aCustomizeExplosionVariants[] = {
     @"tentei",  @"flower",    @"maple", @"iidx", @"popn",
 };
 
-// The frame (category 3) variant-name table.
 // @ghidraAddress 0x35a158
 NSString *const g_aCustomizeFrameVariants[] = {
     @"classic_default",  @"classic_bronze",    @"classic_silver",     @"classic_gold",
@@ -128,7 +112,6 @@ NSString *const g_aCustomizeFrameVariants[] = {
     @"colette_club",     @"colette_dia",       @"colette_joker",
 };
 
-// The background (category 4) variant-name table.
 // @ghidraAddress 0x35a250
 NSString *const g_aCustomizeBackgroundVariants[] = {
     @"classic_default",   @"classic_bronze",     @"classic_silver",    @"classic_gold",
@@ -140,7 +123,6 @@ NSString *const g_aCustomizeBackgroundVariants[] = {
     @"colette_heart",     @"colette_club",       @"colette_dia",       @"colette_joker",
 };
 
-// The object (category 5) size variant-name table.
 // @ghidraAddress 0x35a330
 NSString *const g_aCustomizeObjectVariants[] = {
     @"big",
@@ -148,7 +130,6 @@ NSString *const g_aCustomizeObjectVariants[] = {
     @"small",
 };
 
-// The theme (category 10) variant-name table, indexed by RBUserSettingDataTheme.
 // @ghidraAddress 0x35a348
 NSString *const g_aCustomizeThemaVariants[] = {
     @"classic",

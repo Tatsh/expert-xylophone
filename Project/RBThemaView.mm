@@ -1,14 +1,3 @@
-//
-//  RBThemaView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBThemaView). Verified against
-//  the arm64 disassembly: -setupView's per-theme page geometry, gradation-overlay placement, and
-//  OK button centring were recovered from the soft-float register moves that the decompiler folds
-//  into pseudo-variables. This is an Objective-C++ file because the OK-button handler reaches the
-//  C++ SoundEffectManager engine singleton.
-//
-
 #import "RBThemaView.h"
 
 #import "AppDelegate.h"
@@ -17,30 +6,23 @@
 #import "UIImage+RB.h"
 #import "soundeffectmanager.h"
 
-// The themed sound-effect slot played when the OK button is pressed.
 constexpr int kSoundEffectDecide = 1;
 
-// The theme popup fades fully transparent over one tenth of a second.
 // @ghidraAddress 0x2ec778 (g_flThemaFadeOutDuration)
 constexpr NSTimeInterval kThemaFadeOutDuration = 0.1;
 
-// The OK button rests a small gap above the bottom of the content view. The Colette theme uses a
-// shorter gap than the other themes because its gradation overlay already occupies the lower edge.
+// Colette uses the shorter gap because its gradation overlay occupies the lower edge.
 constexpr CGFloat kOkButtonBottomGapColette = 5.0;
 constexpr CGFloat kOkButtonBottomGapDefault = 10.0;
 
-// The OK button is centred horizontally within the content view.
 constexpr CGFloat kHalf = 0.5;
 
-// The per-theme artwork asset names, one full-page image per theme.
 static NSString *const kClassicImageName = @"05_theme/thema_classic";
 static NSString *const kLimelightImageName = @"05_theme/thema_limelight";
 static NSString *const kColetteImageName = @"05_theme/thema_colette";
 
-// The Colette gradation overlay drawn along the bottom of the content view.
 static NSString *const kGradationImageName = @"04_customize/set_grad_down";
 
-// The OK button face.
 static NSString *const kOkButtonImageName = @"05_theme/theme_ok";
 
 @implementation RBThemaView

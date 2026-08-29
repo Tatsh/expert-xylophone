@@ -1,23 +1,11 @@
-//
-//  RBHowToView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBHowToView). Verified against the
-//  arm64 disassembly: -setupView's theme/idiom/Retina-dependent frame maths and the
-//  page-layout of -createViewSame: were recovered from the soft-float register moves that the
-//  decompiler folds into pseudo-variables.
-//
-
 #import "RBHowToView.h"
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The number of how-to-play instruction pages, one image per page.
 static const int kHowToPlayPageCount = 6;
 
-// The how-to-play page artwork, laid out one image per page. Page @c i uses element @c i.
 static NSString *const kHowToPlayPageImageNames[] = {
     @"03_howtoplay/how_1",
     @"03_howtoplay/how_2",
@@ -27,39 +15,27 @@ static NSString *const kHowToPlayPageImageNames[] = {
     @"03_howtoplay/how_6",
 };
 
-// The page control's fixed height, in points, common to every layout branch.
 static const CGFloat kPageControlHeight = 24.0;
 
-// The scroll view's fixed left inset, in points, common to every layout branch.
 static const CGFloat kScrollViewOriginX = 4.0;
 
-// The transform scale applied to the page control so its dots render smaller than the system size.
 static const CGFloat kPageControlScale = 0.8;
 
-// Page-indicator tint whites (a grey value from black to white) for the Classic theme, where the
-// current page is fully white and the other pages are mid-grey.
 static const CGFloat kClassicPageIndicatorWhite = 0.5;
 static const CGFloat kClassicCurrentPageIndicatorWhite = 1.0;
 
-// Page-indicator tint whites for every non-Classic theme, where the other pages are a light grey
-// and the current page is mid-grey.
 static const CGFloat kThemedPageIndicatorWhite = 0.667f;
 static const CGFloat kThemedCurrentPageIndicatorWhite = 0.5;
 
-// Scroll view and page control geometry for the Classic theme with the iPad (wide) layout.
 static const CGRect kClassicWideScrollFrame = {{kScrollViewOriginX, 4.0}, {536.0, 600.0}};
 static const CGRect kClassicWidePageControlFrame = {{2.0, 615.0}, {540.0, kPageControlHeight}};
 
-// Scroll view and page control geometry for the Classic theme with the narrow iPad idiom.
 static const CGRect kClassicNarrowScrollFrame = {{kScrollViewOriginX, 0.0}, {312.0, 300.0}};
 static const CGRect kClassicNarrowPageControlFrame = {{60.0, 285.0}, {200.0, kPageControlHeight}};
 
-// Scroll view and page control geometry for a non-Classic theme with the iPad (wide) layout.
 static const CGRect kThemedWideScrollFrame = {{kScrollViewOriginX, 30.0}, {536.0, 600.0}};
 static const CGRect kThemedWidePageControlFrame = {{2.0, 640.0}, {540.0, kPageControlHeight}};
 
-// Scroll view geometry for a non-Classic theme with the narrow iPad idiom. The scroll view's top
-// inset and height differ between Retina and non-Retina; the page control is shared.
 static const CGRect kThemedNarrowRetinaScrollFrame = {{kScrollViewOriginX, 0.0}, {312.0, 300.0}};
 static const CGRect kThemedNarrowNonRetinaScrollFrame = {{kScrollViewOriginX, 10.0},
                                                          {312.0, 280.0}};

@@ -1,18 +1,10 @@
-//
-//  RBCollectionView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCollectionView). The single
-//  overridden method, -layoutSubviews, was recovered from the arm64 decompile and disassembly at
-//  0x9d5d8; the weak customDelegate accessors are auto-synthesised from their getter/setter at
-//  0x9d9b8/0x9d9d8.
-//
-
 #import "RBCollectionView.h"
 
+// The customDelegate accessors are auto-synthesised (getter 0x9d9b8, setter 0x9d9d8).
 @implementation RBCollectionView
 
 - (void)layoutSubviews {
+    // @ghidraAddress 0x9d5d8
     if ([self.customDelegate respondsToSelector:@selector(willLayoutSubviews:)]) {
         [self.customDelegate willLayoutSubviews:self];
     }

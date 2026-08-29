@@ -116,7 +116,6 @@ private:
                       float flScaleY,
                       float flRotation);
 
-    // A per-colour full-combo effect record.
     struct EffectRecord {
         bool m_bActive = {}; /*!< Whether the effect is playing. +0x00 */
         // unsigned char m_aPad1[3]; // +0x01 (alignment padding, compiler-inserted)

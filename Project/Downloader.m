@@ -1,12 +1,3 @@
-//
-//  Downloader.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class Downloader). Verified against the
-//  arm64 disassembly (block invocations go through the block's +0x10 invoke pointer, which the
-//  decompiler renders but does not type).
-//
-
 #import "Downloader.h"
 
 #import "RBHttpUtil.h"

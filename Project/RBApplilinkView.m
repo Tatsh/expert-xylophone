@@ -1,33 +1,17 @@
-//
-//  RBApplilinkView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBApplilinkView). Verified
-//  against the arm64 disassembly: -setupView's soft-float web-target frame and corner-radius
-//  operands, the activity indicator's transform.scale key-value coding, the advert-area open rect,
-//  and the fade duration were recovered from the register moves the decompiler folds into
-//  pseudo-variables. This is a plain Objective-C file because the class reaches the
-//  RecommendNetwork advert facade through ordinary class-method message sends, with no C++.
-//
-
 #import "RBApplilinkView.h"
 
 #import "RBUserSettingData.h"
 #import "RecommendNetwork.h"
 #import "UIAlertView+RB.h"
 
-// The web target view's rounded-corner radius and the activity indicator's magnification.
 static const CGFloat kWebTargetCornerRadius = 7.0;
 static const CGFloat kIndicatorScale = 1.5;
 
-// The web target view's fade-in runs over a quarter of a second.
 static const NSTimeInterval kWebTargetFadeDuration = 0.25;
 
-// The advert-model and vertical-alignment identifiers the advert area is opened with.
 static const int kApplilinkAdModelDefault = 1;
 static const int kApplilinkVerticalAlignDefault = 0;
 
-// The ad location the recommend advert area is opened at.
 static NSString *const kApplilinkAdLocation = @"ADL_TOP";
 
 @implementation RBApplilinkView
@@ -51,12 +35,9 @@ static NSString *const kApplilinkAdLocation = @"ADL_TOP";
 
     (void)[RBUserSettingData sharedInstance].thema; // Yes, the binary discards this read.
 
-    // The base popup's gradation and title chrome are unused by the Applilink overlay.
     self.gradationImageView.hidden = YES;
     self.titleImageView.hidden = YES;
 
-    // The rounded, clipped web target view hosts the advert area. It starts fully transparent and
-    // fades in once the advert area has appeared.
     self.webTargetView =
         [[UIView alloc] initWithFrame:CGRectMake(0,
                                                  0,
@@ -72,7 +53,6 @@ static NSString *const kApplilinkAdLocation = @"ADL_TOP";
     self.webTargetView.alpha = 0.0;
     [self.contentView addSubview:self.webTargetView];
 
-    // The large spinner is centred on the content view and magnified while the area loads.
     self.indicatorView = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [self.indicatorView.layer setValue:@(kIndicatorScale) forKeyPath:@"transform.scale"];

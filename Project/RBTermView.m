@@ -1,14 +1,3 @@
-//
-//  RBTermView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBTermView). Verified against the
-//  arm64 disassembly: -setupView's and -showTermsList's theme- and idiom-dependent frame
-//  maths were recovered from the soft-float register moves that the decompiler folds into
-//  pseudo-variables. This class does not reach the C++ engine, so it is a plain Objective-C (.m)
-//  file.
-//
-
 #import "RBTermView.h"
 
 #import "Downloader.h"
@@ -19,17 +8,13 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The view types stored in RBTermView.viewType. The agreement overlay defers dismissal to the base
-// popup; the store terms viewer fades itself out and tears down the owning music-menu overlay.
 enum {
-    kTermViewTypeAgreement = 0, // Terms-of-service agreement overlay.
-    kTermViewTypeStore = 1,     // Store terms viewer.
+    kTermViewTypeAgreement = 0,
+    kTermViewTypeStore = 1,
 };
 
-// The music-menu popup fades over roughly a fifth of a second; this beat is reused throughout.
 static const NSTimeInterval kTermAnimationDuration = 0.2;
 
-// Terms-request JSON keys and response fields.
 static NSString *const kTermsRequestKeyTarget = @"target";
 static NSString *const kTermsRequestKeyType = @"type";
 static NSString *const kTermsResponseKeyList = @"list";
@@ -38,63 +23,45 @@ static NSString *const kTermFieldTitle = @"title";
 static NSString *const kTermFieldURL = @"url";
 static NSString *const kTermFieldContents = @"contents";
 
-// The POST content type for the terms endpoints.
 static NSString *const kTermsRequestContentType = @"application/json";
 
-// Terms artwork asset names.
 static NSString *const kGradationImageName = @"23_terms/tos_grad";
 static NSString *const kTermButtonImageName = @"23_terms/tos_btn";
 
-// The default terms title shown before a term is selected.
 static NSString *const kTermsDefaultTitle = @"規約等および各種注意事項";
 
-// The term-button title format: the term's numeric tag rendered as a decimal string.
 static NSString *const kTermTagFormat = @"%zd";
 
-// Grey-scale colour components used to build the popup's translucent chrome.
-static const CGFloat kColorWhitePanel = 0.2;    // The dark panel white component.
-static const CGFloat kColorWhiteGray = 0.6;     // The dimming overlay white component.
-static const CGFloat kColorWhiteTermText = 0.8; // The term body text colour white component.
+static const CGFloat kColorWhitePanel = 0.2;
+static const CGFloat kColorWhiteGray = 0.6;
+static const CGFloat kColorWhiteTermText = 0.8;
 static const CGFloat kColorAlphaHalf = 0.5;
 static const CGFloat kColorAlphaOpaque = 1.0;
 
-// Corner radii for the gradation overlay in the wide and themed layouts, and its inset in the
-// themed (Colette/Limelight) wide layout.
 static const CGFloat kGradationCornerRadiusWide = 10.0;
 static const CGFloat kGradationCornerRadiusThemed = 5.0;
 static const CGFloat kGradationInsetThemed = 2.0;
 
-// The title label font size and the fraction of the title bar height its baseline is centred on.
 static const CGFloat kTitleFontSize = 22.0;
-static const CGFloat kTitleBarHeightFraction = 0.7; // 7.0 / 10.0.
+static const CGFloat kTitleBarHeightFraction = 0.7;
 static const CGFloat kHalf = 0.5;
 
-// The classic-theme content-origin reference the popup content is pushed up by, and the wide
-// classic fallback offset used when the base panel origin cannot be measured.
 static const CGFloat kClassicContentTopReference = 188.0;
 static const CGFloat kClassicContentFallbackOffset = 12.0;
 
-// The content-view top inset applied to the list, body, and text views. It is theme- and
-// idiom-dependent: the wide layout insets the classic theme less than the themed skins;
-// the tall layout insets only the themed skins.
-static const CGFloat kContentTopInsetWideThemed = 64.0;  // Colette/Limelight wide.
-static const CGFloat kContentTopInsetWideClassic = 32.0; // Classic wide.
-static const CGFloat kContentTopInsetTallThemed = 32.0;  // Colette/Limelight tall.
+static const CGFloat kContentTopInsetWideThemed = 64.0;
+static const CGFloat kContentTopInsetWideClassic = 32.0;
+static const CGFloat kContentTopInsetTallThemed = 32.0;
 
-// The loading spinner is scaled to 1.5x via its layer transform.
 static const float kIndicatorTransformScale = 1.5f;
 
-// The back button geometry: a fixed width, and a height inset below the gradation overlay.
 static const CGFloat kBackButtonWidth = 100.0;
 static const CGFloat kBackButtonHeightInset = -24.0;
 
-// The term text view's container inset (top, left, bottom, right) and body font size.
 static const CGFloat kTermTextInsetVertical = 10.0;
 static const CGFloat kTermTextInsetHorizontal = 5.0;
 static const CGFloat kTermBodyFontSize = 16.0;
 
-// Terms-list button-row geometry. The wide (iPad) layout uses larger metrics than the tall
-// layout; the list content width is the content-view width divided by the visible fraction.
 static const CGFloat kTermListStartYWide = 64.0;
 static const CGFloat kTermListStartYTall = 32.0;
 static const CGFloat kTermButtonWidthTall = 300.0;
@@ -104,15 +71,13 @@ static const CGFloat kTermRowHeightTall = 50.0;
 static const CGFloat kTermRowGapWide = 50.0;
 static const CGFloat kTermRowGapTall = 30.0;
 
-// The term button's background cap-inset fraction and edge bias, and its title edge insets.
 static const CGFloat kTermButtonCapFraction = 0.5;
 static const CGFloat kTermButtonCapBias = -1.0;
 static const CGFloat kTermButtonTitleInsetTop = 1.0;
 static const CGFloat kTermButtonTitleInsetSide = 5.0;
 static const CGFloat kTermButtonTitleInsetBottom = 8.0;
 
-// The autoresizing mask applied to the gradation overlay and term buttons, transcribed verbatim
-// from the binary's raw flag values.
+// Raw autoresizing flag values as the binary stores them.
 static const UIViewAutoresizing kGradationAutoresizingMask = (UIViewAutoresizing)0x3f;
 static const UIViewAutoresizing kTermButtonAutoresizingMask = (UIViewAutoresizing)0x25;
 static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing)0x2d;
@@ -134,9 +99,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     return self;
 }
 
-// The binary's -dealloc only chains to super; under ARC that teardown is automatic, so no explicit
-// -dealloc is needed.
-
 #pragma mark Configuration
 
 - (void)setViewTypeStore {
@@ -150,9 +112,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
 
-    // The content top inset the classic theme pushes the base panel, background, and content view
-    // up by. For the classic theme it is measured from the base panel geometry (or a fixed
-    // fallback when the panel origin is unavailable); the other themes leave it at zero.
     CGFloat contentTopInset = 0.0;
     if (thema == RBUserSettingDataThemeClassic) {
         if (!IsPad()) {
@@ -173,8 +132,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         }
     }
 
-    // The gradation overlay is drawn over the content. The Colette and Limelight themes reuse the
-    // base popup's gradation view; the classic theme builds its own and raises the title bar.
     UIImage *gradationImage = [UIImage imageWithName:kGradationImageName];
     if (thema == RBUserSettingDataThemeLimelight || thema == RBUserSettingDataThemeColette) {
         self.gradationImageView.image = nil;
@@ -196,7 +153,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         [self.baseView bringSubviewToFront:self.titleImageView];
     }
 
-    // The title bar image is centred over the base panel; its origin is truncated to whole points.
     int titleXWhole =
         (int)(self.gradationImageView.frame.size.width - self.titleImageView.frame.size.width);
     int titleYWhole =
@@ -224,8 +180,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 
     self.backgroundColor = [UIColor colorWithWhite:kColorWhitePanel alpha:kColorAlphaHalf];
 
-    // The content-view top inset used to position the list, body, and text views. The wide layout
-    // uses a fixed inset per theme; the tall layout uses a smaller one for the themed skins.
     NSInteger themaInset = [RBUserSettingData sharedInstance].thema;
     CGFloat contentInset;
     if (!IsPad()) {
@@ -240,15 +194,12 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     self.contentView.backgroundColor = [UIColor colorWithWhite:kColorWhitePanel
                                                          alpha:kColorAlphaOpaque];
 
-    // The dimming overlay covers the content while loading; it starts hidden. The view is handed to
-    // the superview before the field is set, so the field never owns it.
     UIView *grayView = [[UIView alloc] initWithFrame:self.bounds];
     grayView.backgroundColor = [UIColor colorWithWhite:kColorWhiteGray alpha:kColorAlphaHalf];
     grayView.hidden = YES;
     [self addSubview:grayView];
     self.grayView = grayView;
 
-    // The loading spinner, scaled up and centred, hidden while stopped.
     UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] init];
     [indicatorView.layer setValue:@(kIndicatorTransformScale) forKeyPath:@"transform.scale"];
     indicatorView.center = self.center;
@@ -260,14 +211,12 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     CGFloat contentWidth = self.contentView.frame.size.width;
     CGFloat contentHeight = self.contentView.frame.size.height;
 
-    // The scrolling terms list fills the content below the inset; it starts fully transparent.
     UIScrollView *termsListView = [[UIScrollView alloc]
         initWithFrame:CGRectMake(0.0, contentInset, contentWidth, contentHeight - contentInset)];
     termsListView.alpha = 0.0;
     [self.contentView addSubview:termsListView];
     self.termsListView = termsListView;
 
-    // The term-body container occupies the same region, starting transparent.
     UIView *termView = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, contentInset, contentWidth, contentHeight - contentInset)];
     termView.alpha = 0.0;
@@ -275,7 +224,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     [self.contentView addSubview:termView];
     self.termView = termView;
 
-    // The back button returns from a term body to the list; it starts hidden.
     self.backButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.backButton setTitle:nil forState:UIControlStateNormal];
     [self.backButton sizeToFit];
@@ -291,8 +239,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     self.backButton.hidden = YES;
     [self.baseView addSubview:self.backButton];
 
-    // The term-body text view fills the body container, non-selectable, and reads back the classic
-    // top inset measured above.
     UITextView *termTextView =
         [[UITextView alloc] initWithFrame:CGRectMake(0.0,
                                                      contentTopInset,
@@ -326,12 +272,9 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     [weakSelf.downloader
         startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x35d180 */
-          // Global no-op proceed block.
         }
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0x111be8 */
-          // Parse the JSON list into termsList, then show it (or the network-error alert) and stop
-          // the spinner, all marshalled to the main queue.
           weakSelf.termsList = [weakSelf.downloader getDataInJSON][kTermsResponseKeyList];
           if (weakSelf.termsList == nil) {
               dispatch_async(dispatch_get_main_queue(), ^{
@@ -344,7 +287,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
                 [weakSelf showTermsList];
               });
           }
-          // The spinner is always stopped, regardless of which branch ran.
           dispatch_async(dispatch_get_main_queue(), ^{
             /** @ghidraAddress 0x111ed8 */
             [weakSelf endLoadAnimation];
@@ -352,7 +294,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         }
         failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x111f48 */
-          // Schedule the network-error alert and spinner stop on the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{
             /** @ghidraAddress 0x111fc0 */
             [UIAlertView showNetworkErrorWithDelegate:weakSelf];
@@ -376,12 +317,9 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     [weakSelf.downloader
         startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x35d370 */
-          // Global no-op proceed block.
         }
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0x113468 */
-          // Cache the JSON body keyed by the term id and show it (or an error), then stop the
-          // spinner, all on the main queue.
           NSDictionary *data = [weakSelf.downloader getDataInJSON];
           if (data == nil) {
               dispatch_async(dispatch_get_main_queue(), ^{
@@ -402,7 +340,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         }
         failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x11380c */
-          // Schedule the terms network-error alert and spinner stop on the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{
             /** @ghidraAddress 0x113884 */
             [UIAlertView showNetworkErrorWithDelegate:weakSelf];
@@ -414,7 +351,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 #pragma mark Presentation
 
 - (void)showTermsList {
-    // Fade the term body out if it is currently shown, and restore the default title.
     if (self.termView.alpha == kColorAlphaOpaque) {
         [UIView animateWithDuration:kTermAnimationDuration
                          animations:^{
@@ -425,7 +361,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     }
     self.backButton.hidden = YES;
 
-    // The list start Y and the term-button width, height, and row gap are idiom-dependent.
     BOOL isPad = IsPad();
     CGFloat listStartY = isPad ? kTermListStartYWide : kTermListStartYTall;
     int buttonWidth = kTermButtonWidthTall;
@@ -439,8 +374,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         CGFloat centreX = self.contentView.frame.size.width * kHalf;
         CGFloat currentY = listStartY;
         for (NSDictionary *term in self.termsList) {
-            // Reuse an existing button in the list whose tag already matches this term's type,
-            // otherwise build a new one.
             UIButton *existing = nil;
             for (UIView *subview in self.termsListView.subviews) {
                 if ([subview isKindOfClass:UIButton.class] &&
@@ -489,7 +422,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         self.termsListView.contentSize = CGSizeMake(self.termsListView.frame.size.width, currentY);
     }
 
-    // Fade the list and title in after a short delay.
     [UIView animateWithDuration:kTermAnimationDuration
         delay:kTermAnimationDuration
         options:UIViewAnimationOptionCurveEaseInOut
@@ -505,7 +437,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 }
 
 - (void)showTermView:(id)termID {
-    // Fade the list out if it is currently shown.
     if (self.termsListView.alpha == kColorAlphaOpaque) {
         [UIView animateWithDuration:kTermAnimationDuration
                          animations:^{
@@ -513,12 +444,10 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
                            self.termView.alpha = 0.0;
                          }];
     }
-    // The binary reads the current theme here without using the result.
-    (void)[RBUserSettingData sharedInstance].thema;
+    (void)[RBUserSettingData sharedInstance].thema; // The binary discards this read.
 
     __weak RBTermView *weakSelf = self;
 
-    // Set the title from the matching term descriptor.
     if (self.termsList != nil) {
         for (NSDictionary *term in weakSelf.termsList) {
             if ([[term[kTermFieldType] stringValue] isEqualToString:termID]) {
@@ -528,11 +457,9 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         }
     }
 
-    // Load the cached body text and set the body font.
     weakSelf.termTextView.text = weakSelf.terms[termID][kTermFieldContents];
     weakSelf.termTextView.font = [UIFont systemFontOfSize:kTermBodyFontSize];
 
-    // Fade the body and title in after a short delay.
     [UIView animateWithDuration:kTermAnimationDuration
         delay:kTermAnimationDuration
         options:UIViewAnimationOptionCurveEaseInOut
@@ -555,7 +482,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 - (void)selectTerm:(id)sender {
     NSString *termID = [NSString stringWithFormat:kTermTagFormat, ((UIButton *)sender).tag];
 
-    // If the matching term carries an external URL, open it and stop.
     if (self.termsList != nil) {
         for (NSDictionary *term in self.termsList) {
             if ([[term[kTermFieldType] stringValue] isEqualToString:termID] &&
@@ -566,7 +492,6 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
         }
     }
 
-    // Otherwise show the cached body, or fetch it when not yet cached.
     if (self.terms[termID] == nil) {
         [self loadDetail:termID];
     } else {
@@ -575,9 +500,8 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 }
 
 - (void)setTermsTitle:(id)termsTitle {
-    // The classic theme reads the base panel origin here without using the result.
     if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeClassic) {
-        (void)self.baseView.frame.origin.y;
+        (void)self.baseView.frame.origin.y; // The binary discards this read.
     }
 
     self.titleView.alpha = 0.0;
@@ -611,8 +535,7 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 #pragma mark Animation
 
 - (void)hideAnimation {
-    // This method gates on the base popup's animating flag, distinct from RBTermView's own
-    // isAnimating flag that guards the list and body transitions.
+    // Gates on the base popup's animating flag, not RBTermView's own isAnimating.
     if (self.animating) {
         return;
     }

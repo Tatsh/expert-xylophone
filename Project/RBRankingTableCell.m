@@ -1,14 +1,3 @@
-//
-//  RBRankingTableCell.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBRankingTableCell). The
-//  -initWithStyle:reuseIdentifier: label geometry and fonts and the -drawRect: CoreGraphics path
-//  geometry were recovered from the arm64 disassembly, where the decompiler folds the soft-float
-//  register moves and scrambles the CoreGraphics argument order. This class uses only Objective-C,
-//  CoreGraphics, and the C iPad idiom helper, so it is a plain Objective-C (.m) file.
-//
-
 #import "RBRankingTableCell.h"
 
 #import <CoreGraphics/CoreGraphics.h>
@@ -18,7 +7,6 @@
 
 #pragma mark - Label geometry
 
-// The rank column occupies the left of the row; its origin, width, and height differ by device.
 static const CGFloat kRankLabelXPad = 5.0;
 static const CGFloat kRankLabelXPhone = 18.0;
 static const CGFloat kRankLabelYPad = 6.0;
@@ -31,7 +19,6 @@ static const CGFloat kRankFontSizePhone = 15.0;
 static const CGFloat kRankMinScalePad = 8.0;
 static const CGFloat kRankMinScalePhone = 7.0;
 
-// The name column sits in the middle of the row.
 static const CGFloat kNameLabelXPad = 80.0;
 static const CGFloat kNameLabelXPhone = 70.0;
 static const CGFloat kNameLabelYPad = 5.0;
@@ -45,8 +32,6 @@ static const CGFloat kNameFontSizePhone = 16.0;
 static const CGFloat kNameMinScalePad = 18.0;
 static const CGFloat kNameMinScalePhone = 13.0;
 
-// The score column is right-aligned, anchored to the row's trailing edge by a negative inset from
-// the cell width and left-margin autoresizing.
 static const CGFloat kScoreLabelXInsetPad = -160.0;
 static const CGFloat kScoreLabelXInsetPhone = -112.0;
 static const CGFloat kScoreLabelYPad = 6.0;
@@ -59,23 +44,17 @@ static const CGFloat kScoreFontSizePhone = 13.0;
 
 #pragma mark - Background geometry
 
-// The x of the divider between the name and score columns, differing by device.
 static const CGFloat kColumnDividerXPad = 66.0;
 static const CGFloat kColumnDividerXPhone = 61.0;
 
-// The outline stroke is one point wide; corners are rounded to this radius on the top or bottom
-// row. The stroked path is inset half a point from the row edges so the one-point line stays crisp.
+// The stroked path is inset half a point from the row edges so the one-point line stays crisp.
 static const CGFloat kStrokeLineWidth = 1.0;
 static const CGFloat kCornerRadius = 6.0;
 static const CGFloat kEdgeInset = 0.5;
 
-// Half-scale factor used to take the row's horizontal and vertical midpoints.
 static const CGFloat kHalfScale = 0.5;
 
 @implementation RBRankingTableCell {
-    // Whether the cell draws with the wider iPad geometry and fonts, captured from the iPad idiom
-    // flag at construction. It is not a property; the binary keeps only this backing ivar and reads
-    // it directly.
     BOOL isPad;
 }
 
@@ -87,7 +66,6 @@ static const CGFloat kHalfScale = 0.5;
     if (self) {
         isPad = IsPad();
 
-        // The rank label: bold, centred, auto-shrinking to fit.
         CGRect rankFrame =
             isPad ?
                 CGRectMake(kRankLabelXPad, kRankLabelYPad, kRankLabelWidthPad, kRankLabelHeight) :
@@ -103,7 +81,6 @@ static const CGFloat kHalfScale = 0.5;
         self.labelRank.textAlignment = NSTextAlignmentCenter;
         self.labelRank.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
 
-        // The name label: bold, left-aligned, truncating its tail.
         CGRect nameFrame =
             isPad ? CGRectMake(
                         kNameLabelXPad, kNameLabelYPad, kNameLabelWidthPad, kNameLabelHeightPad) :
@@ -121,7 +98,6 @@ static const CGFloat kHalfScale = 0.5;
         self.labelName.minimumScaleFactor = isPad ? kNameMinScalePad : kNameMinScalePhone;
         self.labelName.lineBreakMode = NSLineBreakByTruncatingTail;
 
-        // The score label: right-aligned against the row's trailing edge.
         CGFloat scoreX =
             self.frame.size.width + (isPad ? kScoreLabelXInsetPad : kScoreLabelXInsetPhone);
         CGRect scoreFrame =
@@ -147,7 +123,6 @@ static const CGFloat kHalfScale = 0.5;
 }
 
 - (void)dealloc {
-    // The base cell's teardown runs through super.
 }
 
 #pragma mark - Drawing
@@ -164,7 +139,6 @@ static const CGFloat kHalfScale = 0.5;
     CGFloat dividerX = drawIsPad ? kColumnDividerXPad : kColumnDividerXPhone;
     CGFloat midY = height * kHalfScale;
 
-    // Three paths: the outline is stroked, the middle (name) and right (score) columns are filled.
     CGMutablePathRef outlinePath = CGPathCreateMutable();
     CGMutablePathRef namePath = CGPathCreateMutable();
     CGMutablePathRef scorePath = CGPathCreateMutable();
@@ -218,7 +192,6 @@ static const CGFloat kHalfScale = 0.5;
         CGPathAddLineToPoint(scorePath, NULL, dividerX, midY);
     }
 
-    // The divider line down the middle of the outline path, from the top-edge inset to the bottom.
     CGPathMoveToPoint(outlinePath, NULL, dividerX, kEdgeInset);
     CGPathAddLineToPoint(outlinePath, NULL, dividerX, bottomY);
 

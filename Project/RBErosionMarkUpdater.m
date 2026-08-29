@@ -11,62 +11,44 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-/// The tune identifier of the erosion-mark record whose scores this dialog corrects.
-static const unsigned int kErosionMarkTuneID = 99999344; // 0x5f5e470
+static const unsigned int kErosionMarkTuneID = 99999344;
 
-/// Difficulty indices used for the score fields, pickers, and text-field tags.
 enum {
     kDifficultyBasic = 0,
     kDifficultyMedium = 1,
     kDifficultyHard = 2,
 };
 
-/// The number of picker components (digits) per difficulty.
 enum {
     kBasicDigitCount = 3,
     kMediumHardDigitCount = 4,
 };
 
-/// The number of rows in a digit picker component (0 through 9).
 static const NSInteger kPickerDigitRowCount = 10;
 
-/// Sentinel for @c activeFieldIndex meaning no field is being edited.
 static const NSInteger kNoActiveField = -1;
 
-// The height of the picker's accessory toolbar, in points. Its pool neighbours are 284.0 and
-// 79.0, so the slot has to be read exactly.
 static const CGFloat kAccessoryToolbarHeight = 44.0; // @ghidraAddress 0x2eec40
 
-// The legacy dialog's field container starts this far down, scaled by the display rate. The
-// neighbouring pool slots are 0.83 and -110.0.
 static const CGFloat kContainerTop = 85.0; // @ghidraAddress 0x301820
 
-// The container's initial widths. Both are replaced by kContainerGrownWidth as soon as the first
-// field is added, so they only show when no difficulty qualifies.
 static const CGFloat kContainerWidthPad = 150.0;   // @ghidraAddress 0x301028
 static const CGFloat kContainerWidthPhone = 120.0; // @ghidraAddress 0x2ef168
 
-// The width the container takes once it holds at least one field, scaled by the display rate. Its
-// lower neighbour is 63.0, so this slot is easy to misread.
 static const CGFloat kContainerGrownWidth = 290.0; // @ghidraAddress 0x301808
 
-// Each score field's width, scaled by the display rate.
 static const CGFloat kScoreFieldWidth = 260.0; // @ghidraAddress 0x308cd8
 
-// Each score field's height, scaled by the display rate. It is also the amount the container grows
-// per field. Its lower neighbour is 33.0.
 static const CGFloat kScoreFieldHeight = 38.0; // @ghidraAddress 0x2eeec0
 
-/// The shared updater instance, allocated lazily by @c +updateCheckStart:.
-/// @ghidraAddress 0x3de498
+// @ghidraAddress 0x3de498
 static RBErosionMarkUpdater *g_sharedUpdater = nil;
 
-/// The lower score bounds per difficulty, seeded by the game before the dialog opens.
-/// @ghidraAddress 0x3de4a0
+// The score bounds are seeded by the game before the dialog opens.
+// @ghidraAddress 0x3de4a0
 static NSArray<NSNumber *> *g_lowerScoreBounds = nil;
 
-/// The upper score bounds per difficulty, seeded by the game before the dialog opens.
-/// @ghidraAddress 0x3de4a8
+// @ghidraAddress 0x3de4a8
 static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 
 @implementation RBErosionMarkUpdater
@@ -101,8 +83,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)setupView {
-    // Only d2, the width, is kept from the frame at 0x142e9c; the origin is zeroed and the height
-    // comes from the pool rather than from the view.
+    // Only the width is kept from the frame; the origin is zeroed and the height comes from the
+    // pool rather than from the view.
     CGRect frame = [AppDelegate appDelegate].viewController.view.frame;
     UIToolbar *toolbar = [[UIToolbar alloc]
         initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, kAccessoryToolbarHeight)];
@@ -159,8 +141,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         NSInteger bases[] = {self.baseBasicScore, self.baseMediumScore, self.baseHardScore};
         UIPickerView *pickers[] = {
             self.basicPickerView, self.mediumPickerView, self.hardPickerView};
-        // Each label is prefixed with an ideographic space; the constants are at 0x36d160,
-        // 0x36d180, and 0x36d1a0.
+        // Each label is prefixed with an ideographic space.
         NSString *labels[] = {@"　BASIC", @"　MEDIUM", @"　HARD"};
         for (int difficulty = kDifficultyBasic; difficulty <= kDifficultyHard; ++difficulty) {
             if (bases[difficulty] != g_lowerScoreBounds[difficulty].integerValue) {
@@ -192,8 +173,6 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
             } else {
                 self.hardField = field;
             }
-            // The origin and height come back through the UIView(RB) accessors rather than
-            // through -frame, which is what the binary sends at 0x145958 onwards.
             container.frame = CGRectMake(container.x,
                                          container.y,
                                          self.displayRate * kContainerGrownWidth,
@@ -286,7 +265,6 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)createAlertCancel {
-    // The two strings are UTF-16 constants at 0x36d1c0 and 0x36d1e0.
     NSString *title = [NSString stringWithFormat:@"スコア修正を終了します"];
     NSString *message = [NSString stringWithFormat:@"再修正はできません。よろしいですか？"];
     if (NSClassFromString(@"UIAlertController") == nil) {
@@ -322,7 +300,6 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)createAlertConfirm {
-    // The UTF-16 constant at 0x36d200.
     NSString *title = [NSString stringWithFormat:@"スコアを更新します"];
     if (NSClassFromString(@"UIAlertController") == nil) {
         self.alertConfirmView = [[UIAlertView alloc] initWithTitle:title
@@ -332,8 +309,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
                                                  otherButtonTitles:g_pLocalizedOK, nil];
         return;
     }
-    // Yes, this arm passes the literal rather than the formatted string: 0x1471a0 reloads the
-    // constant, so the stringWithFormat: result is used only by the legacy arm at 0x14738c.
+    // Yes, this arm passes the literal rather than the formatted title.
     self.alertConfirmController =
         [RBErosionMarkUpdaterAlertController alertControllerWithTitle:@"スコアを更新します"
                                                               message:@""
@@ -407,8 +383,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         return;
     }
     NSMutableString *summary = [[NSMutableString alloc] init];
-    // The three labels are padded to a common six-column width before the colon: the constants at
-    // 0x36d220, 0x36d240, and 0x36d260 are each 22 characters long.
+    // The labels are padded to a common six-column width before the colon.
     if (self.baseBasicScore == g_lowerScoreBounds[kDifficultyBasic].integerValue) {
         [summary appendFormat:@"BASIC : %04zd → %04zd\n", self.baseBasicScore, self.editBasicScore];
     }
@@ -557,14 +532,12 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         NSArray<NSError *> *detailedErrors = error.userInfo[NSDetailedErrorsKey];
         if (detailedErrors != nil && detailedErrors.count != 0) {
             for (NSError *detailedError in detailedErrors) {
-                // The loop body really is empty: between 0x144b84 and 0x144ba4 the binary runs only
-                // the enumeration mutation guard, and never reads the object buffer it filled.
+                // The loop body really is empty: the binary never reads the object it enumerates.
                 (void)detailedError;
             }
         }
     }
-    // The test at 0x144be4 is on the error rather than on the result of -save:, and both the
-    // success branch and the save-failure fall-through reach it.
+    // The binary tests the error rather than the result of -save:.
     if (error != nil) {
         return NO;
     }
@@ -576,7 +549,6 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 - (NSString *)scoreValidate {
     if (self.editBasicScore == self.baseBasicScore &&
         self.editMediumScore == self.baseMediumScore && self.editHardScore == self.baseHardScore) {
-        // The __cfstring at 0x36d060 is 13 characters and carries no trailing full stop.
         return @"スコアが変更されていません";
     }
     if (self.editBasicScore != self.baseBasicScore) {
@@ -630,8 +602,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         self.alertConfirmView.delegate = nil;
         self.alertConfirmView = nil;
     } else {
-        // Only two of the three controllers are cleared: the routine sends exactly two
-        // set...Controller: messages, and setAlertConfirmController: is not among them.
+        // Only two of the three controllers are cleared; setAlertConfirmController: is never sent.
         self.alertSetScoreController = nil;
         self.alertCancelController = nil;
     }

@@ -11,7 +11,6 @@
 #import "engineglobals.h"
 #import "soundeffectmanager.h"
 
-// The four difficulty slots hosted by this selector.
 enum {
     kDifficultyBasic = 0,
     kDifficultyMedium = 1,
@@ -19,45 +18,31 @@ enum {
     kDifficultyExtended = 3,
 };
 
-// The Colette theme adds the animated background; on it the button icons switch to their alternate
-// artwork and the number images take a themed centre offset. Themes below it (Classic and
-// Limelight) use the ordinary artwork.
+// Themes below Colette (Classic and Limelight) use the ordinary artwork.
 static const NSInteger kThemaColette = RBUserSettingDataThemeColette;
 
-// The layout offset applied to the buttons on the iPad idiom Colette layout (0x41500000).
 static const float kColetteLayoutOffset = 13.0f;
 
-// The autoresizing mask applied to every button and overlay: the four flexible margins.
 static const UIViewAutoresizing kButtonAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// The opaque and translucent button alphas for the selected and unselected difficulties. The
-// translucent value is the shared g_dTranslucentAlpha global (@0x1002ec6a0, 0.8); it is cached
-// here rather than re-declared as a shared extern until the palette globals are recovered.
 static const CGFloat kButtonAlphaSelected = 1.0;
-static const CGFloat kButtonAlphaTranslucent = 0.8;
+static const CGFloat kButtonAlphaTranslucent = 0.8; // Shared g_dTranslucentAlpha (0x1002ec6a0).
 
-// The centre of a button's overlay is half its bounds.
 static const CGFloat kOverlayHalf = 0.5;
 
-// The button vertical centre on the default (non-iPad idiom) and iPad idiom layouts.
 static const CGFloat kButtonCenterYDefault = 43.0; // DAT_1002eeee8
 static const CGFloat kButtonCenterYVariant = 84.0; // g_dLayoutMetricEightyFour
 
-// The extended button's centre on the default layout (built only when the song has an extended
-// chart, so its slot is always the four-button layout).
 static const CGFloat kExtendedCenterXDefault = 255.0; // DAT_100300f98
 static const CGFloat kExtendedCenterYDefault = 43.0;  // DAT_1002eeee8
 
-// The default-layout button horizontal centres, indexed by whether the song lacks an extended
-// chart (index 0: four-button layout with the extended slot; index 1: three-button layout).
+// Indexed by whether the song lacks an extended chart: 0 four-button, 1 three-button.
 static const CGFloat kHardCenterXDefault[] = {185.0, 245.0};   // DAT_1003011d0
 static const CGFloat kMediumCenterXDefault[] = {115.0, 150.0}; // DAT_1003011e0
 static const CGFloat kBasicCenterXDefault[] = {45.0, 54.0};    // DAT_1003011f0
 
-// The iPad idiom button horizontal centres, added to the layout offset. The three-button layout
-// (no extended chart) and the four-button layout use different columns.
 static const CGFloat kBasicCenterXVariantThree = 89.0;    // DAT_1002eef00
 static const CGFloat kMediumCenterXVariantThree = 228.0;  // DAT_10030120c
 static const CGFloat kHardCenterXVariantThree = 367.0;    // DAT_100301210
@@ -66,24 +51,18 @@ static const CGFloat kMediumCenterXVariantFour = 173.0;   // DAT_100301174
 static const CGFloat kHardCenterXVariantFour = 283.0;     // DAT_100301204
 static const CGFloat kExtendedCenterXVariantFour = 393.0; // DAT_100301208
 
-// The number-image centre offsets added to the button centre on the non-Colette themes, keyed by
-// the iPad idiom (decoded from the guard-initialised globals at 0x1003dc6e0/0x1003dc6f0, sourced
-// from 0x1002eef10/0x1002eef20).
+// Decoded from the globals at 0x1003dc6e0/0x1003dc6f0 (sourced from 0x1002eef10/0x1002eef20).
 static const CGFloat kNumberOffsetXVariant = 6.0;
 static const CGFloat kNumberOffsetYVariant = 12.0;
 static const CGFloat kNumberOffsetXDefault = 2.0;
 static const CGFloat kNumberOffsetYDefault = 10.0;
 
-// The themed voice loaded when a difficulty is picked is the difficulty index plus this base.
 static const int kThemedVoiceDifficultyBase = 10;
 
-// The themed sound effect played when the extended difficulty is picked.
 static const int kExtendedSoundEffect = 15;
 
-// The largest difficulty-level image index (levels above this clamp to the last image).
 constexpr int kMaxDifficultyLevelIndex = 14;
 
-// The base difficulty icon, indexed by difficulty slot, on the ordinary (non-Colette) themes.
 static NSString *const kDifficultyIconNames[] = {
     @"02_music_detail/det_dif_0",
     @"02_music_detail/det_dif_1",
@@ -91,8 +70,6 @@ static NSString *const kDifficultyIconNames[] = {
     @"02_music_detail/det_dif_3",
 };
 
-// The alternate difficulty icon, indexed by difficulty slot, on the default layout of a song that
-// has an extended chart.
 static NSString *const kDifficultyIconAltNames[] = {
     @"02_music_detail/det_dif_10",
     @"02_music_detail/det_dif_11",
@@ -100,10 +77,8 @@ static NSString *const kDifficultyIconAltNames[] = {
     @"02_music_detail/det_dif_13",
 };
 
-// The base difficulty icon used on the Colette themes.
 static NSString *const kDifficultyIconColette = @"02_music_detail/det_dif";
 
-// The selected-state flash overlay, indexed by difficulty slot, on the ordinary themes.
 static NSString *const kDifficultySelectedNames[] = {
     @"02_music_detail/det_dif_sel_0",
     @"02_music_detail/det_dif_sel_1",
@@ -111,7 +86,6 @@ static NSString *const kDifficultySelectedNames[] = {
     @"02_music_detail/det_dif_sel_3",
 };
 
-// The alternate selected-state flash overlay for the extended-chart default layout.
 static NSString *const kDifficultySelectedAltNames[] = {
     @"02_music_detail/det_dif_sel_10",
     @"02_music_detail/det_dif_sel_11",
@@ -119,10 +93,8 @@ static NSString *const kDifficultySelectedAltNames[] = {
     @"02_music_detail/det_dif_sel_13",
 };
 
-// The selected-state flash overlay used on the Colette themes.
 static NSString *const kDifficultySelectedColette = @"02_music_detail/det_dif_sel";
 
-// The difficulty-level number images, one table per difficulty slot, indexed by the clamped level.
 static NSString *const kBasicLevelNames[] = {
     @"02_music_detail/det_difa_1",
     @"02_music_detail/det_difa_2",
@@ -228,8 +200,6 @@ static NSString *const kExtendedLevelNames[] = {
     CGFloat extendedY = 0.0;
 
     if (!isPad) {
-        // The three horizontal-centre tables are indexed by whether the song lacks its extended
-        // chart.
         NSUInteger column = hasExtended ? 0 : 1;
         basicX = kBasicCenterXDefault[column];
         mediumX = kMediumCenterXDefault[column];
@@ -324,8 +294,7 @@ static NSString *const kExtendedLevelNames[] = {
                                       button.bounds.size.height * kOverlayHalf);
     selectedView.autoresizingMask = kButtonAutoresizingMask;
     [button addSubview:selectedView];
-    // The binary reads the theme here but discards it; the flash is applied unconditionally.
-    (void)[RBUserSettingData sharedInstance].thema;
+    (void)[RBUserSettingData sharedInstance].thema; // Yes, the binary discards this read.
     [selectedView SetFlashEffectFast];
     [self.difficultySelectedImages addObject:selectedView];
 
@@ -344,8 +313,6 @@ static NSString *const kExtendedLevelNames[] = {
         levelNames = kBasicLevelNames;
         break;
     }
-    // The level indexes the table directly: a level at or below zero takes the first image and a
-    // level above the last clamps to it.
     int levelIndex = Number > kMaxDifficultyLevelIndex ? kMaxDifficultyLevelIndex : Number;
     if (Number < 0) {
         levelIndex = 0;

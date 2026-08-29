@@ -147,8 +147,7 @@ public:
 
 private:
     int m_nRefCount = {}; // +0x00
-    // +0x04..+0x0f is alignment padding placing the projection matrix on a 16-byte boundary for the
-    // vector stores that fill it.
+    // +0x04..+0x0f is alignment padding placing the projection matrix on a 16-byte boundary.
     alignas(16) float m_mProjection[16] = {}; // +0x10
     float m_flFovY = {};                      // +0x50: perspective field of view (zero for ortho).
     float m_flAspect = {};                    // +0x54: perspective aspect ratio (zero for ortho).

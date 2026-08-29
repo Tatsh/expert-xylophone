@@ -6,31 +6,20 @@
 #import "RBCoreDataManager.h"
 #import "UIImage+RB.h"
 
-// The graph view's frame within the panel, decoded from the .const pools referenced by CreateView
-// (@0x4980..: x 16.0, y 20.0, and the two doubles DAT_1002ec690 and DAT_1002ec698).
 static const CGFloat kGraphViewX = 16.0;
 static const CGFloat kGraphViewY = 20.0;
 static const CGFloat kGraphViewWidth = 389.0;
 static const CGFloat kGraphViewHeight = 168.0;
 
-// The achievement rate is stored as a unit fraction and plotted as a percentage, and the graph's
-// maximum plotted value is the full 100%.
 static const float kAchievementRatePercentScale = 100.0f;
 static const CGFloat kGraphMaxValue = 100.0;
 
-// The panel's fully-opaque and fully-transparent alpha endpoints.
 static const CGFloat kPanelAlphaOpaque = 1.0;
 static const CGFloat kPanelAlphaTransparent = 0.0;
 
-// The show animation's fade duration and delay, in seconds, and its animation options (the binary
-// passes the literal option value 1, UIViewAnimationOptionLayoutSubviews).
 static const NSTimeInterval kShowAnimationDuration = 0.5;
 static const NSTimeInterval kShowAnimationDelay = 0.0;
 
-// The shared translucent-panel background alpha (g_dTranslucentAlpha @0x1002ec6a0, 0.8) and the
-// shared mascot-move animation duration (g_dMascotMoveAnimDuration @0x1002ec6a8, 0.1, reused as
-// the hide-fade duration). Both are cross-file palette and timing globals; they are cached here
-// rather than re-declared as shared external constants until those globals are recovered.
 static const CGFloat kTranslucentAlpha = 0.8;
 static const NSTimeInterval kMascotMoveAnimDuration = 0.1;
 
@@ -74,8 +63,6 @@ static const NSTimeInterval kMascotMoveAnimDuration = 0.1;
 #pragma mark Graph data
 
 - (void)createGraphData {
-    // Worked from the raw arm64 (@0x4b98..): the decompiler crashes on this method with the known
-    // RBCoreDataManager broken-struct error.
     NSManagedObjectContext *context = [RBCoreDataManager sharedInstance].historyContext;
     NSArray *records = [History getScoreData:self.musicID
                                   Difficulty:self.difficulty

@@ -4,63 +4,47 @@
 
 #import "RBUserSettingData.h"
 
-// The dimming cover is the first entry of the global UIColor palette built by
-// InitializeUIColorPalette (@0x5517c): 50%-translucent black (red, green, and blue components 0
-// with alpha 0.5). It is a cross-file palette global; it is rebuilt here rather than re-declared
-// as a shared extern until the palette globals are recovered.
+// The first entry of the palette InitializeUIColorPalette (0x5517c) builds, rebuilt here.
 static const CGFloat kCoverAlpha = 0.5;
 
-// The overlay and its loaded image flex in every direction so the HUD tracks its host's bounds.
 // @ghidraAddress 0x310450 (g_dwAutoresizingMaskFlexibleAll)
 static const UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// The loading indicator and the loaded image stay centred: only their margins flex.
 // @ghidraAddress 0x310460 (g_dwRBWebViewIndicatorAutoresizingMask)
 static const UIViewAutoresizing kIndicatorAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// The single-tap dismiss gesture requires exactly one tap of one finger.
 static const NSUInteger kDismissTapCount = 1;
 static const NSUInteger kDismissTouchCount = 1;
 
-// The centre of the host bounds is at half its width and height.
 static const CGFloat kCenterScale = 0.5;
 
-// The show/hide cross-fade runs for a fifth of a second.
 // @ghidraAddress 0x2eedc0 (g_dMascotMessageAnimDuration)
 static const NSTimeInterval kFadeDuration = 0.2;
 
-// The HUD is fully transparent before it fades in and fully opaque after.
 static const CGFloat kAlphaHidden = 0.0;
 static const CGFloat kAlphaVisible = 1.0;
 
-// The loaded image scales up from just under half size, overshoots slightly past full size, and
-// settles at the identity transform, over half a second.
 static const CGFloat kImageScaleStart = 0.5;
 static const CGFloat kImageScaleOvershoot = 1.1;
 static const NSTimeInterval kImageScaleDuration = 0.5;
 
-// The keyframe times for the three-stage scale-up.
 static const CGFloat kImageKeyTimeStart = 0.0;
 static const CGFloat kImageKeyTimeOvershoot = 0.4;
 static const CGFloat kImageKeyTimeSettle = 0.5;
 
-// The identity Z scale used by both intermediate transforms.
 static const CGFloat kImageScaleZ = 1.0;
 
-// The key under which the scale keyframe animation is added to the image layer. The binary names
-// it after the bounds even though it drives the transform key path.
+// The binary names this key after the bounds even though it drives the transform key path.
 static NSString *const kImageAnimationKey = @"boundsAnimation";
 static NSString *const kImageAnimationKeyPath = @"transform";
 
 @implementation RBNewsHUDView {
-    // Whether the HUD may be dismissed yet; set once the image loads or a download fails.
     BOOL m_CanHide;
-    // The news item's information identifier, persisted once the image has been shown.
     int m_InfomationID;
 }
 

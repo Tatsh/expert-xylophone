@@ -1,19 +1,7 @@
-//
-//  RBResoureDownloadBGEffectView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBResoureDownloadBGEffectView; the
-//  "Resoure" misspelling is the binary's own). Verified against the arm64 disassembly:
-//  initWithFrame: and setupView chain to the superclass via objc_msgSendSuper2, and setupParticle
-//  re-reads EFFECT_NUM each iteration.
-//
-
 #import "RBResoureDownloadBGEffectView.h"
 
 #import "RBResourceDownloadBGEffectPartView.h"
 
-// The rainbow (bow) and ring artwork base names seeded into the inherited base paths. Each
-// concrete frame name is these plus an index suffix.
 static NSString *const kRainbowImageBasePath = @"re_";
 static NSString *const kRingImageBasePath = @"ring_";
 
@@ -22,9 +10,9 @@ static NSString *const kRingImageBasePath = @"ring_";
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        // Both setters are super-sends in the binary, objc_msgSendSuper2 at 0x19be8 and 0x19c10,
-        // matching the sibling RBResourceDownloadBGEffectPartView. This class overrides neither,
-        // so the dispatch lands in the same place either way; spelled as super for fidelity.
+        // Spelled as super sends for fidelity; this class overrides neither setter.
+        // @ghidraAddress 0x19be8
+        // @ghidraAddress 0x19c10
         [super setRainbowImageBasePath:kRainbowImageBasePath];
         [super setRingImageBasePath:kRingImageBasePath];
     }

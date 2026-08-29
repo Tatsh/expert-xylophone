@@ -121,7 +121,6 @@ private:
     bool m_bActive = {};                        // +0x35: whether the manager's animation is active.
     // +0x36..+0x37 is alignment padding before the frame counter.
     // unsigned char m_aPad36[2]; // +0x36 (alignment padding, compiler-inserted)
-    float m_flTimer = {}; // +0x38: the zoom effect's accumulated time, reset on activation and
-    //        advanced by the frame delta until it reaches the effect duration.
+    float m_flTimer = {}; // +0x38: the zoom effect's accumulated time.
     // unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
 };

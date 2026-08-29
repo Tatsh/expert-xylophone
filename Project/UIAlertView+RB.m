@@ -1,31 +1,10 @@
-//
-//  UIAlertView+RB.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (category UIAlertView(RB)). Verified
-//  against the arm64 disassembly: -initWithTitle:message:delegate:cancelButtonTitle:
-//  otherButtonTitles: is variadic, so the decompiler drops or reorders its trailing button and
-//  format arguments; the register and stack setup were read directly to recover each call's exact
-//  title, message, delegate, cancel button, other buttons, and -setTag: value.
-//
-//  The fixed English button and sentence strings are localized at runtime through the main bundle,
-//  exactly as the binary's shared string cache does when it fills its global pointers; this
-//  category resolves them on demand with the same NSBundle lookup. The hard-coded Japanese titles
-//  and messages are baked into the binary as literal strings and are reproduced verbatim, including
-//  the binary's "BAET" typo in the spending-limit message.
-//
-
 #import "AppDelegate.h"
 #import "RBViewController.h"
 #import "StoreCampaignItemInfo.h"
 #import "UIAlertView+RB.h"
 
-// The empty value passed as the @c value: argument of every localized-string lookup, matching the
-// binary's shared string cache.
 static NSString *const kEmptyLocalizedValue = @"";
 
-// Localized button labels resolved from the main bundle (the shared string cache uses the same
-// keys).
 static NSString *const kLocalizedKeyOK = @"OK";
 static NSString *const kLocalizedKeyNo = @"NO";
 static NSString *const kLocalizedKeyYes = @"YES";
@@ -33,12 +12,9 @@ static NSString *const kLocalizedKeyCancel = @"Cancel";
 static NSString *const kLocalizedKeyClose = @"Close";
 static NSString *const kLocalizedKeyRetry = @"Retry";
 
-// The App Store button of the unlock-update alert is a plain literal in the binary, not a bundle
-// lookup: the adrp/add at 0xec68 forms the CFString at 0x100361b20 straight into x6, and the only
-// -localizedStringForKey: call in that routine is the one for "Cancel".
+// A plain literal in the binary (adrp/add at 0xec68), not a bundle lookup.
 static NSString *const kAppStoreButtonTitle = @"AppStore";
 
-// Fixed English titles and sentences resolved from the main bundle.
 static NSString *const kLocalizedKeyCaution = @"Caution";
 static NSString *const kLocalizedKeyError = @"Error";
 static NSString *const kLocalizedKeyInfomation = @"Infomation";
@@ -80,12 +56,12 @@ static NSString *const kLocalizedKeyLimePointAddedFormat = @"\"%d Lime Point\" h
 static NSString *const kLocalizedKeySequenceRequirementFormat =
     @"\"%1$@\" is required to purchase this Sequence.\n\nPurchase \"%2$@\"?";
 
-// Hard-coded Japanese titles and messages baked into the binary as literal strings.
 static NSString *const kAgeConfirmationTitle = @"年齢確認";
 static NSString *const kAgeConfirmationMessage =
     @"有料サービスのご利用にあたり、年齢の確認をお願いしております。\n\nご入力頂いた情報は、課金上"
     @"限設定にのみ使用いたします。";
 static NSString *const kSpendingLimitExceededTitle = @"制限超過";
+// The store name is misspelled in the binary; kept verbatim.
 static NSString *const kSpendingLimitExceededMessage =
     @"1ヶ月の課金上限額を超過したため購入できません。月が変わってから再度REFLEC BAET "
     @"Storeにお越しくだ"
@@ -100,7 +76,6 @@ static NSString *const kMusicsNotFoundHeader =
 static NSString *const kErosionMarkHistoryMessage =
     @"Ver.4.4.0 でErosion Markをプレイした履歴が見つかりました。\nスコアを修正しますか？";
 
-// The three button labels of the age/spending-limit selection alert, each formatted "%@ (%@)".
 static NSString *const kAgeBracketUnder16 = @"16歳未満";
 static NSString *const kAgeBracketUnder20 = @"20歳未満";
 static NSString *const kAgeBracket20OrOver = @"20歳以上";
@@ -108,22 +83,15 @@ static NSString *const kSpendingLimit5000 = @"¥5000/月";
 static NSString *const kSpendingLimit20000 = @"¥20000/月";
 static NSString *const kSpendingLimitNone = @"無制限";
 
-// The "%@ (%@)" template used to build the age/spending-limit buttons.
 static NSString *const kLabelWithAmountFormat = @"%@ (%@)";
 
-// The newline separator prepended to each string appended by @c showAlertNotFoundMusics:.
 static NSString *const kMusicsNotFoundSeparator = @"\n";
 
-// The tag identifying an "update data found" alert to the shared delegate.
 static const NSInteger kAlertTagUpdateDataFound = 1;
-// The tag identifying a "latest game data required" alert to the shared delegate.
 static const NSInteger kAlertTagResourceUpdate = 2;
-// The tag identifying a "new version available" alert to the shared delegate.
 static const NSInteger kAlertTagNewVersion = 3;
-// The tag identifying a network-error alert to the shared delegate.
 static const NSInteger kAlertTagNetworkError = 0;
 
-// Resolves a fixed UI string from the main bundle the way the shared string cache does.
 static NSString *RBLocalizedUIString(NSString *key) {
     return [[NSBundle mainBundle] localizedStringForKey:key value:kEmptyLocalizedValue table:nil];
 }
@@ -152,11 +120,8 @@ static NSString *RBLocalizedUIString(NSString *key) {
 
 + (void)strageAlertView:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0x169f2c */
-    // The UIAlertController-era replacement for +strageAlertView above: it builds and presents the
-    // same caution/low-free-space alert with a single dismissing action. The declared argument is
-    // never read (the implementation loads its title, message, and button text from the same three
-    // localized-string globals the older factory uses), so it is vestigial; its type is taken from
-    // the sibling factories in this category rather than confirmed from the method metadata.
+    // The declared argument is never read, and its type is inferred from the sibling factories
+    // rather than confirmed from the method metadata.
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:RBLocalizedUIString(kLocalizedKeyCaution)
                                             message:RBLocalizedUIString(kLocalizedKeyFreeSpaceLow)
@@ -185,8 +150,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
 
 + (UIAlertView *)showRestoreMessageWithDelegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xde64 */
-    // The title is the "Restore purchases" cache entry at 0x1003cfd30, loaded at 0xdea0, and not
-    // the "Install PACKs" entry at 0x1003cfd38 that -showRestoreDownloadWithDelegate: uses.
+    // The title loaded at 0xdea0 is "Restore purchases", not the sibling's "Install PACKs".
     UIAlertView *alert =
         [[UIAlertView alloc] initWithTitle:RBLocalizedUIString(kLocalizedKeyRestorePurchases)
                                    message:RBLocalizedUIString(kLocalizedKeyRestorePacks)
@@ -371,8 +335,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showAddLimepointByApplilink:(int)limePoint:(id<UIAlertViewDelegate>)delegate {
 #pragma clang diagnostic pop
     /** @ghidraAddress 0xf150 */
-    // The format is the lime-point cache entry at 0x1003cfe08, loaded at 0xf188, and not the
-    // "%@" entry at 0x1003cfde8 that -showUnlockedMusicInfoWithDelegate:musicName: uses.
+    // The format loaded at 0xf188 is the lime-point entry, not the "%@" entry a sibling uses.
     NSString *message = [NSString
         stringWithFormat:RBLocalizedUIString(kLocalizedKeyLimePointAddedFormat), limePoint];
     UIAlertView *alert =
@@ -484,9 +447,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showPurchasePack:(NSString *)requirement
                          delegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf8cc */
-    // The format takes two positional arguments and the binary passes the one requirement string
-    // for both: the stp at 0xf930 writes x19 to [sp] and to [sp, #8], and x19 is the retained
-    // first parameter.
+    // The binary passes the one requirement string for both positional arguments (stp at 0xf930).
     NSString *message =
         [NSString stringWithFormat:RBLocalizedUIString(kLocalizedKeySequenceRequirementFormat),
                                    requirement,

@@ -1,14 +1,3 @@
-//
-//  RBCustomInfoPopupView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCustomInfoPopupView). Verified
-//  against the arm64 disassembly: -setupView's and -setItemData:'s iPad idiom- and
-//  theme-dependent soft-float geometry was recovered from the register moves the decompiler folds
-//  into pseudo-variables, and the show/hide/frame-download blocks from their invoke thunks. This is
-//  an Objective-C++ file because it plays the C++ themed sound-effect engine singleton.
-//
-
 #import "RBCustomInfoPopupView.h"
 
 #import "ImageDownloader.h"
@@ -20,25 +9,18 @@
 #import "engineruntime.h"
 #import "soundeffectmanager.h"
 
-// The panel background, and the two button images, all live under the customize asset group.
 static NSString *const kPanelBackgroundImageName = @"04_customize/cus_unlock_bg";
 static NSString *const kYesButtonImageName = @"04_customize/cus_unlock_yes";
 static NSString *const kNoButtonImageName = @"04_customize/cus_unlock_no";
 
-// The item type that carries a downloadable frame overlay (a music item).
 constexpr int kUnlockItemTypeMusic = 7;
 
-// The sound-effect slot played when the popup opens.
 constexpr int kSoundEffectPopupOpen = 3;
 
-// The rounded content view's corner radius.
 constexpr CGFloat kContentCornerRadius = 5.0;
 
-// The fade in/out runs for this many seconds.
 constexpr NSTimeInterval kFadeAnimationDuration = 0.25;
 
-// The item artwork is drawn at half size on the narrow font and full size on the wide font; its
-// origin depends on the current theme.
 constexpr CGFloat kArtworkScaleNarrow = 0.5;
 constexpr CGFloat kArtworkNarrowLimelightX = 34.0;
 constexpr CGFloat kArtworkNarrowLimelightY = 41.0;
@@ -48,9 +30,6 @@ constexpr CGFloat kArtworkWideLimelightY = 82.0;
 constexpr CGFloat kArtworkWideColetteX = 100.0;
 constexpr CGFloat kArtworkWideColetteY = 102.0;
 
-// The cost label, balance label, and yes/no button geometry, chosen by device idiom and theme. Each
-// name follows <role><Variant><Theme><Field>; the buttons take their downloaded image's size for
-// their width and height, so only their origin is a constant.
 constexpr CGFloat kCostNarrowLimelightX = 83.0;
 constexpr CGFloat kCostNarrowLimelightY = 53.0;
 constexpr CGFloat kCostNarrowColetteX = 83.0;
@@ -102,8 +81,8 @@ constexpr CGFloat kNoButtonWideX = 249.0;
     return self;
 }
 
-// The binary keeps no -dealloc; ARC clears the strong subview ivars through the
-// compiler-generated .cxx_destruct (0x19bd00).
+// The binary has no -dealloc; ARC clears the strong subview ivars through .cxx_destruct.
+// @ghidraAddress 0x19bd00
 
 #pragma mark Layout
 
@@ -118,7 +97,6 @@ constexpr CGFloat kNoButtonWideX = 249.0;
                             UIViewAutoresizingFlexibleBottomMargin;
     [self addTarget:self action:@selector(tap:) forControlEvents:UIControlEventTouchUpInside];
 
-    // The centred base panel, sized to the background artwork.
     UIImage *panelImage = [UIImage imageWithName:kPanelBackgroundImageName];
     self.baseView = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, panelImage.size.width, panelImage.size.height)];
@@ -129,7 +107,6 @@ constexpr CGFloat kNoButtonWideX = 249.0;
     self.baseView.backgroundColor = UIColor.clearColor;
     [self addSubview:self.baseView];
 
-    // The background artwork fills the panel and stretches with it.
     UIImageView *backgroundView = [[UIImageView alloc] initWithImage:panelImage];
     backgroundView.frame = self.baseView.bounds;
     backgroundView.autoresizingMask =
@@ -138,43 +115,36 @@ constexpr CGFloat kNoButtonWideX = 249.0;
         UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     [self.baseView addSubview:backgroundView];
 
-    // The rounded, clipped content view fills the panel.
     self.contentView = [[UIView alloc] initWithFrame:self.baseView.bounds];
     self.contentView.layer.cornerRadius = kContentCornerRadius;
     self.contentView.clipsToBounds = YES;
     [self.baseView addSubview:self.contentView];
 
-    // The item artwork and, above it, the music-frame overlay both sit on the base panel.
     self.imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     [self.baseView addSubview:self.imageView];
     self.frameImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     [self.baseView addSubview:self.frameImageView];
 
-    // The cost label goes on the content view (its glyphs are the plain set).
     self.usePointLabel = [[RBNumberLabel alloc] init];
     self.usePointLabel.imageType = RBNumberLabelImageTypeNormal;
     [self.contentView addSubview:self.usePointLabel];
 
-    // The balance label goes on the content view (its glyphs are the decimal set).
     self.pointLabel = [[RBNumberLabel alloc] init];
     self.pointLabel.imageType = RBNumberLabelImageTypeDecimal;
     [self.contentView addSubview:self.pointLabel];
 
-    // The confirm button.
     self.yesButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *yesImage = [UIImage imageWithName:kYesButtonImageName];
     [self.yesButton setImage:yesImage forState:UIControlStateNormal];
     self.yesButton.exclusiveTouch = YES;
     [self.contentView addSubview:self.yesButton];
 
-    // The cancel button.
     self.noButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *noImage = [UIImage imageWithName:kNoButtonImageName];
     [self.noButton setImage:noImage forState:UIControlStateNormal];
     self.noButton.exclusiveTouch = YES;
     [self.contentView addSubview:self.noButton];
 
-    // Lay the labels and buttons out by device idiom and theme.
     if (!isPad) {
         RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
         if (theme == RBUserSettingDataThemeLimelight) {
@@ -232,8 +202,6 @@ constexpr CGFloat kNoButtonWideX = 249.0;
     _itemData = itemData;
     __weak RBCustomInfoPopupView *weakSelf = self;
 
-    // Load the item artwork and size it: half size on the narrow font, full size on the wide one,
-    // with a theme-specific origin.
     UIImage *artwork =
         [UIImage imageWithName:BuildCustomizeAssetPathString(itemData.type, itemData.identity)];
     [self.imageView setImage:artwork];
@@ -267,9 +235,6 @@ constexpr CGFloat kNoButtonWideX = 249.0;
 
     self.usePointLabel.number = (float)itemData.point;
 
-    // A music item additionally downloads its frame overlay; once fetched, the success block
-    // dispatches the frame application to the main queue. The frame and artwork are sized from the
-    // original artwork image, and the downloaded image becomes the final artwork.
     if (itemData.type == kUnlockItemTypeMusic) {
         [weakSelf.imageView setImage:artwork];
         weakSelf.imageDownloader = [[ImageDownloader alloc] initWithGetURL:itemData.path
@@ -343,7 +308,6 @@ constexpr CGFloat kNoButtonWideX = 249.0;
             }
             failure:^(ImageDownloader *downloader) {
               /** @ghidraAddress 0x19de44 */
-              // Cancel the in-flight frame-image download.
               [weakSelf.imageDownloader cancelDownload];
             }];
     }

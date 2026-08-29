@@ -1,36 +1,20 @@
-//
-//  RBRewardListView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBRewardListView). Verified
-//  against the arm64 disassembly: -setupView's soft-float frame and corner-radius operands, the
-//  activity indicator's transform.scale key-value coding, and the fade durations were recovered
-//  from the register moves the decompiler folds into pseudo-variables. This is a plain Objective-C
-//  file because the class reaches the RewardNetwork advert facade through ordinary class-method
-//  message sends, with no C++.
-//
-
 #import "RBRewardListView.h"
 
 #import "RBCustomView.h"
 #import "RewardNetwork.h"
 #import "UIAlertView+RB.h"
 
-// The web target view's rounded-corner radius and the activity indicator's magnification.
 static const CGFloat kWebTargetCornerRadius = 7.0;
 static const CGFloat kIndicatorScale = 1.5;
 
-// The close button sits at the top left, sized to hold its localised title at eighteen points.
 static const CGFloat kBackButtonX = 12.0;
 static const CGFloat kBackButtonY = 8.0;
 static const CGFloat kBackButtonWidth = 60.0;
 static const CGFloat kBackButtonHeight = 30.0;
 static const CGFloat kBackButtonFontSize = 18.0;
 
-// The web target view's fade-in runs over a quarter of a second.
 static const NSTimeInterval kWebTargetFadeDuration = 0.25;
 
-// The ad location the reward advert screen is opened at.
 static NSString *const kRewardAdLocation = @"ADL_TOP";
 
 @implementation RBRewardListView
@@ -48,8 +32,6 @@ static NSString *const kRewardAdLocation = @"ADL_TOP";
 #pragma mark Layout
 
 - (void)setupView {
-    // The rounded, clipped web target view hosts the advert screen. It starts fully transparent and
-    // fades in once the advert list has appeared.
     self.webTargetView = [[UIView alloc] initWithFrame:self.frame];
     self.webTargetView.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
@@ -61,7 +43,6 @@ static NSString *const kRewardAdLocation = @"ADL_TOP";
     self.webTargetView.alpha = 0.0;
     [self addSubview:self.webTargetView];
 
-    // The large spinner is centred on the view and magnified while the list loads.
     self.indicatorView = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [self.indicatorView.layer setValue:@(kIndicatorScale) forKeyPath:@"transform.scale"];
@@ -72,7 +53,6 @@ static NSString *const kRewardAdLocation = @"ADL_TOP";
     self.backgroundColor = UIColor.clearColor;
     self.webTargetAnimating = NO;
 
-    // The close button dismisses the advert list. It is hidden and disabled until the list appears.
     self.backButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.backButton.frame =
         CGRectMake(kBackButtonX, kBackButtonY, kBackButtonWidth, kBackButtonHeight);

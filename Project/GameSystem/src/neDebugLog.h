@@ -10,29 +10,6 @@
  * @c idevicesyslog piped through @c grep.
  */
 
-//
-//  neDebugLog.h
-//  REFLEC BEAT plus
-//
-//  Optional runtime diagnostics. Emits os_log lines tagged "RBPDBG" so they can be captured on
-//  device with:  idevicesyslog | grep RBPDBG
-//
-//  This code is NOT part of the original binary. It is compiled in only when the build defines
-//  RBPDBG (see the RBPDBG CMake option, which is enable-able in any build configuration and is
-//  turned on in CI). With RBPDBG off the helpers below collapse to no-ops, so every translation
-//  unit that only logs matches the reconstructed original exactly -- WITHOUT any `#if RBPDBG` at
-//  the call site:
-//
-//    * neDebugLog(...) becomes an empty inline, so a bare log call vanishes.
-//    * NE_DBG_FIRST(n) becomes `(0)`, so an `if (NE_DBG_FIRST(n)) { ... }` block turns into
-//      `if (0) { ... }` and is dead-code-eliminated; debug-only locals declared inside the
-//      block stay "used" within it, so -Werror stays quiet. Put all diagnostic work inside that
-//      block.
-//    * NE_DBG(...) wraps debug statements that have real side effects we must NOT run in the
-//      faithful build (for example glGetError(), which clears GL error state). It expands to the
-//      statements when RBPDBG is on and to nothing otherwise.
-//
-
 #pragma once
 
 /**

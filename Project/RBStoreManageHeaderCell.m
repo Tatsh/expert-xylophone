@@ -3,47 +3,33 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The header height for the pad (wide) and phone (narrow) iPad idioms.
 static const CGFloat kHeaderHeightPad = 30.0;
 static const CGFloat kHeaderHeightPhone = 25.0;
 
-// The trailing inset reserved beside the expand/collapse indicator on the phone layout; the pad
-// layout uses the wide slider-row height metric instead.
 static const CGFloat kTrailingInsetPhone = 25.0;
 
-// The leading inset for the title label.
 static const CGFloat kTitleLeadingInset = 15.0;
 
-// The x origin the title label's own frame starts at before sizing.
 static const CGFloat kTitleInitialOriginX = 30.0;
 
-// The label font point size.
 static const CGFloat kLabelFontSize = 14.0;
 
-// The background and label opacity.
 static const CGFloat kBackgroundAlpha = 1.0;
 
-// The full opacity used by every reconstructed colour.
 static const CGFloat kColorAlpha = 1.0;
 
-// The alternating section-background white values, indexed by section parity.
 static const CGFloat kBackgroundWhiteEven = 1.0;
 static const CGFloat kBackgroundWhiteOdd = 0.97f;
 
-// The label text colour components.
 static const CGFloat kLabelColorRed = 3.0f / 255.0f;
 static const CGFloat kLabelColorGreen = 122.0f / 255.0f;
 static const CGFloat kLabelColorBlue = 1.0;
 
-// The factor that centres a label vertically within the header.
 static const CGFloat kVerticalCenterFactor = 0.5;
 
-// The number of distinct alternating background colours.
 static const NSInteger kBackgroundColorCount = 2;
 
-// The placeholder glyphs the labels are seeded with so that -sizeToFit measures a representative
-// size; the controller replaces the text afterwards. The indicator is measured with a downward
-// triangle and the title with an ideographic space.
+// Seeded so that -sizeToFit measures a representative size; the controller replaces the text.
 static NSString *const kIndicatorSizingGlyph = @"▼";
 static NSString *const kTitleSizingGlyph = @"　";
 

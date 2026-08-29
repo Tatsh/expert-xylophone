@@ -1,45 +1,25 @@
-//
-//  RBPlaylistManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBPlaylistManager). Verified
-//  against the arm64 disassembly (the +sharedInstance dispatch_once block, the -initWithFile:
-//  fast-enumeration filter, and the -addPlaylistWithName: identifier derivation are partly obscured
-//  by the decompiler).
-//
-
 #import "RBPlaylistManager.h"
 
-// Collaborator category reached from these methods; its header is committed in this tree.
 #import "NSFileManager+RB.h"
 #import "enginecrypto.h"
 
-// The bare filename of the persisted playlist archive under the documents directory.
 static NSString *const kPlaylistArchiveFilename = @"playlist";
 
-// The keys of a playlist dictionary within the archive.
 static NSString *const kPlaylistKeyIdentifier = @"PLID";
 static NSString *const kPlaylistKeyName = @"NAME";
 static NSString *const kPlaylistKeyList = @"LIST";
 
-// The date format used to stamp a new playlist's identifier seed.
 static NSString *const kPlaylistIdentifierDateFormat = @"yyyy/MM/dd HH:mm:ss z";
 
-// The format that combines a new playlist's name and creation timestamp into the string whose MD5
-// hexadecimal digest becomes the playlist identifier.
 static NSString *const kPlaylistIdentifierSeedFormat = @"%@(%@)";
 
-// The initial capacity reserved for the in-memory playlist list and each playlist's tune list.
 static const NSUInteger kPlaylistListCapacity = 16;
 static const NSUInteger kPlaylistTuneListCapacity = 8;
 
-// The number of keys stored in a freshly created playlist dictionary and in a loaded one.
 static const NSUInteger kNewPlaylistKeyCount = 3;
 static const NSUInteger kLoadedPlaylistKeyCount = 2;
 
-// The sentinel tune identifier that means "no tune". The tune-list mutators reject it before
-// touching a playlist's LIST. It is not the tutorial song, which the binary identifies by its
-// music name (the string "ZX0"), not by a numeric identifier.
+// A sentinel meaning "no tune"; not the tutorial song, which the binary matches by music name.
 static const NSUInteger kInvalidMusicID = 0;
 
 @implementation RBPlaylistManager

@@ -8,7 +8,6 @@
 #import "RecommendDebug.h"
 #import "RewardCore.h"
 
-// The Applilink SDK version this debug build reports.
 static NSString *const kApplilinkSdkVersionBase = @"2.2.2";
 static NSString *const kApplilinkSdkVersionBuild = @"5";
 

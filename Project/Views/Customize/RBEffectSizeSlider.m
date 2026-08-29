@@ -1,14 +1,3 @@
-//
-//  RBEffectSizeSlider.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBEffectSizeSlider). The
-//  initialiser's soft-float sprite, grip, track, and digit-readout geometry, and the theme- and
-//  iPad idiom dependent layout, were recovered from the arm64 disassembly (the decompiler folds
-//  the CGRect components into pseudo-variables). This is the explosion (bounds-effect-size) slider
-//  created by RBCustomSelectCollectionView.
-//
-
 #import "RBEffectSizeSlider.h"
 
 #include <assert.h>
@@ -18,12 +7,9 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The track sprite (base view) and grip sprite texture names.
 static NSString *const kEffectSizeSliderTrackImageName = @"04_customize/cus_vol_4";
 static NSString *const kEffectSizeSliderGripImageName = @"02_music_detail/det_col_br_5";
 
-// The readout glyphs are cus_nms_0 ... cus_nms_9 followed by the decimal point. A value place
-// indexes this array directly, and the point column uses the last entry.
 static NSString *const kEffectSizeSliderDigitImageNames[] = {@"04_customize/cus_nms_0",
                                                              @"04_customize/cus_nms_1",
                                                              @"04_customize/cus_nms_2",
@@ -36,34 +22,22 @@ static NSString *const kEffectSizeSliderDigitImageNames[] = {@"04_customize/cus_
                                                              @"04_customize/cus_nms_9",
                                                              @"04_customize/cus_nms_dot"};
 
-// The index of the decimal-point glyph within numImages (also the count of digit glyphs, base
-// ten).
 static const NSUInteger kEffectSizeSliderPointImageIndex = 10;
 
-// The value range: a bounds-effect size from 0 to 3 inclusive, selected in half-unit steps.
 static const int kEffectSizeSliderBarMin = 0;
 static const int kEffectSizeSliderBarMax = 3;
 
-// The value increment per grip step: half a unit.
 static const float kEffectSizeSliderStepValue = 0.5f;
 
-// Every child sprite (track, grip, and the control itself) is nudged down by this many points from
-// its natural origin.
 static const CGFloat kEffectSizeSliderVerticalOffset = 6.0;
 
-// The track rectangle (the grip's travel) by device idiom: origin x/y, then width. Its height is
-// taken from the track sprite's own frame. Narrow mirrors the default font, wide the large font.
 static const CGFloat kEffectSizeSliderBarOriginXNarrow = 19.0;
 static const CGFloat kEffectSizeSliderBarOriginYNarrow = 21.0;
 static const CGFloat kEffectSizeSliderBarWidthNarrow = 210.0;
 static const CGFloat kEffectSizeSliderBarOriginXWide = 38.0;
 static const CGFloat kEffectSizeSliderBarOriginYWide = 33.0;
-static const CGFloat kEffectSizeSliderBarWidthWide = 318.0; // 0x2eeeb0
+static const CGFloat kEffectSizeSliderBarWidthWide = 318.0; // @ghidraAddress 0x2eeeb0
 
-// The digit readout's origin varies by the active theme and iPad idiom. The binary groups the
-// themes by their raw stored value: values below the colette threshold (the classic and limelight
-// themes) share one readout origin, the colette theme its own, and any further theme leaves the
-// readout at the zero origin.
 static const CGFloat kEffectSizeSliderReadoutOriginXLowThemeNarrow = 152.0;
 static const CGFloat kEffectSizeSliderReadoutOriginXLowThemeWide = 225.0;
 static const CGFloat kEffectSizeSliderReadoutOriginYLowThemeNarrow = 10.0;
@@ -73,23 +47,14 @@ static const CGFloat kEffectSizeSliderReadoutOriginXColetteWide = 246.0;
 static const CGFloat kEffectSizeSliderReadoutOriginYColetteNarrow = 10.0;
 static const CGFloat kEffectSizeSliderReadoutOriginYColetteWide = 14.5;
 
-// The classic and colette themes widen the gap before the fractional digit by one point in the
-// large font; the limelight theme does not.
 static const CGFloat kEffectSizeSliderWideFractionGap = 1.0;
 
-// The two grip-travel divisions per unit value (the value range is walked in half-unit steps, so
-// the pixels-per-step denominator is the unit span doubled).
 static const int kEffectSizeSliderStepsPerUnit = 2;
 
-// The decimal base used to peel digit places off the value.
 static const int kEffectSizeSliderDecimalBase = 10;
 
-// The number of readout image views held before growth (whole digit, decimal point, and fractional
-// digit).
 static const NSUInteger kEffectSizeSliderReadoutCapacity = 3;
 
-// The stored theme value at and above which the colette readout layout applies; below it the
-// low-theme (classic and limelight) layout applies.
 static const int kEffectSizeSliderColetteThemaThreshold = 2;
 
 @implementation RBEffectSizeSlider
@@ -139,7 +104,6 @@ static const int kEffectSizeSliderColetteThemaThreshold = 2;
                                   trackHeight);
     }
 
-    // The origin comes from self, but the size comes from the track sprite just laid out above.
     CGRect selfFrame = self.frame;
     CGRect trackBounds = self.baseView.frame;
     self.frame = CGRectMake(selfFrame.origin.x,
@@ -155,8 +119,6 @@ static const int kEffectSizeSliderColetteThemaThreshold = 2;
                         (CGFloat)((self.barMax - self.barMin) * kEffectSizeSliderStepsPerUnit));
 
     self.numImages = [[NSMutableArray alloc] initWithCapacity:kEffectSizeSliderPointImageIndex + 1];
-    // The point glyph is appended in the last iteration; the digit glyphs before it. The first
-    // digit glyph and the point glyph are also measured, giving the readout its cell sizes.
     CGSize digitGlyphSize = CGSizeZero;
     CGSize pointGlyphSize = CGSizeZero;
     for (NSUInteger i = 0; i <= kEffectSizeSliderPointImageIndex; ++i) {
@@ -191,10 +153,6 @@ static const int kEffectSizeSliderColetteThemaThreshold = 2;
         }
     }
 
-    // The whole-digit column sits at the readout origin, the decimal-point column immediately
-    // after it, and the fractional-digit column after that. The classic (0) and colette (2) themes
-    // add a one-point gap before the fractional digit in the large font; the limelight (1) theme
-    // does not, so its column abuts the point directly.
     CGFloat pointColumnX = readoutOrigin.x + digitGlyphSize.width;
     CGFloat fractionColumnX = pointColumnX + pointGlyphSize.width;
     switch ([RBUserSettingData sharedInstance].thema) {
@@ -265,8 +223,6 @@ static const int kEffectSizeSliderColetteThemaThreshold = 2;
     } else if (point.x > self.barRect.origin.x + self.barRect.size.width) {
         newValue = (float)self.barMax;
     } else {
-        // Snap the touch offset to a whole half-unit: convert to doubled steps, round to nearest
-        // with ties away from zero, halve back to a step count, then scale by the per-step value.
         float touchOffset = (float)(point.x - self.barRect.origin.x);
         int doubledSteps = (int)roundf((touchOffset + touchOffset) / self.step);
         newValue = self.stepValue * (float)(doubledSteps / 2);

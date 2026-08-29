@@ -6,26 +6,17 @@
 #import "UIImage+RB.h"
 #import "engineglobals.h"
 
-// Shared layout metrics reached by their Ghidra address as the other reconstructed store cells do;
-// they are not yet in the engine bridge header. Eighty is the tune-row height and the label column
-// left edge, sixty is the levels-label top, and eighty-two is the levels-label left edge.
-
-// Store asset names used by the cell.
 static NSString *const kStoreDefaultJacketImageName = @"09_store/store_jacket_64";
 static NSString *const kStoreItunesImageName = @"09_store/store_itunes";
 static NSString *const kStorePlayImageName = @"09_store/store_play";
 static NSString *const kStoreSequenceImageName = @"09_store/store_sp";
 
-// The jacket is a fixed 64-point square inset 8 points from the top-left, with a rasterised drop
-// shadow.
 static const CGFloat kJacketInset = 8.0;
 static const CGFloat kJacketSize = 64.0;
 static const CGFloat kJacketShadowOffset = 2.0;
 static const CGFloat kJacketShadowOpacity = 0.6;
 static const CGFloat kJacketShadowRadius = 2.0;
 
-// The name and artist labels share an 80-point left edge and a width 90 points shy of the content
-// width; the levels label is a fixed 110-point column 82 points in.
 static const CGFloat kTextColumnWidthInset = 90.0;
 static const CGFloat kNameLabelTop = 8.0;
 static const CGFloat kNameLabelHeight = 18.0;
@@ -37,14 +28,11 @@ static const CGFloat kLevelsLabelWidth = 110.0;
 static const CGFloat kLevelsLabelHeight = 14.0;
 static const CGFloat kLevelsLabelFontSize = 12.0;
 
-// The iTunes link button is pinned 10 points in from the bottom-right corner of the content view.
 static const CGFloat kLinkButtonMargin = -10.0;
 
-// The sample overlay is drawn 0.4 white and centred at half its own size.
 static const CGFloat kSampleViewWhite = 0.4;
 static const CGFloat kCenterScale = 0.5;
 
-// The autoresizing masks the binary applies to each subview.
 static const UIViewAutoresizing kBackgroundAutoresizing =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 static const UIViewAutoresizing kLabelAutoresizing = UIViewAutoresizingFlexibleWidth;
@@ -52,10 +40,8 @@ static const UIViewAutoresizing kLinkButtonAutoresizing =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
 static const UIViewAutoresizing kIconSpAutoresizing = UIViewAutoresizingFlexibleRightMargin;
 
-// The confirm-button index of the extend-note offer alert.
 static const NSInteger kAlertConfirmButtonIndex = 1;
 
-// The unset extend-note product identifier is any non-positive value.
 static const int kNoExtendNotePid = 0;
 
 @implementation StoreDetailMusicCell

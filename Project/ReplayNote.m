@@ -1,14 +1,5 @@
-//
-//  ReplayNote.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ReplayNote). Verified against the
-//  arm64 disassembly (the coder msgSends are variadic and dropped by the decompiler).
-//
-
 #import "ReplayNote.h"
 
-// Archive keys for each field; each matches its property name.
 static NSString *const kIndexCoderKey = @"index";
 static NSString *const kTypeCoderKey = @"type";
 static NSString *const kJudgeCoderKey = @"judge";
@@ -39,7 +30,6 @@ static NSString *const kSlideCoderKey = @"slide";
     [aCoder encodeObject:self.judge forKey:kJudgeCoderKey];
     [aCoder encodeObject:self.jr forKey:kJrCoderKey];
     [aCoder encodeObject:self.longrate forKey:kLongrateCoderKey];
-    // The slide sub-result is only archived when present.
     if (self.slide) {
         [aCoder encodeObject:self.slide forKey:kSlideCoderKey];
     }

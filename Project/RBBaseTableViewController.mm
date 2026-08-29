@@ -1,18 +1,5 @@
-//
-//  RBBaseTableViewController.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBBaseTableViewController).
-//  Verified against the arm64 disassembly: viewDidLoad chains to super then whitens the table
-//  background, the status-bar override returns a constant, and the rotation overrides gate on the
-//  region iPad idiom and the engine's "background music playing" flag.
-//
-
 #import "RBBaseTableViewController.h"
 
-// GameSystem::GetGameSystem() -> GameSystem* (with the fBgmPlaying playback flag reported by
-// GetBgmPlaying()) and IsPad(), which reports whether the region uses the wide (variant) font
-// layout that also selects the constrained-rotation behaviour.
 #import "deviceenvironment.h"
 #import "gamesystem.h"
 

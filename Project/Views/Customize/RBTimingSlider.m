@@ -1,14 +1,3 @@
-//
-//  RBTimingSlider.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBTimingSlider). The
-//  initialiser's soft-float sprite, grip, track, and digit-readout geometry, and the theme- and
-//  iPad idiom dependent layout, were recovered from the arm64 disassembly (the decompiler folds
-//  the CGRect components into pseudo-variables). This is the delay-frame slider created by
-//  RBCustomSelectCollectionView.
-//
-
 #import "RBTimingSlider.h"
 
 #import "RBUserSettingData.h"
@@ -16,12 +5,9 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The track sprite (base view) and grip sprite texture names.
 static NSString *const kTimingSliderTrackImageName = @"04_customize/cus_vol_3";
 static NSString *const kTimingSliderGripImageName = @"02_music_detail/det_col_br_5";
 
-// The digit glyphs are cus_nms_0 ... cus_nms_9 followed by the minus sign; a value place indexes
-// this array directly, and the sign slot uses the last entry.
 static NSString *const kTimingSliderDigitImageNames[] = {@"04_customize/cus_nms_0",
                                                          @"04_customize/cus_nms_1",
                                                          @"04_customize/cus_nms_2",
@@ -34,19 +20,13 @@ static NSString *const kTimingSliderDigitImageNames[] = {@"04_customize/cus_nms_
                                                          @"04_customize/cus_nms_9",
                                                          @"04_customize/cus_nms_minus"};
 
-// The index of the minus-sign glyph within numImages (also the digit-count of glyphs, base ten).
 static const NSUInteger kTimingSliderMinusImageIndex = 10;
 
-// The value range: a delay-frame offset from -10 to 10 inclusive.
 static const int kTimingSliderBarMin = -10;
 static const int kTimingSliderBarMax = 10;
 
-// Every child sprite (track, grip, and the control itself) is nudged down by this many points from
-// its natural origin.
 static const CGFloat kTimingSliderVerticalOffset = 6.0;
 
-// The track rectangle (the grip's travel) by device idiom: origin x/y, then width. Its height is
-// taken from the track sprite's own frame. Narrow mirrors the default font, wide the large font.
 static const CGFloat kTimingSliderBarOriginXNarrow = 19.0;
 static const CGFloat kTimingSliderBarOriginYNarrow = 21.0;
 static const CGFloat kTimingSliderBarWidthNarrow = 210.0;
@@ -54,10 +34,8 @@ static const CGFloat kTimingSliderBarOriginXWide = 40.0;
 static const CGFloat kTimingSliderBarOriginYWide = 33.0;
 static const CGFloat kTimingSliderBarWidthWide = 315.0;
 
-// The digit readout's origin and glyph metrics vary by the active theme and iPad idiom. The
-// binary groups the themes by their raw stored value: values below the colette threshold (the
-// classic and limelight themes) share one readout layout, the colette theme its own, and any
-// further theme leaves the readout at the zero origin. The suffixes below name those two groups.
+// "LowTheme" is the classic/limelight group, which shares one readout layout; a theme above
+// colette leaves the readout at the zero origin.
 static const CGFloat kTimingSliderReadoutOriginXLowThemeNarrow = 140.0; // 0x1002ec6c0
 static const CGFloat kTimingSliderReadoutOriginXLowThemeWide = 212.0;   // 0x100301850
 static const CGFloat kTimingSliderReadoutOriginYLowThemeNarrow = 10.0;
@@ -67,26 +45,19 @@ static const CGFloat kTimingSliderReadoutOriginXColetteWide = 220.0;   // 0x1003
 static const CGFloat kTimingSliderReadoutOriginYColetteNarrow = 10.0;
 static const CGFloat kTimingSliderReadoutOriginYColetteWide = 14.0;
 
-// The colette theme nudges the sign glyph down by half a point in the large font.
 static const CGFloat kTimingSliderColetteSignYAdjust = 0.5;
 
-// Per-digit horizontal advance and its +1 point inter-glyph gap.
 static const CGFloat kTimingSliderDigitGap = 1.0;
 
-// The number of digit-image views held before growth.
 static const NSUInteger kTimingSliderReadoutCapacity = 3;
 
-// The decimal base used to peel digit places off the value.
 static const int kTimingSliderDecimalBase = 10;
 
-// The stored theme value at and above which the colette readout layout applies; below it the
-// low-theme (classic and limelight) layout applies.
 enum {
     kTimingSliderColetteThemaThreshold = 2,
     kTimingSliderColetteThema = 2,
 };
 
-// The CGRect component order used when unpacking a frame.
 enum {
     kRectOriginX = 0,
     kRectOriginY = 1,
@@ -153,8 +124,6 @@ enum {
     self.barMax = kTimingSliderBarMax;
     self.step = (float)(self.barRect.size.width / (CGFloat)(self.barMax - self.barMin));
 
-    // The readout's cell metrics are measured from the glyph artwork rather than read from the
-    // pool: the binary keeps the zero digit's size in d10/d11 and the minus sign's in d8/d9.
     CGSize digitGlyphSize = CGSizeZero;
     CGSize signGlyphSize = CGSizeZero;
     self.numImages = [[NSMutableArray alloc] initWithCapacity:kTimingSliderMinusImageIndex + 1];
@@ -192,18 +161,14 @@ enum {
         }
     }
 
-    // The readout holds one view per digit place plus a trailing sign column, so digit + 1 views
-    // in all. They are appended most-significant-position first: numImageViews[i] is drawn at
-    // column (digit - 1 - i), so numImageViews[0] is the rightmost (least significant) place and
-    // the sign column is appended last at numImageViews[digit]. The final iteration builds the
-    // sign column, the earlier ones the digit places.
+    // numImageViews[i] is drawn at column (digit - 1 - i), so index 0 is the least significant
+    // place and the sign column lands last at index digit.
     CGFloat readoutOriginXWithGap = signGlyphSize.width + kTimingSliderDigitGap + readoutOriginX;
     for (int iteration = -1; iteration < digit; ++iteration) {
         int column = digit - 2 - iteration;
         UIImageView *glyph = [[UIImageView alloc] init];
         if (iteration == digit - 1) {
-            // The sign column; only the low-theme (classic/limelight) group and the colette theme
-            // position it, the latter with a half-point vertical nudge in the large font.
+            // Only the classic/limelight group and colette position the sign column at all.
             RBUserSettingDataTheme signThema = [RBUserSettingData sharedInstance].thema;
             if (signThema < kTimingSliderColetteThemaThreshold) {
                 glyph.frame = CGRectMake(

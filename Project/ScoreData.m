@@ -1,19 +1,7 @@
-//
-//  ScoreData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ScoreData). Verified against the
-//  arm64 disassembly (the Core Data fetch-predicate format strings and the tamper-hash buffer
-//  layout are variadic or scrambled and are dropped or garbled by the decompiler).
-//
-
 #import "ScoreData.h"
 
 #import <CommonCrypto/CommonDigest.h>
 
-// Collaborator classes reached from the class-level helpers. Their headers are not yet
-// reconstructed in this tree (the same speculative imports AppDelegate.mm already uses); they
-// resolve once those classes land.
 #import "RBCoreDataManager.h"
 #import "RBMusicManager.h"
 #import "RBScoreHash.h"
@@ -21,50 +9,34 @@
 #import "enginecrypto.h"
 #import "engineruntime.h"
 
-// The Core Data entity name backing this class.
 static NSString *const kScoreDataEntityName = @"ScoreData";
 
-// Fetch-predicate format strings.
 static NSString *const kPredicateTuneIDEquals = @"tuneID == %d";
-// The binary holds two separate strings for this predicate, differing only in the case of the
-// keyword, and uses one in each of the two fetches below. NSPredicate treats them identically, so
-// the split carries no behaviour; it is kept because collapsing them loses a literal the binary
-// really has.
+// The binary holds both spellings of this predicate and uses one in each fetch below.
 static NSString *const kPredicateTuneIDIn = @"tuneID in %@";
 static NSString *const kPredicateTuneIDInUppercase = @"tuneID IN %@";
 static NSString *const kPredicateRecentInRange =
     @"lastPlayDate > %@ AND 100000000 < tuneID AND tuneID < 900000000";
 
-// The default clear rank stored for a reset chart.
 static const int kResetClearRank = -1;
 
-// The default score stored for a reset chart, also used as the low clamp in @c checkOverScore.
 static const int kResetScore = -1;
 
-// Score bounds enforced by @c checkOverScore.
 static const int kScoreMinimum = -1;
 static const int kScoreMaximum = 9999;
 
-// The lowest score that contributes to @c totalScore: a score is counted only when it lies in the
-// inclusive 1...9999 range.
 static const int kScoreScoringMinimum = 1;
 
-// The lowest tune identifier @c totalScore treats as a real chart; identifiers below it are
-// skipped.
 static const int kMinimumValidTuneID = 1;
 
-// Achievement-rate bounds enforced by @c checkOverScore.
 static const float kAchievementRateMinimum = 0.0f;
 static const float kAchievementRateMaximum = 1.0f;
 
-// Multiplier applied to each achievement rate before it is folded into the tamper hash.
 // @ghidraAddress 0x2f8540 (g_flAchievementRateHashScale)
 static const float kAchievementRateHashScale = 1000.0f;
 
-// The number of tunes processed per fetch batch in @c totalScore.
 static const NSUInteger kTotalScoreBatchSize = 15;
 
-// Frame-bonus thresholds used by @c getFrameBonusType.
 static const int kFrameBonusClearRankThreshold = 3;
 static const int kFrameBonusPerfectClearRank = 5;
 static const int kFrameBonusMaxTier = 2;
@@ -275,9 +247,7 @@ static const int kFrameBonusMaxTier = 2;
             if (![ScoreData checkScore:record]) {
                 continue;
             }
-            // A score contributes only when it lies in the valid 1...9999 range; the binary tests
-            // (score - kScoreScoringMinimum) as an unsigned value so that non-positive scores fall
-            // out as zero.
+            // The binary tests the offset score unsigned, so non-positive scores fall out as zero.
             int scoreBasic = record.scoBas.intValue;
             long long clampedBasic =
                 ((unsigned int)(scoreBasic - kScoreScoringMinimum) < (unsigned int)kScoreMaximum) ?
@@ -328,9 +298,6 @@ static const int kFrameBonusMaxTier = 2;
     int clearRankHard = GetClearRank(self.arHar.floatValue);
     int clearRankMedium = GetClearRank(self.arMed.floatValue);
     int clearRankBasic = GetClearRank(self.arBas.floatValue);
-    // When every difficulty clears above the bonus threshold the tier starts at the top of the
-    // full-combo scale (2 with all full combos, otherwise 1); otherwise it collapses to the
-    // full-combo flag alone (1 or 0).
     int tier = allFullCombo ? kFrameBonusMaxTier : ScoreDataFrameBonusTypeBronze;
     if (clearRankBasic <= kFrameBonusClearRankThreshold ||
         clearRankMedium <= kFrameBonusClearRankThreshold ||
@@ -352,8 +319,6 @@ static const int kFrameBonusMaxTier = 2;
 - (BOOL)checkOverScore {
     /** @ghidraAddress 0x5e150 */
     BOOL changed = NO;
-    // Each rate is clamped into range rather than reset: an over-range value becomes the maximum,
-    // not zero, which is the same shape as the score clamps below.
     if (self.arBas.floatValue < kAchievementRateMinimum) {
         self.arBas = [NSNumber numberWithFloat:kAchievementRateMinimum];
         changed = YES;

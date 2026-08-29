@@ -1,23 +1,10 @@
-//
-//  RBPastelManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBPastelManager). Verified against
-//  the arm64 disassembly of -tryShow: (the sequential gate-and-clear loop is partly obscured by the
-//  decompiler).
-//
-
 #import "RBPastelManager.h"
 
 #include <string.h>
 
-// The number of stages tracked by the show-list. The pastel tutorial advances through these stages
-// in order, and -tryShow: gates each stage on all earlier stages having been shown.
 static const NSUInteger kPastelShowStageCount = 4;
 
 @implementation RBPastelManager {
-    // The per-stage shown flags. A stage is granted by -tryShow: only once every earlier stage is
-    // set; granting a stage clears the trailing stages so the sequence always advances in order.
     BOOL currentShowList[kPastelShowStageCount];
 }
 
@@ -47,15 +34,11 @@ static const NSUInteger kPastelShowStageCount = 4;
 
 - (void)allReset {
     /** @ghidraAddress 0x20afc */
-    // The binary clears the whole four-byte flag array with one 32-bit store of wzr, not just the
-    // leading stage.
     memset(currentShowList, 0, sizeof(currentShowList));
 }
 
 /** @ghidraAddress 0x20b0c */
 + (BOOL)tryShow:(unsigned int)tryShow {
-    // A class method: the binary reaches the show list through the shared singleton loaded from
-    // its global slot, added to the ivar offset, rather than through any receiver.
     RBPastelManager *manager = [RBPastelManager getInstance];
     BOOL *currentShowList = manager->currentShowList;
     unsigned int firstToClear;

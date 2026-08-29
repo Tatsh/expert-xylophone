@@ -1,10 +1,3 @@
-//
-//  number_effect_layer.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458.
-//
-
 #include "number_effect_layer.h"
 
 #import "RBUserSettingData.h"
@@ -21,47 +14,36 @@
 #include "touchmanager.h"
 
 namespace {
-// The gm_parts2 atlas the number glyphs draw from.
 constexpr const char *kAtlasTextureName = "00_texture/gm_parts2";
 
-// The device-dependent transform block the instancer builder seeds into @c m_aTransform. The phone
-// (non-pad) uses a mirror offset and the pad width; the pad uses its own shipped offsets
-// (@ghidraAddress 0x30fb00 = -103.0, 0x30fb08 = 206.0, 0x30fb0c = 96.0).
 constexpr float kMirrorOffset = -6.0f;    // 0xc0c00000
 constexpr float kTransformPadX = -103.0f; // @ghidraAddress 0x30fb00
 constexpr float kTransformPadZ = 206.0f;  // @ghidraAddress 0x30fb08
 constexpr float kTransformPhoneZ = 96.0f; // @ghidraAddress 0x30fb0c
 constexpr float kTransformPadW = 7.0f;    // 0x40e00000
 
-// The four instancer capacities (@ghidraAddress 0x30fb70): three of one, one of two.
+// @ghidraAddress 0x30fb70
 constexpr int kBatchCapacity[] = {1, 1, 1, 2};
 
-// The viewport width past which the wide-screen layout is used (@ghidraAddress 0x2f8558).
+// @ghidraAddress 0x2f8558
 constexpr float kWideScreenSplit = 320.0f;
 
-// The number of anchored elements and wide-layout variant rows.
 constexpr int kAnchorElementCount = 4;
 constexpr int kWideVariantCount = 2;
 
-// The viewport-relative gravity applied to a base offset (from the anchor gravity tables). The
-// offset moves the anchor to the named viewport edge or centre; the top-left case adds nothing (the
-// base offset is already absolute).
 enum AnchorGravity {
-    kGravityBottomCentre = 0, // Offset by half the viewport width and the full height.
-    kGravityTopCentre = 1,    // Offset by half the viewport width.
-    kGravityTopLeft = 2,      // No offset (the base offset is absolute).
-    kGravityTopRight = 3,     // Offset by the full viewport width.
-    kGravityLeftCentre = 4,   // Offset by half the viewport height.
+    kGravityBottomCentre = 0,
+    kGravityTopCentre = 1,
+    kGravityTopLeft = 2,
+    kGravityTopRight = 3,
+    kGravityLeftCentre = 4,
 };
 
-// The portrait-layout base offsets and per-element gravities (only the first two elements are set;
-// the remainder are zero).
 constexpr S_VECTOR2 kPortraitAnchor[kAnchorElementCount] = {
     {0.0f, -69.0f}, {132.0f, 63.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}};
 constexpr int kPortraitGravity[kAnchorElementCount] = {
     kGravityBottomCentre, kGravityTopLeft, kGravityTopLeft, kGravityTopCentre};
 
-// The landscape-layout base offsets and per-element gravities, per wide-layout variant row.
 constexpr S_VECTOR2 kLandscapeAnchor[kWideVariantCount][kAnchorElementCount] = {
     {{29.0f, -13.0f}, {-128.0f, -13.0f}, {0.0f, 31.0f}, {0.0f, 0.0f}},
     {{31.0f, -12.0f}, {-126.0f, -12.0f}, {73.0f, 12.0f}, {-73.0f, 12.0f}},
@@ -72,11 +54,9 @@ constexpr int kLandscapeGravity[kWideVariantCount][kAnchorElementCount] = {
 };
 } // namespace
 
-// The fully-opaque alpha the fade-in eases toward (a 0-to-255 alpha channel).
 namespace {
 constexpr float kOpaqueAlpha = 255.0f;
 
-// One number-glyph element descriptor: its anchor, size, and index into the shared sprite-UV table.
 struct NumberElementDescriptor {
     float flAnchorX;
     float flAnchorY;
@@ -85,14 +65,14 @@ struct NumberElementDescriptor {
     int nUvIndex;
 };
 
-// The number-glyph element descriptors for the landscape and portrait layouts (@ghidraAddress
-// 0x30fbd0 landscape, 0x30fb80 portrait).
+// @ghidraAddress 0x30fbd0
 constexpr NumberElementDescriptor kLandscapeElements[] = {
     {124.0f, 10.0f, 248.0f, 20.0f, 0x175},
     {2.0f, 6.0f, 4.0f, 12.0f, 0x176},
     {25.0f, 10.0f, 50.0f, 20.0f, 0x177},
     {70.0f, 9.0f, 140.0f, 18.0f, 0x178},
 };
+// @ghidraAddress 0x30fb80
 constexpr NumberElementDescriptor kPortraitElements[] = {
     {178.0f, 25.0f, 356.0f, 50.0f, 0xf4},
     {2.0f, 7.0f, 4.0f, 12.0f, 0xf5},
@@ -116,7 +96,6 @@ void NumberEffectLayer::StartFadeIn(float flDuration) {
     m_fadeChannel.SetEnd(kOpaqueAlpha);
     m_fadeChannel.SetDuration(flDuration);
     m_fadeChannel.SetElapsed(0.0f);
-    // A non-positive duration snaps straight to opaque and marks the fade done.
     if (flDuration <= 0.0f) {
         m_fadeChannel.SetCurrent(kOpaqueAlpha);
         m_bFadeActive = true;
@@ -129,7 +108,6 @@ void NumberEffectLayer::StartFadeOut(float flDuration) {
     m_fadeChannel.SetEnd(0.0f);
     m_fadeChannel.SetDuration(flDuration);
     m_fadeChannel.SetElapsed(0.0f);
-    // A non-positive duration snaps straight to transparent and marks the fade done.
     if (flDuration <= 0.0f) {
         m_fadeChannel.SetCurrent(0.0f);
         m_bFadeActive = true;
@@ -148,7 +126,6 @@ void NumberEffectLayer::SetBrightness(float flValue) {
 
 /** @ghidraAddress 0x18a2d4 */
 void NumberEffectLayer::ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const {
-    // The iPad uses the portrait table; the phone uses the wide-variant landscape row.
     int nGravity;
     if (IsPad()) {
         *pOut = kPortraitAnchor[nElement];
@@ -191,7 +168,6 @@ void NumberEffectLayer::EmitNumberSprite(
         return;
     }
 
-    // The portrait (pad) layout uses its own element table; the phone uses the landscape table.
     const NumberElementDescriptor &element =
         IsPad() ? kPortraitElements[nDescIndex] : kLandscapeElements[nDescIndex];
     const SpriteUvEntry &uv = g_aSpriteUvTable[element.nUvIndex];
@@ -207,13 +183,10 @@ void NumberEffectLayer::EmitNumberSprite(
 }
 
 namespace {
-// The two brightness-slider touch targets: the track and the draggable knob.
 constexpr int kSliderTargetTrack = 0;
 constexpr int kSliderTargetKnob = 1;
 
-// The slider hit-rectangle geometry, in atlas pixels. Each target's left inset and width vary by
-// device (the iPad rectangles are wider); the top inset and height are shared. @ghidraAddress
-// 0x2fedf8/0x30fb04/0x30fb10/0x30fb18 and the shared -25/50 constants.
+// @ghidraAddress 0x2fedf8/0x30fb04/0x30fb10/0x30fb18
 constexpr float kKnobLeftInsetPad = -50.0f;
 constexpr float kKnobLeftInsetPhone = -25.0f;
 constexpr float kKnobWidthPad = 100.0f;
@@ -225,10 +198,8 @@ constexpr float kTrackWidthPhone = 145.0f;
 constexpr float kSliderTopInset = -25.0f;
 constexpr float kSliderHeight = 50.0f;
 
-// The themed sound effect played when a knob drag leaves the knob and cancels the adjustment.
 constexpr int kSliderCancelSoundEffect = 3;
 
-// A touch point lies inside a slider rectangle when it is within both spans (inclusive).
 inline bool
 IsInsideSliderRect(float flX, float flY, float flLeft, float flTop, float flWidth, float flHeight) {
     return flLeft <= flX && flX <= flLeft + flWidth && flTop <= flY && flY <= flTop + flHeight;
@@ -239,10 +210,7 @@ IsInsideSliderRect(float flX, float flY, float flLeft, float flTop, float flWidt
 void NumberEffectLayer::ProcessBrightnessSliderTouch() {
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
 
-    // The track target is processed first, then the knob.
     for (int nTarget = kSliderTargetTrack; nTarget <= kSliderTargetKnob; ++nTarget) {
-        // Resolve the target's hit rectangle from its element anchor and the device-dependent
-        // insets and width.
         S_VECTOR2 anchor{0.0f, 0.0f};
         ComputeAnchorPos(static_cast<unsigned int>(nTarget), &anchor);
         float flLeftInset;
@@ -259,7 +227,6 @@ void NumberEffectLayer::ProcessBrightnessSliderTouch() {
 
         int &nTouchId = m_anSliderTouchId[nTarget];
         if (nTouchId == -1) {
-            // Unclaimed: scan the freshly-pressed touches for one that lands inside the rectangle.
             for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
                 TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
                 if (!pTouch->bIsNew) {
@@ -283,7 +250,6 @@ void NumberEffectLayer::ProcessBrightnessSliderTouch() {
             }
         }
 
-        // Claimed: track the touch.
         TouchPoint *pTouch = pTouchManager->FindTouchById(nTouchId);
         if (pTouch == nullptr) {
             nTouchId = -1;
@@ -294,9 +260,6 @@ void NumberEffectLayer::ProcessBrightnessSliderTouch() {
         }
 
         if (nTarget == kSliderTargetKnob) {
-            // The knob stays held while the touch presses inside it. A touch that leaves the knob
-            // is simply not held; a touch released inside the knob cancels the adjustment, plays
-            // the cancel sound, clears the knob, and returns the play scene to its state.
             const bool bInside = IsInsideSliderRect(static_cast<float>(pTouch->nCurrentX),
                                                     static_cast<float>(pTouch->nCurrentY),
                                                     flLeft,
@@ -316,9 +279,6 @@ void NumberEffectLayer::ProcessBrightnessSliderTouch() {
             }
             m_bSliderHeld = bHeld;
         } else {
-            // The track maps the touch's X to a normalised brightness (clamped to the unit
-            // interval), stores it, pushes it into the user settings and background layer, and
-            // saves.
             S_VECTOR2 trackAnchor{0.0f, 0.0f};
             ComputeAnchorPos(kSliderTargetTrack, &trackAnchor);
             float flBrightness =
@@ -341,7 +301,6 @@ void NumberEffectLayer::ProcessBrightnessSliderTouch() {
 
 /** @ghidraAddress 0x18a4ac */
 void NumberEffectLayer::Update(float flDeltaTime) {
-    // The slider layout tracks the elements to specific batches and descriptors.
     constexpr unsigned int kTrackBatch = 3;
     constexpr unsigned int kKnobBatch = 2;
     constexpr unsigned int kFillBatch = 0;
@@ -349,14 +308,13 @@ void NumberEffectLayer::Update(float flDeltaTime) {
     constexpr unsigned int kTrackElement = 2;
     constexpr unsigned int kTrackWideElement = 3;
     constexpr unsigned int kKnobElement = 1;
-    // The knob's glyph row, which is not its anchor element (the immediate 2 at 0x18a5bc).
+    // The knob's glyph row is not its anchor element. @ghidraAddress 0x18a5bc
     constexpr unsigned int kKnobDescriptor = 2;
     constexpr unsigned int kFillElement = 0;
     constexpr unsigned int kOpaque = 0xff;
     constexpr unsigned int kHeldAlpha = 0x80;
     constexpr unsigned int kWhite = 0xff;
 
-    // Re-anchor and refresh the wide-screen flag when the viewport size changes.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const float flWidth = pGameSystem->GetViewportWidth();
     const float flHeight = pGameSystem->GetViewportHeight();
@@ -368,7 +326,6 @@ void NumberEffectLayer::Update(float flDeltaTime) {
 
     AdvanceFadeInterp(flDeltaTime);
 
-    // Reset every batch's live sprite count for the frame.
     for (auto *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
@@ -376,7 +333,6 @@ void NumberEffectLayer::Update(float flDeltaTime) {
     ProcessBrightnessSliderTouch();
 
     S_VECTOR2 pos{};
-    // The landscape layout draws the slider track (element 2) plus its wide-variant extension.
     if (!IsPad()) {
         ComputeAnchorPos(kTrackElement, &pos);
         EmitNumberSprite(pos.x, pos.y, kTrackBatch, kTrackWideElement, kWhite);
@@ -386,14 +342,10 @@ void NumberEffectLayer::Update(float flDeltaTime) {
         }
     }
 
-    // The knob (element 1) draws at half alpha while the slider is held.
     ComputeAnchorPos(kKnobElement, &pos);
-    // The knob's anchor is element 1 but its glyph is descriptor 2 (the immediate at 0x18a5bc).
     EmitNumberSprite(
         pos.x, pos.y, kKnobBatch, kKnobDescriptor, m_bSliderHeld ? kHeldAlpha : kOpaque);
 
-    // The brightness fill (element 0) plus a marker sprite offset along the track vector by the
-    // current brightness.
     ComputeAnchorPos(kFillElement, &pos);
     EmitNumberSprite(pos.x, pos.y, kFillBatch, kFillElement, kWhite);
     EmitNumberSprite(pos.x + m_aTransform[0] + m_flBrightness * m_aTransform[2],
@@ -403,7 +355,6 @@ void NumberEffectLayer::Update(float flDeltaTime) {
                      kWhite);
 }
 
-// The process-wide number-effect layer, created lazily by shared().
 static NumberEffectLayer *g_pNumberEffectLayer = nullptr; // @ghidraAddress 0x3df240
 
 /** @ghidraAddress 0x189ce0 */
@@ -428,7 +379,6 @@ NumberEffectLayer::~NumberEffectLayer() {
         m_pTexture->Release();
         m_pTexture = nullptr;
     }
-    // Each live instancer is flagged for deletion by the scene tree and detached from the layer.
     for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
@@ -443,7 +393,6 @@ void NumberEffectLayer::CreateSpriteInstancers() {
         return;
     }
 
-    // Seed the device-dependent transform block: the phone mirrors, the pad uses its own offsets.
     if (IsPad()) {
         m_aTransform[0] = kTransformPadX;
         m_aTransform[1] = kMirrorOffset;
@@ -457,8 +406,7 @@ void NumberEffectLayer::CreateSpriteInstancers() {
     }
 
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
-    // The binary fetches the background layer and its render object here but discards both; the
-    // instancers register directly into the global scene tree instead.
+    // Yes, the binary discards this call's result.
     (void)BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
     for (int i = 0; i < kBatchCount; ++i) {
         ne::C_SPRITE_INSTANCING_2D *pSprite =
@@ -470,6 +418,5 @@ void NumberEffectLayer::CreateSpriteInstancers() {
         pSprite->SetSpriteCount(0);
     }
 
-    // The wide-screen layout is used once the viewport is wider than the split threshold.
     m_bWideScreen = GameSystem::GetGameSystem()->GetViewportWidth() > kWideScreenSplit;
 }

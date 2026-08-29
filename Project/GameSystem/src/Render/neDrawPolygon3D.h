@@ -167,11 +167,7 @@ public:
     void Render() override;
 
 private:
-    // Applies the mesh's per-bone translation/rotation/scale palette matrices (the shared skinning
-    // path), one per supported vertex unit.
     void LoadBoneMatrices(neGLESRenderer *pRenderer);
-    // Premultiplies each vertex colour in the interleaved buffer by its own alpha (the binary's
-    // dirty-colour fixup), reading the packed source colours from the colour array.
     void PremultiplyVertexColors();
     // The first derived member sits at +0xd4, in the polymorphic base's tail padding.
     unsigned int m_nDrawMode = {};     // +0xd4: the primitive draw mode.

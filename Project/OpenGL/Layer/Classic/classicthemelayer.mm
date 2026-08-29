@@ -10,13 +10,10 @@
 #include "sprite_uv_table.h"
 #include "vectormath.h"
 
-// The background texture the Classic-theme batches all draw from.
 static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8
 
-// The sprite capacities (maximum sprite counts) for the three Classic-theme background batches.
 static const int g_anClassicThemeBatchCapacities[] = {1, 7, 30}; // @ghidraAddress 0x301970
 
-// The per-sprite-kind transform table: each kind's anchor, size, and atlas-frame index.
 // @ghidraAddress 0x301c60
 const ClassicThemeSpriteTransform g_aClassicThemeSpriteTransforms[] = {
     {{384.0f, 512.0f}, {768.0f, 1024.0f}, 0},
@@ -26,25 +23,19 @@ const ClassicThemeSpriteTransform g_aClassicThemeSpriteTransforms[] = {
     {{14.0f, 14.0f}, {28.0f, 28.0f}, 12},
 };
 
-// The process-wide Classic-theme layer, created lazily by shared().
 static ClassicThemeLayer *g_pClassicThemeLayer = nullptr; // @ghidraAddress 0x3dca00
 
 namespace {
 
-// The colour index the constructor defaults to.
 constexpr int kDefaultColor = 1;
 
-// The value the two score-value slots are seeded to by the constructor.
 constexpr int kScoreValueDefault = 4;
 
-// The animation clock's seeded start, well before zero so the intro plays from the beginning
-// (@ghidraAddress 0x3018b0).
+// @ghidraAddress 0x3018b0
 constexpr float kAnimClockStart = -500.0f;
 
-// The eased-progress channel's fully-shown value.
 constexpr float kEaseFullValue = 1.0f;
 
-// The maximum value of an opaque colour channel.
 constexpr unsigned int kColorMax = 255;
 
 } // namespace
@@ -52,7 +43,6 @@ constexpr unsigned int kColorMax = 255;
 /** @ghidraAddress 0x109ee0 */
 ClassicThemeLayer *ClassicThemeLayer::shared() {
     if (g_pClassicThemeLayer == nullptr) {
-        // The binary allocates the raw 0x60-byte object and runs the constructor.
         g_pClassicThemeLayer = new ClassicThemeLayer();
     }
     return g_pClassicThemeLayer;
@@ -60,8 +50,6 @@ ClassicThemeLayer *ClassicThemeLayer::shared() {
 
 /** @ghidraAddress 0x109e68 */
 ClassicThemeLayer::ClassicThemeLayer() {
-    // The base constructor and the zero-initialised members clear the texture, batches, counts, and
-    // flags; the constructor then applies the two non-zero defaults.
     m_nColor = kDefaultColor;
     for (int &nValue : m_aScoreValues) {
         nValue = kScoreValueDefault;
@@ -82,13 +70,12 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
             ne::CreateWorldSpriteBatch(g_anClassicThemeBatchCapacities[nBatchIndex]);
         pRootNode->AttachChild(pBatch);
         pBatch->SetVisible(true);
-        // The first batch is stored without being given the shared texture; only the second and
-        // third batches take it, exactly as the binary does.
+        // The first batch never gets the shared texture, as in the binary.
         if (nBatchIndex != 0) {
             pBatch->SetRefCountedMember(m_pTexture);
         }
         pBatch->SetSpriteCount(m_anSpriteCount[nBatchIndex]);
-        // The last batch is additively blended over the others.
+        // Blend mode 1 is additive.
         if (nBatchIndex == kBackgroundBatchCount - 1) {
             pBatch->SetBlendMode(1);
         }
@@ -120,8 +107,7 @@ void ClassicThemeLayer::ConfigureSpriteSlot(int nBatch,
     const ClassicThemeSpriteTransform &transform = g_aClassicThemeSpriteTransforms[nSpriteKind];
     const SpriteUvEntry &uv = g_aSpriteUvTable[transform.nUvIndex];
 
-    // The slot sits at the given position, offset down by the play-field half-height (rounding
-    // toward zero).
+    // The negative adjustment reproduces the binary's truncating halving.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
     pBatch->SetSpritePositionXY(nIndex, position.x, position.y + static_cast<float>(nHalfHeight));
@@ -132,7 +118,6 @@ void ClassicThemeLayer::ConfigureSpriteSlot(int nBatch,
     pBatch->SetSpriteScale(nIndex, flScaleX, flScaleY);
     pBatch->SetSpriteRotation(nIndex, flRotation);
 
-    // Batch zero is tinted black; the others opaque white.
     const unsigned int nChannel = nBatch == 0 ? 0 : kColorMax;
     pBatch->SetSpriteColor(nIndex, nChannel, nChannel, nChannel, static_cast<unsigned int>(nAlpha));
 
@@ -141,9 +126,6 @@ void ClassicThemeLayer::ConfigureSpriteSlot(int nBatch,
 
 /** @ghidraAddress 0x10a01c */
 void ClassicThemeLayer::InitializeScoreGaugeState() {
-    // Seed the animation clock and the eased-progress channel: the clock starts well before zero,
-    // the channel starts and ends fully shown over a zero duration (so it reads as shown), and its
-    // current value is one. Both animation flags are raised.
     m_flClock = kAnimClockStart;
     m_easeChannel.SetStart(kEaseFullValue);
     m_easeChannel.SetEnd(kEaseFullValue);
@@ -165,13 +147,10 @@ void ClassicThemeLayer::InitializeScoreValuesFromTracker() {
 
 /** @ghidraAddress 0x10a080 */
 void ClassicThemeLayer::StartGaugeValueFade(float flDuration) {
-    // Restart the eased-progress channel from its current value down to zero over the given
-    // duration.
     m_easeChannel.SetStart(m_easeChannel.GetCurrent());
     m_easeChannel.SetEnd(0.0f);
     m_easeChannel.SetDuration(flDuration);
     m_easeChannel.SetElapsed(0.0f);
-    // A non-positive duration takes effect immediately: snap the current value to zero.
     if (flDuration <= 0.0f) {
         m_easeChannel.SetCurrent(0.0f);
     }
@@ -184,61 +163,48 @@ void ClassicThemeLayer::AdvanceEasedProgress(float flDelta) {
 
 namespace {
 
-// The number of play sides the reveal draws.
 constexpr int kSideCount = 2;
 
-// The animation clock at which the reveal stops advancing (@ghidraAddress 0x2feff0).
+// @ghidraAddress 0x2feff0
 constexpr float kAnimClockEnd = 2000.0f;
 
-// The clock the glow sprite waits for before it is emitted (@ghidraAddress 0x2ec6b0).
+// @ghidraAddress 0x2ec6b0
 constexpr float kGlowStartClock = 100.0f;
 
-// The half-turn rotation a mirrored side's sprites take, in radians (@ghidraAddress 0x2fe894).
+// @ghidraAddress 0x2fe894
 constexpr float kMirrorRotation = 3.1415927f;
 
-// The factor a mirrored side's particle offsets are scaled by, flipping them through the anchor.
 constexpr float kMirrorScale = -1.0f;
 
-// The scale every sprite but the particles is drawn at.
 constexpr float kUnitScale = 1.0f;
 
-// The 0-to-255 alpha channel the eased progress is scaled into (@ghidraAddress 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kAlphaScale = 255.0f;
 
-// The three batches the reveal emits into: the full-screen scrim, the per-side outcome banner, and
-// the glow and particle effects.
 constexpr int kScrimBatch = 0;
 constexpr int kBannerBatch = 1;
 constexpr int kEffectBatch = 2;
 
-// The sprite kinds the reveal emits directly: the full-screen scrim, and the small particle glyph.
-// The banner and glow instead take the side's outcome plus one as their kind.
 constexpr int kScrimSpriteKind = 0;
 constexpr int kParticleSpriteKind = 4;
 
-// The play-record outcomes that gate the reveal: the winning side plays the two particle bursts,
-// and the losing side draws nothing past its banner.
 constexpr int kOutcomeWin = 0;
 constexpr int kOutcomeLose = 1;
 
-// Every curve sampled through CalculateCurveInterpolation below has two keyframe pairs.
 constexpr int kTwoPointCurve = 2;
 
-// The scrim's alpha over the animation clock (@ghidraAddress 0x30197c).
+// @ghidraAddress 0x30197c
 constexpr float kScrimAlphaPairs[] = {-500.0f, 0.0f, -333.33334f, 0.75f};
 
-// The outcome banner's vertical scale over the animation clock (@ghidraAddress 0x301990).
+// @ghidraAddress 0x301990
 constexpr float kBannerScalePairs[] = {0.0f, 0.0f, 116.666664f, 1.0f};
 
-// The glow's alpha over the animation clock (@ghidraAddress 0x3019a0).
+// @ghidraAddress 0x3019a0
 constexpr float kGlowAlphaPairs[] = {116.666664f, 0.6f, 500.0f, 0.0f};
 
-// Whether each side's sprites are mirrored, indexed by the theme colour and then the side
-// (@ghidraAddress 0x30198c).
+// Indexed by the theme colour and then the side. @ghidraAddress 0x30198c
 constexpr unsigned char kSideMirrored[][kSideCount] = {{0, 0}, {1, 0}};
 
-// The number of particles in each of the two bursts, and the keyframe-pair count of each of their
-// curves.
 constexpr int kBurstAParticleCount = 10;
 constexpr int kBurstBParticleCount = 6;
 constexpr int kBurstAScalePairCount = 3;
@@ -246,8 +212,8 @@ constexpr int kBurstAOffsetPairCount = 2;
 constexpr int kBurstBScalePairCount = 4;
 constexpr int kBurstBSpinPairCount = 2;
 
-// The first burst's per-particle scale curves (@ghidraAddress 0x3019b0). The curve doubles as the
-// particle's gate: a non-positive value skips it for this frame.
+// The curve doubles as the particle's gate: a non-positive value skips it.
+// @ghidraAddress 0x3019b0
 constexpr float kBurstAScalePairs[][kBurstAScalePairCount * 2] = {
     {450.0f, 0.0f, 700.0f, 1.0f, 1200.0f, 0.0f},
     {250.0f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
@@ -261,8 +227,7 @@ constexpr float kBurstAScalePairs[][kBurstAScalePairCount * 2] = {
     {250.0f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
 };
 
-// The first burst's per-particle vertical-drift curves, added to each spawn offset's Y
-// (@ghidraAddress 0x301aa0).
+// @ghidraAddress 0x301aa0
 constexpr float kBurstAOffsetPairs[][kBurstAOffsetPairCount * 2] = {
     {450.0f, 0.0f, 1200.0f, -100.0f},
     {250.0f, 0.0f, 1000.0f, -110.0f},
@@ -276,8 +241,7 @@ constexpr float kBurstAOffsetPairs[][kBurstAOffsetPairCount * 2] = {
     {250.0f, 0.0f, 1000.0f, -190.0f},
 };
 
-// The second burst's per-particle scale curves, gating each particle as above
-// (@ghidraAddress 0x301b40).
+// @ghidraAddress 0x301b40
 constexpr float kBurstBScalePairs[][kBurstBScalePairCount * 2] = {
     {1331.6666f, 0.0f, 1333.3334f, 0.5f, 1500.0f, 1.0f, 1833.3334f, 0.0f},
     {1365.0f, 0.0f, 1366.6666f, 0.5f, 1533.3334f, 1.0f, 1866.6666f, 0.0f},
@@ -287,8 +251,7 @@ constexpr float kBurstBScalePairs[][kBurstBScalePairCount * 2] = {
     {1498.3334f, 0.0f, 1500.0f, 0.5f, 1666.6666f, 1.0f, 2000.0f, 0.0f},
 };
 
-// The second burst's per-particle spin curves, added to the side's base rotation
-// (@ghidraAddress 0x301c00).
+// @ghidraAddress 0x301c00
 constexpr float kBurstBSpinPairs[][kBurstBSpinPairCount * 2] = {
     {1333.3334f, 0.0f, 1833.3334f, 1.5707964f},
     {1366.6666f, 0.0f, 1866.6666f, 1.5707964f},
@@ -298,8 +261,7 @@ constexpr float kBurstBSpinPairs[][kBurstBSpinPairCount * 2] = {
     {1500.0f, 0.0f, 2000.0f, 1.5707964f},
 };
 
-// The four curve arrays the bursts sample, each pairing a keyframe count with one of the pair
-// blocks above. @ghidraAddress 0x35cb80, 0x35cc20, 0x35ccc0, and 0x35cd20.
+// @ghidraAddress 0x35cb80, 0x35cc20, 0x35ccc0, and 0x35cd20.
 const FloatCurve g_aBurstAScaleCurves[kBurstAParticleCount] = {
     {kBurstAScalePairCount, kBurstAScalePairs[0]},
     {kBurstAScalePairCount, kBurstAScalePairs[1]},
@@ -358,11 +320,8 @@ void ClassicThemeLayer::Update(float flDelta) {
             m_bAnimActive = false;
         }
 
-        // The eased progress fades the whole reveal in and out; every sprite's alpha is scaled by
-        // it.
         const float flProgress = m_easeChannel.GetCurrent();
 
-        // The full-screen scrim darkens the play field behind the reveal.
         S_VECTOR2 anchor{0.0f, 0.0f};
         const float flScrimAlpha =
             CalculateCurveInterpolation(kScrimAlphaPairs, kTwoPointCurve, m_flClock);
@@ -380,22 +339,18 @@ void ClassicThemeLayer::Update(float flDelta) {
                 continue;
             }
 
-            // Each side's banner anchor, by theme colour then side (@ghidraAddress 0x3dca10, seeded
-            // once from the read-only block at 0x3018c0).
+            // @ghidraAddress 0x3dca10, seeded from 0x3018c0
             static const S_VECTOR2 kSideAnchor[][kSideCount] = {
                 {{0.0f, -5000.0f}, {0.0f, 0.0f}},
                 {{0.0f, -300.0f}, {0.0f, 300.0f}},
             };
 
-            // The side's outcome selects the banner and glow sprite kind; the mirrored side is
-            // rotated a half turn and has its particle offsets flipped.
             const int nOutcome = m_aScoreValues[nSide];
             const int nOutcomeSpriteKind = nOutcome + 1;
             const bool bMirrored = kSideMirrored[m_nColor][nSide] != 0;
             const float flRotation = bMirrored ? kMirrorRotation : 0.0f;
             anchor = kSideAnchor[m_nColor][nSide];
 
-            // The outcome banner grows vertically into place.
             const float flBannerScale =
                 CalculateCurveInterpolation(kBannerScalePairs, kTwoPointCurve, m_flClock);
             ConfigureSpriteSlot(kBannerBatch,
@@ -410,7 +365,6 @@ void ClassicThemeLayer::Update(float flDelta) {
                 continue;
             }
 
-            // The additive glow behind the banner, once the clock has run past its start.
             if (m_flClock > kGlowStartClock) {
                 const float flGlowAlpha =
                     CalculateCurveInterpolation(kGlowAlphaPairs, kTwoPointCurve, m_flClock);
@@ -427,8 +381,7 @@ void ClassicThemeLayer::Update(float flDelta) {
                 continue;
             }
 
-            // The winning side's first particle burst: ten particles that drift upward from their
-            // spawn offsets (@ghidraAddress 0x3dca40, seeded once from 0x3018e0).
+            // @ghidraAddress 0x3dca40, seeded from 0x3018e0
             static const S_VECTOR2 kBurstASpawn[kBurstAParticleCount] = {
                 {250.0f, 30.0f},
                 {150.0f, 30.0f},
@@ -462,8 +415,7 @@ void ClassicThemeLayer::Update(float flDelta) {
                                     static_cast<int>(flProgress * kAlphaScale));
             }
 
-            // The second burst: six particles that spin in place rather than drift
-            // (@ghidraAddress 0x3dcaa0, seeded once from 0x301930).
+            // @ghidraAddress 0x3dcaa0, seeded from 0x301930
             static const S_VECTOR2 kBurstBSpawn[kBurstBParticleCount] = {
                 {-109.0f, -42.0f},
                 {-101.0f, 49.0f},
@@ -496,7 +448,6 @@ void ClassicThemeLayer::Update(float flDelta) {
         }
     }
 
-    // Publish each batch's live slot count to its render node, whether or not the reveal ran.
     for (int nBatch = 0; nBatch < kBackgroundBatchCount; ++nBatch) {
         m_apSpriteBatch[nBatch]->SetSpriteCount(m_anSpriteCount[nBatch]);
     }

@@ -181,8 +181,7 @@ void NoteResultLayer::CreateSpriteInstancer() {
 
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
 
-    // A screen-space batch: the bl at 0x1893ac targets CreateSpriteInstancer at 0x30804, not
-    // CreateWorldSpriteBatch at 0x31834.
+    // Screen-space batch: the call at 0x1893ac is CreateSpriteInstancer, not the world batch.
     m_pSprites = ne::CreateSpriteInstancer(kSpriteCapacity);
     ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
     pParent->AttachChild(m_pSprites);
@@ -281,7 +280,6 @@ void NoteResultLayer::Update(float flDeltaTime) {
             nRemaining /= kDigitBase;
         }
 
-        // Sum the run width so the digits can be centred on the label position.
         float flTotalWidth = 0.0f;
         for (int i = 0; i < nDigitCount; ++i) {
             const StarSpriteDescriptor &glyph = pTable[aDigits[i] + kDigitRecordBase];

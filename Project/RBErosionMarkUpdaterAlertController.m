@@ -1,13 +1,3 @@
-//
-//  RBErosionMarkUpdaterAlertController.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class
-//  RBErosionMarkUpdaterAlertController). The orientation accessors are plain ivar reads and writes;
-//  the initialisers defer to the UIAlertController superclass and then seed the mask from the
-//  current layout.
-//
-
 #import "RBErosionMarkUpdaterAlertController.h"
 
 #import "deviceenvironment.h"

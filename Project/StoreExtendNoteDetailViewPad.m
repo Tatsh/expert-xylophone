@@ -13,24 +13,19 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The localised "Loading..." title, reused from the store page. @ghidraAddress 0x3cfca8.
+// @ghidraAddress 0x3cfca8
 
-// Shared engine layout constants. @ghidraAddress values are image-base offsets.
 extern const double g_dMascotMessageMaxWidthPad;   // @ghidraAddress 0x2ee930 (300.0)
 extern const double g_dMascotMessageMaxWidthPhone; // @ghidraAddress 0x2ee938 (200.0)
 extern const double g_dLayoutMetricThirtyTwo;      // @ghidraAddress 0x2ee9b0 (32.0)
 
-// Image asset names.
 static NSString *const kStorePackBgImageName = @"09_store/store_pack_bg_2";
 static NSString *const kStoreSampleStoppedImageName = @"09_store/store_sample_1";
 static NSString *const kStoreSamplePlayingImageName = @"09_store/store_sample_2";
 static NSString *const kStoreJacketPlaceholderImageName = @"09_store/store_jacket_110";
 
-// The sentinel stored in the campaign identifier when no note is loaded.
 static const int kNoCampaign = -1;
 
-// Layout metrics recovered from the binary's anonymous coordinate data (image-base offsets in
-// comments). These describe the pad card geometry.
 static const double kCardWidth = 650.0;                   // @ghidraAddress 0x2eec30
 static const double kCardHeight = 284.0;                  // @ghidraAddress 0x2eec38
 static const double kTitleBarHeight = 44.0;               // @ghidraAddress 0x2eec40
@@ -52,28 +47,22 @@ static const double kLevelColorRed = 85.0 / 255.0;        // @ghidraAddress 0x2e
 static const double kLevelColorGreen = 9.0f / 255.0f;     // @ghidraAddress 0x2eec80
 static const double kLevelColorBlue = 120.0 / 255.0;      // @ghidraAddress 0x2eec88
 static const double kBackgroundDimWhite = 0.863f;         // @ghidraAddress 0x2eecd0
-// These two are single-precision in the binary, and their addresses were never recovered: neither
-// value exists as a double anywhere in __const, while both exist as floats at several addresses, so
-// the annotations they used to carry (0x2eecc0 and 0x2eecb8) named the doubles belonging to other
-// constants entirely. Left unannotated rather than pointing at an address that was not verified.
+// Single-precision in the binary, and unannotated because the neighbouring pool slots hold other
+// constants.
 static const double kTermBarWhite = 0.90000003576278687;
 static const double kLoadingTextWhite = 0.19999998807907104;
 
-// The playback state stored in the sampleStatus ivar.
 typedef enum {
-    StoreSampleStatusStopped = 0,     // No sample is queued or playing.
-    StoreSampleStatusDownloading = 1, // The sample BGM is downloading.
-    StoreSampleStatusPlaying = 2,     // The sample BGM is playing.
+    StoreSampleStatusStopped = 0,
+    StoreSampleStatusDownloading = 1,
+    StoreSampleStatusPlaying = 2,
 } StoreSampleStatus;
 
 @implementation StoreExtendNoteDetailViewPad {
-    // The current sample-playback state. This ivar has no leading underscore in the binary.
+    // No leading underscore in the binary; buttonType, bUnlock, and hideType are unused.
     StoreSampleStatus sampleStatus;
-    // Reserved button-type field declared by the binary. No leading underscore in the binary.
     int buttonType;
-    // Reserved unlock flag declared by the binary. No leading underscore in the binary.
     BOOL bUnlock;
-    // Reserved hide-type field declared by the binary. No leading underscore in the binary.
     int hideType;
 }
 
@@ -108,8 +97,7 @@ typedef enum {
     [noteBg setImage:[packBg stretchableImageWithLeftCapWidth:4 topCapHeight:4]];
     [self.noteView addSubview:noteBg];
 
-    // A 44 pt title strip across the top of the card, not the whole panel: 0x2248c takes the
-    // height from the same 44.0 the title label uses, and only the width comes from the bounds.
+    // The strip spans the card, not the panel: 0x2248c takes only the width from the bounds.
     UIView *card = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, self.bounds.size.width, kTitleBarHeight)];
     [card setBackgroundColor:UIColor.whiteColor];
@@ -127,7 +115,6 @@ typedef enum {
     [card addSubview:self.labelTitle];
     [self.noteView addSubview:card];
 
-    // The size is its own pool slot, not the Y repeated.
     self.artworkView =
         [[StoreImageView alloc] initWithFrame:CGRectMake(18.0, 79.0, kButtonWidth, kButtonWidth)];
     self.artworkView.layer.borderWidth = 1.0;
@@ -297,8 +284,7 @@ typedef enum {
 
 /** @ghidraAddress 0x271bc */
 - (void)dealloc {
-    // The binary's .cxx_destruct releases every strong ivar and destroys the weak _delegate; ARC
-    // synthesises the equivalent.
+    // ARC synthesises the equivalent of the binary's .cxx_destruct.
 }
 
 #pragma mark - Note loading

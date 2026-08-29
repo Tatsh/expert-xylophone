@@ -1309,9 +1309,6 @@ void LimelightResultLayer::RenderPhonePercentValue(int nValue,
 
 namespace {
 
-// The fraction glyph banks and layout: the parts slot, the digit bank ('0'), the separating slash
-// glyph, the nominal per-digit width used to centre the run, the per-digit advance, the slash
-// advance, and the centring pad.
 constexpr unsigned int kFractionSlot = 1;
 constexpr unsigned int kFractionDigitBank = 0x39;
 constexpr unsigned int kFractionSlashGlyph = 0x46;
@@ -1322,8 +1319,6 @@ constexpr float kFractionSlashInset = 7.0f;
 constexpr float kFractionSlashAdvance = 1.0f;
 constexpr float kFractionCentrePad = 2.0f;
 
-// Splits a value into up to four digits (ones first) and returns the significant-digit count (at
-// least one).
 inline int SplitFractionDigits(int nValue, int (&aDigits)[4]) {
     int nSignificant = 0;
     for (int i = 0; i < 4; ++i) {
@@ -1348,15 +1343,12 @@ void LimelightResultLayer::RenderPhoneFraction(int nNumerator,
     const int nNumCount = SplitFractionDigits(nNumerator, aNumerator);
     const int nDenCount = SplitFractionDigits(nDenominator, aDenominator);
 
-    // Centre the run: the numerator and denominator digits at the nominal width, plus the slash's
-    // advance and the centring pad, rounded and halved.
     const int nHalfWidth = static_cast<int>(static_cast<float>(nNumCount) * kFractionNominalWidth +
                                             static_cast<float>(nDenCount) * kFractionNominalWidth +
                                             kFractionDigitInset + kFractionCentrePad);
     float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f;
     const float flY = pPosition->y;
 
-    // The denominator digits, right to left.
     for (int i = 0; i < nDenCount; ++i) {
         RenderPhoneResultSpriteById(kFractionSlot,
                                     aDenominator[i] + kFractionDigitBank,
@@ -1369,14 +1361,12 @@ void LimelightResultLayer::RenderPhoneFraction(int nNumerator,
         flCursorX -= kFractionDigitAdvance;
     }
 
-    // The separating slash: unlike a digit, its inset folds into the running cursor before the
-    // slash's own one-pixel advance.
+    // Unlike a digit, the slash's inset folds into the running cursor.
     flCursorX -= kFractionSlashInset;
     RenderPhoneResultSpriteById(
         kFractionSlot, kFractionSlashGlyph, S_VECTOR2{flCursorX, flY}, nAlpha, 0, 0.0f, 1.0f, 1.0f);
     flCursorX -= kFractionSlashAdvance;
 
-    // The numerator digits, right to left.
     for (int i = 0; i < nNumCount; ++i) {
         RenderPhoneResultSpriteById(kFractionSlot,
                                     aNumerator[i] + kFractionDigitBank,
@@ -1436,8 +1426,6 @@ void LimelightResultLayer::RenderPhoneResultSpriteById(unsigned int nSlot,
     if (nPartId >= kLimelightPadGlyphRecordBound) {
         return;
     }
-    // The glyph metrics come from the pad parts table indexed by the part id; the texture rectangle
-    // from the Limelight glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aLimelightPartsPhone[nPartId];
     const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
     const unsigned int nIntensity = bDimmed ? 0x80 : 0xff;
@@ -1482,7 +1470,6 @@ void LimelightResultLayer::EmitPartSprite(float flRotation,
     }
     const PartsDataRecord *pRecord = GetPartsData(nPartId);
     const UvPaletteEntry &palette = g_aUvPalette[pRecord->nUvPaletteIndex];
-    // The main pass draws at full intensity; the shadow pass darkens the quad to half intensity.
     const unsigned int nIntensity = bShadowPass ? 0x80 : 0xff;
     AppendSpriteToSlot(position,
                        S_VECTOR2{pRecord->flX, pRecord->flY},
@@ -1498,25 +1485,17 @@ void LimelightResultLayer::EmitPartSprite(float flRotation,
 
 namespace {
 
-// The part id of the '0' digit glyph; digits 0 through 9 are parts kDigitZeroPart through
-// kDigitZeroPart + 9.
 constexpr unsigned int kDigitZeroPart = 0x69;
-// The maximum number of decimal digits RenderDigits draws.
 constexpr int kMaxDigits = 4;
-// The instancer slot the parts atlas (including digit glyphs) draws into.
 constexpr unsigned int kPartsSlot = 1;
 
-// The maximum number of digits RenderNumber splits a value into (the binary's digit buffer holds
-// six).
 constexpr int kNumberMaxDigits = 6;
-// The glyph-bank base part ids that carry special per-column layout handling: the two score-column
-// banks, the rating-column bank, and the three banks whose trailing '1' is micro-nudged.
 constexpr unsigned int kScoreColumnPartA = 0x7c;
 constexpr unsigned int kScoreColumnPartB = 0x92;
 constexpr unsigned int kRatingColumnPart = 0xa8;
 constexpr unsigned int kNudgeBankPlus4A = 0x44;
 constexpr unsigned int kNudgeBankPlus4B = 0x4e;
-// The dim factor applied to the padded leading zeros (@ghidraAddress 0x2fd008).
+// @ghidraAddress 0x2fd008
 constexpr float kPadZeroDimFactor = 0.7f;
 
 } // namespace
@@ -1525,8 +1504,6 @@ constexpr float kPadZeroDimFactor = 0.7f;
 void LimelightResultLayer::RenderDigits(int nValue,
                                         const S_VECTOR2 &position,
                                         unsigned int nAlpha) {
-    // Split the value into up to four decimal digits (least-significant first), tracking how many
-    // are significant; at least one digit is always drawn.
     int aDigits[kMaxDigits] = {};
     int nSignificant = 0;
     for (int i = 0; i < kMaxDigits; ++i) {
@@ -1540,7 +1517,6 @@ void LimelightResultLayer::RenderDigits(int nValue,
         nSignificant = 1;
     }
 
-    // Centre the run about the position using the zero-glyph's width as the nominal advance.
     const float flAdvance = GetPartsData(kDigitZeroPart)->flWidth;
     float flX = position.x + static_cast<float>(static_cast<int>(nSignificant * flAdvance)) * 0.5f;
     for (int i = 0; i < nSignificant; ++i) {
@@ -1564,7 +1540,6 @@ void LimelightResultLayer::EmitTexturedPart(unsigned long nSlot,
     if (pTexture == nullptr) {
         return;
     }
-    // The whole used image mapped within its power-of-two allocation.
     const S_VECTOR2 uvSize{static_cast<float>(pTexture->GetImageWidth()) /
                                static_cast<float>(pTexture->GetAllocWidth()),
                            static_cast<float>(pTexture->GetImageHeight()) /
@@ -1595,8 +1570,6 @@ void LimelightResultLayer::EmitAutoUvPart(unsigned long nSlot,
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flScale = pTexture->GetScale();
-    // The pixel size is the used image over its scale; the UV rectangle is the used fraction of the
-    // power-of-two allocation.
     const S_VECTOR2 size{flImageWidth / flScale, flImageHeight / flScale};
     const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
                            flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
@@ -1622,8 +1595,6 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
                                         bool bPaired,
                                         bool bPadZeros,
                                         unsigned int nAlpha) {
-    // Split the value into up to nMaxDigits decimal digits (least-significant first), tracking the
-    // index of the most-significant non-zero digit.
     int aDigits[kNumberMaxDigits] = {};
     int nMostSignificant = 0;
     for (int i = 0; i < nMaxDigits; ++i) {
@@ -1654,7 +1625,6 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
                 drawPos.y = flY;
             }
         }
-        // The rating column's first glyph (when paired) uses the comma-shifted bank.
         const bool bFirstPaired = (i == 0) && bPaired;
         if (nBasePartId == kRatingColumnPart && bFirstPaired) {
             nPartId = nBasePartId + 0xb + nDigit;
@@ -1680,7 +1650,6 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
         float flNextX = drawPos.x;
         EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nPartId, drawPos, nAlpha, 0);
         flNextX -= flSpacing;
-        // A paired column draws a second glyph ten ids up from the base.
         if (bFirstPaired) {
             drawPos.x = flNextX;
             const PartsDataRecord *pPaired = GetPartsData(nBasePartId + 10);
@@ -1696,7 +1665,6 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
         drawPos.x = flNextX;
     }
 
-    // Pad the remaining leading positions with dimmed grey zeros.
     if (bPadZeros && nMostSignificant + 1 < nMaxDigits) {
         const auto nDimAlpha =
             static_cast<unsigned int>(static_cast<float>(nAlpha) * kPadZeroDimFactor);
@@ -1711,9 +1679,6 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
 
 namespace {
 
-// The part id of the decimal-point glyph inserted by RenderPercentValue. The minimum drawn digit
-// count this function also needs is kPercentMinDigits, declared with the rest of the percent-value
-// layout constants above.
 constexpr unsigned int kPointPart = 0x73;
 
 } // namespace
@@ -1722,7 +1687,6 @@ constexpr unsigned int kPointPart = 0x73;
 void LimelightResultLayer::RenderPercentValue(int nValue,
                                               const S_VECTOR2 &position,
                                               unsigned int nAlpha) {
-    // Split into up to four digits, tracking the significant count; at least two digits are drawn.
     int aDigits[kMaxDigits] = {};
     int nSignificant = 0;
     for (int i = 0; i < kMaxDigits; ++i) {
@@ -1749,7 +1713,6 @@ void LimelightResultLayer::RenderPercentValue(int nValue,
                        nAlpha,
                        0);
         flX -= flGlyphWidth;
-        // Insert the decimal point after the ones digit.
         if (i == 0) {
             const float flPointWidth = GetPartsData(kPointPart)->flWidth;
             EmitPartSprite(0.0f,
@@ -1767,7 +1730,6 @@ void LimelightResultLayer::RenderPercentValue(int nValue,
 
 namespace {
 
-// The part id of the slash glyph drawn between a fraction's denominator and numerator.
 constexpr unsigned int kSlashPart = 0x74;
 
 } // namespace
@@ -1777,8 +1739,6 @@ void LimelightResultLayer::RenderFraction(int nNumerator,
                                           int nDenominator,
                                           const S_VECTOR2 &position,
                                           unsigned int nAlpha) {
-    // Split the numerator and denominator into up to four digits each, tracking their significant
-    // counts (each at least one).
     int aNumerator[kMaxDigits] = {};
     int nNumeratorDigits = 0;
     for (int i = 0; i < kMaxDigits; ++i) {
@@ -1805,8 +1765,6 @@ void LimelightResultLayer::RenderFraction(int nNumerator,
         nDenominatorDigits = 1;
     }
 
-    // The digits and slash advance by the uniform zero-glyph width; the run is centred about the
-    // position, with the slash and a one-pixel pad accounted for.
     const float flAdvance = GetPartsData(kDigitZeroPart)->flWidth;
     float flX = position.x + (static_cast<float>(static_cast<int>(nDenominatorDigits * flAdvance) +
                                                  static_cast<int>(nNumeratorDigits * flAdvance)) +
@@ -1844,15 +1802,11 @@ void LimelightResultLayer::RenderFraction(int nNumerator,
 
 namespace {
 
-// The rating glyph bank's '0' part id, the rating decimal-point part id, and the per-glyph
-// horizontal gap the rating value advances by beyond each glyph's width.
 constexpr unsigned int kRatingDigitZeroPart = 0xf1;
 constexpr unsigned int kRatingPointPart = 0xfb;
 constexpr float kRatingGlyphGap = 4.0f;
-// The number of digits the scaled rating value is split into, and the minimum drawn.
 constexpr int kRatingDigits = 3;
 constexpr int kRatingMinDigits = 2;
-// The one-decimal scale applied to the rating value before it is split into digits.
 constexpr float kRatingScale = 10.0f;
 
 } // namespace
@@ -1861,7 +1815,6 @@ constexpr float kRatingScale = 10.0f;
 void LimelightResultLayer::RenderRatingValue(float flValue,
                                              const S_VECTOR2 &position,
                                              unsigned int nAlpha) {
-    // Scale to one decimal place and split into up to three digits (least-significant first).
     int aDigits[kRatingDigits] = {};
     int nSignificant = 0;
     int nScaled = static_cast<int>(flValue * kRatingScale);
@@ -1877,7 +1830,6 @@ void LimelightResultLayer::RenderRatingValue(float flValue,
     float flX = position.x;
     int nDigit = 0;
     while (true) {
-        // The fractional digit past the integer part is drawn at half alpha.
         if (nDigit == nDrawn) {
             nAlpha = static_cast<unsigned int>(static_cast<float>(nAlpha & 0xff) * 0.5f);
         }
@@ -1893,7 +1845,6 @@ void LimelightResultLayer::RenderRatingValue(float flValue,
                        0);
         flX -= pRecord->flWidth;
         if (nDigit == 0) {
-            // Insert the decimal point after the ones digit, using its own advance and offset.
             const PartsDataRecord *pPoint = GetPartsData(kRatingPointPart);
             EmitPartSprite(0.0f,
                            1.0f,
@@ -1916,9 +1867,6 @@ void LimelightResultLayer::RenderRatingValue(float flValue,
 
 namespace {
 
-// The Limelight total-score digit layout: the ones-place and higher-place glyph banks, the
-// separator glyph drawn beside the ones digit, the number of digit places, the minimum drawn, and
-// the gap the cursor steps by between places.
 constexpr unsigned int kPadTotalScoreOnesBank = 0xe1;
 constexpr unsigned int kPadTotalScoreHighBank = 0xd7;
 constexpr unsigned int kPadTotalScoreSeparatorPart = 0xeb;
@@ -1932,12 +1880,10 @@ constexpr float kPadTotalScoreDimFactor = 0.5f;
 /** @ghidraAddress 0x1278a0 */
 void LimelightResultLayer::RenderLimelightTotalScore(const S_VECTOR2 *pPosition,
                                                      unsigned int nAlpha) {
-    // The total is the sum of the five result-bonus values, scaled to tenths.
     const int nTotal = static_cast<int>((m_flExperienceBonus + m_flClearBonus + m_flMissBonus +
                                          m_flRankBonus + m_flFirstPlayBonus) *
                                         kTotalScoreTenthsScale);
 
-    // Split into seven places (ones first), tracking the significant count.
     int aDigits[kPadTotalScoreDigits] = {};
     int nSignificant = 0;
     int nRemaining = nTotal;
@@ -1954,7 +1900,6 @@ void LimelightResultLayer::RenderLimelightTotalScore(const S_VECTOR2 *pPosition,
     float flX = pPosition->x;
     int nDigit = 0;
     while (true) {
-        // Leading places beyond the significant digits draw at half alpha.
         if (nDigit == nDrawn) {
             nAlpha = static_cast<unsigned int>(static_cast<float>(nAlpha & 0xff) *
                                                kPadTotalScoreDimFactor);
@@ -1972,8 +1917,7 @@ void LimelightResultLayer::RenderLimelightTotalScore(const S_VECTOR2 *pPosition,
                        0);
         flX -= pRecord->flWidth;
         if (nDigit == 0) {
-            // The separator sits beside the ones digit; the cursor does not step by its width, only
-            // by the between-place gap.
+            // The cursor does not step by the separator's width, only by the between-place gap.
             const PartsDataRecord *pSeparator = GetPartsData(kPadTotalScoreSeparatorPart);
             EmitPartSprite(
                 0.0f,
@@ -1998,9 +1942,7 @@ void LimelightResultLayer::RenderLimelightTotalScore(const S_VECTOR2 *pPosition,
 
 namespace {
 
-// The time threshold, in frame-delta units, past which the bonus voice cue fires.
 constexpr float kBonusCueThreshold = 3300.0f;
-// The themed voice identifier played for the result bonus cue.
 constexpr int kBonusCueVoiceId = 7;
 
 } // namespace
@@ -2019,7 +1961,6 @@ void LimelightResultLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
 
 /** @ghidraAddress 0x123da4 */
 void LimelightResultLayer::ResetThemeSelectState() {
-    // Clear the five result-bonus display values (the binary bulk-zeroes the 0x150..0x164 span).
     m_flExperienceBonus = 0.0f;
     m_flClearBonus = 0.0f;
     m_flMissBonus = 0.0f;
@@ -2030,17 +1971,13 @@ void LimelightResultLayer::ResetThemeSelectState() {
 
 /** @ghidraAddress 0x123f60 */
 void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
-    // Every channel eases from its current shown value up to one.
     constexpr float kShown = 1.0f;
-    // The later channels' fixed durations and the elapsed-time stagger offsets that cascade them in
-    // (the stagger constants are at @ghidraAddress 0x2eedcc = 300 and 0x307a38 = 900).
     constexpr float kDuration200 = 200.0f;
     constexpr float kDuration300 = 300.0f;
+    // @ghidraAddress 0x2eedcc and 0x307a38
     constexpr float kStagger300 = 300.0f;
     constexpr float kStagger900 = 900.0f;
 
-    // Channel 0: the base channel, its duration the caller's base time; snaps to shown when the
-    // base time is non-positive.
     FloatTween &ch0 = m_aBonusAnimChannels[0];
     ch0.SetFrom(ch0.GetCurrent());
     ch0.SetTo(kShown);
@@ -2051,7 +1988,6 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
         ch0.SetCurrent(kShown);
     }
 
-    // Channel 2: a 200-unit fade whose elapsed time starts at the base time.
     FloatTween &ch2 = m_aBonusAnimChannels[2];
     ch2.SetFrom(ch2.GetCurrent());
     ch2.SetTo(kShown);
@@ -2059,7 +1995,6 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
     ch2.SetDelay(flBaseTime);
     ch2.SetElapsed(0.0f);
 
-    // Channel 1: a 300-unit fade staggered 300 units after the base time.
     FloatTween &ch1 = m_aBonusAnimChannels[1];
     ch1.SetFrom(ch1.GetCurrent());
     ch1.SetTo(kShown);
@@ -2067,7 +2002,6 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
     ch1.SetDelay(flBaseTime + kStagger300);
     ch1.SetElapsed(0.0f);
 
-    // Channel 4: a 200-unit fade staggered 900 units after the base time.
     FloatTween &ch4 = m_aBonusAnimChannels[4];
     ch4.SetFrom(ch4.GetCurrent());
     ch4.SetTo(kShown);
@@ -2075,7 +2009,6 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
     ch4.SetDelay(flBaseTime + kStagger900);
     ch4.SetElapsed(0.0f);
 
-    // Channel 3: a 300-unit fade staggered 900 units after the base time.
     FloatTween &ch3 = m_aBonusAnimChannels[3];
     ch3.SetFrom(ch3.GetCurrent());
     ch3.SetTo(kShown);
@@ -2086,8 +2019,6 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
 
 /** @ghidraAddress 0x124000 */
 void LimelightResultLayer::ResetResultBonusAnimations(float flStartTime) {
-    // Each channel eases from its current shown value toward zero over the start time; a
-    // non-positive start time snaps the target to zero immediately.
     for (FloatTween &channel : m_aBonusAnimChannels) {
         channel.SetFrom(channel.GetCurrent());
         channel.SetTo(0.0f);
@@ -2102,12 +2033,10 @@ void LimelightResultLayer::ResetResultBonusAnimations(float flStartTime) {
 }
 
 namespace {
-// The overall pressed state published each frame while any touch is active, on release, or idle.
 constexpr unsigned short kPressedActive = 1;
 constexpr unsigned short kPressedReleased = 0x100;
 constexpr unsigned short kPressedNone = 0;
 
-// Whether a touch point lies inside a by-state anchor rectangle.
 bool IsTouchInsideRect(float flX, float flY, const PhoneLayoutRect &rect) {
     return rect.flX <= flX && flX <= rect.flX + rect.flWidth && rect.flY <= flY &&
            flY <= rect.flY + rect.flHeight;
@@ -2119,7 +2048,6 @@ void LimelightResultLayer::UpdatePhonePartTouchStates() {
     for (int nButton = 0; nButton < kButtonCount; ++nButton) {
         ResultButtonRecord &button = m_aButtons[nButton];
 
-        // First-use initialisation: mark the button unclaimed and clear its flags.
         if (!button.bInitialised) {
             button.nTouchId = kNoTouchId;
             button.bDown = false;
@@ -2129,7 +2057,6 @@ void LimelightResultLayer::UpdatePhonePartTouchStates() {
 
         TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
         if (button.nTouchId == kNoTouchId) {
-            // Unclaimed: scan the active touches for one pressing inside the button's rectangle.
             for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
                 TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
                 if (!pTouch->bIsNew) {
@@ -2146,7 +2073,6 @@ void LimelightResultLayer::UpdatePhonePartTouchStates() {
                 }
             }
         } else {
-            // Claimed: track the touch until it is released, latching a tap-edge on release inside.
             TouchPoint *pTouch = pTouchManager->FindTouchById(button.nTouchId);
             if (pTouch == nullptr) {
                 button.nTouchId = kNoTouchId;
@@ -2161,7 +2087,6 @@ void LimelightResultLayer::UpdatePhonePartTouchStates() {
                 if (pTouch->bEnded) {
                     button.nTouchId = kNoTouchId;
                     if (bInside) {
-                        // The click latch: pressed byte cleared, tap-edge byte set (flags = 0x100).
                         button.bDown = false;
                         button.bTapEdge = true;
                     }
@@ -2170,8 +2095,6 @@ void LimelightResultLayer::UpdatePhonePartTouchStates() {
         }
     }
 
-    // Publish the overall pressed state: active while any touch exists, the just-released latch on
-    // the frame the last touch ends, otherwise none.
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     if (pTouchManager->GetActiveTouchCount() > 0) {
         m_nPressedState = kPressedActive;
@@ -2183,31 +2106,22 @@ void LimelightResultLayer::UpdatePhonePartTouchStates() {
 }
 
 namespace {
-// The fully-opaque alpha level the panel-shown gate compares against.
 constexpr int kFullyOpaqueAlpha = 255;
-// The panel/effect alpha channels the interactivity gate reads.
 constexpr int kPanelAlphaChannel = 0;
 constexpr int kEffectAlphaChannel = 3;
-// The result-panel gesture button indices: the panel gate, the two swipe buttons, and the share
-// button.
 constexpr int kButtonPanel = 0;
 constexpr int kButtonSwipeRight = 1;
 constexpr int kButtonSwipeLeft = 2;
 constexpr int kButtonShare = 3;
-// The side-slider drag threshold, in pixels, past the touch's start X in either direction.
 constexpr float kSliderDragThreshold = 30.0f;
-// The slider's two settle-target directions.
 constexpr float kSliderDirectionRight = 1.0f;
 constexpr float kSliderDirectionLeft = -1.0f;
-// The themed sound effect the slider toggle fires.
 constexpr int kSliderToggleSoundEffect = 7;
-// The value the toggle target compares against.
 constexpr int kToggleOn = 1;
 } // namespace
 
 /** @ghidraAddress 0x1240ec */
 void LimelightResultLayer::UpdatePhoneTouchAndShare() {
-    // The result panel is interactive only once its reveal is complete and the screen fade is gone.
     const int nPanelAlpha =
         static_cast<int>(m_aBonusAnimChannels[kPanelAlphaChannel].GetCurrent() * kFullyOpaqueAlpha);
     const float flChannelC = m_aBonusAnimChannels[kEffectAlphaChannel].GetCurrent();
@@ -2218,8 +2132,6 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
     m_aButtons[kButtonPanel].bInitialised = nPanelAlpha == kFullyOpaqueAlpha && flFadeAlpha == 0.0f;
     if (flFadeAlpha != 0.0f ||
         static_cast<int>(flChannelC * static_cast<float>(nPanelAlpha)) != kFullyOpaqueAlpha) {
-        // Not fully shown: disable the swipe buttons, and the share button when Twitter is
-        // available.
         m_aButtons[kButtonSwipeRight].bInitialised = false;
         m_aButtons[kButtonSwipeLeft].bInitialised = false;
         if (m_bTwitterAvailable) {
@@ -2228,8 +2140,6 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
         return;
     }
 
-    // Fully shown: enable the swipe buttons on an iPad and the share button when Twitter is
-    // available.
     if (IsPad()) {
         m_aButtons[kButtonSwipeRight].bInitialised = true;
         m_aButtons[kButtonSwipeLeft].bInitialised = true;
@@ -2238,9 +2148,7 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
         m_aButtons[kButtonShare].bInitialised = true;
     }
 
-    // Track a horizontal swipe over the centre box: claim a fresh touch inside it, then release it
-    // as a left or right swipe once it moves past the drag threshold from its start X. The slider's
-    // tracked touch id reuses the current-step slot.
+    // The slider's tracked touch id reuses the current-step slot.
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     if (m_nCurrentStep == kNoStep) {
         for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
@@ -2271,11 +2179,9 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
                 m_aButtons[kButtonSwipeRight].bTapEdge = true;
                 m_nCurrentStep = kNoStep;
             }
-            // Within the drag deadzone the touch keeps tracking (its id is retained).
         }
     }
 
-    // On a swipe in single-player, toggle the slider value and fire the toggle sound.
     if ((GameSystem::GetGameSystem()->GetGameType() | 2) == 2) {
         if (!m_aButtons[kButtonSwipeRight].bTapEdge && !m_aButtons[kButtonSwipeLeft].bTapEdge) {
             m_bSliderSwiped = false;
@@ -2290,7 +2196,6 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
         }
     }
 
-    // On the share gesture, consume the edge and post the result to Twitter.
     if (m_bTwitterAvailable && m_aButtons[kButtonShare].bTapEdge) {
         m_aButtons[kButtonShare].bTapEdge = false;
         PostResultToTwitterBlack();
@@ -2299,35 +2204,27 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
 
 namespace {
 
-// The unit-interval-to-byte alpha scale (@ghidraAddress 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kAlphaScale = 255.0f;
-// The clear-rate threshold separating the cleared and failed stamps (@ghidraAddress 0x2fd008).
+// @ghidraAddress 0x2fd008
 constexpr float kClearRateThreshold = 0.7f;
-// The clear rate is shown as tenths of a percent (@ghidraAddress 0x2f8540).
+// @ghidraAddress 0x2f8540
 constexpr float kRateTenthsOfPercentScale = 1000.0f;
-// The pixel width a full score gauge bar scales to (@ghidraAddress 0x302d60), and the width a full
-// judgement-count bar scales to (@ghidraAddress 0x302d64).
+// @ghidraAddress 0x302d60 and 0x302d64
 constexpr float kScoreGaugeFullWidth = 160.0f;
 constexpr float kJudgeGaugeFullWidth = 138.0f;
-// The horizontal travel, in pixels, the two result pages slide by as they cross-fade.
 constexpr float kPageSlideDistance = 20.0f;
 
-// The instancer slots the iPad path draws into: the full-screen background, the music jacket, and
-// the two character previews. Everything else goes to the shared parts slot.
 constexpr unsigned int kBackgroundSlot = 0;
 constexpr unsigned long kJacketSlot = 2;
 constexpr unsigned long kPreviewLeftSlot = 3;
 constexpr unsigned long kPreviewRightSlot = 4;
-// The music jacket draws as a square of this pixel size.
 constexpr float kJacketSize = 180.0f;
 
-// The alpha channels the Limelight result window reads: the overall window fade, the panel fade,
-// and the page fade the two sliding pages share.
 constexpr int kChannelWindowFade = 0;
 constexpr int kChannelPanelFade = 1;
 constexpr int kChannelPageFade = 3;
 
-// The result-window part ids drawn by the iPad path.
 constexpr unsigned int kPartBackground = 0x00;
 constexpr unsigned int kPartPanelBody = 0x01;
 constexpr unsigned int kPartShareButton = 0x02;
@@ -2346,7 +2243,6 @@ constexpr unsigned int kPartScoreAboveTarget = 0x40;
 constexpr unsigned int kPartScoreBelowTarget = 0x41;
 constexpr unsigned int kPartGaugeBarBase = 0x42;
 constexpr unsigned int kPartSideScoreBankBase = 0x44;
-// The two sides' score banks sit ten part ids apart, one per play colour.
 constexpr unsigned int kPartSideScoreBankStride = 10;
 constexpr unsigned int kPartRankBadgeBase = 0x58;
 constexpr unsigned int kPartFullComboBadge = 0x5e;
@@ -2362,7 +2258,6 @@ constexpr unsigned int kPartComboGauge = 0x79;
 constexpr unsigned int kPartRateGauge = 0x7a;
 constexpr unsigned int kPartArPanelMark = 0x7b;
 constexpr unsigned int kPartArSideBankBase = 0x7c;
-// The AR columns' number banks and marks are also a play-colour pair, 0x16 part ids apart.
 constexpr unsigned int kPartArSideBankStride = 0x16;
 constexpr unsigned int kPartArSideMarkBase = 0x91;
 constexpr unsigned int kPartArTargetBank = 0xa8;
@@ -2387,18 +2282,13 @@ constexpr unsigned int kPartBonusRowRule = 0xfc;
 constexpr unsigned int kPartBonusTotalRule = 0xfd;
 constexpr unsigned int kPartBonusRowValueMark = 0xfe;
 
-// The winner stamp is placed at a fixed x, one row below the clear/failed stamp.
 constexpr float kWinnerStampX = 524.0f;
 constexpr float kWinnerStampYOffset = 18.0f;
-// The AR number column is nudged left of its anchor.
 constexpr float kArNumberNudgeX = -2.0f;
 
 // The play record's trailing field holds the match outcome; this side won.
 constexpr int kMatchOutcomeWin = 0;
 
-// The parts-anchor slots the iPad result window positions its elements at. Each name is the sole
-// element drawn at that slot; the table itself is filled at load time by
-// InitializePadResultLayoutTable.
 constexpr int kAnchorBackground = 1;
 constexpr int kAnchorPanelBody = 2;
 constexpr int kAnchorShareButton = 3;
@@ -2445,27 +2335,22 @@ constexpr int kAnchorBonusTotalRule = 130;
 constexpr int kAnchorBonusTotalValue = 131;
 constexpr int kAnchorBonusTotalScore = 132;
 
-// The four bonus rows draw their value from these anchors, in the binary's order: the clear, miss,
-// rank, and first-play bonuses (the rank and miss anchors are swapped relative to the row order).
+// The rank and miss value anchors are swapped relative to the row order.
 constexpr int kAnchorBonusValueClear = 119;
 constexpr int kAnchorBonusValueMiss = 121;
 constexpr int kAnchorBonusValueRank = 120;
 constexpr int kAnchorBonusValueFirstPlay = 122;
 
-// The number of frame parts in each mirrored frame run, and the number of bonus rows.
 constexpr int kFramePartCount = 6;
 constexpr int kBonusRowCount = 4;
 constexpr int kStatsHeaderPartCount = 3;
 
-// The per-side statistics rows: side 0's anchors sit this far above side 1's, and the row's columns
-// are these offsets from the side's base slot.
 constexpr int kStatsSideAnchorStride = 0x11;
 constexpr int kStatsAnchorBase = 1;
 constexpr int kStatsColumnSideLabel = 0x2e;
 constexpr int kStatsColumnSideMark = 0x2f;
 constexpr int kStatsColumnFirst = 0x30; // Then alternating value and gauge columns.
 
-// The AR comparison block's anchor slots for one side.
 struct ArComparisonAnchors {
     int nSideNumber;
     int nTargetNumber;
@@ -2477,22 +2362,15 @@ struct ArComparisonAnchors {
 constexpr ArComparisonAnchors kArAnchorsSideOne{84, 85, 86, 87, 88};
 constexpr ArComparisonAnchors kArAnchorsSideZero{92, 93, 94, 95, 96};
 
-// The AR panel mark and side label slots for side zero.
 constexpr int kAnchorArPanelMarkZero = 89;
 constexpr int kAnchorArSideLabelZero = 90;
 
-// Clamps a rate to the unit interval the way the binary does: values above one saturate, and NaN or
-// negative values fall to zero.
+// NaN or negative rates fall to zero.
 inline float ClampRateToUnit(float flRate) {
     const float flCapped = flRate > 1.0f ? 1.0f : flRate;
     return flRate >= 0.0f ? flCapped : 0.0f;
 }
 
-// The emit helpers below de-inline the shapes the binary repeats verbatim through the two sliding
-// pages; each one seeds a fresh position vector from the page offset and adds the element's anchor,
-// exactly as the binary's `stp` pair plus AddVector2 does.
-
-// Emits one part at an anchor shifted right by the statistics page's slide offset.
 inline void EmitOffsetPart(LimelightResultLayer *pLayer,
                            unsigned int nPartId,
                            int nAnchor,
@@ -2503,7 +2381,6 @@ inline void EmitOffsetPart(LimelightResultLayer *pLayer,
     pLayer->EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nPartId, position, nAlpha, 0);
 }
 
-// Emits a run of consecutive parts at consecutive anchors, all on the statistics page.
 inline void EmitOffsetPartRun(LimelightResultLayer *pLayer,
                               unsigned int nFirstPart,
                               int nFirstAnchor,
@@ -2516,7 +2393,6 @@ inline void EmitOffsetPartRun(LimelightResultLayer *pLayer,
     }
 }
 
-// Emits one part at an anchor shifted by the bonus page's slide offset.
 inline void EmitBonusPart(LimelightResultLayer *pLayer,
                           unsigned int nPartId,
                           int nAnchor,
@@ -2527,7 +2403,6 @@ inline void EmitBonusPart(LimelightResultLayer *pLayer,
     pLayer->EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nPartId, position, nAlpha, 0);
 }
 
-// Draws one bonus row's rating value at an anchor shifted by the bonus page's slide offset.
 inline void EmitBonusRatingValue(LimelightResultLayer *pLayer,
                                  int nAnchor,
                                  const S_VECTOR2 &offset,
@@ -2538,8 +2413,7 @@ inline void EmitBonusRatingValue(LimelightResultLayer *pLayer,
     pLayer->RenderRatingValue(flValue, position, nAlpha);
 }
 
-// Emits the frame both sliding pages share: three mirrored part pairs at fixed anchors, plus the
-// page's own marker. Neither is shifted by the page offset.
+// Neither the shared frame nor the page marker is shifted by the page offset.
 inline void
 EmitPageFrame(LimelightResultLayer *pLayer, unsigned int nAlpha, unsigned int nPageMarkPart) {
     for (int i = 0; i < kFramePartCount; ++i) {
@@ -2562,9 +2436,6 @@ EmitPageFrame(LimelightResultLayer *pLayer, unsigned int nAlpha, unsigned int nP
                            0);
 }
 
-// Draws one side's achievement-rate comparison: the side's rate, the target rate, an ahead or
-// behind mark, the signed difference, and the grade badge. The binary emits this block twice, once
-// per side, with only the anchors and the play-colour-selected banks differing.
 inline void EmitArComparison(LimelightResultLayer *pLayer,
                              const ArComparisonAnchors &anchors,
                              unsigned int nSideNumberBank,
@@ -2601,8 +2472,6 @@ inline void EmitArComparison(LimelightResultLayer *pLayer,
     position = S_VECTOR2{flOffsetX, 0.0f};
     AddVector2(&position, &g_aLimelightPartsAnchorPhone[anchors.nCompareMark]);
 
-    // Behind the target draws the behind mark and the shortfall; at or above it draws the ahead
-    // mark and the surplus.
     int nDifference = 0;
     if (ClampRateToUnit(flSideRate) <= ClampRateToUnit(flTargetRate)) {
         pLayer->EmitPartSprite(
@@ -2634,7 +2503,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
     ScoreTracker *pTracker = ScoreTracker::shared();
     const unsigned int nPlayColor = static_cast<unsigned int>(pGameSystem->GetPlayColor());
 
-    // Clear every instancer's sprite count before re-emitting this frame.
     for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
@@ -2647,7 +2515,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
     const unsigned int nPageAlpha =
         static_cast<unsigned int>(flPageFade * static_cast<float>(nWindowAlpha));
 
-    // The window frame and the fixed panel furniture.
     EmitPartSprite(0.0f,
                    1.0f,
                    1.0f,
@@ -2690,7 +2557,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                        nPageAlpha,
                        m_aButtons[kButtonShare].bDown);
     }
-    // The panel frame is three mirrored pairs: the odd part of each pair draws flipped in x.
     for (int i = 0; i < kFramePartCount; ++i) {
         EmitPartSprite(0.0f,
                        (i % 2) == 0 ? 1.0f : -1.0f,
@@ -2742,7 +2608,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                  false,
                  nPanelAlpha);
 
-    // The target score, and the signed distance this play landed from it.
     const int nTargetScore = pGameSystem->GetTargetScore() < 0 ? 0 : pGameSystem->GetTargetScore();
     int nScoreGap = pTracker->GetPlayRecordCell(1, kCellScore) - nTargetScore;
     RenderNumber(2.0f,
@@ -2782,7 +2647,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                  true,
                  nPanelAlpha);
 
-    // The two sides' score gauges, each scaled against the higher of the two scores.
     const int nSideOneScore = pTracker->GetPlayRecordCell(1, kCellScore);
     const int nSideZeroScore = pTracker->GetPlayRecordCell(0, kCellScore);
     float flSideOneBar = (nSideZeroScore != 0 || nSideOneScore != 0) ? 1.0f : 0.0f;
@@ -2856,7 +2720,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                  true,
                  nPanelAlpha);
 
-    // The cleared or failed stamp, the winner stamp, the grade badge, and the full-combo badge.
     EmitPartSprite(0.0f,
                    1.0f,
                    1.0f,
@@ -2897,8 +2760,7 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                        0);
     }
 
-    // The statistics and bonus pages cross-fade as the slide timer runs, each sliding in from its
-    // own side. Which page leads depends on the panel's active flag.
+    // Which page leads depends on the panel's active flag.
     const float flSlide = m_flSlideTimer;
     const float flTransition = std::fabs(flSlide);
     const float flSlideSign = flSlide <= 0.0f ? -kPageSlideDistance : kPageSlideDistance;
@@ -2940,8 +2802,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                    flStatsOffsetX,
                    nStatsAlpha);
 
-    // One statistics row per side: the judgement counts with their proportion gauges, the combo and
-    // reflec fractions, the score, and the clear rate.
     for (unsigned int nSide = 0; nSide < static_cast<unsigned int>(ScoreTracker::kSideCount);
          ++nSide) {
         const int nJust = pTracker->GetPlayRecordCell(nSide, kCellJust);
@@ -2955,7 +2815,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
         const float flRate = pTracker->GetPlayRecordRate(nSide);
         const float flTotalNotes = static_cast<float>(nTotalNotes);
 
-        // The reflec quota is read from the score slot belonging to this row's play colour.
         const unsigned int nQuotaColor = nSide == 0 ? nPlayColor : (nPlayColor == 0 ? 1u : 0u);
         const int nReflecQuota = nQuotaColor == 0 ? m_nResultScore : m_nResultScoreHi;
         const int nRowBase = kStatsAnchorBase + (nSide == 0 ? kStatsSideAnchorStride : 0);
@@ -3080,8 +2939,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
                      flStatsOffsetX,
                      nStatsAlpha);
 
-    // The bonus breakdown page: the same frame, four bonus rows with their rating values, and the
-    // grand total.
     EmitPageFrame(this, nBonusAlpha, kPartBonusPageMark);
     for (int i = 0; i < kStatsHeaderPartCount; ++i) {
         EmitBonusPart(this,
@@ -3138,8 +2995,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
         RenderLimelightTotalScore(&cursor, nBonusAlpha);
     }
 
-    // In the versus game types the two page markers draw twice: once opaque over the share fade and
-    // once at each page's own alpha.
     if ((pGameSystem->GetGameType() | 2) == 2) {
         for (int i = 0; i < 2; ++i) {
             S_VECTOR2 position{};
@@ -3158,7 +3013,6 @@ void LimelightResultLayer::RenderLimelightResultWindow() {
 
 namespace {
 
-// The phone result window's part ids.
 constexpr unsigned int kPhonePartBackground = 0x00;
 constexpr unsigned int kPhonePartShareButton = 0x01;
 constexpr unsigned int kPhonePartBoxCorner = 0x02;
@@ -3219,7 +3073,6 @@ constexpr unsigned int kPhonePartBonusRowMark = 0x80;
 constexpr unsigned int kPhonePartBonusRowRule = 0x8b;
 constexpr unsigned int kPhonePartBonusTotalRule = 0x8c;
 
-// The phone anchor-position indices the window resolves through getPosition_Phone.
 constexpr int kPhoneAnchorBackground = 0;
 constexpr int kPhoneAnchorOuterBoxTopLeft = 1;
 constexpr int kPhoneAnchorOuterBoxBottomRight = 2;
@@ -3284,8 +3137,6 @@ constexpr int kPhoneAnchorBonusTotalRule = 0x55;
 constexpr int kPhoneAnchorBonusTotalValue = 0x56;
 constexpr int kPhoneAnchorBonusTotalScore = 0x57;
 
-// The separator-record runs the window draws its rules from: the twelve panel rules, the
-// twenty-eight statistics-table rules, and the six bonus-table rules.
 constexpr unsigned int kPhoneSeparatorPanelFirst = 0;
 constexpr unsigned int kPhoneSeparatorPanelThickFirst = 2;
 constexpr unsigned int kPhoneSeparatorPanelThickCount = 4;
@@ -3295,30 +3146,21 @@ constexpr unsigned int kPhoneSeparatorStatsCount = 28;
 constexpr unsigned int kPhoneSeparatorBonusFirst = 0x2e;
 constexpr unsigned int kPhoneSeparatorBonusCount = 6;
 
-// The statistics rows' anchor columns: side zero's row sits this far above side one's, and the
-// eight columns follow the row's base slot.
 constexpr int kPhoneStatsSideAnchorStride = 9;
 constexpr int kPhoneStatsColumnFirst = 0x20;
 
-// The nine-patch box inset: each corner occupies this many pixels, so the stretched edges span the
-// box less twice the inset.
 constexpr float kPhoneBoxInset = 9.0f;
 constexpr float kPhoneBoxInsetTwice = 18.0f;
-// The stats bar's end caps occupy this many pixels each.
 constexpr float kPhoneBarCapInset = 15.0f;
 constexpr float kPhoneBarCapInsetTwice = 30.0f;
-// The footer band starts this far in from the panel's left edge and is mirrored about the viewport.
 constexpr float kPhoneFooterInset = 42.0f;
-// The music jacket draws as a square of this pixel size.
 constexpr float kPhoneJacketSize = 82.0f;
-// The side rail is drawn at twice the viewport height so it always spans the screen.
+// Twice the viewport height so the rail always spans the screen.
 constexpr float kPhoneSideRailHeightScale = 2.0f;
-// The two side labels stand on end off an iPhone: the rows read bottom-up on one side and top-down
-// on the other (@ghidraAddress 0x302d74 and 0x302d78).
+// @ghidraAddress 0x302d74 and 0x302d78
 constexpr float kPhoneSideLabelRotationZero = -1.5707964f;
 constexpr float kPhoneSideLabelRotationOne = 1.5707964f;
 
-// The number of bonus rows the phone breakdown lists.
 constexpr int kPhoneBonusRowCount = 4;
 
 } // namespace
@@ -3337,7 +3179,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     GameSystem *pViewport = GameSystem::GetGameSystem();
     S_VECTOR2 position{};
 
-    // Clear every instancer's sprite count before re-emitting this frame.
     for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
@@ -3348,8 +3189,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     const unsigned int nPanelAlpha =
         static_cast<unsigned int>(flPanelFade * static_cast<float>(nWindowAlpha));
 
-    // Draws one nine-patch box: four mirrored corners, two stretched horizontal edges, two
-    // stretched vertical edges, and the stretched centre fill.
     const auto EmitNinePatch = [&](const S_VECTOR2 &topLeft,
                                    const S_VECTOR2 &bottomRight,
                                    unsigned int nCornerPart,
@@ -3422,7 +3261,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                                     flInnerHeight);
     };
 
-    // Resolves an anchor, shifts it by a page offset, and returns the result.
     const auto AnchorPlus = [&](int nAnchorIndex, const S_VECTOR2 &offset) {
         S_VECTOR2 result{};
         getPosition_Phone(nAnchorIndex, &result);
@@ -3431,7 +3269,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
         return result;
     };
 
-    // The full-screen backdrop, the side rail, and the header bar.
     getPosition_Phone(kPhoneAnchorBackground, &position);
     RenderPhoneResultSpriteById(
         kBackgroundSlot, kPhonePartBackground, position, nWindowAlpha, 0, 0.0f, 1.0f, 1.0f);
@@ -3463,8 +3300,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     RenderPhoneResultSpriteById(
         kPartsSlot, kPhonePartHeaderBarCap, headerRight, nWindowAlpha, 0, 0.0f, 1.0f, 1.0f);
 
-    // The footer band: a cap at each end, mirrored about the viewport, with a stretched body
-    // between.
     S_VECTOR2 footer{};
     getPosition_Phone(kPhoneAnchorFooter, &footer);
     const float flFooterBodyX = footer.x + kPhoneFooterInset;
@@ -3503,7 +3338,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                                     1.0f);
     }
 
-    // The outer panel box and the inner information box.
     S_VECTOR2 outerTopLeft{};
     S_VECTOR2 outerBottomRight{};
     getPosition_Phone(kPhoneAnchorOuterBoxTopLeft, &outerTopLeft);
@@ -3527,7 +3361,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                   kPhonePartInnerFill,
                   nPanelAlpha);
 
-    // The twelve panel rules: the middle four are the thick variant.
     for (unsigned int i = 0; i < kPhoneSeparatorPanelCount; ++i) {
         const unsigned int nSeparator = kPhoneSeparatorPanelFirst + i;
         const bool bThick =
@@ -3541,8 +3374,7 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                                       nPanelAlpha);
     }
 
-    // The music jacket and the two character previews. In portrait the previews come from the
-    // captured half-scale image; otherwise they draw straight from their instancers.
+    // In portrait the previews come from the captured half-scale image.
     getPosition_Phone(kPhoneAnchorJacket, &position);
     EmitTexturedPart(
         kJacketSlot, position, S_VECTOR2{kPhoneJacketSize, kPhoneJacketSize}, nPanelAlpha);
@@ -3581,7 +3413,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                                 1.0f,
                                 1.0f);
 
-    // The target score and the signed distance this play landed from it.
     const int nSideOneScore = pTracker->GetPlayRecordCell(1, kCellScore);
     getPosition_Phone(kPhoneAnchorTargetLabel, &position);
     RenderPhoneResultSpriteById(
@@ -3659,7 +3490,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
             kPartsSlot, kPhonePartWinnerStamp, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
     }
 
-    // The statistics box and the bar beneath it.
     S_VECTOR2 statsTopLeft{};
     S_VECTOR2 statsBottomRight{};
     S_VECTOR2 barLeft{};
@@ -3745,8 +3575,7 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     RenderPhoneResultSpriteById(
         kPartsSlot, kPhonePartBarCap, barRight, nPanelAlpha, 0, 0.0f, -1.0f, 1.0f);
 
-    // The statistics and bonus pages cross-fade as the slide timer runs, each sliding in from its
-    // own side. Which page leads depends on the panel's active flag.
+    // Which page leads depends on the panel's active flag.
     const float flSlide = m_flSlideTimer;
     const float flTransition = std::fabs(flSlide);
     const float flRemaining = 1.0f - flTransition;
@@ -3771,7 +3600,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     const unsigned int nStatsAlpha = static_cast<unsigned int>(flStatsAlpha);
     const unsigned int nBonusAlpha = static_cast<unsigned int>(flBonusAlpha);
 
-    // The statistics page: its title fades with the page's own share of the title channel.
     getPosition_Phone(kPhoneAnchorStatsTitle, &position);
     RenderPhoneResultSpriteById(
         kPartsSlot,
@@ -3790,7 +3618,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                                       nStatsAlpha);
     }
 
-    // The statistics table's column headings.
     const int aStatsHeaderAnchors[] = {kPhoneAnchorStatsDecorA,
                                        kPhoneAnchorStatsHeaderB,
                                        kPhoneAnchorStatsHeaderC,
@@ -3821,7 +3648,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
                                 1.0f);
     }
 
-    // One statistics row per side, each a run of eight value columns.
     const unsigned int nSideOneLabel = kPhonePartSideOneLabelBase + nPlayColor;
     const unsigned int nSideZeroLabel = kPhonePartSideZeroLabelBase + (nPlayColor == 0 ? 1u : 0u);
     for (unsigned int nSide = 0; nSide < static_cast<unsigned int>(ScoreTracker::kSideCount);
@@ -3836,7 +3662,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
         const int nTotalNotes = pTracker->GetTotalNotes();
         const float flRate = pTracker->GetPlayRecordRate(nSide);
 
-        // The reflec quota is read from the score slot belonging to this row's play colour.
         const unsigned int nQuotaColor = nSide == 0 ? nPlayColor : (nPlayColor == 0 ? 1u : 0u);
         const int nReflecQuota = nQuotaColor == 0 ? m_nResultScore : m_nResultScoreHi;
         const int nRowBase = nSide == 0 ? kPhoneStatsSideAnchorStride : 0;
@@ -3875,7 +3700,6 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
             static_cast<int>(flRate * kRateTenthsOfPercentScale), &cursor, nStatsAlpha);
     }
 
-    // The bonus breakdown page.
     getPosition_Phone(kPhoneAnchorStatsTitle, &position);
     RenderPhoneResultSpriteById(
         kPartsSlot, kPhonePartBonusTitle, position, nBonusAlpha, 0, 0.0f, 1.0f, 1.0f);
@@ -3964,7 +3788,7 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
     bonusCursor = AnchorPlus(kPhoneAnchorBonusTotalScore, bonusOffset);
     RenderPhoneTotalScoreDigits(&bonusCursor, nBonusAlpha);
 
-    // The two page dots: each lights (drawing through the dimmed pass) for the page it selects.
+    // Each dot draws through the dimmed pass for the page it selects.
     getPosition_Phone(kPhoneAnchorPageDotStats, &position);
     RenderPhoneResultSpriteById(kPartsSlot,
                                 kPhonePartPageDot,
@@ -3979,10 +3803,7 @@ void LimelightResultLayer::RenderPhoneResultWindow() {
         kPartsSlot, kPhonePartPageDot, position, nPageAlpha, m_nActive == 0, 0.0f, 1.0f, 1.0f);
 }
 
-// Seeds every Limelight phone result-screen layout table at load time, the twin of
-// InitializeResultLayoutTable. Its address sits in the binary's __mod_init_func list (0x358cb0), so
-// dyld runs it at image load; nothing calls it by name. The binary wraps the whole fill in an
-// autorelease pool, then writes every field inline.
+// @ghidraAddress 0x358cb0
 /** @ghidraAddress 0x12af9c */
 __attribute__((constructor)) void InitializePadResultLayoutTable() {
     @autoreleasepool {
@@ -6467,8 +6288,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightColorMarkerPoints[77].y = 910.0f;
         g_LimelightColorMarkerOrigin.x = 384.0f;
         g_LimelightColorMarkerOrigin.y = 910.0f;
-        // Each centre-position record arrives as one 16-byte pool blob, so all four fields are
-        // set: 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0.
+        // @ghidraAddress 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0
         g_LimelightCenterPositionPhoneState.flX = 119.0f;
         g_LimelightCenterPositionPhoneState.flY = 439.0f;
         g_LimelightCenterPositionPhoneState.flWidth = 530.0f;

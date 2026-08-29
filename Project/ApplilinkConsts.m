@@ -1,19 +1,3 @@
-//
-//  ApplilinkConsts.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkConsts). This is a plain
-//  Objective-C file: every collaborator (Crypto, ApplilinkUdid, ApplilinkCore, ApplilinkParameters,
-//  ApplilinkNetworkError, and RecommendCore) is reached through ordinary message sends, with no
-//  C++.
-//
-//  The class has no instance state; every member is a class method. Its mutable state lives in
-//  file-scope statics (the cached user identifier and country code, the appli-country-code lock,
-//  the category identifier, and the advertising identifier) and in NSUserDefaults. The persisted
-//  identifier, application-install list, and template list are encrypted with Crypto before they
-//  are stored.
-//
-
 #import "ApplilinkConsts.h"
 
 #import "ApplilinkCore.h"
@@ -24,26 +8,21 @@
 #import "RBMacros.h"
 #import "RecommendCore.h"
 
-// The server environment name is compared against these string keys, each selecting a base URL.
 static NSString *const kApplilinkEnvProduction = @"0";
 static NSString *const kApplilinkEnvStaging = @"1";
 static NSString *const kApplilinkEnvSandboxAlt = @"2";
 static NSString *const kApplilinkEnvSandbox = @"3";
 static NSString *const kApplilinkEnvDevelopmentAlt = @"4";
 
-// The base URLs keyed by the server environment name above, build-configurable; see RBMacros.h.
 static NSString *const kApplilinkUrlProduction = @RB_APPLILINK_URL_PRODUCTION;
 static NSString *const kApplilinkUrlStaging = @RB_APPLILINK_URL_STAGING;
 static NSString *const kApplilinkUrlDevelopment = @RB_APPLILINK_URL_DEVELOPMENT;
 static NSString *const kApplilinkUrlSandbox = @RB_APPLILINK_URL_SANDBOX;
 
-// The SDK version string.
 static NSString *const kApplilinkSdkVersion = @"2.2.2";
 
-// The minimum operating-system version, as a float, that the SDK supports.
 static const float kApplilinkMinimumSystemVersion = 6.1f;
 
-// The NSUserDefaults keys for the SDK's persisted state.
 static NSString *const kDefaultsKeyEnv = @"ApplilinkNetwork.env";
 static NSString *const kDefaultsKeyAppliId = @"ApplilinkNetwork.appliId";
 static NSString *const kDefaultsKeyUserId = @"ApplilinkNetwork.userId";
@@ -53,13 +32,10 @@ static NSString *const kDefaultsKeyAppInstallListExpire =
     @"ApplilinkRecommend.app.install.list.expire";
 static NSString *const kDefaultsKeyTemplateList = @"ApplilinkRecommend.template.list";
 
-// The Crypto keys under which each persisted payload is encrypted.
 static NSString *const kCryptoKeyUserId = @"applilink.reward.recommend";
 static NSString *const kCryptoKeyAppInstallList = @"applilink.recommend.install.list";
 static NSString *const kCryptoKeyTemplateList = @"applilink.recommend.template.list";
 
-// The application-install list is matched to the app's own URL scheme, then written to a temporary
-// file, keyed by these dictionary keys and file name.
 static NSString *const kBundleUrlTypesKey = @"CFBundleURLTypes";
 static NSString *const kBundleUrlSchemesKey = @"CFBundleURLSchemes";
 static NSString *const kInstallEntryDefaultSchemeKey = @"default_scheme";
@@ -68,30 +44,23 @@ static NSString *const kAppListRootKey = @"applist";
 static NSString *const kTemplateListRootKey = @"templateList";
 static NSString *const kAppInstallListFileName = @"applilinkapplist";
 
-// The application-install list stays valid for one hour after it is stored.
 static const NSTimeInterval kAppInstallListLifetime = 3600.0;
 
-// The Crypto direction argument: encrypt plaintext, or decrypt ciphertext.
 enum {
     kCryptoModeEncrypt = 0,
     kCryptoModeDecrypt = 1,
 };
 
-// The Applilink error codes reported to the delegate when a request is refused.
 static const NSInteger kApplilinkErrorSdkUnavailable = 0x401;
 static const NSInteger kApplilinkErrorTrackingDisabled = 0x404;
 
-// The cached, decrypted user identifier.
 static NSString *g_userId = nil;
 
-// The country code, and whether the SDK itself supplied it (which locks out later overrides).
 static NSString *g_countryCode = nil;
 static BOOL g_appliCountryCodeSet = NO;
 
-// The advert category identifier.
 static NSString *g_categoryId = nil;
 
-// The advertising identifier.
 static NSString *g_adId = nil;
 
 @implementation ApplilinkConsts
@@ -161,7 +130,6 @@ static NSString *g_adId = nil;
         [[NSUserDefaults standardUserDefaults] synchronize];
         [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *error){
             /** @ghidraAddress 0x205a14 */
-            // The binary passes an empty completion block here.
         }];
     }
     g_userId = [NSString stringWithString:userId];
@@ -333,8 +301,7 @@ static NSString *g_adId = nil;
             }
         }
     }
-    // The binary loads and decrypts the list to refresh the advertising identifier, but returns
-    // nil rather than the parsed list.
+    // The binary returns nil rather than the parsed list; the load exists to refresh the ad id.
     return nil;
 }
 

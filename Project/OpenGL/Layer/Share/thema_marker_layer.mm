@@ -42,7 +42,6 @@ constexpr MarkerLayout kMarkerLayout[] = {
     {248.0f, 34.0f, 496.0f, 124.0f, 100},
 };
 
-// Only the six entries the markers use (indices 95 through 100) are listed, keyed by table index.
 // @ghidraAddress 0x2ef668
 struct UvEntry {
     int nIndex;
@@ -121,7 +120,6 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
     const int nThema = [RBUserSettingData.sharedInstance thema];
     m_nMarkerCount = nThema == kClassicThema ? kClassicMarkerCount : kOtherMarkerCount;
 
-    // The markers hang beneath the background layer's render object, not the global scene root.
     BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
     ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
 
@@ -386,7 +384,6 @@ constexpr float kBandDimFactor = 0.8f;
 
 /** @ghidraAddress 0x1804a4 */
 void ThemaMarkerLayer::RefreshMarkerAlpha(float flDelta) {
-    // The fade tween's elapsed baseline is offset by the active-marker value.
     const float flTarget = m_fadeChannel.GetDuration() + m_flActiveMarker;
     if (flTarget > m_fadeChannel.GetElapsed()) {
         const float flElapsed = std::min(m_fadeChannel.GetElapsed() + flDelta, flTarget);
@@ -428,7 +425,6 @@ void ThemaMarkerLayer::RefreshMarkerAlpha(float flDelta) {
                 flAlpha = flBase * m_flDangerBrightness * m_flScaleX * kBandDimFactor;
                 break;
             default:
-                // Groups 4 and 5 ignore the per-group scale.
                 flAlpha = m_fadeChannel.GetCurrent() * kMarkerAlphaScale * m_flScaleY;
                 break;
             }

@@ -148,9 +148,8 @@ public:
     void TraverseChildren();
 
 private:
-    // +0x00: implicit vtable pointer (from the virtual destructor above).
-    // +0x08/+0x10: this node's slot in a self-linked ring whose owning list is not yet identified;
-    // it is distinct from the parent/child/sibling tree below, which the link helpers manage.
+    // +0x00: implicit vtable pointer.
+    // +0x08/+0x10: a self-linked ring distinct from the parent/child/sibling tree below.
     C_RENDER *m_pLinkPrev = {};    // +0x08
     C_RENDER *m_pLinkNext = {};    // +0x10
     int m_nField18 = {};           // +0x18: node state not yet recovered.
@@ -158,16 +157,14 @@ private:
     C_RENDER *m_pChildHead = {};   // +0x28
     C_RENDER *m_pSiblingPrev = {}; // +0x30
     C_RENDER *m_pSiblingNext = {}; // +0x38
-    // +0x40: lazily-allocated buffer freed with delete[] in the destructor; the element type is not
-    // yet recovered, so it is modelled as a raw byte buffer.
+    // +0x40: the element type is not yet recovered, so it is modelled as a raw byte buffer.
     unsigned char *m_pBuffer = {};      // +0x40
     unsigned char m_reserved48[8] = {}; // +0x48: node state not yet recovered.
     float m_mLocalMatrix[16] = {};      // +0x50: local transform.
     float m_mWorldMatrix[16] = {};      // +0x90: composed world transform.
     bool m_bDeleteRequest = {};         // +0xd0
     bool m_bVisible = {};               // +0xd1
-    // +0xd2..+0xd3 is alignment padding; the polymorphic object is 0xd4 bytes, and derived classes
-    // place their first member at +0xd4.
+    // +0xd2..+0xd3 is alignment padding; derived classes place their first member at +0xd4.
     unsigned char m_reservedD2[2] = {}; // +0xd2
 };
 

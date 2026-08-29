@@ -1,16 +1,3 @@
-//
-//  RBMenuButton.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuButton). Verified against
-//  the arm64 disassembly: -setupView:'s bounds sizing, the resizable-image cap insets, and the
-//  per-type image-name table were recovered from the soft-float register moves and the [type * 5]
-//  table index that the decompiler folds into pseudo-variables.
-//
-//  -setupView: sets no background colour anywhere in its 0x9dab4-0x9e1af body, so the button's own
-//  surface is transparent and only the pill artwork is drawn.
-//
-
 #import "RBMenuButton.h"
 
 #import "RBUserSettingData.h"
@@ -18,45 +5,29 @@
 #import "UIImageView+RB.h"
 #import "deviceenvironment.h"
 
-// The inner button's bounds, chosen by the active iPad idiom. The wide variant uses a larger
-// button to fit the wider glyphs.
 static const CGFloat kMenuButtonWidthNarrow = 30.0;
 static const CGFloat kMenuButtonHeightNarrow = 42.0;
 static const CGFloat kMenuButtonWidthWide = 92.0;
 static const CGFloat kMenuButtonHeightWide = 72.0;
 
-// The theme index below which the button always uses the narrow artwork regardless of iPad idiom.
 static const NSInteger kMenuButtonWideArtworkTheme = 2;
 
-// The autoresizing mask applied to the button and its flash background: 0x12 at 0x9dda0 and
-// 0x9df9c, which is flexible width and height, so both follow the container when the menu bar
-// widens it from the 92 points set here to the width of a footer cell.
+// The 0x12 mask the binary sets at 0x9dda0 and 0x9df9c.
 static const UIViewAutoresizing kMenuButtonAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The autoresizing mask applied to the flash icon overlay: 0x2d at 0x9e128, which is all four
-// flexible margins and no flexible size, so the overlay keeps its own size and stays centred while
-// the margins absorb the change.
+// The 0x2d mask the binary sets at 0x9e128.
 static const UIViewAutoresizing kMenuButtonEffectTextAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// The cap-inset inset applied when stretching the background and flash images: the resizable region
-// is a single centre pixel, so the caps are half the image size less one pixel.
-// The fmov at 0x9dcb0 is an instruction immediate, not a pool slot, so it carries no
-// @ghidraAddress: the audit tool would read the instruction bytes as a float. Its word is
-// 0x1e7e100a, whose imm8 field (bits 20:13) is 0xf0, and VFPExpandImm(0xf0) is -1.0. Ghidra
-// renders this one as -0x4010000000000000, which is easy to misread as -4.0; -4.0 would need
-// imm8 0x90 and the word 0x1e72100a. Decode the field rather than the printed form.
+// An fmov immediate at 0x9dcb0, not a pool slot, so it carries no @ghidraAddress. Ghidra prints it
+// as -0x4010000000000000, but the imm8 field 0xf0 decodes to -1.0, not -4.0.
 static const CGFloat kMenuButtonCapInsetMargin = 1.0;
 
-// The number of image-name slots per button type in the setup table. Only the first four are used;
-// the fifth is a shared fallback image name.
+// Only the first four of the binary's five slots per type are used; the fifth is a fallback.
 static const NSUInteger kMenuButtonImageNamesPerType = 4;
 
-// The background, icon, flash-background, and flash-icon image names for each RBMenuButtonType, in
-// type order. The playlist add and delete buttons share the add/delete background and the settings
-// flash background; the finish button shares the store flash background.
 static NSString *const kMenuButtonImageNames[][kMenuButtonImageNamesPerType] = {
     {@"01_music_select/sel_b_set_1",
      @"01_music_select/sel_b_set_3",
@@ -84,7 +55,6 @@ static NSString *const kMenuButtonImageNames[][kMenuButtonImageNamesPerType] = {
      @"01_music_select/sel_b_fin_eff_3"},
 };
 
-// The slot index within a type's image-name row.
 enum {
     kMenuButtonImageBackground = 0,
     kMenuButtonImageIcon = 1,
@@ -125,11 +95,7 @@ enum {
     } else {
         background = [UIImage imageWithName:backgroundName];
     }
-    // Both horizontal caps come from the WIDTH. The binary sends -size twice and takes d0, the
-    // width, from each (0x9dc94 and 0x9dca4), so the left inset at 0x9dcb4 and the right at 0x9dcbc
-    // are the same expression. Taking the right one from the height makes the two caps exceed the
-    // image whenever it is taller than it is wide, which leaves an invalid resizable image that
-    // draws as a flat block rather than a stretched button face.
+    // Both horizontal caps come from the width (0x9dc94 and 0x9dca4), never the height.
     background = [background
         resizableImageWithCapInsets:UIEdgeInsetsMake(
                                         0.0,

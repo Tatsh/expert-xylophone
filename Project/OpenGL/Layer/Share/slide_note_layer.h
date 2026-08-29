@@ -27,8 +27,7 @@ struct SlideNoteTrail {
     // unsigned char aPad02[2] = {}; /*!< Alignment padding. +0x02..+0x03 */
     int nKind = {};  /*!< The trail kind/type. +0x04 */
     int nColor = {}; /*!< The note colour (0 or 1). +0x08 */
-    // +0x0c..+0x18: the trail's two endpoints (the animated end at +0x0c, the target at +0x14); the
-    // update draws the comet between them.
+    // +0x0c..+0x18: the trail's two endpoints (the animated end at +0x0c, the target at +0x14).
     float flEndX = {};         /*!< The animated endpoint X. +0x0c */
     float flEndY = {};         /*!< The animated endpoint Y. +0x10 */
     float flTargetX = {};      /*!< The target endpoint X. +0x14 */

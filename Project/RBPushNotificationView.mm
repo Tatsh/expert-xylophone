@@ -8,35 +8,27 @@
 #import "engineglobals.h"
 #import "soundeffectmanager.h"
 
-// The music-menu themed sound-effect slot played when the banner slides into view. This is the
-// same slot the search bar uses for its slide-in in RBMenuView.
+// The same slot RBMenuView's search bar uses for its slide-in.
 constexpr int kSoundEffectNotificationShow = 0x11;
 
-// The default top inset, in points, applied above the banner.
 constexpr float kDefaultUpMargin = 2.0f;
 
-// The auto-hide delay, in seconds, before the banner slides back off-screen.
+// In seconds.
 constexpr double kAutoHideDelay = 7.0;
 
-// The banner background artwork.
 static NSString *const kNotificationBackgroundImageName = @"01_music_select/sel_push_bg";
 
-// The keys of a popped push-notification dictionary.
 static NSString *const kNotificationBodyKey = @"body";
 static NSString *const kNotificationURLKey = @"url";
 
-// The URL scheme handed back to the delegate rather than routed through RBUrlSchemeManager.
 static NSString *const kExternalURLScheme = @"http";
 
-// Message-label geometry and font size for the default (region) iPad idiom.
 constexpr CGRect kMessageLabelFrameDefault{{120.0, 7.0}, {190.0, 32.0}};
 constexpr CGFloat kMessageLabelFontSizeDefault = 12.0;
 
-// Message-label geometry and font size for the iPad (wide) layout.
 constexpr CGRect kMessageLabelFrameWide{{186.0, 14.0}, {290.0, 40.0}};
 constexpr CGFloat kMessageLabelFontSizeWide = 14.0;
 
-// The message label wraps onto at most two lines.
 constexpr NSInteger kMessageLabelLineCount = 2;
 
 @implementation RBPushNotificationView

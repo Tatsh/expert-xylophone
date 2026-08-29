@@ -1,17 +1,9 @@
-//
-//  rbff_stream.mm
-//  REFLEC BEAT plus
-//
-//  The RBFF chart-stream cursor and header helpers. Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "rbff_stream.h"
 
 #include <cstring>
 
 namespace {
-// The little-endian 'RBFF' magic word ('R' | 'B' << 8 | 'F' << 16 | 'F' << 24).
+// The little-endian 'RBFF' magic word.
 constexpr unsigned int kRbffMagic = 0x46464252;
 } // namespace
 

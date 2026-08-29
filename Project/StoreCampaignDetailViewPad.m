@@ -12,14 +12,11 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The informal close callback the overlay sends to its weak delegate (the campaign list page). The
-// binary guards detailViewClose with respondsToSelector: before sending it.
 @interface NSObject (StoreCampaignDetailPadDelegate)
 - (void)detailViewClose;
 - (void)pushCellButton:(nullable id)sender;
 @end
 
-// Layout metrics shared with the campaign list page, defined once in the binary as doubles.
 extern const CGFloat g_dMascotMessageMaxWidthPad;     // @ghidraAddress 0x2ee930 (300.0)
 extern const CGFloat g_dMascotMessageMaxWidthPhone;   // @ghidraAddress 0x2ee938 (200.0)
 extern const CGFloat g_dSliderRowHeightWide;          // @ghidraAddress 0x2ee950 (40.0)
@@ -28,51 +25,41 @@ extern const CGFloat g_dTranslucentAlpha;             // @ghidraAddress 0x2ec6a0
 extern const CGFloat g_dAudioManagerResumeFadeInTime; // @ghidraAddress 0x2ec718 (0.3)
 extern const float g_flFlashMinOpacity;               // @ghidraAddress 0x2ec6b4 (0.0)
 
-// The shared localised "Loading..." string seeded at startup. @ghidraAddress 0x3cfca8
+// @ghidraAddress 0x3cfca8
 extern NSString *g_pLocalizedLoadingMixed;
 
-// The sample-download and playback state machine held in the (non-property) sampleStatus ivar.
 typedef enum {
-    StoreCampaignSampleStatusIdle = 0,        // No sample is loading or playing.
-    StoreCampaignSampleStatusDownloading = 1, // The audio sample is being downloaded.
-    StoreCampaignSampleStatusPlaying = 2,     // The audio sample is playing.
+    StoreCampaignSampleStatusIdle = 0,
+    StoreCampaignSampleStatusDownloading = 1,
+    StoreCampaignSampleStatusPlaying = 2,
 } StoreCampaignSampleStatus;
 
-// The item hide mode; a value of one masks the item's name and identifier.
 static const int kCampaignHideTypeSecret = 1;
-// The item type that identifies a downloadable tune.
 static const int kCampaignItemTypeTune = 0;
-// The acquisition-button kind set once a download is in progress.
 static const int kCampaignButtonDownloading = 1;
 
-// Asset names loaded through UIImage+RB.
 static NSString *const kItemPanelBackgroundName = @"09_store/store_pack_bg_2";
 static NSString *const kSampleStopGlyphName = @"09_store/store_sample_1";
 static NSString *const kSamplePlayGlyphName = @"09_store/store_sample_2";
 static NSString *const kPlaceholderJacketName = @"09_store/store_jacket_110";
 
-// Display formats.
 static NSString *const kLevelFormat = @"LEVEL:  %d / %d / %d";
 static NSString *const kIdFormat = @"%d";
-// The masked name shown for a secret (hidden) item.
 static NSString *const kSecretNameMask = @"？？？？？？";
-// The external-link button title.
 static NSString *const kLinkButtonTitle = @"詳しくはこちら";
 
-// Item-container geometry.
 static const CGFloat kItemViewWidth = 650.0;
 static const CGFloat kItemViewHeight = 284.0;
 static const CGFloat kItemBackgroundStretchCap = 4.0;
 static const CGFloat kTitleFontSize = 18.0;
 static const CGFloat kTitleInset = 20.0;
-// The white strip that caps the item panel. @ghidraAddress 0x2eec40
+// @ghidraAddress 0x2eec40
 static const CGFloat kTitleBarHeight = 44.0;
 static const CGFloat kItemNameFontSize = 22.0;
 static const CGFloat kArtistFontSize = 18.0;
 static const CGFloat kLevelsFontSize = 20.0;
 static const CGFloat kLabelMinimumScaleFactor = 18.0;
 static const CGFloat kArtworkOriginX = 18.0;
-// The jacket's y sits one pool slot below the 160.0 that gives its width and height.
 // @ghidraAddress 0x2eec48
 static const CGFloat kArtworkOriginY = 79.0;
 static const CGFloat kLabelNameOriginX = 195.0;
@@ -96,11 +83,9 @@ static const CGFloat kSampleBtnGlyphSize = 20.0;
 static const CGFloat kArtworkBorderWidth = 1.0;
 static const CGFloat kArtworkShadowOffset = 2.0;
 static const CGFloat kArtworkShadowRadius = 2.0;
-// CALayer's shadowOpacity is a float, and the binary loads this with ldr s0.
 // @ghidraAddress 0x2ec6b8
 static const float kArtworkShadowOpacity = 0.6f;
 
-// Panel and detail-pane geometry.
 static const CGFloat kPanelShadowRadius = 8.0;
 static const CGFloat kPanelShadowOpacity = 0.5;
 static const CGFloat kInnerPanelShadowOffset = 1.0;
@@ -116,21 +101,18 @@ static const CGFloat kDescriptionHeight = 316.0;
 static const CGFloat kDescriptionFontSize = 18.0;
 static const CGFloat kCopyrightFontSize = 16.0;
 static const CGFloat kBottomCopyrightThreshold = 356.0;
-// The detail pane's border grey, stored as a float widened to double. @ghidraAddress 0x2ec730
+// @ghidraAddress 0x2ec730
 static const CGFloat kDetailBorderWhite = 143.0f / 255.0f;
 
-// Loading label and indicator geometry.
 static const CGFloat kLoadingLabelHeight = 24.0;
 static const CGFloat kLoadingLabelFontSize = 18.0;
 static const CGFloat kLoadingShadowWhite = 0.0;
 static const CGFloat kLoadingLabelOffsetY = 15.0;
-// Both stored as floats widened to double.
 static const CGFloat kLoadingShadowAlpha = 0.4f;               // @ghidraAddress 0x2ec720
 static const CGFloat kLoadingLabelTextWhite = 158.0f / 255.0f; // @ghidraAddress 0x2eecb8
-// The spinner is square; the binary builds it with fmov d2,#24.0 at 0x44618.
+// @ghidraAddress 0x44618
 static const CGFloat kIndicatorSize = 24.0;
 
-// setArtwork: sizing.
 static const CGFloat kArtworkMarginX = 12.0;
 static const CGFloat kArtworkMarginY = 10.0;
 static const CGFloat kSquareArtworkSizeNarrow = 64.0;
@@ -138,7 +120,6 @@ static const CGFloat kSquareArtworkSizeWide = 110.0;
 static const CGFloat kSquareArtworkVariantYInset = 2.0;
 static const CGFloat kArtworkFadeInDuration = 0.2;
 
-// Colours used for the item panel and buttons.
 static const CGFloat kItemPanelBackgroundWhite = 0.863f;
 static const CGFloat kFullAlpha = 1.0;
 
@@ -154,16 +135,10 @@ static const CGFloat kFullAlpha = 1.0;
 @end
 
 @implementation StoreCampaignDetailViewPad {
-    // The audio-sample state machine; this ivar has no property and keeps its literal, non-prefixed
-    // binary name.
     int sampleStatus;
-    // Whether the bound item reports itself as unlocked; keeps its literal binary name.
     BOOL bUnlock;
-    // The item hide mode of the bound item; keeps its literal binary name.
     int hideType;
-    // The acquisition-button kind of the bound item; keeps its literal binary name.
     int buttonType;
-    // Whether the bound item's install has completed; keeps its literal binary name.
     BOOL downloadFlag;
 }
 
@@ -332,8 +307,8 @@ static const CGFloat kFullAlpha = 1.0;
         UIActivityIndicatorView *sampleIndicator = [[UIActivityIndicatorView alloc]
             initWithFrame:CGRectMake(0, 0, kSampleBtnGlyphSize, kSampleBtnGlyphSize)];
         self.indicatorSample = sampleIndicator;
-        // The binary reads sampleBtn's frame twice, taking the width from the first read and the
-        // height from the second, so keep both sends rather than hoisting one local.
+        // The binary reads sampleBtn's frame twice, so keep both sends rather than hoisting a
+        // local.
         self.indicatorSample.center = CGPointMake(self.sampleBtn.frame.size.width * 0.5,
                                                   self.sampleBtn.frame.size.height * 0.5);
         self.indicatorSample.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
@@ -385,8 +360,6 @@ static const CGFloat kFullAlpha = 1.0;
         [self addSubview:self.detailView];
 
         [self removeItemInfo];
-        // The binary reads its own frame once here and centres both the spinner and the loading
-        // caption on it, the two differing only in the sign of the 15 pt offset.
         const CGRect selfFrame = self.frame;
 
         UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
@@ -492,7 +465,6 @@ static const CGFloat kFullAlpha = 1.0;
     CGFloat copyrightHeight = CGRectGetHeight(self.copyrightView.frame);
     CGFloat copyrightY = descriptionY + descriptionHeight + kDetailStackSpacing;
     if (copyrightY + copyrightHeight < kBottomCopyrightThreshold) {
-        // The copyright is short: pin it to the bottom of the detail pane instead.
         copyrightY = kDetailViewHeight - copyrightHeight - kDetailContentInset;
     }
     self.copyrightView.frame = CGRectMake(
@@ -542,7 +514,7 @@ static const CGFloat kFullAlpha = 1.0;
 
 /** @ghidraAddress 0x45364 */
 - (void)cancelLoading {
-    // The binary body is empty; the campaign overlay has no artwork or sample load to cancel here.
+    // The binary body is empty.
 }
 
 #pragma mark - Acquisition button
@@ -673,7 +645,7 @@ static const CGFloat kFullAlpha = 1.0;
 
 /** @ghidraAddress 0x45f7c */
 - (void)downloaderProceed:(Downloader *)downloader {
-    // The binary body is empty; sample-download progress is not surfaced.
+    // The binary body is empty.
 }
 
 #pragma mark - Alert view delegate

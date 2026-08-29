@@ -10,25 +10,20 @@
 #include "sprite_uv_table.h"
 #include "vectormath.h"
 
-// The process-wide background sprite manager, created lazily by shared().
 static BackgroundSpriteManager *g_pBackgroundManager = nullptr; // @ghidraAddress 0x3dcad8
 
 namespace {
 
-// The atlas the background sprites draw from (@ghidraAddress 0x3ceaa8).
+// @ghidraAddress 0x3ceaa8
 constexpr const char *kTextureName = "00_texture/gm_parts2";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x301cc8).
+// @ghidraAddress 0x301cc8
 constexpr unsigned int kSlotCapacities[] = {3, 11, 11};
 
-// The additive blend-mode identifier the outer two slots use.
 constexpr int kAdditiveBlendMode = 1;
 
-// The maximum value of an opaque colour channel.
 constexpr unsigned int kColorMax = 255;
 
-// One zoom-effect sprite-layout record: the instance's sprite anchor and pixel size, and the shared
-// UV atlas frame it draws from. The 20-byte stride matches the binary.
 struct ZoomSpriteLayout {
     float flAnchorX;   // +0x00: the sprite's anchor X.
     float flAnchorY;   // +0x04: the sprite's anchor Y.
@@ -37,8 +32,7 @@ struct ZoomSpriteLayout {
     int nUvFrameIndex; // +0x10: the frame into the shared sprite UV atlas.
 };
 
-// The zoom-effect sprite-layout table: the border quad, the edge quads, and the segment row the
-// intro zoom animation draws. Read-only ROM data embedded in the binary. @ghidraAddress 0x301e4c
+// @ghidraAddress 0x301e4c
 constexpr ZoomSpriteLayout kZoomSpriteLayout[] = {
     {90.0f, 90.0f, 180.0f, 180.0f, 0},
     {250.0f, 38.0f, 500.0f, 76.0f, 1},
@@ -59,8 +53,6 @@ BackgroundSpriteManager::BackgroundSpriteManager() = default;
 /** @ghidraAddress 0x10a81c */
 BackgroundSpriteManager *BackgroundSpriteManager::shared() {
     if (g_pBackgroundManager == nullptr) {
-        // The binary allocates the raw 0x40-byte object and runs the constructor, which chains the
-        // base-layer constructor and zero-clears the manager's state.
         g_pBackgroundManager = new BackgroundSpriteManager();
     }
     return g_pBackgroundManager;
@@ -72,16 +64,11 @@ void BackgroundSpriteManager::BuildBackgroundSpriteNodes() {
         return;
     }
 
-    // The sprites hang beneath the shared background layer's render object rather than the global
-    // scene root.
     BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
     ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
 
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTextureName);
 
-    // Build one sprite instancer per slot, attach it under the background render object, make it
-    // visible, bind the atlas, seed its sprite count, and flag additive blend on the outer two
-    // slots (every slot but the middle one).
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         pParent->AttachChild(pSprite);
@@ -139,55 +126,49 @@ void BackgroundSpriteManager::SetInactive(float flDuration) {
 
 namespace {
 
-// The effect clock at which the zoom animation retires (@ghidraAddress 0x301cc4).
+// @ghidraAddress 0x301cc4
 constexpr float kEffectDuration = 1600.0f;
 
-// The clock the effect's gated sprites wait for before they are emitted (@ghidraAddress 0x2ec6b0).
+// @ghidraAddress 0x2ec6b0
 constexpr float kEffectStartTime = 100.0f;
 
-// The viewport is halved to find its centre. The phone also draws the whole effect at that half
-// scale; an iPad draws it full size.
+// The phone draws the whole effect at the same half scale that halves the viewport.
 constexpr float kHalfScale = 0.5f;
 constexpr float kFullScale = 1.0f;
 
-// The row's per-sprite X offsets are biased by this before being scaled out from the centre
-// (@ghidraAddress 0x2f8568).
+// @ghidraAddress 0x2f8568
 constexpr float kRowOriginX = -384.0f;
 
-// Scales a unit-interval curve value into an 8-bit alpha (@ghidraAddress 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kAlphaByteScale = 255.0f;
 
-// The three instancers: the bursts and their halo, the animated row, and the static ghost row.
 constexpr unsigned int kSlotBurst = 0;
 constexpr unsigned int kSlotRow = 1;
 constexpr unsigned int kSlotGhostRow = 2;
 
-// The layout records the burst pair and the halo draw from.
 constexpr unsigned int kLayoutBurst = 0;
 constexpr unsigned int kLayoutHalo = 1;
 
-// The row's eleven sprites and the layout record each draws from. Both the animated row and the
-// ghost row use this same sequence.
 constexpr int kRowSpriteCount = 11;
 constexpr unsigned int kRowLayout[kRowSpriteCount] = {2, 3, 4, 4, 5, 6, 7, 4, 3, 8, 4};
 
-// The keyframe-pair counts of the curves below.
 constexpr int kTwoPointCurve = 2;
 constexpr int kThreePointCurve = 3;
 constexpr int kFourPointCurve = 4;
 constexpr int kSixPointCurve = 6;
 
-// The first burst's alpha and scale over the effect clock (@ghidraAddress 0x301cd4 and 0x301ce4).
+// @ghidraAddress 0x301cd4
 constexpr float kBurstAAlphaCurve[] = {100.0f, 1.0f, 366.66666f, 0.0f};
+// @ghidraAddress 0x301ce4
 constexpr float kBurstAScaleCurve[] = {100.0f, 0.47f, 266.66666f, 1.17f, 1416.6666f, 1.69f};
 
-// The second burst's alpha and scale (@ghidraAddress 0x301cfc and 0x301d1c). It shares the first
-// burst's scale keyframes but fades in rather than straight out.
+// @ghidraAddress 0x301cfc
 constexpr float kBurstBAlphaCurve[] = {
     100.0f, 0.0f, 166.66667f, 1.0f, 533.3333f, 1.0f, 1416.6666f, 0.0f};
+// @ghidraAddress 0x301d1c
 constexpr float kBurstBScaleCurve[] = {100.0f, 0.47f, 266.66666f, 1.17f, 1416.6666f, 1.69f};
 
-// The halo's alpha (@ghidraAddress 0x301d34).
+// @ghidraAddress 0x301d34
 constexpr float kHaloAlphaCurve[] = {100.0f,
                                      0.0f,
                                      166.66667f,
@@ -201,8 +182,7 @@ constexpr float kHaloAlphaCurve[] = {100.0f,
                                      1500.0f,
                                      0.0f};
 
-// Each row sprite's X offset over the effect clock (@ghidraAddress 0x301d64, stride 0x10). The
-// ghost row samples these same curves at time zero.
+// @ghidraAddress 0x301d64
 constexpr float kRowOffsetCurves[kRowSpriteCount][kTwoPointCurve * 2] = {
     {1333.3334f, 163.0f, 1583.3334f, 133.0f},
     {1333.3334f, 213.0f, 1583.3334f, 188.0f},
@@ -217,10 +197,11 @@ constexpr float kRowOffsetCurves[kRowSpriteCount][kTwoPointCurve * 2] = {
     {1333.3334f, 608.0f, 1583.3334f, 632.0f},
 };
 
-// The animated row's shared alpha and vertical scale (@ghidraAddress 0x301e14 and 0x301e24), and
-// the ghost row's alpha (@ghidraAddress 0x301e34).
+// @ghidraAddress 0x301e14
 constexpr float kRowAlphaCurve[] = {1333.3334f, 1.0f, 1500.0f, 0.0f};
+// @ghidraAddress 0x301e24
 constexpr float kRowScaleYCurve[] = {0.0f, 0.0f, 133.33333f, 1.0f};
+// @ghidraAddress 0x301e34
 constexpr float kGhostAlphaCurve[] = {133.33333f, 0.6f, 333.33334f, 0.5f, 833.3333f, 0.0f};
 
 } // namespace
@@ -240,15 +221,11 @@ void BackgroundSpriteManager::Update(float flDelta) {
         return;
     }
 
-    // The effect is laid out around the viewport centre. An iPad draws it full size; the phone
-    // draws it at the same half scale that halves the viewport.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     S_VECTOR2 center{pGameSystem->GetViewportWidth(), pGameSystem->GetViewportHeight()};
     ScaleVector2(&center, kHalfScale);
     const float flScale = IsPad() ? kFullScale : kHalfScale;
 
-    // The two expanding bursts, once the intro delay has passed. Both draw the same layout record
-    // into the same instancer, uniformly scaled.
     if (m_flTimer > kEffectStartTime) {
         S_VECTOR2 position = center;
         const float flAlpha =
@@ -276,7 +253,6 @@ void BackgroundSpriteManager::Update(float flDelta) {
                                static_cast<int>(flAlpha * kAlphaByteScale));
     }
 
-    // The halo behind them is emitted every frame, at the effect's base scale.
     S_VECTOR2 haloPosition = center;
     const float flHaloAlpha =
         CalculateCurveInterpolation(kHaloAlphaCurve, kSixPointCurve, m_flTimer);
@@ -287,8 +263,6 @@ void BackgroundSpriteManager::Update(float flDelta) {
                            &haloPosition,
                            static_cast<int>(flHaloAlpha * kAlphaByteScale));
 
-    // The animated row: eleven sprites spread along the centre line, each on its own X-offset
-    // curve, sharing one alpha and one vertical-scale curve.
     const float flRowAlpha = CalculateCurveInterpolation(kRowAlphaCurve, kTwoPointCurve, m_flTimer);
     const float flRowScaleY =
         flScale * CalculateCurveInterpolation(kRowScaleYCurve, kTwoPointCurve, m_flTimer);
@@ -301,8 +275,6 @@ void BackgroundSpriteManager::Update(float flDelta) {
             flScale, flRowScaleY, kSlotRow, kRowLayout[nSprite], &position, nRowAlpha);
     }
 
-    // The ghost row: the same eleven sprites frozen at their time-zero offsets, fading on their own
-    // curve, once the intro delay has passed.
     if (m_flTimer > kEffectStartTime) {
         const float flGhostAlpha =
             CalculateCurveInterpolation(kGhostAlphaCurve, kThreePointCurve, m_flTimer);

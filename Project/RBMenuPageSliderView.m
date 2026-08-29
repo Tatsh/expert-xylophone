@@ -1,25 +1,13 @@
-//
-//  RBMenuPageSliderView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuPageSliderView). The popup
-//  wrapper that embeds an RBMenuPageSlider; the show and reposition soft-float geometry was
-//  recovered from the arm64 disassembly (the decompiler folds the CGRect components into
-//  pseudo-variables).
-//
-
 #import "RBMenuPageSliderView.h"
 
 #import "RBMenuPageSlider.h"
 #import "RBPopupView.h"
 
-// The base, content, and wrapper views resize with a flexible width and a flexible top margin so
-// the slider stays pinned to the bottom edge as the layout changes (the binary's 0x12 mask).
+// Pins the slider to the bottom edge as the layout changes.
 static const UIViewAutoresizing kSliderAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 
-// The duration of the post-rotation fade that restores the slider to full opacity. This is the
-// shared 0.3 second animation duration used across the menu views (0x1002ec718).
+// The shared menu-view animation duration (0x1002ec718).
 static const NSTimeInterval kSliderRotationFadeDuration = 0.3;
 
 @implementation RBMenuPageSliderView

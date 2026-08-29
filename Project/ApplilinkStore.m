@@ -1,46 +1,23 @@
-//
-//  ApplilinkStore.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkStore). This is a plain
-//  Objective-C file: it drives an ApplilinkViewController through ordinary message sends, guards
-//  its shared instance with dispatch_once, and serialises on a private queue with dispatch_sync, so
-//  there is no C++.
-//
-//  ApplilinkStore is the SDK's App Store product-page facade singleton. It is created once,
-//  presents the store through an ApplilinkViewController (which owns the
-//  SKStoreProductViewController), and is itself the SdkViewDelegate of that view controller. When
-//  the view controller reports the open, close, closed, or load-failure notices, the store forwards
-//  them to the caller's own sdkDelegate.
-//
-
 #import "ApplilinkStore.h"
 
 #import "ApplilinkParameters.h"
 #import "ApplilinkViewController.h"
 
-// The one and only ApplilinkStore instance and its dispatch_once tokens.
-// File-scope rather than method-local, which the singleton rule would otherwise ask for, because
-// +allocWithZone: and +sharedInstance share the instance and each has its own once token. The
-// binary agrees: all three live at one global base, the instance at +0x670 and the shared token at
-// +0x670+0x18.
+// File-scope rather than method-local because +allocWithZone: and +sharedInstance share the
+// instance and each has its own once token, which the binary keeps at one global base:
+// +0x670 for the instance and +0x670+0x18 for the shared token.
 static ApplilinkStore *sSharedInstance = nil;
 static dispatch_once_t sAllocOnceToken = 0;
 static dispatch_once_t sSharedOnceToken = 0;
 
-// The private serial queue -init synchronises its super call onto. It is created in
-// +allocWithZone:, which alloc always runs before init, so it is non-nil by the time -init reads
-// it.
+// Created in +allocWithZone:, so it is non-nil by the time -init reads it.
 static dispatch_queue_t sQueue = nil;
 
-// The label the binary passes to dispatch_queue_create.
 static const char *const kQueueLabel = "ApplilinkStore";
 
-// The view controller presenting the store product page while one is on screen, or nil when none
-// is. It survives across store requests, so it is a file-scope global rather than an instance ivar.
+// It survives across store requests, so it is a file-scope global rather than an instance ivar.
 static ApplilinkViewController *sViewController = nil;
 
-// The first iOS version whose SKStoreProductViewController the SDK is willing to present.
 static const float kMinimumStoreSystemVersion = 6.0f;
 
 @implementation ApplilinkStore
@@ -63,9 +40,8 @@ static const float kMinimumStoreSystemVersion = 6.0f;
 // @ghidraAddress 0x2202ec
 - (instancetype)init {
     __block ApplilinkStore *initResult = self;
-    // The queue is the private serial one created in +allocWithZone:, not the main queue. Syncing
-    // onto the main queue here would deadlock whenever +sharedInstance is first called from the
-    // main thread, which is what +[ApplilinkCore resume] does on entering the foreground.
+    // Syncing onto the main queue instead would deadlock whenever +sharedInstance is first called
+    // from the main thread.
     dispatch_sync(sQueue, ^{
       /** @ghidraAddress 0x2203fc */
       initResult = [super init];
@@ -90,9 +66,8 @@ static const float kMinimumStoreSystemVersion = 6.0f;
         return NO;
     }
     if (sViewController == nil) {
-        // The binary stores both values straight into the backing ivars here; in particular the
-        // parameters bypass the copy setter, so this keeps the caller's instance rather than a
-        // copy.
+        // The binary stores straight into the backing ivars, so the parameters bypass the copy
+        // setter and the caller's instance is kept.
         _sdkDelegate = delegate;
         _applilinkParams = appParam;
         sViewController = [[ApplilinkViewController alloc] init];

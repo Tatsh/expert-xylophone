@@ -173,8 +173,6 @@ public:
     void Stop();
 
 private:
-    // Resolves a raw play handle to its live voice (index in the high bits, generation in the low
-    // 16), or @c nullptr when the index is out of range or the generation is stale.
     caVoice *ResolveVoice(unsigned int hVoice);
 
     AUGraph m_pAUGraph = {};      // +0x00 the Core Audio processing graph

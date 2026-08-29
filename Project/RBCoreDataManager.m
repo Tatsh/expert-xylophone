@@ -1,26 +1,12 @@
-//
-//  RBCoreDataManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCoreDataManager). Verified
-//  against the arm64 disassembly (the store-option dictionary and the variadic
-//  addPersistentStoreWithType:configuration:URL:options:error: message are dropped or garbled by
-//  the decompiler, and the RBCoreDataManager struct is mispacked in the project so several methods
-//  fail to decompile and were read from the disassembly instead).
-//
-
 #import "RBCoreDataManager.h"
 
 #import "deviceenvironment.h"
 
-// The score store file name for the tablet and phone variants.
 static NSString *const kScoreDataStoreFileName = @"ScoreData.sqlite";
 static NSString *const kScoreDataPhoneStoreFileName = @"ScoreDataPhone.sqlite";
 
-// The history store file name.
 static NSString *const kHistoryStoreFileName = @"History.data";
 
-// Bundled managed object model resource names and their type.
 static NSString *const kScoreDataModelResource = @"ScoreData";
 static NSString *const kHistoryModelResource = @"History";
 static NSString *const kManagedObjectModelType = @"mom";

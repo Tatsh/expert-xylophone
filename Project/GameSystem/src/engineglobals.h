@@ -497,8 +497,7 @@ void InitializeUiColorConstants(void);
  */
 extern UIColor *g_pPaletteDimmingCoverColor;
 #endif
-// The per-channel palette colour components, read by InitializeUIColorPalette. Three of the five
-// colours have no blue component in the binary, so none is declared here.
+// Three of the five palette colours have no blue component in the binary, so none is declared.
 /**
  * The green-grass palette colour's red component, 63/255.
  * @ghidraAddress 0x2ef5e8

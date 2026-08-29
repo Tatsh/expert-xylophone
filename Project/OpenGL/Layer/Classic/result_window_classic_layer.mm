@@ -54,7 +54,6 @@ PhoneLayoutRecord g_aClassicSeparatorPhonePortrait[kClassicSeparatorRecordCount]
 PhoneLayoutRecord g_aClassicSeparatorPhoneLandscape[kClassicSeparatorRecordCount] =
     {}; // @ghidraAddress 0x3d8c40
 
-// The accessor bounds-checks nothing; four is inferred from the 0x50 gaps between the tables.
 constexpr int kClassicPositionByStateRecordCount = 4;
 PhoneLayoutRecord g_aClassicPositionPhoneState[kClassicPositionByStateRecordCount] =
     {}; // @ghidraAddress 0x3d8fd8
@@ -67,8 +66,7 @@ PhoneLayoutRect g_ClassicCenterPositionPhoneState = {};     // @ghidraAddress 0x
 PhoneLayoutRect g_ClassicCenterPositionPhonePortrait = {};  // @ghidraAddress 0x3d90e0
 PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape = {}; // @ghidraAddress 0x3d90f0
 
-// 0x3d8058 through 0x3d8070 fall inside the anchor table based at 0x3d7cd0, so these must be
-// indices; separate statics would get their own zeroed storage and both overlays would add nothing.
+// These addresses fall inside the anchor table based at 0x3d7cd0, so they are indices into it.
 constexpr int kCustomizeOverlayLandscapeAnchor = 113; // 0x3d8058
 constexpr int kNameplateBackingAnchor = 114;          // 0x3d8060
 constexpr int kNameplateNameAnchor = 115;             // 0x3d8068
@@ -1049,7 +1047,6 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
         const int nDigit = aDigits[i];
         unsigned int nPartId = nDigit + nGlyphBase;
 
-        // The score columns comma-shift their first glyph and raise their second.
         if (nGlyphBase == kScoreColumnBankB || nGlyphBase == kScoreColumnBankA) {
             if (i == 0 && bLeadingZero) {
                 nPartId = nGlyphBase + 0xb + nDigit;
@@ -1151,10 +1148,8 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
         nIntegerLen = 1;
     }
 
-    // The uniform advance is the zero glyph's width.
     const float flAdvance = getPartsData(static_cast<int>(kCompactDigitBank))->flWidth;
 
-    // Split the fractional part likewise.
     int aFraction[kCompactMaxDigits] = {};
     int nFractionLen = 0;
     for (int i = 0; i < kCompactMaxDigits; ++i) {
@@ -1168,13 +1163,11 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
         nFractionLen = 1;
     }
 
-    // Centre the combined run (integer digits, the dot, and fraction digits) about the position.
     const float flRunWidth = static_cast<float>(static_cast<int>(nFractionLen * flAdvance) +
                                                 static_cast<int>(nIntegerLen * flAdvance)) +
                              flAdvance + 2.0f;
     float flX = position.x + flRunWidth * 0.5f;
 
-    // Emit the integer digits right to left.
     for (int i = 0; i < nIntegerLen; ++i) {
         EmitPartSprite(0.0f,
                        1.0f,
@@ -1187,12 +1180,10 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
         flX -= flAdvance;
     }
 
-    // Emit the dot glyph, then step past it.
     flX -= flAdvance + 1.0f;
     EmitPartSprite(0.0f, 1.0f, 1.0f, kGlyphSlot, kDotGlyph, S_VECTOR2{flX, position.y}, nAlpha, 0);
     flX -= 1.0f;
 
-    // Emit the fraction digits right to left.
     for (int i = 0; i < nFractionLen; ++i) {
         EmitPartSprite(0.0f,
                        1.0f,
@@ -1206,21 +1197,17 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
     }
 }
 
-// The customize preview draws into this sprite instancer slot.
 static constexpr unsigned int kCustomizePreviewSlot = 6;
 
 /** @ghidraAddress 0x11c5a0 */
 void ResultWindowClassicLayer::ToggleCustomizeCharacterTexture(unsigned int nCharacterId) {
-    // Already shown: hide the preview and remember the id to re-show on the next toggle.
     if (m_bCustomizePreviewShown) {
         m_bCustomizePreviewShown = false;
         m_nCustomizePendingId = static_cast<int>(nCharacterId);
         return;
     }
 
-    // Show the preview: resolve the character's unlock entry (its category is cached as the sub-id,
-    // its item is the asset variant), build and load the asset texture, and bind it into the
-    // preview slot. The binary discards this method's return value.
+    // The binary discards this method's return value.
     m_nCustomizeCharacterId = static_cast<int>(nCharacterId);
     m_bCustomizePreviewShown = true;
     LevelTables::GetInstance(); // The binary vends the singleton (lazy-init) before the lookup.
@@ -1234,7 +1221,6 @@ void ResultWindowClassicLayer::ToggleCustomizeCharacterTexture(unsigned int nCha
     }
 }
 
-// The main customize asset draws into this sprite instancer slot.
 static constexpr unsigned int kMainAssetSlot = 5;
 
 /** @ghidraAddress 0x11c66c */
@@ -1242,8 +1228,6 @@ void ResultWindowClassicLayer::BeginCustomizeMainAsset(unsigned int nAssetId) {
     m_nMainAssetId = static_cast<int>(nAssetId);
     LevelTables::GetInstance(); // The binary vends the singleton (lazy-init) before the lookups.
 
-    // The asset is available only when its level threshold is non-negative; otherwise clear the
-    // active flags and show nothing.
     if (static_cast<int>(LevelTables::GetLevelExpThreshold(m_nMainAssetId)) < 0) {
         m_bCustomizePending = false;
         m_bMainAssetActive = false;
@@ -1254,31 +1238,22 @@ void ResultWindowClassicLayer::BeginCustomizeMainAsset(unsigned int nAssetId) {
     m_bCustomizePending = true;
     m_flMainAssetScale = 1.0f;
 
-    // Resolve the asset's unlock entry (its category is the asset type, its item the variant),
-    // build and load the asset texture, and bind it into the main asset slot. The binary discards
-    // this method's return value.
+    // The binary discards this method's return value.
     const LevelUnlockEntry *pEntry = LevelTables::GetLevelUnlockEntry(m_nMainAssetId);
     m_bMainAssetSubState = false;
     NSString *path = BuildCustomizeAssetPathString(pEntry->nCategory, pEntry->nItem);
     ne::C_TEXTURE *pTexture = ne::C_TEXTURE::FindOrLoadCached([path UTF8String]);
-    // The binary binds and releases the texture unconditionally on the available path (no null
-    // check, unlike the toggle helper).
+    // The binary does not null-check the texture here, unlike the toggle helper.
     SetInstancerTextureAndRefreshSlots(kMainAssetSlot, pTexture);
     pTexture->Release();
 }
 
 namespace {
-// The experience-bar reveal animation constants.
-// The reveal timer bias (@ghidraAddress 0x302d70 = -4200) and its normalising duration
-// (@ghidraAddress 0x2ec6b0 = 100).
-constexpr float kExpRevealTimerBias = -4200.0f;
-constexpr float kExpRevealDuration = 100.0f;
-// The looping reveal sound-effect slot.
+constexpr float kExpRevealTimerBias = -4200.0f; // @ghidraAddress 0x302d70
+constexpr float kExpRevealDuration = 100.0f;    // @ghidraAddress 0x2ec6b0
 constexpr int kExpRevealSoundSlot = 6;
-// The "no sound-effect handle" sentinel.
 constexpr int kNoSeHandle = -1;
 
-// Clamps a value to the unit interval.
 float ClampUnit(float flValue) {
     if (flValue < 0.0f) {
         return 0.0f;
@@ -1292,8 +1267,6 @@ float ClampUnit(float flValue) {
 
 /** @ghidraAddress 0x1199fc */
 float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames) {
-    // Maps the reveal progress through the gained-experience span into the settled experience
-    // ratio.
     const auto mapExpRatio = [this](float flProgress) {
         return (flProgress * static_cast<float>(m_nGainedExp) + static_cast<float>(m_nPlayerExp) -
                 static_cast<float>(m_nLevelUpStep)) /
@@ -1301,13 +1274,11 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
     };
 
     if (m_bExpAnimSettled) {
-        // Already settled: report the mapped ratio at the frozen timer, without advancing.
         const float flProgress =
             ClampUnit((m_flExpAnimTimer + kExpRevealTimerBias) / kExpRevealDuration);
         return ClampUnit(mapExpRatio(flProgress));
     }
 
-    // Accumulate the frame delta and normalise the reveal progress.
     m_flExpAnimTimer += static_cast<float>(nDeltaFrames);
     float flProgress = (m_flExpAnimTimer + kExpRevealTimerBias) / kExpRevealDuration;
     if (flProgress < 0.0f) {
@@ -1321,8 +1292,6 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
     if (flExpRatio < 0.0f) {
         flResult = 0.0f;
     } else if (flExpRatio >= 1.0f) {
-        // The reveal reached its target: latch it, show the next character texture, advance the
-        // player level, and either record the pending track index or begin the main-asset load.
         m_bExpAnimSettled = true;
         ToggleCustomizeCharacterTexture(static_cast<unsigned int>(m_nPlayerLevel));
         ++m_nPlayerLevel;
@@ -1334,8 +1303,6 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
         }
         flResult = 1.0f;
     } else {
-        // Mid-reveal: while the timer is inside the ramp and there is experience to gain, keep a
-        // looping reveal sound effect playing (re-acquire it once the previous handle finishes).
         if (flProgress > 0.0f && flProgress < 1.0f && m_nGainedExp != 0) {
             SoundEffectManager *pManager = SoundEffectManager::GetInstance();
             if (m_nRevealSeHandle == kNoSeHandle ||
@@ -1352,18 +1319,13 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
 }
 
 namespace {
-// The phone-overlay slide constants.
-// The overlay slide duration (@ghidraAddress 0x2eedcc = 300).
-constexpr float kPhoneOverlaySlideDuration = 300.0f;
-// The upward Y travel applied to the overlay as it slides in (@ghidraAddress 0xc1a00000 = -20).
+constexpr float kPhoneOverlaySlideDuration = 300.0f; // @ghidraAddress 0x2eedcc
+// @ghidraAddress 0xc1a00000
 constexpr float kPhoneOverlaySlideOffsetY = -20.0f;
-// The phone (portrait) overlay glyph slot, part id, and anchor-position index.
 constexpr unsigned int kPhoneOverlaySlot = 7;
 constexpr unsigned int kPhoneOverlayCharCode = 0x64;
 constexpr int kPhoneOverlayPositionIndex = 0x3c;
-// The iPad (landscape) overlay part id.
 constexpr unsigned int kPadOverlayPartId = 0xde;
-// The main customize asset instancer slot the scaled render targets.
 constexpr unsigned int kMainAssetRenderSlot = 5;
 } // namespace
 
@@ -1371,9 +1333,6 @@ constexpr unsigned int kMainAssetRenderSlot = 5;
 void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
                                                            const S_VECTOR2 *pBasePos,
                                                            float flScale) {
-    // Advance the slide timer: forward (clamped to the duration) while the direction flag is set,
-    // backward (clamped to zero) while it is clear. On reaching zero, kick off any queued
-    // main-asset load and clear the queue sentinel.
     float flTimer;
     if (m_bCustomizePending) {
         flTimer = m_flPhoneOverlayTimer + static_cast<float>(nDeltaFrames);
@@ -1394,7 +1353,6 @@ void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
         }
     }
 
-    // Normalise the slide progress to the unit interval.
     float flProgress = flTimer / kPhoneOverlaySlideDuration;
     if (flProgress < 0.0f) {
         flProgress = 0.0f;
@@ -1402,21 +1360,16 @@ void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
         flProgress = 1.0f;
     }
 
-    // The overlay eases upward as it appears; its base alpha scales with the progress.
     S_VECTOR2 renderPos{pBasePos->x, pBasePos->y + (1.0f - flProgress) * kPhoneOverlaySlideOffsetY};
     const float flAlphaBase = flProgress * flScale;
     const unsigned int nGroupAlpha =
         static_cast<unsigned int>(static_cast<int>(flAlphaBase * m_flMainAssetScale));
 
     if (IsPad()) {
-        // The iPad overlay part draws at the base position shifted by the fixed landscape offset;
-        // the same shifted position feeds the final scaled render.
         AddVector2(&renderPos, &g_aClassicPartsAnchorPad[kCustomizeOverlayLandscapeAnchor]);
         EmitPartSprite(
             0.0f, 1.0f, 1.0f, kPhoneOverlaySlot, kPadOverlayPartId, renderPos, nGroupAlpha, false);
     } else {
-        // The phone overlay glyph draws at its own anchor plus the eased position; the final scaled
-        // render then uses the eased position shifted by the phone anchor.
         RenderSpriteWithPositionOffset(kPhoneOverlaySlot,
                                        kPhoneOverlayCharCode,
                                        kPhoneOverlayPositionIndex,
@@ -1428,33 +1381,26 @@ void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
         AddVector2(&renderPos, &anchorPos);
     }
 
-    // The main-asset slot render at the eased position; its scale folds the group alpha and the
-    // inverse main-asset scale.
     const unsigned int nRenderScale =
         static_cast<unsigned int>(static_cast<int>(flAlphaBase * (1.0f - m_flMainAssetScale)));
     RenderSpriteInstancerSlotScaled(kMainAssetRenderSlot, renderPos, nRenderScale);
 }
 
 namespace {
-// The nameplate-overlay slide constants.
-// The nameplate slide duration (@ghidraAddress 0x2feff4 = 500).
-constexpr float kNameplateSlideDuration = 500.0f;
-// The upward Y travel applied to the nameplate as it slides in (@ghidraAddress 0xc1a00000 = -20).
+constexpr float kNameplateSlideDuration = 500.0f; // @ghidraAddress 0x2feff4
+// @ghidraAddress 0xc1a00000
 constexpr float kNameplateSlideOffsetY = -20.0f;
-// The nameplate reveal-complete sound-effect slot and themed voice.
 constexpr int kNameplateRevealSoundSlot = 9;
 constexpr int kNameplateRevealVoiceId = 0xe;
-// The customize asset texture instancer slot the nameplate swap targets.
 constexpr unsigned int kNameplateAssetSlot = 6;
-// The part-id and character-code bases the nameplate name/level glyphs draw from.
 constexpr unsigned int kNameplateNamePartBase = 0xdf; // iPad name part = subId + this.
-constexpr unsigned int kNameplateLevelPart = 0xe4;    // iPad level part.
-constexpr unsigned int kNameplateNameCharBase = 0x79; // phone name char = subId + this.
-constexpr int kNameplateNamePositionIndex = 0x3d;     // phone name anchor.
-constexpr unsigned int kNameplateLevelChar = 0x69;    // phone level char.
-constexpr int kNameplateLevelPositionIndex = 0x3e;    // phone level anchor.
-constexpr int kNameplateBackingPositionIndex = 0x3f;  // phone backing anchor.
-constexpr unsigned int kNameplateGlyphSlot = 1;       // the name/level glyph instancer slot.
+constexpr unsigned int kNameplateLevelPart = 0xe4;
+constexpr unsigned int kNameplateNameCharBase = 0x79; // Phone name char = subId + this.
+constexpr int kNameplateNamePositionIndex = 0x3d;
+constexpr unsigned int kNameplateLevelChar = 0x69;
+constexpr int kNameplateLevelPositionIndex = 0x3e;
+constexpr int kNameplateBackingPositionIndex = 0x3f;
+constexpr unsigned int kNameplateGlyphSlot = 1;
 } // namespace
 
 /** @ghidraAddress 0x119db4 */
@@ -1462,8 +1408,6 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
                                                                const S_VECTOR2 *pBasePos,
                                                                float flScale) {
     if (!m_bCustomizePreviewShown) {
-        // Decay phase: run the timer down; on reaching zero, promote any queued asset id, swap the
-        // displayed customize-character texture, and re-enter the grow phase.
         m_flNameplateTimer -= static_cast<float>(nDeltaFrames);
         if (m_flNameplateTimer <= 0.0f) {
             m_flNameplateTimer = 0.0f;
@@ -1482,7 +1426,6 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
             }
         }
     } else if (m_flNameplateTimer < kNameplateSlideDuration) {
-        // Grow phase: run the timer up; on reaching the cap, fire the reveal jingle and voice.
         m_flNameplateTimer += static_cast<float>(nDeltaFrames);
         if (kNameplateSlideDuration <= m_flNameplateTimer) {
             m_flNameplateTimer = kNameplateSlideDuration;
@@ -1490,8 +1433,6 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
             SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kNameplateRevealVoiceId);
         }
     } else if (m_bExpAnimSettled) {
-        // Fully grown: once the level-up voice finishes, fold the gained experience into the
-        // running total and re-read the next level's threshold.
         if (![AudioManager.sharedManager isPlayingVoice]) {
             m_bExpAnimSettled = false;
             LevelTables::GetInstance();
@@ -1500,7 +1441,6 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
         }
     }
 
-    // The eased slide progress, upward Y offset, and base position.
     float flProgress = m_flNameplateTimer / kNameplateSlideDuration;
     if (flProgress < 0.0f) {
         flProgress = 0.0f;
@@ -1511,7 +1451,6 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
     const unsigned int nAlpha = static_cast<unsigned int>(static_cast<int>(flProgress * flScale));
 
     if (IsPad()) {
-        // The iPad path draws the name and level glyphs at their landscape offsets.
         const unsigned int nNamePart =
             static_cast<unsigned int>(m_nCustomizeSubId) + kNameplateNamePartBase;
         S_VECTOR2 namePos = renderPos;
@@ -1527,8 +1466,6 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
         // Yes, the binary passes the name part id (subId + 0xdf) as the scaled render's scale here.
         RenderSpriteInstancerSlotScaled(kNameplateAssetSlot, renderPos, nNamePart);
     } else {
-        // The phone path draws the name and level glyphs at their anchor positions plus the eased
-        // position, then the backing group at its anchor.
         const unsigned int nNameChar =
             static_cast<unsigned int>(m_nCustomizeSubId) + kNameplateNameCharBase;
         RenderSpriteWithPositionOffset(
@@ -1559,7 +1496,6 @@ void ResultWindowClassicLayer::SetInstancerTextureAndRefreshSlots(unsigned int n
         return;
     }
 
-    // Refresh every sprite slot to the newly bound texture's dimensions.
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flTextureScale = pTexture->GetScale();
@@ -1586,13 +1522,10 @@ void ResultWindowClassicLayer::RenderGlyphAtSeparator(unsigned int nSlot,
         return;
     }
 
-    // The glyph metrics come from the phone parts table indexed by the character code; the texture
-    // rectangle from the glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
 
-    // The separator record supplies the anchored base position and this sprite's scale and
-    // rotation: its width field is the X scale, its height field is the rotation.
+    // The separator record's width field is the X scale and its height field is the rotation.
     const PhoneLayoutRecord *pSeparator = getSeparator_Phone(nSepIndex);
     float flAnchoredX = pSeparator->flX;
     float flAnchoredY = pSeparator->flY;
@@ -1626,7 +1559,6 @@ void ResultWindowClassicLayer::BlitInstancerTextureSlot(unsigned int nSlot,
     if (pTexture == nullptr) {
         return;
     }
-    // The used UV region is the image size over the allocated power-of-two size.
     const S_VECTOR2 uvSize{static_cast<float>(pTexture->GetImageWidth()) /
                                static_cast<float>(pTexture->GetAllocWidth()),
                            static_cast<float>(pTexture->GetImageHeight()) /
@@ -1661,12 +1593,9 @@ void ResultWindowClassicLayer::RenderSpriteInstancerSlotScaled(unsigned int nSlo
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flTextureScale = pTexture->GetScale();
-    // The quad is sized by the texture's own scale factor; the UV region is the used image area.
     const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
     const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
                            flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
-    // The alpha channel is the requested scale times the layer's default scale; the intensity is
-    // the texture's scale factor truncated to a byte.
     const unsigned int nAlpha =
         static_cast<unsigned int>(static_cast<float>(nScale) * m_flDefaultScale);
     const unsigned int nIntensity = static_cast<unsigned int>(flTextureScale) & 0xff;
@@ -1699,7 +1628,6 @@ void ResultWindowClassicLayer::RenderSpriteInstancerSlotHalfScale(unsigned int n
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flTextureScale = pTexture->GetScale();
-    // The quad is sized by the texture's scale factor and centred by anchoring at half its size.
     const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
     const S_VECTOR2 anchor{spriteSize.x * 0.5f, spriteSize.y * 0.5f};
     const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
@@ -1729,8 +1657,6 @@ void ResultWindowClassicLayer::RenderTableSpriteAtIndex(unsigned int nSlot,
     if (nCharCode >= kCharCodeBound) {
         return;
     }
-    // The glyph metrics come from the phone parts table indexed by the character code; the texture
-    // rectangle from the glyph UV palette. The sprite is placed at the position plus the offset.
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
     const unsigned int nIntensity = bShadowPass ? kIntensityShadow : kIntensityFull;
@@ -1759,8 +1685,6 @@ void ResultWindowClassicLayer::RenderTableSpriteWithOffset(unsigned int nSlot,
     if (nCharCode >= kCharCodeBound) {
         return;
     }
-    // Resolve the base position by index, then emit as RenderTableSpriteAtIndex does: phone glyph
-    // metrics, glyph UV palette, placed at the resolved position plus the offset.
     S_VECTOR2 position{};
     getPosition_Phone(nPositionIndex, &position);
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
@@ -1785,7 +1709,6 @@ void ResultWindowClassicLayer::RenderSpriteWithPositionOffset(unsigned int nSlot
                                                               const S_VECTOR2 &offset,
                                                               unsigned int nAlpha,
                                                               float flScaleX) {
-    // Resolve the base position by index, add the offset, then dispatch the glyph X-scaled only.
     S_VECTOR2 position{};
     getPosition_Phone(nPositionIndex, &position);
     S_VECTOR2 offsetCopy{offset.x, offset.y};
@@ -1799,8 +1722,6 @@ void ResultWindowClassicLayer::RenderDigitRowSpacedByWidth(int nValue,
                                                            unsigned int nAlpha) {
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split the value into up to four digits (ones first), tracking the count of significant
-    // digits, rendering at least one.
     int aDigits[kRowMaxDigits] = {};
     int nSignificant = 0;
     for (int i = 0; i < kRowMaxDigits; ++i) {
@@ -1814,8 +1735,6 @@ void ResultWindowClassicLayer::RenderDigitRowSpacedByWidth(int nValue,
         nSignificant = 1;
     }
 
-    // Centre the run about the position using the nominal glyph width, then step left by each
-    // glyph's own width (plus one pixel) as it is drawn.
     const int nHalfWidth =
         static_cast<int>(static_cast<float>(nSignificant) * kRowNominalGlyphWidth);
     float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f;
@@ -1837,8 +1756,6 @@ void ResultWindowClassicLayer::RenderRatioDigits(int nNumerator,
                                                  unsigned int nAlpha) {
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split each value into up to four digits (ones first), tracking the count of significant
-    // digits, rendering at least one per group.
     int aNumerator[kRatioMaxDigits] = {};
     int aDenominator[kRatioMaxDigits] = {};
     int nNumeratorSig = 0;
@@ -1864,9 +1781,6 @@ void ResultWindowClassicLayer::RenderRatioDigits(int nNumerator,
         nDenominatorSig = 1;
     }
 
-    // Centre the combined run about the position: reserve one glyph advance per digit plus the
-    // separator's nominal width and a two-pixel bias. The cursor starts at the centre and steps
-    // left; the run is emitted right to left (denominator, separator, numerator).
     const int nNumeratorWidth =
         static_cast<int>(static_cast<float>(nNumeratorSig) * kRatioGlyphAdvance);
     const int nDenominatorWidth =
@@ -1876,7 +1790,6 @@ void ResultWindowClassicLayer::RenderRatioDigits(int nNumerator,
                               0.5f;
     float flCursorX = pPosition->x + flHalfWidth;
 
-    // The denominator digits (rightmost group).
     for (int i = 0; i < nDenominatorSig; ++i) {
         const unsigned int nGlyph = aDenominator[i] + kRatioDigitBank;
         S_VECTOR2 drawPos{flCursorX - kRatioDigitInset, pPosition->y};
@@ -1884,14 +1797,12 @@ void ResultWindowClassicLayer::RenderRatioDigits(int nNumerator,
         flCursorX -= kRatioGlyphAdvance;
     }
 
-    // The separator glyph, pre-stepped a full advance and tightened one pixel afterwards.
     flCursorX -= kRatioGlyphAdvance;
     S_VECTOR2 separatorPos{flCursorX, pPosition->y};
     DispatchGlyphSpriteFromTable(
         kGlyphSlot, kRatioSeparatorGlyph, &separatorPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
     flCursorX -= kRatioSeparatorTighten;
 
-    // The numerator digits (leftmost group).
     for (int i = 0; i < nNumeratorSig; ++i) {
         const unsigned int nGlyph = aNumerator[i] + kRatioDigitBank;
         S_VECTOR2 drawPos{flCursorX - kRatioDigitInset, pPosition->y};
@@ -1906,8 +1817,6 @@ void ResultWindowClassicLayer::RenderDecimalWithDotGlyph(int nValue,
                                                          unsigned int nAlpha) {
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split the value into up to four digits (ones first), tracking the count of significant
-    // digits, and render at least two.
     int aDigits[kDecimalMaxDigits] = {};
     int nSignificant = 0;
     for (int i = 0; i < kDecimalMaxDigits; ++i) {
@@ -1921,8 +1830,6 @@ void ResultWindowClassicLayer::RenderDecimalWithDotGlyph(int nValue,
         nSignificant = kDecimalMinDigits;
     }
 
-    // Centre the run (the leading glyph plus the significant digits) about the given position using
-    // the fixed glyph advance, then start one advance to the left of the centre.
     const int nGlyphCount = nSignificant + 1;
     const int nHalfWidth = static_cast<int>(static_cast<float>(nGlyphCount) * kDecimalGlyphAdvance +
                                             kDecimalCenterBias);
@@ -1936,7 +1843,6 @@ void ResultWindowClassicLayer::RenderDecimalWithDotGlyph(int nValue,
         const unsigned int nGlyph = aDigits[i] + kDecimalDigitBank;
         drawPos.x -= kDecimalGlyphAdvance;
         DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
-        // The dot glyph is tucked in after the ones digit.
         if (i == 0) {
             drawPos.x -= kDecimalDotAdvance;
             DispatchGlyphSpriteFromTable(
@@ -1957,7 +1863,6 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
                                                         float flSpacing) {
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split the value into up to nDigitCount digits, tracking the most-significant non-zero digit.
     int aDigits[kMaxDigitCount] = {};
     int nMostSignificant = 0;
     for (int i = 0; i < nDigitCount; ++i) {
@@ -1971,7 +1876,6 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
         nMostSignificant = 1;
     }
 
-    // The run starts at the base position shifted by the offset.
     S_VECTOR2 drawPos{position.x, position.y};
     S_VECTOR2 offsetCopy{offset.x, offset.y};
     AddVector2(&drawPos, &offsetCopy);
@@ -1983,7 +1887,6 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
         drawPos.x -= flGlyphWidth;
         DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
         drawPos.x -= flSpacing;
-        // The first glyph draws a paired glyph ten codes up when the leading-zero flag is set.
         if (i == 0 && bLeadingZero) {
             const float flPairedWidth = getPartsData_Phone(static_cast<int>(nPairedGlyph))->flWidth;
             drawPos.x -= flPairedWidth;
@@ -1993,7 +1896,6 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
         }
     }
 
-    // Pad the remaining leading positions with dimmed glyphs.
     if (bPadRight && nMostSignificant + 1 < nDigitCount) {
         for (int nRemaining = (nDigitCount - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {
             const float flGlyphWidth = getPartsData_Phone(static_cast<int>(nGlyphBase))->flWidth;
@@ -2011,7 +1913,6 @@ void ResultWindowClassicLayer::RenderScorePaddedWithDot(int nValue,
                                                         unsigned int nAlpha) {
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split the value into up to four digits, showing at least two.
     int aDigits[kCompactMaxDigits] = {};
     int nSignificant = 0;
     for (int i = 0; i < kCompactMaxDigits; ++i) {
@@ -2025,7 +1926,6 @@ void ResultWindowClassicLayer::RenderScorePaddedWithDot(int nValue,
         nSignificant = kPaddedMinDigits;
     }
 
-    // Emit each digit right to left from the position, inserting the dot after the ones digit.
     float flX = position.x;
     for (int i = 0; i < nSignificant; ++i) {
         const unsigned int nPart = aDigits[i] + kCompactDigitBank;
@@ -2060,7 +1960,6 @@ void ResultWindowClassicLayer::RenderScoreDigitsCompact(int nValue,
                                                         unsigned int nAlpha) {
     constexpr unsigned int kGlyphSlot = 1;
 
-    // Split the value into up to four digits, tracking the significant count (at least one).
     int aDigits[kCompactMaxDigits] = {};
     int nSignificant = 0;
     for (int i = 0; i < kCompactMaxDigits; ++i) {
@@ -2074,7 +1973,6 @@ void ResultWindowClassicLayer::RenderScoreDigitsCompact(int nValue,
         nSignificant = 1;
     }
 
-    // Centre the run about the position using the zero glyph's width as the nominal advance.
     const float flAdvance = getPartsData(static_cast<int>(kCompactDigitBank))->flWidth;
     float flX = position.x + static_cast<float>(static_cast<int>(nSignificant * flAdvance)) * 0.5f;
     for (int i = 0; i < nSignificant; ++i) {
@@ -2106,10 +2004,7 @@ void ResultWindowClassicLayer::InitSpriteSetsLazy() {
 
     ne::C_TEXTURE *const apTextureFields[] = {m_pBackgroundTexture, m_pPartsTexture};
 
-    // Build one sprite instancer per slot, register it in the global scene tree, make it visible,
-    // and clear its sprite count. The two edge slots bind a texture per the selector; the middle
-    // slots (2 through 6) share the atlas of the batch they mirror, so they bind none here. During
-    // the first slot's setup, initialise the four ribbon trails.
+    // Slots 2 through 6 share the atlas of the batch they mirror, so they bind no texture here.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         m_apSprites[nSlot] = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         m_apSprites[nSlot]->RegisterGlobal();
@@ -2130,8 +2025,6 @@ void ResultWindowClassicLayer::InitSpriteSetsLazy() {
 
 /** @ghidraAddress 0x1170c0 */
 void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
-    // Each channel eases from its current shown value toward zero over the start time; a
-    // non-positive start time snaps the target to zero immediately.
     for (FloatTween &channel : m_aScoreAnimChannels) {
         channel.SetFrom(channel.GetCurrent());
         channel.SetTo(0.0f);
@@ -2143,7 +2036,6 @@ void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
         }
     }
 
-    // Reset the four ribbon trails, then clear the score-animation active flag.
     for (Polygon2dTrail *pTrail : m_apTrails) {
         pTrail->Reset();
     }
@@ -2152,8 +2044,6 @@ void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
 
 /** @ghidraAddress 0x116f90 */
 void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
-    // The score channel eases from its current shown value to one over the base start time; a
-    // non-positive time snaps it to the final value immediately.
     FloatTween &scoreChannel = m_aScoreAnimChannels[kScoreChannel];
     scoreChannel.SetFrom(scoreChannel.GetCurrent());
     scoreChannel.SetTo(kScoreAnimShownTarget);
@@ -2164,12 +2054,9 @@ void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
         scoreChannel.SetCurrent(kScoreAnimShownTarget);
     }
 
-    // The first ribbon-trail pair starts at the base time.
     m_apTrails[0]->Start(kTrailDuration, static_cast<int>(flStartTime));
     m_apTrails[1]->Start(kTrailDuration, static_cast<int>(flStartTime));
 
-    // Each effect channel eases from its current value to one over a fixed duration, its start
-    // staggered past the base time by holding the delay in the elapsed slot.
     FloatTween &effectB = m_aScoreAnimChannels[kEffectChannelB];
     effectB.SetFrom(effectB.GetCurrent());
     effectB.SetTo(kScoreAnimShownTarget);
@@ -2184,7 +2071,6 @@ void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
     effectA.SetDelay(flStartTime + kEffectDelayA);
     effectA.SetElapsed(0.0f);
 
-    // The second ribbon-trail pair is delayed past the base time.
     const int nDelayedTrailStart = static_cast<int>(flStartTime + kEffectDelayC);
     m_apTrails[2]->Start(kTrailDuration, nDelayedTrailStart);
     m_apTrails[3]->Start(kTrailDuration, nDelayedTrailStart);
@@ -2203,7 +2089,6 @@ void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
     effectC.SetDelay(flStartTime + kEffectDelayD);
     effectC.SetElapsed(0.0f);
 
-    // Reset the reveal sound-effect handle to "none".
     m_nRevealSeHandle = -1;
 }
 
@@ -2214,7 +2099,6 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     // A single-player game type (0 or 2) is offline; every other type is a networked play.
     m_nNetworkPlay = (pGameSystem->GetGameType() | 2) == 2 ? 0 : 1;
 
-    // Clear the per-round display counters and reset every music-track index sentinel to -1.
     m_flResultElapsed = 0.0f;
     m_flExpAnimTimer = 0.0f;
     m_bExpAnimSettled = false;
@@ -2228,7 +2112,6 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nCustomizePendingId = -1;
     m_nRevealSeHandle = -1;
 
-    // Copy the player level and experience from the game system and resolve the level-up threshold.
     const int nLevel = pGameSystem->GetPlayerLevel();
     m_nPlayerLevel = nLevel;
     m_nPlayerExp = pGameSystem->GetPlayerExp();
@@ -2236,15 +2119,12 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nExpThreshold = static_cast<int>(nThreshold);
     m_nLevelUpStep = 0;
     if (static_cast<int>(nThreshold) < 0) {
-        // The level cap has no threshold; no experience is gained toward the next level, and the
-        // main customize asset is not shown.
+        // The level cap has no threshold, so no experience is gained toward the next level.
         m_bMainAssetActive = false;
     } else {
         m_nGainedExp = pGameSystem->GetGainedExp();
     }
 
-    // When no customize swap is pending, kick off the main-asset load; otherwise consume the
-    // pending flag and seed the resolved track index from the player level.
     if (!m_bCustomizePending) {
         BeginCustomizeMainAsset(static_cast<unsigned int>(m_nPlayerLevel));
     } else {
@@ -2252,8 +2132,6 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
         m_nTrackIndexC = m_nPlayerLevel;
     }
 
-    // Arm the score/gesture-active flag from the result-bonus feature, reset the hold timer, and
-    // record whether the Twitter share API is available.
     m_bScoreAnimActive = pGameSystem->IsNewRecord();
     m_flGestureHoldTimer = 0.0f;
     m_bTwitterAvailable = [RBViewController hasTwitterAPI];
@@ -2272,26 +2150,19 @@ void ResultWindowClassicLayer::UpdateGestureHoldTimer(float flDeltaTime) {
 }
 
 namespace {
-// The Update timers' constants.
-// The positive slide-timer divisor (the timer counts toward zero) (@ghidraAddress 0x2fd050 = -300).
-constexpr float kSlideTimerRateDown = -300.0f;
-// The negative slide-timer divisor (@ghidraAddress 0x2eedcc = 300).
-constexpr float kSlideTimerRateUp = 300.0f;
-// The two decoration rotation counters' wrap periods.
+constexpr float kSlideTimerRateDown = -300.0f; // @ghidraAddress 0x2fd050
+constexpr float kSlideTimerRateUp = 300.0f;    // @ghidraAddress 0x2eedcc
 constexpr int kRotationWrapA = 400;
 constexpr int kRotationWrapB = 0xc0;
-// The frames per decoration animation index (@ghidraAddress 0x2fcff8 = 48).
-constexpr float kRotationFramesPerIndex = 48.0f;
-// The last decoration animation frame index.
+constexpr float kRotationFramesPerIndex = 48.0f; // @ghidraAddress 0x2fcff8
 constexpr int kRotationFrameMax = 3;
 
-// The five score channels' advance order the update uses (channels 2 and 3 are advanced swapped).
+// Channels 2 and 3 are advanced swapped, as the binary does.
 constexpr int kScoreAdvanceOrder[] = {0, 1, 3, 2, 4};
 } // namespace
 
 /** @ghidraAddress 0x11c1bc */
 void ResultWindowClassicLayer::Update(float flDeltaTime) {
-    // Off an iPad, keep the portrait-orientation flag in sync with the viewport aspect.
     if (!IsPad()) {
         const float flWidth = GameSystem::GetGameSystem()->GetViewportWidth();
         const bool bPortrait = flWidth <= GameSystem::GetGameSystem()->GetViewportHeight();
@@ -2300,14 +2171,10 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the five score/effect channels. Each shares FloatTween's six-float layout and the
-    // binary drives it through FloatTween::Advance, so advance each through that view.
     for (int nChannel : kScoreAdvanceOrder) {
         m_aScoreAnimChannels[nChannel].Advance(flDeltaTime);
     }
 
-    // Advance the signed slide/settle timer toward zero, at differing rates by sign, clamping on
-    // the zero crossing.
     if (m_flSlideTimer > 0.0f) {
         m_flSlideTimer += flDeltaTime / kSlideTimerRateDown;
         if (m_flSlideTimer < 0.0f) {
@@ -2320,7 +2187,6 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
         }
     }
 
-    // The four ribbon trails: advance them on an iPad, hide their meshes otherwise.
     if (IsPad()) {
         const int nDelta = static_cast<int>(flDeltaTime);
         for (Polygon2dTrail *pTrail : m_apTrails) {
@@ -2332,8 +2198,6 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the two decoration rotation counters (the first wraps every 400 frames, the second
-    // every 192) and derive the second's animation frame index.
     m_nRotationCounterA =
         static_cast<int>(static_cast<float>(m_nRotationCounterA) + flDeltaTime) % kRotationWrapA;
     int nCounterB = static_cast<int>(static_cast<float>(m_nRotationCounterB) + flDeltaTime);
@@ -2353,7 +2217,6 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
     UpdateGestureHoldTimer(flDeltaTime);
     UpdateTouchAndPostTwitterShare();
 
-    // Dispatch to the iPad or phone render path.
     if (IsPad()) {
         RenderResultScoreLayerActive(flDeltaTime);
     } else {
@@ -2362,45 +2225,35 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
 }
 
 namespace {
-// The instancer slots the pad render path draws into. Slot 1 carries every part sprite; the rest
-// carry a single quad each.
+// Slot 1 carries every part sprite; the rest carry a single quad each.
 constexpr unsigned int kPadBackdropSlot = 0;
 constexpr unsigned int kPadPartsSlot = 1;
 constexpr unsigned int kPadJacketSlot = 2;
 constexpr unsigned int kPadBannerSlotA = 3;
 constexpr unsigned int kPadBannerSlotB = 4;
 
-// The music-jacket quad's pixel size.
 constexpr float kPadJacketSize = 180.0f;
 
-// The three proportional-bar reference widths: the two sides' score-comparison bars
-// (@ghidraAddress 0x302d60), the per-judgement rows (0x302d64), and the experience bar (0x302d68).
-constexpr float kScoreCompareBarWidth = 160.0f;
-constexpr float kJudgementBarWidth = 138.0f;
-constexpr float kExperienceBarWidth = 210.0f;
+constexpr float kScoreCompareBarWidth = 160.0f; // @ghidraAddress 0x302d60
+constexpr float kJudgementBarWidth = 138.0f;    // @ghidraAddress 0x302d64
+constexpr float kExperienceBarWidth = 210.0f;   // @ghidraAddress 0x302d68
 
-// The two stat pages slide this far horizontally as they trade places.
 constexpr float kPageSlideTravel = 20.0f;
 
-// The level-up sparkle chase: the rotation counter's period (@ghidraAddress 0x302d6c), the phase
-// step between consecutive sparkles (0x3010a0, held as a double in the binary), and their X travel.
-constexpr float kSparkleCounterPeriod = 400.0f;
-constexpr double kSparklePhaseStep = 0.3;
+constexpr float kSparkleCounterPeriod = 400.0f; // @ghidraAddress 0x302d6c
+constexpr double kSparklePhaseStep = 0.3;       // @ghidraAddress 0x3010a0
 constexpr float kSparkleTravelX = 5.0f;
 
-// The achievement-rate digits sit two pixels left of their anchor.
 constexpr float kRateDigitNudgeX = -2.0f;
 
 // A single-digit difficulty level shifts its digits left to stay centred.
 constexpr float kLevelDigitNarrowShiftX = -6.0f;
 constexpr int kLevelDigitWideThreshold = 9;
 
-// The inter-glyph gaps the pad path's digit runs use.
 constexpr float kDigitGapWide = 2.0f;
 constexpr float kDigitGapNarrow = 1.0f;
 constexpr float kDigitGapNone = 0.0f;
 
-// The pad panel's part ids.
 constexpr unsigned int kPartBackdrop = 0;
 constexpr unsigned int kPartConfirmButton = 1;
 constexpr unsigned int kPartShareButton = 2;
@@ -2412,8 +2265,7 @@ constexpr unsigned int kPartScoreDeltaDown = 0x4a;
 constexpr unsigned int kPartRankBadgeBase = 0x61;
 constexpr unsigned int kPartFullComboBadge = 0x67;
 constexpr unsigned int kPartRowIcon = 0x69;
-// The judgement-bar family: the great, good, miss, maximum-combo, and rate bars are consecutive
-// members, and the two animated rows index the family by the decoration frame instead.
+// The two animated judgement rows index this family by the decoration frame instead.
 constexpr unsigned int kPartBarFamilyBase = 0x7f;
 constexpr unsigned int kPartBarGreat = kPartBarFamilyBase;
 constexpr unsigned int kPartBarGood = kPartBarFamilyBase + 1;
@@ -2432,36 +2284,30 @@ constexpr unsigned int kPartExpBar = 0xdc;
 constexpr unsigned int kPartExpSparkle = 0xdd;
 constexpr unsigned int kPartMatchOutcomeBase = 0xed;
 
-// The glyph-bank bases the pad path's digit runs draw from.
 constexpr unsigned int kGlyphLevelBase = 0x2e;
 constexpr unsigned int kGlyphScoreBase = 0x3e;
 constexpr unsigned int kGlyphRateTargetBase = 0xb1;
 constexpr unsigned int kGlyphExpGainedBase = 0xd0;
 constexpr unsigned int kGlyphExpThresholdBase = 0x72;
 
-// The digit counts each run draws.
 constexpr int kLevelDigitCount = 2;
 constexpr int kScoreDigitCount = 4;
 constexpr int kRateDigitCount = 4;
 constexpr int kExpGainedDigitCount = 4;
 constexpr int kExpThresholdDigitCount = 5;
 
-// The multiplier that turns a unit-interval achievement rate into its displayed permille value
-// (@ghidraAddress 0x2f8540).
-constexpr float kAchievementRateScale = 1000.0f;
+constexpr float kAchievementRateScale = 1000.0f; // @ghidraAddress 0x2f8540
 
 // The clear-rank badge family tops out at six tiers.
 constexpr int kClearRankTierMax = 5;
 
-// One frame-furniture emit: a part id, its anchor-bank slot, and its X scale (the mirrored halves
-// of the frame draw at -1).
+// The mirrored halves of the frame draw at an X scale of -1.
 struct PadFramePart {
     unsigned int nPartId;
     int nAnchor;
     float flScaleX;
 };
 
-// The panel furniture that always draws at the body alpha, in the binary's emit order.
 constexpr PadFramePart kPadFrameParts[] = {
     {3, 3, 1.0f},
     {4, 4, -1.0f},
@@ -2475,7 +2321,6 @@ constexpr PadFramePart kPadFrameParts[] = {
     {0xea, 125, 1.0f},
 };
 
-// The panel furniture that draws at the panel alpha, above the backdrop.
 constexpr PadFramePart kPadHeaderParts[] = {
     {0xe5, 117, 1.0f},
     {0xe6, 118, 1.0f},
@@ -2484,7 +2329,6 @@ constexpr PadFramePart kPadHeaderParts[] = {
     {0xe9, 121, -1.0f},
 };
 
-// The front stat page's frame, drawn straight from the anchor bank at the front-page alpha.
 constexpr PadFramePart kFrontPageFrameParts[] = {
     {0x0c, 9, 1.0f},
     {0x0d, 10, -1.0f},
@@ -2499,7 +2343,6 @@ constexpr PadFramePart kFrontPageFrameParts[] = {
     {0xea, 48, 1.0f},
 };
 
-// The back stat page's frame, drawn straight from the anchor bank at the back-page alpha.
 constexpr PadFramePart kBackPageFrameParts[] = {
     {0x0c, 9, 1.0f},
     {0x0d, 10, -1.0f},
@@ -2513,14 +2356,12 @@ constexpr PadFramePart kBackPageFrameParts[] = {
     {0xec, 130, 1.0f},
 };
 
-// The front page's slide-relative headings, and the back page's.
 constexpr PadFramePart kFrontPageHeadings[] = {
     {0x19, 17, 1.0f}, {0x1a, 18, 1.0f}, {0x1b, 19, 1.0f}};
 constexpr PadFramePart kFrontPageFooters[] = {{0x1c, 20, 1.0f}, {0x1d, 21, 1.0f}, {0x1e, 22, 1.0f}};
 constexpr PadFramePart kBackPageHeadings[] = {{0x1f, 23, 1.0f}, {0x20, 24, 1.0f}, {0x21, 25, 1.0f}};
 constexpr PadFramePart kBackPageFooters[] = {{0x22, 26, 1.0f}, {0x23, 27, 1.0f}, {0x24, 28, 1.0f}};
 
-// The front page's decoration group: a static badge and the two frame-animated rosettes.
 constexpr int kFrontPageBadgeAnchor = 49;
 constexpr unsigned int kPartFrontPageBadge = 0x68;
 constexpr int kFrontPageRosetteAnchorA = 50;
@@ -2528,11 +2369,9 @@ constexpr int kFrontPageRosetteAnchorB = 51;
 constexpr unsigned int kPartRosetteBaseA = 0x6a;
 constexpr unsigned int kPartRosetteBaseB = 0x6e;
 
-// The two lane markers the single-player pass draws, each as a shadow and then a main pass.
 constexpr int kLaneMarkerAnchors[] = {15, 16};
 constexpr int kLaneMarkerCount = 2;
 
-// The panel's fixed anchor-bank slots.
 constexpr int kBackdropAnchor = 0;
 constexpr int kConfirmButtonAnchor = 1;
 constexpr int kShareButtonAnchor = 2;
@@ -2555,13 +2394,11 @@ constexpr int kMatchOutcomeAnchor = 45;
 constexpr int kRankBadgeAnchor = 46;
 constexpr int kFullComboAnchor = 47;
 
-// The rank/rate comparison group each side draws on the front page.
 constexpr int kSide1RateMarkerAnchor = 86;
 constexpr int kSide1RateLabelAnchor = 87;
 constexpr int kSide0RateMarkerAnchor = 94;
 constexpr int kSide0RateLabelAnchor = 95;
 
-// The experience/level-up group on the back page.
 constexpr int kExpLabelAnchor = 102;
 constexpr int kExpGainedLabelAnchor = 103;
 constexpr int kExpGainedAnchor = 104;
@@ -2573,8 +2410,7 @@ constexpr int kExpBarAnchor = 109;
 constexpr int kExpSparkleAnchors[] = {110, 111, 112};
 constexpr int kExpSparkleCount = 3;
 
-// The per-side judgement-row anchor bases: side 0's row starts at 0x45, side 1's at 0x34. Each row
-// lays out seventeen consecutive slots from its base.
+// Each row lays out seventeen consecutive anchor slots from its base.
 constexpr int kJudgementRowBase[ResultWindowClassicLayer::kSideCount] = {0x45, 0x34};
 
 // The offsets of each field within a judgement row, from that row's base anchor.
@@ -2598,27 +2434,24 @@ enum JudgementRowSlot {
     kRowRateBar = 0x10,
 };
 
-// The anchor-bank slots one side's rank/achievement-rate comparison block draws into.
 struct RankBlockAnchors {
-    int nRateDigits;   // the side's achievement-rate digits, and its own rate-bank badge.
-    int nTargetDigits; // the target rate's digits.
-    int nCompareGlyph; // the above-or-below comparison glyph.
-    int nDeltaDigits;  // the signed difference between the two.
-    int nRankBadge;    // the clear-rank badge.
+    int nRateDigits;
+    int nTargetDigits;
+    int nCompareGlyph;
+    int nDeltaDigits;
+    int nRankBadge;
 };
 constexpr RankBlockAnchors kRankBlockAnchors[ResultWindowClassicLayer::kSideCount] = {
     {97, 98, 99, 100, 101},
     {89, 90, 91, 92, 93},
 };
 
-// Clamps a rate into the unit interval. The comparison order is the binary's, so a NaN rate falls
-// through both tests and lands at zero.
+// The comparison order is the binary's, so a NaN rate falls through both tests and lands at zero.
 inline float ClampRate(float flRate) {
     const float flCapped = (flRate > 1.0f) ? 1.0f : flRate;
     return (flRate >= 0.0f) ? flCapped : 0.0f;
 }
 
-// Offsets a copy of an anchor-bank entry by a page's horizontal slide.
 inline S_VECTOR2 AnchorWithSlide(float flSlideX, int nAnchor) {
     S_VECTOR2 position{flSlideX, 0.0f};
     AddVector2(&position, &g_aClassicPartsAnchorPad[nAnchor]);
@@ -2651,7 +2484,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
     const unsigned int nShareAlpha =
         static_cast<unsigned int>(flShareScale * static_cast<float>(nPanelAlpha));
 
-    // The backdrop and the header furniture draw at the panel alpha.
     EmitPartSprite(0.0f,
                    1.0f,
                    1.0f,
@@ -2671,8 +2503,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
                        false);
     }
 
-    // The confirm and share buttons dim while their own gesture region is held; the share button
-    // only exists when the Twitter API is available.
     EmitPartSprite(0.0f,
                    1.0f,
                    1.0f,
@@ -2703,7 +2533,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
                        false);
     }
 
-    // The music jacket and the two banner slots.
     EmitPartSprite(0.0f,
                    1.0f,
                    1.0f,
@@ -2720,7 +2549,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
     RenderSpriteInstancerSlotScaled(
         kPadBannerSlotB, g_aClassicPartsAnchorPad[kBannerAnchorB], nBodyAlpha);
 
-    // The difficulty badge and its level digits; a single-digit level shifts left to stay centred.
     EmitPartSprite(0.0f,
                    1.0f,
                    1.0f,
@@ -2744,7 +2572,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
                         nBodyAlpha,
                         kDigitGapWide);
 
-    // The target score and the signed distance from it.
     int nTargetScore = pGameSystem->GetTargetScore();
     if (nTargetScore < 0) {
         nTargetScore = 0;
@@ -2778,8 +2605,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
                         nBodyAlpha,
                         kDigitGapWide);
 
-    // The two sides' score-comparison bars: the leading side's bar runs full width and the trailing
-    // side's is scaled by their ratio; both are zero only when neither side scored.
     const int nSide1Score = pTracker->GetPlayRecordCell(1, 0);
     const int nSide0Score = pTracker->GetPlayRecordCell(0, 0);
     float flSide1Ratio = (nSide0Score != 0 || nSide1Score != 0) ? 1.0f : 0.0f;
@@ -2793,7 +2618,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
         flSide1Ratio = static_cast<float>(nSide1Score) / static_cast<float>(nSide0Score);
     }
 
-    // The play colour swaps which side owns which label, bar, and digit bank.
     const bool bColorSwapped = nPlayColor != 0;
     const unsigned int nSide1LabelPart = bColorSwapped ? 0x26 : 0x25;
     const unsigned int nSide0LabelPart = bColorSwapped ? 0x27 : 0x28;
@@ -2851,8 +2675,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
                         nBodyAlpha,
                         kDigitGapNone);
 
-    // The match-outcome and clear-rank badges, and the full-combo badge when the maximum combo
-    // covers every note in the chart.
     EmitPartSprite(0.0f,
                    1.0f,
                    1.0f,
@@ -2882,9 +2704,7 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
                        false);
     }
 
-    // The stat area cross-fades between two horizontally sliding pages. The signed slide timer
-    // drives both the alphas and the travel; a networked play leads with the opposite page, so the
-    // two assignments are mirrored.
+    // A networked play leads with the opposite page, so the two assignments are mirrored.
     const float flSlide = m_flSlideTimer;
     const float flSlideMagnitude = std::fabs(flSlide);
     float flFrontAlpha = 0.0f;
@@ -2907,7 +2727,7 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
     const S_VECTOR2 backPageOrigin{flBackSlideX, 0.0f};
     const unsigned int nFrontAlpha = static_cast<unsigned int>(flFrontAlpha);
 
-    // The front page's frame draws straight from the anchor bank; only its content slides.
+    // Only the front page's content slides; its frame draws straight from the anchor bank.
     for (const PadFramePart &part : kFrontPageFrameParts) {
         EmitPartSprite(0.0f,
                        part.flScaleX,
@@ -2947,8 +2767,7 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
                        false);
     }
 
-    // One judgement row per side: a digit column and a proportional bar for each counter. The just
-    // and just-reflec bars index the bar family by the decoration frame, so they animate.
+    // The just and just-reflec bars index the bar family by the decoration frame, so they animate.
     for (int nSide = 0; nSide < kSideCount; ++nSide) {
         const unsigned int uSide = static_cast<unsigned int>(nSide);
         const int nJust = pTracker->GetPlayRecordCell(uSide, 3);
@@ -2961,7 +2780,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
         const int nRowTotalNotes = pTracker->GetTotalNotes();
         const float flRate = pTracker->GetPlayRecordRate(uSide);
 
-        // Side 0 reads the play colour's score slot; side 1 reads the other one.
         const int nScoreSlot =
             (nSide == 0) ? static_cast<int>(nPlayColor) : ((nPlayColor == 0) ? 1 : 0);
         const int nSideResultScore = m_aResultScores[nScoreSlot];
@@ -3083,8 +2901,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
 
     const unsigned int nBackAlpha = static_cast<unsigned int>(flBackAlpha);
 
-    // Each side's achievement rate against the target rate: its own digits, the target's digits, an
-    // above-or-below glyph, the signed difference, and the clear-rank badge.
     const auto RenderRankBlock = [&](int nSide) {
         S_VECTOR2 position;
         const unsigned int uSide = static_cast<unsigned int>(nSide);
@@ -3168,8 +2984,7 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
         EmitPartSprite(0.0f, 1.0f, 1.0f, kPadPartsSlot, nRankPart, position, nFrontAlpha, false);
     };
 
-    // Side one leads with the rate marker, side zero with its label: the binary emits the pair in
-    // the opposite order for each side.
+    // The binary emits the marker/label pair in the opposite order for each side.
     {
         S_VECTOR2 position = AnchorWithSlide(flFrontSlideX, kSide1RateMarkerAnchor);
         EmitPartSprite(
@@ -3189,8 +3004,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
     }
     RenderRankBlock(0);
 
-    // The back page: its frame draws straight from the anchor bank, its content from the page
-    // origin.
     for (const PadFramePart &part : kBackPageFrameParts) {
         EmitPartSprite(0.0f,
                        part.flScaleX,
@@ -3208,7 +3021,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
             0.0f, part.flScaleX, 1.0f, kPadPartsSlot, part.nPartId, position, nBackAlpha, false);
     }
 
-    // The experience/level-up group.
     const int nDeltaFrames = static_cast<int>(flDeltaTime);
     const float flExpProgress = AdvanceCustomizeOverlayProgress(nDeltaFrames);
     int nExpThreshold = m_nExpThreshold;
@@ -3275,9 +3087,7 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
 
     m_flResultElapsed += flDeltaTime;
 
-    // Three sparkles chase along the experience bar while the main customize asset is shown. Each
-    // trails the previous one by a fixed phase, wrapping back through zero, and the whole group
-    // drifts right as the rotation counter runs.
+    // Each sparkle trails the previous one by a fixed phase, wrapping back through zero.
     if (m_bMainAssetActive) {
         const float flPhase = static_cast<float>(m_nRotationCounterA) / kSparkleCounterPeriod;
         float flLevel = 1.0f - flPhase;
@@ -3313,8 +3123,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
 
     RenderCustomizeNameplateOverlay(nDeltaFrames, &backPageOrigin, static_cast<float>(nBackAlpha));
 
-    // A single-player game draws the two lane markers twice: a half-intensity shadow pass at the
-    // share alpha, then the main pass, whose two markers take the back and front page alphas.
     if ((pGameSystem->GetGameType() | 2) == 2) {
         for (int nMarker : kLaneMarkerAnchors) {
             S_VECTOR2 markerPos{};
@@ -3339,38 +3147,29 @@ void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
 }
 
 namespace {
-// The instancer slots the phone render path draws into.
 constexpr unsigned int kPhoneBackdropSlot = 0;
 constexpr unsigned int kPhoneGlyphSlot = 1;
 constexpr unsigned int kPhoneJacketSlot = 2;
 constexpr unsigned int kPhoneBannerSlotA = 3;
 constexpr unsigned int kPhoneBannerSlotB = 4;
 
-// The music-jacket quad's pixel size on the phone layout.
 constexpr float kPhoneJacketSize = 82.0f;
-// The banner slots draw at full intensity when the layer is in its landscape orientation.
 constexpr unsigned int kBannerFullIntensity = 255;
 
 // A nine-slice box insets its corner glyphs by this much, so each stretched edge loses twice it.
 constexpr float kNineSliceCornerInset = 9.0f;
 constexpr float kNineSliceEdgeTrim = kNineSliceCornerInset * 2.0f;
 
-// The outer frame's stretch insets: the rail that spans the viewport, the header bar, and the caps
-// at each end of the notch in the stats box's top edge.
 constexpr float kFrameRailInset = 22.0f;
 constexpr float kHeaderBarInset = 24.0f;
 constexpr float kNotchCapInset = 15.0f;
 constexpr float kNotchCapTrim = kNotchCapInset * 2.0f;
 
-// The per-side stat header rotates a quarter turn in landscape and sits upright in portrait
-// (@ghidraAddress 0x302d74 and 0x302d78).
-constexpr float kSideHeaderRotationSide0 = -1.5707964f;
-constexpr float kSideHeaderRotationSide1 = 1.5707964f;
+constexpr float kSideHeaderRotationSide0 = -1.5707964f; // @ghidraAddress 0x302d74
+constexpr float kSideHeaderRotationSide1 = 1.5707964f;  // @ghidraAddress 0x302d78
 
-// The phone experience bar's full width (@ghidraAddress 0x302d7c).
-constexpr float kPhoneExperienceBarWidth = 112.0f;
+constexpr float kPhoneExperienceBarWidth = 112.0f; // @ghidraAddress 0x302d7c
 
-// The phone panel's glyph codes.
 constexpr unsigned int kPhoneGlyphBackdrop = 0;
 constexpr unsigned int kPhoneGlyphShareButton = 1;
 constexpr unsigned int kPhoneGlyphFrameCornerTop = 0x6a;
@@ -3401,14 +3200,12 @@ constexpr unsigned int kPhoneGlyphLaneMarker = 0x65;
 constexpr unsigned int kPhoneGlyphExpSparkle = 0x63;
 constexpr unsigned int kPhoneGlyphExpBar = 0x62;
 
-// The glyph banks the phone path's number fields draw from.
 constexpr unsigned int kPhoneGlyphBankTarget = 0x17;
 constexpr unsigned int kPhoneGlyphBankScore = 0x24;
 constexpr unsigned int kPhoneGlyphBankExpGained = 0x55;
 constexpr unsigned int kPhoneGlyphBankExpThreshold = 0x39;
 
-// The two nine-slice boxes the panel draws, each from a pair of phone position records. The glyph
-// family runs corner, horizontal edge, vertical edge, centre from its base code.
+// The glyph family runs corner, horizontal edge, vertical edge, centre from its base code.
 constexpr unsigned int kNineSliceOuterBase = 2;
 constexpr unsigned int kNineSliceInnerBase = 6;
 constexpr int kOuterBoxPositionA = 1;
@@ -3416,7 +3213,6 @@ constexpr int kOuterBoxPositionB = 2;
 constexpr int kInnerBoxPositionA = 3;
 constexpr int kInnerBoxPositionB = 4;
 
-// The notched stats box: its two corners plus the two ends of the notch in its top edge.
 constexpr int kStatsBoxCornerA = 0x4d;
 constexpr int kStatsBoxCornerB = 0x4e;
 constexpr int kStatsBoxNotchStart = 0x4f;
@@ -3424,7 +3220,6 @@ constexpr int kStatsBoxNotchEnd = 0x50;
 constexpr unsigned int kNotchCapGlyph = 10;
 constexpr unsigned int kNotchSpanGlyph = 0xb;
 
-// The phone position records the fixed panel furniture resolves from.
 constexpr int kPhonePosBackdrop = 0;
 constexpr int kPhonePosShareButton = 0x42;
 constexpr int kPhonePosFrameCornerTop = 0x43;
@@ -3459,12 +3254,10 @@ constexpr int kPhonePosPageTabs = 0x51;
 constexpr int kPhonePosLaneMarkerA = 0x40;
 constexpr int kPhonePosLaneMarkerB = 0x41;
 
-// The rotating decoration row above the stats: five frame-animated or fixed glyphs and their
-// position records.
 struct PhoneDecoration {
-    unsigned int nCharCode; // the glyph code, or the animation base when bAnimated is set.
+    unsigned int nCharCode; // The animation base when bAnimated is set.
     int nPositionIndex;
-    bool bAnimated; // whether the decoration frame index is added to the glyph code.
+    bool bAnimated;
 };
 constexpr PhoneDecoration kPhoneDecorations[] = {
     {0x47, 0x17, true},
@@ -3477,7 +3270,6 @@ constexpr PhoneDecoration kPhoneDecorations[] = {
     {0x54, 0x1e, false},
 };
 
-// The exp page's fixed glyph row.
 struct PhoneExpPart {
     unsigned int nCharCode;
     int nPositionIndex;
@@ -3491,8 +3283,6 @@ constexpr PhoneExpPart kPhoneExpParts[] = {
     {0x61, 0x39},
 };
 
-// The separator glyphs drawn straight from the separator table, before the pages split. The two
-// glyph codes are the thin and thick rules.
 constexpr unsigned int kSeparatorRuleThin = 0xc;
 constexpr unsigned int kSeparatorRuleThick = 0xd;
 struct PhoneSeparator {
@@ -3514,14 +3304,11 @@ constexpr PhoneSeparator kPanelSeparators[] = {
     {11, kSeparatorRuleThin},
 };
 
-// The separator ranges the two pages carry, each drawn at its own page offset and alpha.
 constexpr int kStatsSeparatorFirst = 0x0c;
 constexpr int kStatsSeparatorLast = 0x27;
 constexpr int kExpSeparatorFirst = 0x28;
 constexpr int kExpSeparatorLast = 0x2d;
 
-// Each side's stat row: a header glyph at its own position record, then eight value fields laid out
-// from the row's base position record.
 constexpr int kStatRowBase[ResultWindowClassicLayer::kSideCount] = {0x29, 0x20};
 constexpr int kStatRowHeaderPosition[ResultWindowClassicLayer::kSideCount] = {0x28, 0x1f};
 enum PhoneStatRowSlot {
@@ -3535,7 +3322,6 @@ enum PhoneStatRowSlot {
     kPhoneRowRate = 7,
 };
 
-// The exp page's number fields and their position records.
 constexpr int kPhonePosExpGained = 0x35;
 constexpr int kPhonePosExpProgress = 0x36;
 constexpr int kPhonePosExpThreshold = 0x37;
@@ -3572,13 +3358,11 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
 
     const unsigned int nBodyAlpha = static_cast<unsigned int>(flBodyScale * flPanelAlpha);
 
-    // Resolves a phone-layout position record.
     const auto PositionAt = [&](int nIndex) {
         S_VECTOR2 position{};
         getPosition_Phone(nIndex, &position);
         return position;
     };
-    // Emits one glyph into the panel's glyph slot.
     const auto EmitGlyph = [&](unsigned int nCharCode,
                                const S_VECTOR2 &position,
                                unsigned int nAlpha,
@@ -3589,7 +3373,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
             kPhoneGlyphSlot, nCharCode, &position, nAlpha, bDimmed, 0.0f, flScaleX, flScaleY);
     };
 
-    // The backdrop and the outer frame furniture.
     {
         const S_VECTOR2 backdrop = PositionAt(kPhonePosBackdrop);
         DispatchGlyphSpriteFromTable(kPhoneBackdropSlot,
@@ -3626,7 +3409,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
               1.0f,
               1.0f);
 
-    // The rail across the panel: a cap and joint at each end, and a span stretched to the viewport.
     {
         const S_VECTOR2 railCap = PositionAt(kPhonePosRailCap);
         const S_VECTOR2 railJoint = PositionAt(kPhonePosRailJoint);
@@ -3647,7 +3429,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
         EmitGlyph(kPhoneGlyphRailCap, mirrorPos, nPanelAlpha, false, flCapWidth, 1.0f);
     }
 
-    // The header bar, dimmed while the confirm region is held.
     {
         const bool bConfirmDown = m_aGestureRegions[0].bDown;
         const S_VECTOR2 headerCap = PositionAt(kPhonePosHeaderCap);
@@ -3679,8 +3460,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
                   1.0f);
     }
 
-    // A nine-slice box spanning two corner positions: four corners drawn by mirroring one glyph,
-    // two stretched horizontal edges, two stretched vertical edges, and a stretched centre.
     const auto RenderNineSlice = [&](unsigned int nBaseCharCode,
                                      const S_VECTOR2 &cornerA,
                                      const S_VECTOR2 &cornerB,
@@ -3728,8 +3507,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
             kPhoneGlyphSlot, separator.nIndex, separator.nCharCode, noOffset, nBodyAlpha);
     }
 
-    // The music jacket and the two banner slots; the landscape orientation draws the banners
-    // centred at full intensity instead of scaled.
     {
         const S_VECTOR2 jacketPos = PositionAt(kPhonePosJacket);
         const S_VECTOR2 jacketSize{kPhoneJacketSize, kPhoneJacketSize};
@@ -3749,7 +3526,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
         }
     }
 
-    // The music heading, difficulty badge, and the target/score comparison.
     EmitGlyph(
         kPhoneGlyphMusicTitle, PositionAt(kPhonePosMusicTitle), nBodyAlpha, false, 1.0f, 1.0f);
     EmitGlyph(
@@ -3842,7 +3618,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
 
     const unsigned int nShareAlpha = static_cast<unsigned int>(flShareScale * flPanelAlpha);
 
-    // The clear-rank badge, the full-combo badge, and the match outcome.
     EmitGlyph(kPhoneGlyphRankBase + static_cast<unsigned int>(pTracker->GetPlayRecordRank(1)),
               PositionAt(kPhonePosRankBadge),
               nBodyAlpha,
@@ -3862,8 +3637,7 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
               1.0f,
               1.0f);
 
-    // The stats box: a nine-slice whose top edge is notched to make room for the page tabs, so its
-    // top rail is drawn as two spans either side of the notch, with a capped bar bridging them.
+    // The stats box's top edge is notched for the page tabs, so its top rail draws as two spans.
     {
         const S_VECTOR2 cornerA = PositionAt(kStatsBoxCornerA);
         const S_VECTOR2 cornerB = PositionAt(kStatsBoxCornerB);
@@ -3905,7 +3679,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
         const S_VECTOR2 centre{flInsetX, flInsetY};
         EmitGlyph(nCentre, centre, nBodyAlpha, false, flSpanX, flSpanY);
 
-        // The bar bridging the notch, capped at each end.
         EmitGlyph(kNotchCapGlyph, notchStart, nBodyAlpha, false, 1.0f, 1.0f);
         const S_VECTOR2 notchSpan{notchStart.x + kNotchCapInset, notchStart.y};
         EmitGlyph(kNotchSpanGlyph,
@@ -3917,10 +3690,8 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
         EmitGlyph(kNotchCapGlyph, notchEnd, nBodyAlpha, false, -1.0f, 1.0f);
     }
 
-    // The stats and experience pages cross-fade as the signed slide timer runs, sliding
-    // horizontally in opposite directions. A networked play leads with the opposite page, so the
-    // assignments are mirrored. Each page also drives its own tab glyph, whose alpha comes from the
-    // fifth channel rather than the body channel.
+    // A networked play leads with the opposite page, so the assignments are mirrored. Each page's
+    // tab glyph takes its alpha from the fifth channel rather than the body channel.
     const float flSlide = m_flSlideTimer;
     const float flSlideMagnitude = std::fabs(flSlide);
     const float flRemaining = 1.0f - flSlideMagnitude;
@@ -3982,8 +3753,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
                                  1.0f);
     }
 
-    // One stat row per side: a rotated header glyph, then the judgement counts, the two ratios, the
-    // score, and the achievement rate.
     const unsigned int nSide1HeaderGlyph = (nPlayColor != 0) ? 0x36 : 0x35;
     const unsigned int nSide0HeaderGlyph = (nPlayColor == 0) ? 0x38 : 0x37;
     for (int nSide = 0; nSide < kSideCount; ++nSide) {
@@ -4002,7 +3771,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
             (nSide == 0) ? static_cast<int>(nPlayColor) : ((nPlayColor == 0) ? 1 : 0);
         const int nSideResultScore = m_aResultScores[nScoreSlot];
 
-        // The header sits upright in portrait and turns a quarter turn in landscape.
         const float flHeaderRotation =
             m_bPortrait ? 0.0f :
                           ((nSide == 1) ? kSideHeaderRotationSide1 : kSideHeaderRotationSide0);
@@ -4017,7 +3785,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
                                     1.0f);
 
         const int nRowBase = kStatRowBase[nSide];
-        // Each field's position is resolved from its record, then shifted by the page's slide.
         const auto RowPosition = [&](int nSlot) {
             S_VECTOR2 position = PositionAt(nRowBase + nSlot);
             S_VECTOR2 offset = statsOffset;
@@ -4124,7 +3891,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
                                  1.0f);
     }
 
-    // A single sparkle chases along the experience bar while the main customize asset is shown.
     if (m_bMainAssetActive) {
         const float flPhase = static_cast<float>(m_nRotationCounterA) / kSparkleCounterPeriod;
         const S_VECTOR2 sparkleOffset{expOffset.x + flPhase * kSparkleTravelX, expOffset.y};
@@ -4144,8 +3910,6 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
     RenderCustomizePhoneOverlay(nDeltaFrames, &expOffset, flExpAlpha);
     RenderCustomizeNameplateOverlay(nDeltaFrames, &expOffset, flExpAlpha);
 
-    // A single-player game draws the two lane markers twice: a half-intensity shadow pass at the
-    // share alpha, then the main pass, whose two markers take the exp and stats page alphas.
     if ((pGameSystem->GetGameType() | 2) == 2) {
         EmitGlyph(
             kPhoneGlyphLaneMarker, PositionAt(kPhonePosLaneMarkerA), nShareAlpha, true, 1.0f, 1.0f);
@@ -4162,10 +3926,7 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
     }
 }
 
-// Seeds every Classic result-screen layout table at load time. Nothing calls this by name: its
-// address sits in the binary's __mod_init_func list (0x358ca8), so dyld runs it when the image
-// loads. The binary wraps the whole fill in an autorelease pool, then writes every field inline.
-// Only the play-field height below is not a constant.
+// Nothing calls this by name: its address sits in the binary's __mod_init_func list (0x358ca8).
 /** @ghidraAddress 0x11c9b8 */
 __attribute__((constructor)) void InitializeResultLayoutTable() {
     @autoreleasepool {
@@ -6484,8 +6245,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicTrailVertices[76].y = 909.0f;
         g_aClassicTrailVertices[77].x = 646.0f;
         g_aClassicTrailVertices[77].y = 910.0f;
-        // Three 16-byte pool copies from 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0; each writes all four
-        // floats, so the width and height come across too.
+        // Three 16-byte pool copies from 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0 write all four floats.
         g_ClassicCenterPositionPhoneState.flX = 119.0f;
         g_ClassicCenterPositionPhoneState.flY = 439.0f;
         g_ClassicCenterPositionPhoneState.flWidth = 530.0f;

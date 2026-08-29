@@ -117,7 +117,6 @@ private:
                                   int nAlpha,
                                   float flRotation);
 
-    // Constructs the layer: clears the sprite set and every effect slot.
     // @ghidraAddress 0x176e18
     ExplosionEffectLayer();
 

@@ -178,44 +178,33 @@ private:
      */
     void AdvanceSwipeState(int nSwipeEvent);
 
-    // The base's trailing bool ends at +0x4a, so +0x4b is the natural alignment padding before the
-    // dispatch state.
-    int m_nState = {};                               // +0x4c: the dispatch state.
-    int m_nAnimationTime = {};                       // +0x50: the title animation clock, in
-                                                     // milliseconds; wraps back to the end of the
-                                                     // intro once it passes the loop end.
-    int m_nReadyDelay = {};                          // +0x54: the start ready delay.
-    ne::C_TEXTURE *m_apTextures[kTextureCount] = {}; // +0x58: the three title textures.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
-        {};                                    // +0x70: the part sprite instancers.
+    // The base's trailing bool ends at +0x4a, so +0x4b is alignment padding before the state.
+    int m_nState = {};                               // +0x4c
+    int m_nAnimationTime = {};                       // +0x50: in ms; wraps to the end of the intro.
+    int m_nReadyDelay = {};                          // +0x54
+    ne::C_TEXTURE *m_apTextures[kTextureCount] = {}; // +0x58
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x70
     int m_aSpriteCount[kSpriteSlotCount] = {}; // +0x308: each instancer's seed sprite count.
-    // +0x454: a third per-slot array the constructor zeroes in the same loop as the instancer
-    // pointers and the seed sprite counts. No routine in the class reads or writes it -- the
-    // constructor's zeroing loop is its only access anywhere in the reconstructed cluster -- so its
-    // role is recorded as unknown rather than guessed.
+    // +0x454: only the constructor's zeroing loop ever touches this array; its role is unknown.
     int m_aSpriteSlotState[kSpriteSlotCount] = {}; // +0x454
-    float m_flFadeStart = {};                      // +0x5a0: the fade curve's start value.
-    float m_flFadeEnd = {};                        // +0x5a4: the fade curve's end value.
-    float m_flFadeDuration = {};   // +0x5a8: the fade curve's duration, in milliseconds.
-    float m_flFadeElapsed = {};    // +0x5ac: the fade curve's elapsed time.
-    float m_flFadeStartDelay = {}; // +0x5b0: the delay before the fade curve begins.
-    float m_flFadeValue = {};      // +0x5b4: the current fade value (seeded to 1.0).
-    bool m_bLeaving = {};          // +0x5b8: set once the start prompt is taken; the frame then
-                                   // stops accepting touches and only waits for the fade.
+    float m_flFadeStart = {};                      // +0x5a0
+    float m_flFadeEnd = {};                        // +0x5a4
+    float m_flFadeDuration = {};                   // +0x5a8: in milliseconds.
+    float m_flFadeElapsed = {};                    // +0x5ac
+    float m_flFadeStartDelay = {};                 // +0x5b0
+    float m_flFadeValue = {};                      // +0x5b4: seeded to 1.0.
+    bool m_bLeaving = {}; // +0x5b8: set once the start prompt is taken; touches then stop
+                          // being accepted.
     // +0x5b9..+0x5bb is the natural alignment padding after the leaving flag.
-    int m_nUnusedCounter = {};        // +0x5bc: zeroed by the constructor and never read or written
-                                      // again anywhere in the class.
-    float m_flCornerButtonClock = {}; // +0x5c0: the corner button's own one-second pulse clock,
-                                      // advanced six times as fast while leaving.
-    int m_nTrackedTouchId = {}; // +0x5c4: the touch being tracked for a flick (-1 when none is).
-    int m_nSwipeState = {};     // +0x5c8: the hidden-code (Konami) input sequence's progress.
-    bool m_bSecretActive = {};  // +0x5cc: the hidden-code flag; doubles the burst scale.
+    int m_nUnusedCounter = {};        // +0x5bc: zeroed by the constructor and never read again.
+    float m_flCornerButtonClock = {}; // +0x5c0: advanced six times as fast while leaving.
+    int m_nTrackedTouchId = {};       // +0x5c4: -1 when no touch is tracked.
+    int m_nSwipeState = {};           // +0x5c8: the hidden-code (Konami) sequence's progress.
+    bool m_bSecretActive = {};        // +0x5cc: the hidden-code flag; doubles the burst scale.
     // +0x5cd..+0x5cf is the natural alignment padding before the cached viewport size.
-    float m_flViewportWidth = {};  // +0x5d0: the viewport width cached each frame; the part emitter
-                                   // halves it into the part layout's screen X origin.
-    float m_flViewportHeight = {}; // +0x5d4: the viewport height, used the same way.
-    // +0x5d8: the five touch hit-rectangles the part emitter records for the interactive parts,
-    // read by the title touch tests. Each is {x, y, width, height}.
+    float m_flViewportWidth = {};  // +0x5d0: cached each frame; halved into the screen X origin.
+    float m_flViewportHeight = {}; // +0x5d4
+    // +0x5d8: recorded by the part emitter for the interactive parts.
     HitRect m_aHitRects[kHitRectCount] = {}; // +0x5d8
 };
 

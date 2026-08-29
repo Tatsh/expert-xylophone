@@ -6,23 +6,17 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// The pad cell is 180 points tall; the phone cell reuses the shared 100-point layout metric.
 static const CGFloat kCellHeightPad = 180.0;
 
-// The artwork inset from the cell edge: 12 points horizontally on pad and 10 on phone, with a
-// constant 10-point vertical inset.
 static const CGFloat kArtworkMarginWidthPad = 12.0;
 static const CGFloat kArtworkMarginWidthPhone = 10.0;
 static const CGFloat kArtworkMarginHeight = 10.0;
 
-// The banner artwork frame size: 640x160 on pad and 320x80 on phone.
 static const CGFloat kItemWidthPad = 640.0;
 static const CGFloat kItemWidthPhone = 320.0;
 static const CGFloat kItemHeightPad = 160.0;
 static const CGFloat kItemHeightPhone = 80.0;
 
-// The rounded jacket placeholder is a square (110 points on pad, 64 on phone) that is inset from
-// the artwork origin, nudged up 2 points on phone to line up with the shadow.
 static const CGFloat kJacketSizePad = 110.0;
 static const CGFloat kJacketSizePhone = 64.0;
 static const int kJacketPhoneVerticalNudge = 2;
@@ -32,28 +26,21 @@ static const CGFloat kJacketShadowOffset = 1.0;
 static const CGFloat kJacketShadowOpacity = 0.6;
 static const CGFloat kJacketShadowRadius = 1.0;
 
-// The centre of the frame divides the surplus size in half.
 static const CGFloat kHalf = 0.5;
 
-// The artwork fades in over two tenths of a second once its banner arrives.
 static const NSTimeInterval kArtworkFadeDuration = 0.2;
 static const CGFloat kOpaqueAlpha = 1.0;
 static const CGFloat kTransparentAlpha = 0.0;
 
-// A campaign item is a tune when its type is zero; only a tune is checked against the local
-// library.
 static const int kCampaignItemTypeTune = 0;
 
-// The two alternating pack-background images (selected by row parity) and the jacket placeholder.
 static NSString *const kPackBackgroundImageNameEven = @"09_store/store_pack_bg_0";
 static NSString *const kPackBackgroundImageNameOdd = @"09_store/store_pack_bg_1";
 static NSString *const kJacketPlaceholderImageName = @"09_store/store_jacket_110";
 
-// The purchased action-button state that a downloaded item forces.
 static const int kButtonTypePurchased = 1;
 
 @implementation StoreCampaignTableViewCell {
-    // Plain ivars without properties, written straight from the bound item.
     BOOL downloadFlag;
     int buttonType;
     BOOL bUnlock;

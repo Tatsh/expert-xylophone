@@ -2,33 +2,28 @@
 
 #import <UIKit/UIKit.h>
 
-// The title colour and shadow alphas the binary applies in -initWithFrame:.
-static const CGFloat kTitleShadowAlpha = 0.7;            // Normal- and disabled-state shadow alpha.
-static const CGFloat kHighlightedTitleWhite = 0.8;       // Highlighted title colour brightness.
-static const CGFloat kHighlightedTitleShadowAlpha = 0.8; // Highlighted title shadow alpha.
-static const CGFloat kSelectedTitleShadowAlpha = 0.6;    // Selected title shadow alpha.
-static const CGFloat kRetinaTitleShadowHeight = -0.5;    // Title shadow offset height on retina.
-static const CGFloat kNonRetinaTitleShadowHeight = -1.0; // Title shadow offset height otherwise.
-static const CGFloat kRetinaScaleThreshold = 2.0;        // Screen scale treated as retina.
+static const CGFloat kTitleShadowAlpha = 0.7;
+static const CGFloat kHighlightedTitleWhite = 0.8;
+static const CGFloat kHighlightedTitleShadowAlpha = 0.8;
+static const CGFloat kSelectedTitleShadowAlpha = 0.6;
+static const CGFloat kRetinaTitleShadowHeight = -0.5;
+static const CGFloat kNonRetinaTitleShadowHeight = -1.0;
+static const CGFloat kRetinaScaleThreshold = 2.0;
 
-// The fill-gradient parameters used in -drawRect:. The base fill is darkened by a state-dependent
-// factor, then four stops brighten it towards white.
-static const CGFloat kFillFactorNormal = 0.8;      // Base darkening factor when not highlighted.
-static const CGFloat kFillFactorHighlighted = 0.6; // Base darkening factor when highlighted.
+static const CGFloat kFillFactorNormal = 0.8;
+static const CGFloat kFillFactorHighlighted = 0.6;
 static const CGFloat kGradientFactors[] = {0.0, 0.16, 0.32, 0.48};
 static const CGFloat kGradientLocations[] = {0.0, 0.45, 0.55, 1.0};
 
-// The grey inner-shadow border parameters used in -drawRect:.
-static const CGFloat kShadowBlurNormal = 2.0;      // Border shadow blur when not highlighted.
-static const CGFloat kShadowBlurHighlighted = 3.0; // Border shadow blur when highlighted.
-static const CGFloat kShadowBlurDisabled = 2.0;    // Border shadow blur while disabled.
-static const CGFloat kShadowOffsetNormal = 1.0; // Border shadow base offset when not highlighted.
-static const CGFloat kShadowOffsetHighlighted = 2.0; // Border shadow base offset when highlighted.
-static const CGFloat kShadowOffsetDisabled = 1.0;    // Border shadow base offset while disabled.
-static const CGFloat kBorderInset = -4.0;            // Outward inset of the even-odd border rect.
-static const CGFloat kShadowOffsetNudge = 0.1;       // Rounding nudge applied to the border shadow.
+static const CGFloat kShadowBlurNormal = 2.0;
+static const CGFloat kShadowBlurHighlighted = 3.0;
+static const CGFloat kShadowBlurDisabled = 2.0;
+static const CGFloat kShadowOffsetNormal = 1.0;
+static const CGFloat kShadowOffsetHighlighted = 2.0;
+static const CGFloat kShadowOffsetDisabled = 1.0;
+static const CGFloat kBorderInset = -4.0;
+static const CGFloat kShadowOffsetNudge = 0.1;
 
-// The number of components a fully specified RGBA colour reports.
 static const int kRGBAComponentCount = 4;
 
 @interface StoreButtonView ()
@@ -44,7 +39,7 @@ static const int kRGBAComponentCount = 4;
 
 @implementation StoreButtonView
 
-// The overridden accessors suppress auto-synthesis; the binary keeps the backing ivar.
+// The overridden accessors suppress auto-synthesis.
 @synthesize buttonColor = _buttonColor;
 @synthesize cornerRadius = _cornerRadius;
 @synthesize disabledColor = _disabledColor;
@@ -167,8 +162,7 @@ static const int kRGBAComponentCount = 4;
         shadowOffset = highlighted ? kShadowOffsetHighlighted : kShadowOffsetNormal;
         shadowBlur = highlighted ? kShadowBlurHighlighted : kShadowBlurNormal;
 
-        // Read the fill colour's straight RGBA components. Older UIColor builds lack
-        // -getRed:green:blue:alpha:, so fall back to reading the component array of the CGColor.
+        // Older UIColor builds lack -getRed:green:blue:alpha:, hence the CGColor fallback.
         CGFloat red;
         CGFloat green;
         CGFloat blue;
@@ -212,9 +206,8 @@ static const int kRGBAComponentCount = 4;
 
     CGContextRestoreGState(context);
 
-    // Paint a grey inner shadow by filling an even-odd ring (an outward-inset rect minus the
-    // rounded path), clipped to the rounded path and translated off to one side so its cast
-    // shadow falls back inside the button.
+    // The even-odd ring is translated off to one side so its cast shadow falls back inside the
+    // button as an inner shadow.
     CGColorRef blackColor = UIColor.blackColor.CGColor;
     CGRect outerRect = CGRectInset(
         CGRectOffset(CGRectInset(roundedPath.bounds, -shadowBlur, -shadowBlur), -shadowOffset, 0.0),
@@ -228,8 +221,6 @@ static const int kRGBAComponentCount = 4;
 
     CGContextSaveGState(context);
     CGFloat translation = round(outerRect.size.width);
-    // The shadow offset and blur are derived from the SIMD-garbled disassembly: the ring is shifted
-    // by its own rounded width and its shadow, nudged by 0.1, is cast back through the clip.
     CGContextSetShadowWithColor(
         context,
         CGSizeMake(translation + copysign(kShadowOffsetNudge, translation), shadowBlur),
@@ -254,5 +245,5 @@ static const int kRGBAComponentCount = 4;
 
 @end
 
-// The compiler-generated -.cxx_destruct (@ghidraAddress 0xcca0) that clears _disabledColor and
-// _buttonColor is provided automatically by ARC.
+// ARC provides the -.cxx_destruct the binary has.
+// @ghidraAddress 0xcca0

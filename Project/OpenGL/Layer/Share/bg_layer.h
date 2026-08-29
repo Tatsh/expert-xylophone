@@ -110,14 +110,10 @@ public:
     }
 
 private:
-    // The "no background selected" sentinel the factory stamps into m_nBackgroundId; while it is
-    // set, no background texture is loaded.
     static constexpr int kNoBackground = 0x1d;
 
-    // The clear-effect fade duration used when the clear-effect overlay is toggled.
     static constexpr float kClearEffectFadeDuration = 1000.0f;
 
-    // Re-centre the built background batches on the play-field's full-height layout Y.
     void RecenterBackgroundSprites();
 
     ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {};      // +0x08: root container node.

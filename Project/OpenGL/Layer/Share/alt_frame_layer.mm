@@ -1,11 +1,3 @@
-//
-//  alt_frame_layer.mm
-//  REFLEC BEAT plus
-//
-//  The alternate play-field frame layer (AltFrameLayer). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "alt_frame_layer.h"
 
 #include "alt_frame_marker_table.h"
@@ -17,23 +9,16 @@
 #include "neTexture.h"
 #include "s_vector2.h"
 
-// The process-wide alternate-frame layer, created lazily by shared().
 static AltFrameLayer *g_pAltFrameLayer = nullptr; // @ghidraAddress 0x3deda8
 
-// The shared parts atlas every frame overlays draw from.
 static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8
 
 namespace {
-// The frame type and mode the constructor seeds.
 constexpr int kDefaultFrameType = 0x20;
 constexpr int kDefaultFrameMode = 5;
-// The batch index of the mesh instancer whose first slot carries the frame texture.
 constexpr int kFrameMeshBatch = 2;
-// The mesh's single textured slot.
 constexpr int kFrameMeshSlot = 0;
-// Halves a scaled dimension into a half-pixel UV centre.
 constexpr float kUvHalf = 0.5f;
-// The fully-opaque alpha endpoint the fade-in eases toward (a 0-to-255 alpha channel).
 constexpr float kFrameAlphaOpaque = 255.0f;
 } // namespace
 
@@ -41,14 +26,11 @@ constexpr float kFrameAlphaOpaque = 255.0f;
 AltFrameLayer::AltFrameLayer() {
     m_nFrameType = kDefaultFrameType;
     m_nFrameMode = kDefaultFrameMode;
-    // The sprite batches, counts, ready flag, and fade channel are zeroed by the member
-    // initialisers.
 }
 
 /** @ghidraAddress 0x17a4f8 */
 AltFrameLayer *AltFrameLayer::shared() {
     if (g_pAltFrameLayer == nullptr) {
-        // The binary allocates the raw 0x80-byte object and runs the constructor.
         g_pAltFrameLayer = new AltFrameLayer();
     }
     return g_pAltFrameLayer;
@@ -98,7 +80,6 @@ void AltFrameLayer::SetAltFrameTexture(ne::C_TEXTURE *pTexture) {
     pMesh->SetRefCountedMember(pTexture);
 
     if (pTexture == nullptr) {
-        // With no texture, zero the mesh slot's centre, size, UV origin, and UV size.
         pMesh->SetSpriteAnchor(kFrameMeshSlot, S_VECTOR2{0.0f, 0.0f});
         pMesh->SetSpriteSize(kFrameMeshSlot, S_VECTOR2{0.0f, 0.0f});
         pMesh->SetSpriteUvOrigin(kFrameMeshSlot, S_VECTOR2{0.0f, 0.0f});
@@ -106,7 +87,6 @@ void AltFrameLayer::SetAltFrameTexture(ne::C_TEXTURE *pTexture) {
         return;
     }
 
-    // The texture's source dimensions in points (its image size divided by the retina scale).
     const float flPointWidth = static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetScale();
     const float flPointHeight =
         static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetScale();
@@ -132,7 +112,6 @@ void AltFrameLayer::Process(float flDelta) {
     const float flDuration = m_fadeChannel.GetDuration();
     bool bApply;
     if (flDuration > m_fadeChannel.GetElapsed()) {
-        // Advance the fade toward its end, clamping the elapsed time to the duration.
         float flElapsed = m_fadeChannel.GetElapsed() + flDelta;
         if (flElapsed > flDuration) {
             flElapsed = flDuration;
@@ -143,7 +122,7 @@ void AltFrameLayer::Process(float flDelta) {
                                  flFraction * (m_fadeChannel.GetEnd() - m_fadeChannel.GetStart()));
         bApply = true;
     } else {
-        // The fade is complete; only apply the final alpha once (on the frame the flag latches).
+        // Once complete, the final alpha is applied only on the frame the flag latches.
         bApply = m_bFadeDone;
     }
 
@@ -158,16 +137,13 @@ void AltFrameLayer::Process(float flDelta) {
         }
     }
 
-    // Keep the two overlay batches visible.
     m_apSprites[1]->SetVisible(true);
     m_apSprites[2]->SetVisible(true);
 }
 
 namespace {
-// The frame-type thresholds that select the low/mid/high lane-count marker set.
 constexpr int kFrameTypeMidThreshold = 7;
 constexpr int kFrameTypeHighThreshold = 0xd;
-// The highlight sprite-kind row the active-lane marker draws instead of its normal row, per set.
 constexpr int kActiveLaneKind4 = 4;
 constexpr int kActiveLaneKind6 = 6;
 constexpr int kActiveLaneKind9 = 9;
@@ -175,15 +151,11 @@ constexpr int kActiveLaneKind9 = 9;
 
 /** @ghidraAddress 0x17a9d8 */
 void AltFrameLayer::RenderMarkers() {
-    // The play-field half-height (rounded toward zero) offsets every marker's base Y each frame.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
 
-    // Each batch's running slot index this frame.
     int aSlotIndex[kSpriteSlotCount] = {};
     for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
-        // Select the layout and descriptor tables and the active-lane highlight kind by frame type,
-        // bounding the marker index to the chosen set's record count.
         const AltFrameMarkerLayout *pLayout = nullptr;
         const AltFrameSpriteDescriptor *pDescriptors = nullptr;
         int nActiveKind = 0;
@@ -210,7 +182,6 @@ void AltFrameLayer::RenderMarkers() {
             nActiveKind = kActiveLaneKind9;
         }
 
-        // The active-lane marker draws its highlight row; every other marker its own layout row.
         const int nKind = nMarker == m_nActiveLane ? nActiveKind : pLayout->nSpriteKind;
         const AltFrameSpriteDescriptor &descriptor = pDescriptors[nKind];
 
@@ -223,13 +194,8 @@ void AltFrameLayer::RenderMarkers() {
 }
 
 namespace {
-// The batch index of the mesh instancer, whose sprite draws from the alt-frame mesh UV atlas rather
-// than the shared atlas.
 constexpr int kMeshBatch = 0;
-// The highlight sprite's fixed opaque-white colour (a packed 24-bit red-green-blue word with the
-// alpha left to the fade pass).
 constexpr unsigned int kHighlightColor = 0xffffff;
-// The first (and only) slot the highlight sprite occupies in its batch.
 constexpr int kHighlightSlot = 0;
 } // namespace
 
@@ -237,9 +203,6 @@ constexpr int kHighlightSlot = 0;
 void AltFrameLayer::SetFrameMode(int nMode) {
     m_nFrameMode = nMode;
 
-    // Select the marker and descriptor tables and the highlight sprite-kind row by lane-count tier,
-    // matching RenderMarkers' tier split. The descriptor is indexed by the mode plus the tier's
-    // highlight kind.
     const AltFrameMarkerLayout *pMarker = nullptr;
     const AltFrameSpriteDescriptor *pDescriptor = nullptr;
     if (m_nFrameType < kFrameTypeMidThreshold) {
@@ -253,15 +216,9 @@ void AltFrameLayer::SetFrameMode(int nMode) {
         pDescriptor = &g_aAltFrameDescriptor9[nMode + kActiveLaneKind9];
     }
 
-    // The play-field half-height (rounded toward zero) offsets the highlight's base Y, as in
-    // RenderMarkers.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
 
-    // The mesh sprite (batch zero) draws from the frame type's alt-frame mesh UV atlas (the
-    // mid-lane-count set up to frame type twelve, the high-lane-count set above); the overlay
-    // batches draw from the shared atlas. The descriptor's UV-frame index selects the record either
-    // way.
     const SpriteUvEntry *pUvTable;
     if (pDescriptor->nBatch != kMeshBatch) {
         pUvTable = g_aSpriteUvTable;
@@ -272,9 +229,6 @@ void AltFrameLayer::SetFrameMode(int nMode) {
     }
     const SpriteUvEntry &uv = pUvTable[pDescriptor->nUvFrameIndex];
 
-    // Write the active lane's highlight into the first slot of its batch: position and rotation and
-    // scale from the marker layout, anchor and pixel size and atlas rectangle from the descriptor,
-    // opaque white.
     ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[pDescriptor->nBatch];
     pBatch->SetSpritePosition(
         kHighlightSlot, S_VECTOR2{pMarker->flX, pMarker->flY + static_cast<float>(nHalfHeight)});
@@ -289,43 +243,30 @@ void AltFrameLayer::SetFrameMode(int nMode) {
 }
 
 namespace {
-// The number of lane markers the alt frame lays out. The mesh batch is sized to hold one sprite per
-// marker; each overlay batch holds a single sprite.
 constexpr int kAltFrameMarkerCount = 14;
 constexpr int kOverlayBatchCapacity = 1;
 
-// The highlighted lane, per lane-count tier.
 constexpr int kActiveLane4 = 9;
 constexpr int kActiveLane6 = 13;
 constexpr int kActiveLane9 = 11;
 
-// The two texture slots the layer loads: the frame's own atlas and the shared parts atlas.
 constexpr int kFrameAtlasSlot = 0;
 constexpr int kPartsAtlasSlot = 1;
 
-// Each batch's texture slot. Slots zero and one are the two textures above. The third entry indexes
-// one slot past the two-entry texture array, so the binary hands the last batch whatever pointer
-// sits there — m_apSprites[1], which the previous iteration has just stored. The out-of-bounds read
-// is in the shipped code, and is masked in practice because SetAltFrameTexture replaces that
-// batch's texture before the frame draws.
+// The third entry indexes past the two-entry texture array, an out-of-bounds read the shipped code
+// makes and that SetAltFrameTexture masks by replacing that batch's texture before the frame draws.
 constexpr int kBatchTextureSlot[] = {0, 1, 3};
 
-// The two overlay batch indices, whose sprites are tinted; the mesh batch's sprites stay white.
 constexpr int kOverlayBatchFirst = 1;
 constexpr int kOverlayBatchLast = 2;
 
-// The first frame type whose overlay sprites are tinted rather than left white, and the first whose
-// tint is the warm grey rather than black.
 constexpr int kFirstTintedFrameType = 7;
 constexpr int kFirstWarmTintFrameType = 15;
 
-// The warm-grey overlay tint the colette frames use.
 constexpr unsigned int kWarmTintRed = 0x4e;
 constexpr unsigned int kWarmTintGreen = 0x45;
 constexpr unsigned int kWarmTintBlue = 0x3a;
 
-// A fully-lit colour channel, and the alpha every freshly built sprite starts at (the fade pass in
-// Process supplies the real value).
 constexpr unsigned int kChannelMax = 255;
 constexpr unsigned int kInitialAlpha = 0;
 } // namespace
@@ -338,13 +279,11 @@ void AltFrameLayer::BuildSprites() {
 
     m_nMarkerCount = kAltFrameMarkerCount;
 
-    // The default frame type is a sentinel meaning "whatever frame the player has equipped";
-    // resolve it once and keep the resolved type.
+    // kDefaultFrameType is a sentinel meaning the frame the player has equipped.
     if (m_nFrameType == kDefaultFrameType) {
         m_nFrameType = GameSystem::GetGameSystem()->GetFrameType();
     }
 
-    // The lane-count tier picks which marker is the highlighted one.
     if (m_nFrameType < kFrameTypeMidThreshold) {
         m_nActiveLane = kActiveLane4;
     } else if (m_nFrameType < kFrameTypeHighThreshold) {
@@ -358,8 +297,8 @@ void AltFrameLayer::BuildSprites() {
         m_anBatchCapacity[nBatch] = kOverlayBatchCapacity;
     }
 
-    // The sentinel survives only when the game system is itself unset, in which case the layer
-    // keeps whatever textures it already holds.
+    // The sentinel survives only when the game system is unset, and the layer then keeps the
+    // textures it already holds.
     if (m_nFrameType != kDefaultFrameType) {
         m_apTextures[kFrameAtlasSlot] =
             ne::C_TEXTURE::FindOrLoadCached(g_aFrameTextureNames[m_nFrameType]);
@@ -375,8 +314,7 @@ void AltFrameLayer::BuildSprites() {
         ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nBatch];
         pBatch->SetVisible(true);
 
-        // Bind the batch's texture from its slot; see kBatchTextureSlot for the last batch's
-        // out-of-bounds slot.
+        // See kBatchTextureSlot for the last batch's out-of-bounds slot.
         const int nTextureSlot = kBatchTextureSlot[nBatch];
         ne::C_TEXTURE *pTexture =
             nTextureSlot < kTextureSlotCount ?
@@ -388,15 +326,10 @@ void AltFrameLayer::BuildSprites() {
         m_aSpriteCounts[nBatch] = 0;
     }
 
-    // The play-field half-height (rounded toward zero) offsets every marker's base Y, as in
-    // RenderMarkers.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
 
     for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
-        // Select the layout and descriptor tables and the active-lane highlight kind by frame type,
-        // bounding the marker index to the chosen set's record count, exactly as RenderMarkers
-        // does.
         const AltFrameMarkerLayout *pLayout = nullptr;
         const AltFrameSpriteDescriptor *pDescriptors = nullptr;
         int nActiveKind = 0;
@@ -426,9 +359,6 @@ void AltFrameLayer::BuildSprites() {
         const int nKind = nMarker == m_nActiveLane ? nActiveKind : pLayout->nSpriteKind;
         const AltFrameSpriteDescriptor &descriptor = pDescriptors[nKind];
 
-        // The mesh sprite draws from the frame type's alt-frame mesh UV atlas (the mid-lane-count
-        // set up to frame type twelve, the high-lane-count set above); the overlay sprites draw
-        // from the shared atlas.
         const SpriteUvEntry *pUvTable;
         if (descriptor.nBatch != kMeshBatch) {
             pUvTable = g_aSpriteUvTable;
@@ -439,12 +369,10 @@ void AltFrameLayer::BuildSprites() {
         }
         const SpriteUvEntry &uv = pUvTable[descriptor.nUvFrameIndex];
 
-        // Each batch's sprite count doubles as its running slot index while the frame is built.
         ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[descriptor.nBatch];
         const int nSlot = m_aSpriteCounts[descriptor.nBatch];
         pBatch->SetSpritePositionXY(
             nSlot, pLayout->flX, pLayout->flY + static_cast<float>(nHalfHeight));
-        // The play field draws too low with no frame border; record the terms that place it.
         if (nSlot == 0) {
         }
         pBatch->SetSpriteAnchor(nSlot, S_VECTOR2{descriptor.flAnchorX, descriptor.flAnchorY});

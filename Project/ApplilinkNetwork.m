@@ -1,16 +1,3 @@
-//
-//  ApplilinkNetwork.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkNetwork). This is a plain
-//  Objective-C file: it is the SDK's public umbrella class, and every collaborator
-//  (ApplilinkConsts, ApplilinkCore, RewardCore, and RecommendCore) is reached through ordinary
-//  class-method message sends, with no C++.
-//
-//  The class has no instance state; every member is a thin class-method facade that forwards to an
-//  internal SDK collaborator.
-//
-
 #import "ApplilinkNetwork.h"
 
 #import "ApplilinkConsts.h"

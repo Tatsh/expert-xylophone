@@ -33,5 +33,4 @@ struct TouchPoint {
                                   CompactTouchList pass. +0x2d */
     bool bEndedPending = {}; /*!< Whether the touch ended while still new; promoted to @c bEnded on
                                   the next commit. +0x2e */
-    // unsigned char aPad2f[1] = {}; // +0x2f trailing pad to the 0x30-byte slot size
 };

@@ -1,16 +1,3 @@
-//
-//  ApplilinkViewController.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkViewController). This is
-//  a plain Objective-C file: it drives a RotateStoreProductViewController and an ApplilinkIndicator
-//  through ordinary message sends and stack blocks, so there is no C++.
-//
-//  ApplilinkViewController owns and presents the native App Store product page. It shows a loading
-//  overlay while the product loads, is the product view controller's delegate, and forwards the App
-//  Store opened, close, closed, and load-failure notices to its sdkDelegate.
-//
-
 #import "ApplilinkViewController.h"
 
 #import <StoreKit/StoreKit.h>

@@ -7,20 +7,15 @@
 #import "RBMenuBGEffectPartView.h"
 #import "UIImage+RB.h"
 
-// The default particle-layer count seeded by @c initWithFrame:.
 static const int kDefaultEffectNum = 50;
 
-// The layout mask that keeps every layer stretched to the container's bounds
-// (@c UIViewAutoresizingFlexibleWidth | @c UIViewAutoresizingFlexibleHeight).
 static const UIViewAutoresizing kEffectAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The rainbow and ring artwork base names; each is completed with a @c "%02d" one-based index.
 static NSString *const kRainbowImageBasePath = @"00_texture/re_";
 static NSString *const kRingImageBasePath = @"00_texture/ring_";
 static NSString *const kImageNameFormat = @"%@%02d";
 
-// Core Animation keys and key paths.
 static NSString *const kRainbowAnimationKey = @"rainbowanimation";
 static NSString *const kRingAnimationKey = @"ringanimation";
 static NSString *const kOpacityKeyPath = @"opacity";
@@ -31,10 +26,8 @@ static NSString *const kPositionKeyPath = @"position";
 static const int kRainbowImageCount = 3;
 static const int kRingImageCount = 4;
 
-// Animation durations, in seconds.
 static const CFTimeInterval kOpacityAnimationDuration = 15.0;
 static const CFTimeInterval kRingAnimationDuration = 20.0;
-// The per-ring start delay, in seconds, applied as @c (type - kRingTypeBase) * kRingBeginStep.
 static const CFTimeInterval kRingBeginStep = 5.5;
 
 // @c createAnimation:type: dispatches on these ranges: 1-3 flash opacity, 4-7 sweep a ring upward.
@@ -44,14 +37,11 @@ enum {
     kRingTypeMax = 7,
 };
 
-// The nine opacity key frames for each flash variant.
 static const float kOpacityValuesType1[] = {0, 1, 1, 1, 1, 0, 0, 0, 0};
 static const float kOpacityValuesType2[] = {0, 0, 0, 1, 1, 1, 1, 0, 0};
 static const float kOpacityValuesType3[] = {1, 0, 0, 0, 0, 1, 1, 1, 1};
-// The shared key times for the opacity flash.
 static const float kOpacityKeyTimes[] = {0.0f, 0.05f, 0.25f, 0.3f, 0.5f, 0.55f, 0.75f, 0.8f, 1.0f};
 
-// The ring sweep starts at these bottom positions and rises to @c kRingEndY at the same x.
 static const CGPoint kRingStartPoints[] = {
     {250, 1400},
     {600, 1400},
@@ -59,10 +49,8 @@ static const CGPoint kRingStartPoints[] = {
     {450, 1400},
 };
 static const CGFloat kRingEndY = 0.0;
-// The two-frame ring sweep key times.
 static const float kRingKeyTimes[] = {0.0f, 1.0f};
 
-// The origins of the three rainbow layers; each layer is sized from its own image.
 static const CGPoint kRainbowOrigins[] = {
     {0, 696},
     {0, 200},
@@ -175,8 +163,7 @@ static const CGPoint kRainbowOrigins[] = {
 
 /** @ghidraAddress 0xe72bc */
 - (void)createAnimation:(UIView *)view type:(int)type {
-    // The binary always builds and configures this opacity animation up front, then discards it
-    // unused for the ring types below.
+    // The binary builds this opacity animation up front and discards it unused for the ring types.
     CAKeyframeAnimation *opacity = [CAKeyframeAnimation animationWithKeyPath:kOpacityKeyPath];
     opacity.duration = kOpacityAnimationDuration;
     opacity.repeatCount = HUGE_VALF;

@@ -1,18 +1,7 @@
-//
-//  RBUserSettingData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBUserSettingData). Verified
-//  against the arm64 disassembly: every archive key was read from its literal, the archive order
-//  was taken from the send order, and each customise dictionary was recovered from the key and
-//  value arrays that -dictionaryWithObjects:forKeys:count: is handed.
-//
-
 #import "RBUserSettingData.h"
 
 #import "deviceenvironment.h"
 
-// Archive keys for the scalar and object settings. They match the shipped literals verbatim.
 static NSString *const kVersionCoderKey = @"kVersion";
 static NSString *const kThemaCoderKey = @"kThemaKey";
 static NSString *const kBGMTypeCoderKey = @"kBGMTypeKey";
@@ -67,25 +56,18 @@ static NSString *const kFullJustReflecCoderKey = @"kFullJustReflecKey";
 static NSString *const kVsPastelCoderKey = @"kVsPastel";
 static NSString *const kAlreadyReadTitleCautionCoderKey = @"kAlreadyReadTitleCaution";
 
-// Resource names for each theme, returned by @c +themaNameWithID:.
 static NSString *const kThemaNameClassic = @"01_Classic";
 static NSString *const kThemaNameLimelight = @"02_Limelight";
 static NSString *const kThemaNameColette = @"03_Colette";
 static NSString *const kThemaNameFallback = @"original";
-// The resource extension of a theme bundle.
 static NSString *const kThemaBundleExtension = @"bundle";
 
-// The seed timestamp for the news and terms bookkeeping on a fresh install.
 static NSString *const kDefaultTimeString = @"200001010000";
-// The seed version for the downloaded resource pack on a fresh install.
 static NSString *const kDefaultResourceDownloadVersion = @"0.0.0";
 
-// The number of customise entries stored per theme dictionary.
 static const NSUInteger kCustomizeItemCount = 9;
-// The number of themes with their own customise dictionary.
 static const NSUInteger kCustomizeThemaCount = 3;
 
-// The shipped default settings seeded by @c setDefault.
 static const int kDefaultBgmType = 15;
 static const int kDefaultExplosionType = 12;
 static const int kDefaultFrameType = 14;
@@ -99,28 +81,22 @@ static const float kDefaultDamageEffectSize = 1.0f;
 static const int kDefaultCpuLevel = 2;
 static const int kDefaultPlayerColor = 2;
 static const int kDefaultBoundsEffectStyle = 1;
-// The bounds-effect style selected when a theme has no stored customise dictionary.
 static const int kBoundsEffectStyleFallback = 1;
-// The ghost style that clears the full-combo flags when selected.
 static const int kGhostStyleDanger = 1;
 
-// The classic-theme customise defaults (all effects off, unit volume and brightness).
 static const int kClassicBgmType = 0;
 static const int kClassicExplosionType = 0;
 static const int kClassicFrameType = 0;
 static const int kClassicBackgroundType = 0;
-// The limelight-theme customise defaults.
 static const int kLimelightBgmType = 1;
 static const int kLimelightExplosionType = 1;
 static const int kLimelightFrameType = 7;
 static const int kLimelightBackgroundType = 6;
-// The colette-theme customise defaults.
 static const int kColetteBgmType = 15;
 static const int kColetteExplosionType = 12;
 static const int kColetteFrameType = 14;
 static const int kColetteBackgroundType = 13;
 
-// Builds one theme's customise dictionary from the supplied option values.
 static NSMutableDictionary *
 RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroundType) {
     return [@{
@@ -136,9 +112,8 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
     } mutableCopy];
 }
 
-// Mirrors one option into the current theme's customise dictionary. The binary inlines this block
-// into each of the reset methods; it is a plain function rather than a method because the class
-// metadata defines no such selector.
+// A plain function rather than a method: the binary inlines this into each reset method and the
+// class metadata defines no such selector.
 static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *key) {
     NSMutableDictionary *item = settings.customizeItems[settings.thema];
     [item setValue:value forKey:key];
@@ -269,7 +244,6 @@ static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, 
     } else {
         self.thema = [coder decodeInt32ForKey:kThemaCoderKey];
         self.customizeItems = [coder decodeObjectForKey:kCustomizeItemCoderKey];
-        // The theme-specific customise items override the flat option ivars.
         NSDictionary *item = self.customizeItems[self.thema];
         self.bgmType = [item[kBGMTypeCoderKey] intValue];
         self.shotType = [item[kShotTypeCoderKey] intValue];
@@ -410,8 +384,6 @@ static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, 
     _thema = thema;
 
     if (self.customizeItems.count - 1 < (NSUInteger)thema) {
-        // No stored customise dictionary for this theme: fall back to the limelight defaults, and
-        // always select the middle bounds-effect style.
         self.shotType = 0;
         self.bgmType = kLimelightBgmType;
         self.explosionType = kLimelightExplosionType;
@@ -433,8 +405,7 @@ static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, 
     self.shotVolume = [item[kShotVolumeCoderKey] floatValue];
     self.backgroundBrighness = [item[kBackgroundBrighnessCoderKey] floatValue];
 
-    // The bounds-effect style tracks the theme index, except an unrecognised theme leaves it
-    // untouched.
+    // The bounds-effect style tracks the theme index; an unrecognised theme leaves it untouched.
     switch (thema) {
     case RBUserSettingDataThemeClassic:
         self.boundsEffectStyle = RBUserSettingDataThemeClassic;

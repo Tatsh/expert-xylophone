@@ -1,11 +1,3 @@
-//
-//  neWindow.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class neWindow). This class does not
-//  reach the C++ engine, so it is a plain Objective-C (.m) file.
-//
-
 #import "neWindow.h"
 
 @implementation neWindow
@@ -17,8 +9,7 @@
 
 #pragma mark - Touch handling
 
-// The window deliberately swallows every touch phase: the engine's GL view reads input directly, so
-// none of these are forwarded through the responder chain.
+// The window swallows every touch phase: the engine's GL view reads input directly.
 
 /** @ghidraAddress 0x3d0b4 */
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {

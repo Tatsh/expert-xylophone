@@ -1,11 +1,3 @@
-//
-//  title_screen_layer2.mm
-//  REFLEC BEAT plus
-//
-//  The parts-based title-screen scene layer (TitleLimelightScene). Reconstructed from Ghidra
-//  project rb458, program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "titlelimelightscene.h"
 
 #include <cstdint>
@@ -28,87 +20,71 @@
 #include "touchmanager.h"
 
 namespace {
-// The value the constructor seeds into the fade value (the fully-shown level).
 constexpr float kInitialFadeValue = 1.0f;
 
-// The sentinel the constructor writes into the tracked-touch id (no touch tracked).
 constexpr int kNoTrackedTouch = -1;
 
-// The dispatch states OnFrame selects between.
 constexpr int kStateLoad = 0;
 constexpr int kStateStartMusic = 1;
 constexpr int kStateRender = 2;
 constexpr int kStateFinish = 3;
 
-// The fade-in time, in seconds, the title BGM begins playing with (@ghidraAddress 0x2ee910).
+// In seconds. @ghidraAddress 0x2ee910
 constexpr float kTitleBgmFadeInTime = 0.3f;
 
-// The three title textures, in load order (indices into m_apTextures).
 constexpr const char *kTitleTextureNames[rb::TitleLimelightScene::kTextureCount] = {
     "00_texture/ti_bg",
     "00_texture/ti_parts",
     "00_texture/ti_parts_eff",
 };
 
-// The part-layout record's texture index marking an instancer that binds no texture.
 constexpr int kUntexturedTextureIndex = 4;
-// The layout record's texture index that marks the logo part (see TitlePartLayoutRecord).
 constexpr int kPartTextureIndexLogo = 3;
 
-// The ready-delay timer the title screen counts down before the start prompt, and the fade-curve
-// duration, in milliseconds.
+// In milliseconds.
 constexpr int kTitleReadyDelay = 0x708;
 constexpr float kTitleFadeDuration = 500.0f;
 
-// The themed voice bank the title screen loads.
 constexpr int kTitleVoiceId = 0;
 
-// The maximum value of an opaque colour channel, and the half factor for a size-to-anchor centre.
 constexpr unsigned int kColorMax = 255;
 constexpr float kHalf = 0.5f;
 
-// The part-layout anchor mode that draws from the per-device lettered/logo UV atlas; every other
-// mode draws from the shared default title-part atlas.
+// Mode one draws from the per-device lettered/logo UV atlas; every other mode uses the shared
+// default title-part atlas.
 constexpr int kPartAnchorModeAtlas = 1;
 
-// The screen-space transform the default-device parts apply: the X and Y offsets and the scale that
-// map a part's layout position into screen space (@ghidraAddress 0x2f8568 X offset, 0x301f94 Y
-// offset, 0x301108 scale), plus the layer's own half-anchor origins.
+// @ghidraAddress 0x2f8568 X offset, 0x301f94 Y offset, 0x301108 scale
 constexpr float kPartScreenOffsetX = -384.0f;
 constexpr float kPartScreenOffsetY = -680.0f;
 constexpr float kPartScreenScale = 0.4f;
 
-// The interactive part kinds whose screen rectangles are recorded for the title touch tests.
 constexpr unsigned int kPartKindHit0 = 0x2b;
 constexpr unsigned int kPartKindHit1 = 0x32;
 constexpr unsigned int kPartKindHit2 = 0x34;
 constexpr unsigned int kPartKindHit3 = 0x3e;
 constexpr unsigned int kPartKindHit4 = 0x50;
 
-// The extra offsets the default-device hit-rect for kind 0x50 (the start prompt) is nudged by
-// (@ghidraAddress 0x2f855c width, 0x2f8574 X, 0x2f8578 height, plus an inline -30 Y).
+// @ghidraAddress 0x2f855c width, 0x2f8574 X, 0x2f8578 height, plus an inline -30 Y
 constexpr float kStartPromptWidthPad = 80.0f;
 constexpr float kStartPromptOffsetX = -40.0f;
 constexpr float kStartPromptHeightPad = 60.0f;
 constexpr float kStartPromptOffsetY = -30.0f;
 
-// The star-field particle burst: the number of particles, the number of {time, value} pairs each
-// animation curve holds (and its float count), the part-kind base the particles emit at, and the
-// unit-interval-to-alpha scale.
 constexpr int kBurstParticleCount = 0x23;
 constexpr int kBurstCurvePairs = 3;
 constexpr int kBurstCurveFloats = kBurstCurvePairs * 2;
 constexpr unsigned int kBurstPartKindBase = 5;
 constexpr float kBurstAlphaByteScale = 255.0f;
 
-// The 35 burst particles' fixed X columns. @ghidraAddress 0x30b3b0
+// @ghidraAddress 0x30b3b0
 constexpr float kBurstParticleX[kBurstParticleCount] = {
     74.0f,  74.0f,  194.0f, 194.0f, 454.0f, 454.0f, 229.0f, 229.0f, 545.0f, 545.0f, 725.0f, 725.0f,
     564.0f, 564.0f, 234.0f, 234.0f, 657.0f, 657.0f, 464.0f, 464.0f, 593.0f, 593.0f, 593.0f, 593.0f,
     334.0f, 334.0f, 134.0f, 134.0f, 644.0f, 644.0f, 71.0f,  71.0f,  424.0f, 424.0f, 384.0f,
 };
 
-// the particles' Y-position curves (three {time, value} pairs each). @ghidraAddress 0x30b43c
+// @ghidraAddress 0x30b43c
 constexpr float kBurstYCurve[kBurstParticleCount][kBurstCurveFloats] = {
     {333.33334f, 738.0f, 500.0f, 730.5f, 1000.0f, 716.5f},
     {333.33334f, 738.0f, 500.0f, 730.5f, 1000.0f, 716.5f},
@@ -147,7 +123,7 @@ constexpr float kBurstYCurve[kBurstParticleCount][kBurstCurveFloats] = {
     {166.66667f, 574.0f, 333.33334f, 524.0f, 833.3333f, 494.0f},
 };
 
-// the particles' alpha curves (three {time, value} pairs each). @ghidraAddress 0x30b784
+// @ghidraAddress 0x30b784
 constexpr float kBurstAlphaCurve[kBurstParticleCount][kBurstCurveFloats] = {
     {483.33334f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
     {466.66666f, 0.0f, 483.33334f, 1.0f, 650.0f, 0.0f},
@@ -186,7 +162,7 @@ constexpr float kBurstAlphaCurve[kBurstParticleCount][kBurstCurveFloats] = {
     {216.66667f, 0.0f, 233.33333f, 1.0f, 400.0f, 0.0f},
 };
 
-// the particles' scale curves (three {time, value} pairs each). @ghidraAddress 0x30bacc
+// @ghidraAddress 0x30bacc
 constexpr float kBurstScaleCurve[kBurstParticleCount][kBurstCurveFloats] = {
     {333.33334f, 0.0f, 1000.0f, 0.5f, 1016.6667f, 0.5f},
     {333.33334f, 0.0f, 1000.0f, 0.5f, 1016.6667f, 0.5f},
@@ -225,13 +201,7 @@ constexpr float kBurstScaleCurve[kBurstParticleCount][kBurstCurveFloats] = {
     {166.66667f, 0.0f, 333.33334f, 0.6f, 833.3333f, 1.0f},
 };
 
-// The state-2 render sweep's animation curves. Each is a flat run of {time, value} pairs sampled at
-// the layer's animation clock. The whole block runs contiguously from 0x30a510 up to 0x30b3b0,
-// where the burst tables above begin, so no curve in the region is unaccounted for.
-
-// Part 0x2b is the only rotated part: it flies in along a 32-keyframe path while a decaying
-// rotation oscillation (in radians, opening at 100 degrees) settles to zero, then holds until its
-// alpha drops out.
+// Part 0x2b is the only rotated part; its rotation curve is in radians.
 constexpr int kPart2bPathPairs = 32;
 constexpr int kPart2bRotationPairs = 15;
 constexpr int kPart2bAlphaPairs = 3;
@@ -272,8 +242,6 @@ constexpr float kPart2bRotationCurve[] = {
 /** @ghidraAddress 0x30a788 */
 constexpr float kPart2bAlphaCurve[] = {0.0f, 1.0f, 2966.6667f, 1.0f, 3100.0f, 0.0f};
 
-// Parts 0x2c..0x35: ten parts on a fixed row of X columns, each rising into place on its own
-// staggered Y curve and fading in behind it.
 constexpr int kPart2cCount = 10;
 constexpr int kPart2cPosYPairs = 4;
 constexpr int kPart2cAlphaPairs = 2;
@@ -321,9 +289,6 @@ constexpr float kPart2cAlphaCurve[kPart2cCount][kPart2cAlphaPairs * 2] = {
     {2783.3333f, 0.0f, 2883.3333f, 1.0f},
 };
 
-// Parts 0x36..0x39: four parts at fixed points that pop in with an overshoot and then join the
-// shared ambient breathing. Parts 0x3a..0x3d sit at their own four points and share the alpha
-// curves below with them, taking the ambient scale from the outset.
 constexpr int kPart36Count = 4;
 constexpr int kPart36ScalePairs = 8;
 constexpr int kPart36AlphaPairs = 2;
@@ -413,8 +378,6 @@ constexpr float kPart36AlphaCurve[kPart36Count][kPart36AlphaPairs * 2] = {
     {2750.0f, 0.0f, 2916.6667f, 1.0f},
 };
 
-// Parts 0x3f and 0x40 are the two fully opaque parts: each slides along its own dense position path
-// and shares one scale curve.
 constexpr int kPart3fPathPairs = 12;
 constexpr int kPart40PathPairs = 11;
 constexpr int kPart3fScalePairs = 6;
@@ -463,12 +426,9 @@ constexpr float kPart3fScaleCurve[] = {
     1.0f,
 };
 
-// Parts 0x41..0x4f: fifteen parts arranged around a small ring, each blinking on its own long
-// schedule. The last two sit off the ring and use a longer scale curve that pops them in.
 constexpr int kPart41Count = 15;
 constexpr int kPart41AlphaPairs = 5;
 constexpr int kPart41LateScalePairs = 7;
-// The first index of the two parts that take the longer scale curve, and how many there are.
 constexpr int kPart41LateFirst = 13;
 constexpr int kPart41LateCount = 2;
 
@@ -547,7 +507,6 @@ constexpr float kPart41LateScaleCurve[] = {
     1.0f,
 };
 
-// The ambient breathing scale every settled part shares: a slow swell and dip back to unity.
 constexpr int kAmbientScalePairs = 4;
 /** @ghidraAddress 0x30af90 */
 constexpr float kAmbientScaleCurve[] = {
@@ -561,8 +520,6 @@ constexpr float kAmbientScaleCurve[] = {
     1.0f,
 };
 
-// Parts 0x29 and 0x28: the two parts stacked over the fixed point below, each with its own scale
-// curve that repeats the ambient swell once more near the end of the loop.
 constexpr int kPart29ScalePairs = 8;
 constexpr int kPart29AlphaPairs = 2;
 constexpr int kPart2aAlphaPairs = 2;
@@ -625,13 +582,11 @@ constexpr float kPart29AlphaCurve[] = {3233.3333f, 0.0f, 3300.0f, 1.0f};
 constexpr int kPart3eCurvePairs = 2;
 constexpr int kPart52CurvePairs = 2;
 
-// Parts 1..4 sweep across the screen once per particle-burst window: their three fade-in/fade-out
-// windows line up exactly with the three burst gates below.
 constexpr int kPart01Count = 4;
 constexpr int kPart01PathPairs = 6;
 constexpr int kPart01AlphaPairs = 9;
 constexpr int kPart01ScalePairs = 6;
-// The first part kind the sweep emits. The binary runs its counter from -4 to -1 and adds 5.
+// The binary runs its counter from -4 to -1 and adds 5.
 constexpr unsigned int kPartKindSweepFirst = 1;
 
 /** @ghidraAddress 0x30b038 */
@@ -866,14 +821,12 @@ constexpr float kPart01ScaleCurve[kPart01Count][kPart01ScalePairs * 2] = {
      2.2f},
 };
 
-// Part 0x51 pulses over the corner button's own clock rather than the animation clock: a triangular
-// ramp up to the half-second mark and back down over one second.
+// Part 0x51 pulses on the corner button's own clock, not the animation clock.
 constexpr int kPart51AlphaPairs = 3;
 /** @ghidraAddress 0x30b398 */
 constexpr float kPart51AlphaCurve[] = {0.0f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f};
 
-// The fixed part positions the sweep does not curve. @ghidraAddress 0x30949c, 0x3094a0, 0x305350,
-// 0x3094a4, 0x3094a8, 0x3094b8, 0x3094bc
+// @ghidraAddress 0x30949c, 0x3094a0, 0x305350, 0x3094a4, 0x3094a8, 0x3094b8, 0x3094bc
 constexpr float kPart52PosY = 748.0f;
 constexpr float kPart29PosX = 399.0f;
 constexpr float kPart29PosY = 657.0f;
@@ -882,27 +835,22 @@ constexpr float kPart28PosY = 662.0f;
 constexpr float kPart50PosX = 389.0f;
 constexpr float kPart50PosY = 991.0f;
 
-// The three particle-burst windows: the animation time each opens at, how long each stays open, and
-// the offset added to the animation clock to give the burst its own zero-based time.
 constexpr int kBurstWindowCount = 3;
 constexpr int kBurstWindowStart[kBurstWindowCount] = {0xe00, 0x2926, 0x3c9d};
 constexpr int kBurstWindowSpan = 0x79e;
 /** @ghidraAddress 0x3094ac */
 constexpr float kBurstTimeOffset[kBurstWindowCount] = {-3583.3333f, -10533.333f, -15516.667f};
 
-// The animation clock's loop: past the end it rewinds to where the intro curves finish, so only the
-// ambient portion repeats.
+// Past the end the clock rewinds to where the intro curves finish, so only the ambient repeats.
 constexpr int kAnimationLoopEnd = 0x492e;
 constexpr int kAnimationLoopStart = 0xe63;
 
-// The animation times each gated group waits for.
 constexpr int kPart2cGate = 0xa6a;
 constexpr int kPart41Gate = 0xb96;
 constexpr int kPart2aGateStart = 0xbeb;
 constexpr int kPart2aGateSpan = 0x7bf;
 constexpr int kPart29Gate = 0xca1;
 
-// The part kinds the sweep emits, in program order.
 constexpr unsigned int kPartKindBackdrop = 0;
 constexpr unsigned int kPartKindLead = 0x2b;
 constexpr unsigned int kPartKindRowFirst = 0x2c;
@@ -919,13 +867,10 @@ constexpr unsigned int kPartKindStackTop = 0x28;
 constexpr unsigned int kPartKindCornerBase = 0x50;
 constexpr unsigned int kPartKindCornerPulse = 0x51;
 
-// The unit scale and zero rotation most emits pass, and the fully-opaque alpha.
 constexpr float kUnitScale = 1.0f;
 constexpr float kNoRotation = 0.0f;
 constexpr unsigned int kOpaqueAlpha = 255;
 
-// The leave transition: the fade curve the start prompt seeds, the BGM fade-out time, the corporate
-// button's target alpha, and the fade value that hands over to the finish state.
 // @ghidraAddress 0x3094c0 (the four-float fade seed)
 constexpr float kLeaveFadeEnd = 1.0f;
 constexpr float kLeaveFadeDuration = 1500.0f;
@@ -935,68 +880,57 @@ constexpr float kLeaveMusicFadeTime = 0.5f;
 constexpr float kCorporateButtonAlpha = 0.0f;
 constexpr float kFadeComplete = 1.0f;
 
-// The corner button's pulse clock: its one-second period, the step that wraps it, and how many
-// extra times the frame delta is added once the title is leaving.
 // @ghidraAddress 0x2f8540 (g_flAchievementRateHashScale), 0x2f8544
 constexpr float kCornerPulsePeriod = 1000.0f;
 constexpr float kCornerPulseWrapStep = -1000.0f;
 constexpr int kCornerPulseLeavingExtra = 5;
 
-// How far a drag must travel on its longer axis to register as a flick.
 constexpr float kSwipeDeadZone = 25.0f;
 
-// The audition shot sound the lead part plays.
 constexpr unsigned long kShotAuditionChannel = 1;
 constexpr int kShotAuditionVariant = 0;
 
-// The hit rectangles the part emitter records, by the role each one drives.
 constexpr int kHitRectStart = 0;
 constexpr int kHitRectShotSound = 1;
 constexpr int kHitRectSecretA = 2;
 constexpr int kHitRectSecretB = 3;
 constexpr int kHitRectVoice = 4;
 
-// The hidden-code sound effect, and the animation time the completed code rewinds the clock to.
 constexpr int kSoundEffectTitleSecret = 0xd;
 constexpr int kSecretReplayTimerValue = 0x24fa;
 
-// The inputs the hidden-code sequence accepts.
 enum TitleSwipeInput {
-    kTitleSwipeUp = 0,      // An upward flick.
-    kTitleSwipeDown = 1,    // A downward flick.
-    kTitleSwipeLeft = 2,    // A leftward flick.
-    kTitleSwipeRight = 3,   // A rightward flick.
-    kTitleSwipeButtonA = 4, // The "A" confirm input that completes the sequence.
-    kTitleSwipeButtonB = 5, // The "B" input, the penultimate step.
+    kTitleSwipeUp = 0,
+    kTitleSwipeDown = 1,
+    kTitleSwipeLeft = 2,
+    kTitleSwipeRight = 3,
+    kTitleSwipeButtonA = 4,
+    kTitleSwipeButtonB = 5,
 };
 
-// How far through the sequence the player has got.
 enum TitleSwipeStep {
-    kSwipeStepNone = 0,      // No input entered yet.
-    kSwipeStepUp1 = 1,       // First up entered.
-    kSwipeStepUp2 = 2,       // Second up entered.
-    kSwipeStepDown1 = 3,     // First down entered.
-    kSwipeStepDown2 = 4,     // Second down entered.
-    kSwipeStepLeft1 = 5,     // First left entered.
-    kSwipeStepRight1 = 6,    // First right entered.
-    kSwipeStepLeft2 = 7,     // Second left entered.
-    kSwipeStepRight2 = 8,    // Second right entered.
-    kSwipeStepButtonB = 9,   // B entered; the next A completes the sequence.
-    kSwipeStepComplete = 10, // The sequence completed.
+    kSwipeStepNone = 0,
+    kSwipeStepUp1 = 1,
+    kSwipeStepUp2 = 2,
+    kSwipeStepDown1 = 3,
+    kSwipeStepDown2 = 4,
+    kSwipeStepLeft1 = 5,
+    kSwipeStepRight1 = 6,
+    kSwipeStepLeft2 = 7,
+    kSwipeStepRight2 = 8,
+    kSwipeStepButtonB = 9,
+    kSwipeStepComplete = 10,
 };
 
-// Samples one animation curve at the frame's animation time. The binary inlines this conversion at
-// each of the sweep's curve sites.
+// The binary inlines this at each of the sweep's curve sites.
 inline float SampleCurve(const float *pPairs, int nPairs, int nTime) {
     return CalculateCurveInterpolation(pPairs, nPairs, static_cast<float>(nTime));
 }
 
-// Converts a sampled unit-interval curve value into a colour-channel alpha.
 inline unsigned int CurveToAlpha(float flCurve) {
     return static_cast<unsigned int>(flCurve * kBurstAlphaByteScale);
 }
 
-// Whether a touch point lies inside one of the hit rectangles the part emitter records.
 inline bool IsInsideHitRect(const rb::TitleLimelightScene::HitRect &rect, float flX, float flY) {
     return (flX >= rect.x) && (flX <= rect.x + rect.width) && (flY >= rect.y) &&
            (flY <= rect.y + rect.height);
@@ -1008,8 +942,6 @@ namespace rb {
 
 /** @ghidraAddress 0x152de8 */
 TitleLimelightScene::TitleLimelightScene() {
-    // The UI-layer base constructor ran first and the compiler installed the title dispatch vtable;
-    // the presentation state is otherwise zero-initialised by the member initialisers.
     m_flFadeValue = kInitialFadeValue;
     m_nTrackedTouchId = kNoTrackedTouch;
 }
@@ -1024,14 +956,13 @@ TitleLimelightScene::~TitleLimelightScene() {
 
 /** @ghidraAddress 0x152edc */
 void TitleLimelightScene::ReleaseResources() {
-    // Release and null each cached texture.
     for (ne::C_TEXTURE *&pTexture : m_apTextures) {
         if (pTexture != nullptr) {
             pTexture->Release();
             pTexture = nullptr;
         }
     }
-    // The part instancers are owned by the scene graph; flag each for the scene walker and null it.
+    // The part instancers are owned by the scene graph, so they are flagged for the scene walker.
     for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
@@ -1064,14 +995,10 @@ void TitleLimelightScene::OnFrame(int nElapsedMs) {
 void TitleLimelightScene::LoadResources() {
     m_nAnimationTime = 0;
 
-    // Load the three title textures.
     for (int nTexture = 0; nTexture < kTextureCount; ++nTexture) {
         m_apTextures[nTexture] = ne::C_TEXTURE::FindOrLoadCached(kTitleTextureNames[nTexture]);
     }
 
-    // Build the part sprite instancers (each holds one sprite): register each in the global scene
-    // tree, make it visible, bind its texture from the per-device part-layout table (unless the
-    // record marks it untextured), and seed its sprite count.
     const TitlePartLayoutRecord *pLayout =
         IsPad() ? g_aTitle2PartLayoutAltFrame : g_aTitle2PartLayoutDefault;
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
@@ -1085,12 +1012,10 @@ void TitleLimelightScene::LoadResources() {
         m_apSprites[nSlot] = pSprite;
     }
 
-    // Start the title BGM and load the title voice and shot-sound banks.
     [RBBGMManager.getInstance LoadMusicTitleWithLoop:NO];
     SoundEffectManager::GetInstance()->LoadThemedVoiceData(kTitleVoiceId);
     ShotSoundManager::GetInstance()->LoadSlotVariants(GameSystem::GetGameSystem()->GetShotType());
 
-    // Seed the fade curve from the current fade value and arm the ready-delay timer, then advance.
     m_flFadeStart = m_flFadeValue;
     m_flFadeEnd = 0.0f;
     m_flFadeDuration = kTitleFadeDuration;
@@ -1109,24 +1034,20 @@ void TitleLimelightScene::StartMusic() {
 void TitleLimelightScene::RenderFrame(int nElapsedMs) {
     const int nDeltaFrames = nElapsedMs;
 
-    // Cache the viewport size the part emitter halves into the part layout's screen origin.
     const GameSystem *pGameSystem = GameSystem::GetGameSystem();
     m_flViewportWidth = pGameSystem->GetViewportWidth();
     m_flViewportHeight = pGameSystem->GetViewportHeight();
 
-    // Advance the animation clock, rewinding it to the end of the intro once it runs off the end so
-    // that only the ambient portion repeats. The ready delay is read before the clock moves.
+    // The ready delay is read before the clock moves.
     const int nReadyDelay = m_nReadyDelay;
     const int nAdvanced = m_nAnimationTime + nDeltaFrames;
     m_nAnimationTime = (nAdvanced < kAnimationLoopEnd) ? nAdvanced : kAnimationLoopStart;
     const int nTime = m_nAnimationTime;
 
-    // Start the frame with every part instancer empty; each emit appends to its own instancer.
     for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
 
-    // Count the ready delay down and fire the title voice on the frame it expires.
     if (nReadyDelay > 0) {
         m_nReadyDelay = nReadyDelay - nDeltaFrames;
         if (m_nReadyDelay < 1) {
@@ -1136,7 +1057,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
 
     AdvanceFadeValue(nDeltaFrames);
 
-    // The backdrop fills the viewport from its centre.
     RenderPartsElement(kPartKindBackdrop,
                        kOpaqueAlpha,
                        m_flViewportWidth * kHalf,
@@ -1144,7 +1064,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                        kUnitScale,
                        kNoRotation);
 
-    // The lead part flies in along its own path; it is the only emit that takes a rotation.
     {
         const float flPosX = SampleCurve(kPart2bPosXCurve, kPart2bPathPairs, nTime);
         const float flPosY = SampleCurve(kPart2bPosYCurve, kPart2bPathPairs, nTime);
@@ -1154,8 +1073,7 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
             kPartKindLead, CurveToAlpha(flAlpha), flPosX, flPosY, kUnitScale, flRotation);
     }
 
-    // The row of ten parts rises into place once the intro reaches its gate. The binary restages
-    // this group's two curve tables onto the stack on every iteration; because the tables are
+    // The binary restages this group's two curve tables on the stack every iteration; being
     // read-only they are indexed in place here instead.
     if (nTime > kPart2cGate) {
         for (int nPart = 0; nPart < kPart2cCount; ++nPart) {
@@ -1171,7 +1089,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
         }
     }
 
-    // Four parts pop in at their fixed points with an overshoot before settling.
     for (int nPart = 0; nPart < kPart36Count; ++nPart) {
         const float flScale = SampleCurve(kPart36ScaleCurve[nPart], kPart36ScalePairs, nTime);
         const float flAlpha = SampleCurve(kPart36AlphaCurve[nPart], kPart36AlphaPairs, nTime);
@@ -1183,7 +1100,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                            kNoRotation);
     }
 
-    // Four more parts share those fade-in curves but take the ambient scale from the outset.
     for (int nPart = 0; nPart < kPart36Count; ++nPart) {
         const float flAlpha = SampleCurve(kPart36AlphaCurve[nPart], kPart36AlphaPairs, nTime);
         const float flScale = SampleCurve(kAmbientScaleCurve, kAmbientScalePairs, nTime);
@@ -1195,7 +1111,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                            kNoRotation);
     }
 
-    // The solo part slides a short distance as it fades in.
     {
         const float flPosX = SampleCurve(kPart3ePosXCurve, kPart3eCurvePairs, nTime);
         const float flPosY = SampleCurve(kPart3ePosYCurve, kPart3eCurvePairs, nTime);
@@ -1205,7 +1120,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
             kPartKindSolo, CurveToAlpha(flAlpha), flPosX, flPosY, flScale, kNoRotation);
     }
 
-    // The two fully opaque parts each travel their own dense path and share one scale curve.
     {
         const float flPosX = SampleCurve(kPart3fPosXCurve, kPart3fPathPairs, nTime);
         const float flPosY = SampleCurve(kPart3fPosYCurve, kPart3fPathPairs, nTime);
@@ -1219,7 +1133,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
         RenderPartsElement(kPartKindOpaqueB, kOpaqueAlpha, flPosX, flPosY, flScale, kNoRotation);
     }
 
-    // The strip part slides horizontally along a fixed line.
     {
         const float flPosX = SampleCurve(kPart52PosXCurve, kPart52CurvePairs, nTime);
         const float flAlpha = SampleCurve(kPart52AlphaCurve, kPart52CurvePairs, nTime);
@@ -1227,8 +1140,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
             kPartKindStrip, CurveToAlpha(flAlpha), flPosX, kPart52PosY, kUnitScale, kNoRotation);
     }
 
-    // The ring of fifteen parts, each blinking on its own long schedule. The last two sit off the
-    // ring and pop in on a longer scale curve than the shared ambient one.
     if (nTime > kPart41Gate) {
         for (int nPart = 0; nPart < kPart41Count; ++nPart) {
             const bool bIsLate =
@@ -1246,7 +1157,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
         }
     }
 
-    // The three stacked parts over one fixed point. The middle one shows only inside its window.
     if (static_cast<unsigned int>(nTime - kPart2aGateStart) < kPart2aGateSpan) {
         const float flScale = SampleCurve(kAmbientScaleCurve, kAmbientScalePairs, nTime);
         const float flAlpha = SampleCurve(kPart2aAlphaCurve, kPart2aAlphaPairs, nTime);
@@ -1279,7 +1189,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
         }
     }
 
-    // The four sweeping parts, whose three fade windows line up with the three burst windows below.
     for (int nPart = 0; nPart < kPart01Count; ++nPart) {
         const float flPosX = SampleCurve(kPart01PosXCurve[nPart], kPart01PathPairs, nTime);
         const float flPosY = SampleCurve(kPart01PosYCurve[nPart], kPart01PathPairs, nTime);
@@ -1293,15 +1202,13 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                            kNoRotation);
     }
 
-    // Each burst window replays the star field from its own zero-based time.
     for (int nWindow = 0; nWindow < kBurstWindowCount; ++nWindow) {
         if (static_cast<unsigned int>(nTime - kBurstWindowStart[nWindow]) < kBurstWindowSpan) {
             RenderParticleBurst(static_cast<float>(nTime) + kBurstTimeOffset[nWindow]);
         }
     }
 
-    // The corner button: an always-opaque base with a pulsing overlay on top of it. The overlay
-    // rides its own one-second clock, which runs six times as fast once the title is leaving.
+    // The overlay clock runs six times as fast once the title is leaving.
     RenderPartsElement(
         kPartKindCornerBase, kOpaqueAlpha, kPart50PosX, kPart50PosY, kUnitScale, kNoRotation);
 
@@ -1323,13 +1230,10 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                            kNoRotation);
     }
 
-    // Once the start prompt has been taken the frame stops accepting input and only waits out the
-    // fade.
     if (!m_bLeaving) {
         TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
         if (m_nTrackedTouchId == kNoTrackedTouch) {
             if (pTouchManager->GetActiveTouchCount() > 0) {
-                // The terms sheet takes priority over the title's own hit rectangles.
                 if ([AppDelegate.appDelegate needUpdateTerms]) {
                     [AppDelegate.appDelegate showTerms];
                     return;
@@ -1344,8 +1248,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                     const auto flTouchX = static_cast<float>(pTouch->nCurrentX);
                     const auto flTouchY = static_cast<float>(pTouch->nCurrentY);
                     if (IsInsideHitRect(m_aHitRects[kHitRectStart], flTouchX, flTouchY)) {
-                        // Commit: seed the leave fade, stop the BGM, and hand the corporate button
-                        // off to the view controller.
                         m_flFadeStart = m_flFadeValue;
                         m_flFadeEnd = kLeaveFadeEnd;
                         m_flFadeDuration = kLeaveFadeDuration;
@@ -1359,7 +1261,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                     } else if (IsInsideHitRect(m_aHitRects[kHitRectSecretA], flTouchX, flTouchY)) {
                         AdvanceSwipeState(kTitleSwipeButtonA);
                     } else if (IsInsideHitRect(m_aHitRects[kHitRectSecretB], flTouchX, flTouchY)) {
-                        // The compiler inlined this one input; the other button keeps its call.
                         AdvanceSwipeState(kTitleSwipeButtonB);
                     } else if (IsInsideHitRect(
                                    m_aHitRects[kHitRectShotSound], flTouchX, flTouchY)) {
@@ -1374,7 +1275,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                 }
             }
         } else {
-            // A tracked touch: when it ends, its net travel is read as a flick.
             TouchPoint *pTouch = pTouchManager->FindTouchById(m_nTrackedTouchId);
             if (pTouch == nullptr) {
                 m_nTrackedTouchId = kNoTrackedTouch;
@@ -1386,8 +1286,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
                     static_cast<float>(pTouch->nCurrentY) - static_cast<float>(pTouch->nBeginY);
                 const float flAbsX = (flDragX > 0.0f) ? flDragX : -flDragX;
                 const float flAbsY = (flDragY > 0.0f) ? flDragY : -flDragY;
-                // The longer axis wins; a drag shorter than the dead zone on it registers as
-                // nothing. The compiler inlined each of these four calls.
                 if (flAbsX <= flAbsY) {
                     if (flDragY > kSwipeDeadZone) {
                         AdvanceSwipeState(kTitleSwipeDown);
@@ -1402,7 +1300,6 @@ void TitleLimelightScene::RenderFrame(int nElapsedMs) {
             }
         }
 
-        // Until the start prompt is taken the frame ends here.
         if (!m_bLeaving) {
             return;
         }
@@ -1420,8 +1317,6 @@ void TitleLimelightScene::FinishAndOpenList() {
         return;
     }
     ReleaseResources();
-    // Construct the gameplay scene into the game system's leading scene slot, then open the music
-    // list through the app's root view controller.
     rb::GameScene::GetInstance(GameSystem::GetGameSystem()->GetCurrentSceneSlot());
     [AppDelegate.appDelegate.viewController showMusicListView];
     MarkDead();
@@ -1429,13 +1324,11 @@ void TitleLimelightScene::FinishAndOpenList() {
 
 /** @ghidraAddress 0x154380 */
 void TitleLimelightScene::AdvanceFadeValue(int nDeltaFrames) {
-    // Past the fade duration, snap to the end value.
     if (m_flFadeElapsed >= m_flFadeDuration) {
         m_flFadeValue = m_flFadeEnd;
         return;
     }
 
-    // Accumulate the elapsed frames, clamping to the duration.
     m_flFadeElapsed += static_cast<float>(nDeltaFrames);
     if (m_flFadeElapsed < m_flFadeStartDelay) {
         return;
@@ -1444,7 +1337,6 @@ void TitleLimelightScene::AdvanceFadeValue(int nDeltaFrames) {
         m_flFadeElapsed = m_flFadeDuration;
     }
 
-    // Interpolate from the start to the end value over the span past the start delay.
     float flProgress;
     if (m_flFadeDuration == 0.0f) {
         flProgress = 1.0f;
@@ -1472,7 +1364,7 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
     }
 
     if (nKind == 0) {
-        // The background: a full-texture quad sized from the instancer's bound texture.
+        // Kind zero is the backdrop.
         ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
         const float flScale = pTexture->GetScale();
         const float flPointWidth = static_cast<float>(pTexture->GetImageWidth()) / flScale;
@@ -1489,9 +1381,7 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         // The background draws at the texture's retina scale, not the caller's scale.
         pInstancer->SetSpriteScale(nSlot, flScale, flScale);
     } else {
-        // A lettered or logo part: its anchor, size, and atlas frame come from the per-device
-        // layout record (the record's position/size fields serve as the sprite anchor and size
-        // here).
+        // The layout record's position and size fields serve as the sprite anchor and size here.
         const bool bIsPad = IsPad();
         const TitlePartLayoutRecord &layout =
             bIsPad ? g_aTitle2PartLayoutAltFrame[nKind] : g_aTitle2PartLayoutDefault[nKind];
@@ -1500,8 +1390,6 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         const float flSizeX = layout.flWidth;
         const float flSizeY = layout.flHeight;
 
-        // The anchor mode selects the atlas: mode one draws from the per-device lettered/logo
-        // atlas, any other mode from the shared default title-part atlas.
         const SpriteUvEntry *pUvTable;
         if (layout.nTextureIndex != kPartAnchorModeAtlas) {
             pUvTable = g_aTitlePartUvDefault;
@@ -1514,8 +1402,8 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         pInstancer->SetSpriteUvOrigin(nSlot, S_VECTOR2{uv.flOriginU, uv.flOriginV});
         pInstancer->SetSpriteUvSize(nSlot, S_VECTOR2{uv.flSizeU, uv.flSizeV});
 
-        // Map the part's transform into screen space. The iPad layout is already in screen units
-        // barring the Y offset; the default device also scales about the screen offsets.
+        // The iPad layout is already in screen units barring the Y offset; the default device also
+        // scales about the screen offsets.
         float flPosX;
         float flPosY;
         if (bIsPad) {
@@ -1532,8 +1420,7 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         pInstancer->SetSpriteSize(nSlot, S_VECTOR2{flSizeX, flSizeY});
         pInstancer->SetSpriteScale(nSlot, flSize, flSize);
 
-        // Record the interactive parts' touch rectangles (top-left corner, then size) for the title
-        // touch tests. Kind 0x50 (the start prompt) is padded outwards on the default device.
+        // A hit rect is stored as its top-left corner followed by its size.
         const float flRectX = flPosX - flAnchorX;
         const float flRectY = flPosY - flAnchorY;
         switch (nKind) {
@@ -1566,7 +1453,6 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
 
     pInstancer->SetSpriteRotation(nSlot, flRotation);
 
-    // Tint by the intro-fade complement: a grey (1 - fade) with the caller's alpha scaled by it.
     const float flIntensity = 1.0f - m_flFadeValue;
     const auto nChannel = static_cast<unsigned int>(flIntensity * kColorMax);
     const auto nAlpha = static_cast<unsigned int>(static_cast<float>(nColorAlpha) * flIntensity);
@@ -1584,7 +1470,6 @@ void TitleLimelightScene::RenderParticleBurst(float flTime) {
             CalculateCurveInterpolation(kBurstAlphaCurve[nParticle], kBurstCurvePairs, flTime);
         float flScale =
             CalculateCurveInterpolation(kBurstScaleCurve[nParticle], kBurstCurvePairs, flTime);
-        // The hidden code doubles every particle's scale.
         if (m_bSecretActive) {
             flScale += flScale;
         }
@@ -1633,7 +1518,6 @@ void TitleLimelightScene::AdvanceSwipeState(int nSwipeEvent) {
         }
         return;
     case kTitleSwipeButtonA:
-        // The final A completes the code: fire the secret effect, latch the flag, rewind the timer.
         if (m_nSwipeState == kSwipeStepButtonB) {
             m_nSwipeState = kSwipeStepComplete;
             SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);

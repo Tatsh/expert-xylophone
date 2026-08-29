@@ -10,19 +10,15 @@
 #import "RecommendAdWebView.h"
 #import "RecommendCore.h"
 
-// The activity indicator is a square of this side, and is auto-hidden after this many seconds. The
-// container only shows the indicator when both frame dimensions are at least this large.
+// The binary reuses this for the auto-hide delay in seconds and the minimum frame dimension.
 static const CGFloat kRecommendIndicatorSize = 60.0;
 
-// Advert-model identifiers whose content is served from a locally cached HTML file rather than a
-// live web request.
 enum {
     kRecommendCachedAdModelFive = 5,
     kRecommendCachedAdModelLower = 100,
     kRecommendCachedAdModelUpper = 101,
 };
 
-// Applilink error codes reported through the delegate when the advert cannot be loaded.
 enum {
     kApplilinkErrorNotInitialized = 0x3f2,
     kApplilinkErrorCachedFileMissing = 0x40b,
@@ -108,8 +104,6 @@ enum {
                                           delegate:delegate];
         return;
     }
-    // Advert models 5 and 100..101 are served from a locally cached HTML file; every other model is
-    // loaded live on the main queue.
     if ((adModel != kRecommendCachedAdModelFive) &&
         (adModel < kRecommendCachedAdModelLower || adModel > kRecommendCachedAdModelUpper)) {
         dispatch_async(dispatch_get_main_queue(), ^{

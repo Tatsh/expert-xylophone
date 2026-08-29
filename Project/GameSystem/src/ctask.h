@@ -5,19 +5,6 @@
 
 #pragma once
 
-//
-//  listener_list.h
-//  REFLEC BEAT plus
-//
-//  The engine keeps one process-wide, sentinel-headed, priority-sorted doubly-linked list of
-//  per-frame listener nodes. Each frame the render loop dispatches the list, invoking every live
-//  node's callback and destroying the ones flagged dead. Scene layers register themselves onto the
-//  list at a priority; the list is walked in ascending priority order.
-//
-//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
-//  the program image base.
-//
-
 namespace ne {
 
 /**

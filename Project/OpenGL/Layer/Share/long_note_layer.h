@@ -99,9 +99,7 @@ private:
     int m_aSpriteCounts[kBatchCount] = {}; // +0x28: each batch's initial count.
     bool m_bBuilt = {};                    // +0x34: set once the sprites are built.
     // +0x35..+0x37 is alignment padding before the base offset.
-    // unsigned char m_aPad35[3]; // +0x35 (alignment padding, compiler-inserted)
-    // +0x38: the shared pulse clock, advanced each frame and wrapped into its period. The
-    // constructor seeds it to -1.
+    // +0x38: the shared pulse clock; the constructor seeds it to -1.
     float m_flPulseClock = {};
 
     /**
@@ -113,23 +111,20 @@ private:
         bool bActive = {};         /*!< Whether the slot holds a live connector. +0x00 */
         unsigned char nFlagA = {}; /*!< The first shape selector. +0x01 */
         unsigned char nFlagB = {}; /*!< The second shape selector. +0x02 */
-        // unsigned char m_aPad03[1] = {}; // +0x03
+        // +0x03: alignment padding.
         int nColor = {};           /*!< The note colour. +0x04 */
         S_VECTOR2 startPoint;      /*!< The connector's start point. +0x08 */
         S_VECTOR2 endPoint;        /*!< The connector's end point. +0x10 */
         unsigned char nFlagC = {}; /*!< Gates the pulse-phase sprite. +0x18 */
         unsigned char nFlagD = {}; /*!< Indexes the frame-alpha table. +0x19 */
         unsigned char nFlagE = {}; /*!< Set when the record carries its own rotation. +0x1a */
-        // unsigned char m_aPad1b[1] = {}; // +0x1b
+        // +0x1b: alignment padding.
         float flAlphaScale = {}; /*!< Scales the record's emitted alpha. +0x1c */
         float flRotation = {};   /*!< The rotation used when nFlagE is set. +0x20 */
     };
-    // The number of pooled connector draw records.
     static constexpr int kNoteRecordCount = 30;
-    // +0x3c..+0x473: the pooled connector draw records.
     NoteRecord m_aNoteRecords[kNoteRecordCount] = {}; // +0x3c
-    // unsigned char m_aReserved474[0xc] = {};           // +0x474: trailing state to the 0x480
-    // size.
+    // +0x474..+0x47f: trailing state to the 0x480 size.
 
 public:
     /**

@@ -1,12 +1,3 @@
-//
-//  engineglobals.mm
-//  REFLEC BEAT plus
-//
-//  Definitions for the shared engine globals declared in engineglobals.h, and the startup module
-//  initialiser that seeds the localised UI strings. Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #import "engineglobals.h"
 
 #import <Foundation/Foundation.h>
@@ -14,15 +5,11 @@
 
 #import "deviceenvironment.h"
 
-// The device slider/section row height, and the three cached UI colours, seeded at startup by the
-// module initialisers below.
 double g_dSliderRowHeight;
 UIColor *g_pCachedWhiteColor;
 UIColor *g_pCachedOffWhiteColor;
 UIColor *g_pCachedBlueColor;
 
-// The palette colour pointers, seeded by InitializeUIColorPalette, and their per-channel component
-// constants (each n/255). The pointers live in mutable storage (assigned at load).
 UIColor *g_pPaletteDimmingCoverColor;
 UIColor *g_pPaletteWhiteColor;
 UIColor *g_pPaletteOpaqueBlackColor;
@@ -55,8 +42,6 @@ const double g_PaletteColorGoldRed = 229.0f / 255.0f;
 const double g_PaletteColorGoldGreen = 183.0f / 255.0f;
 const double g_PaletteColorGoldBlue = 49.0f / 255.0f;
 
-// The shared layout metrics and timings the UI code reads. Each value is transcribed from the
-// binary's read-only data at the address in its comment.
 const double g_dTranslucentAlpha = 0.8f;
 const double g_dMascotMoveAnimDuration = 0.1f;
 const double g_dMascotMessageAnimDuration = 0.2f;
@@ -78,13 +63,10 @@ const double g_dRBWebViewGrayViewWhite = 0.6f;
 const double g_dRBNavBarTintWhite = 0.054901960784313725;
 const float g_flDefaultExplosionEffectSize = 0.9f;
 
-// The two shared autoresizing masks: every margin and dimension flexible, and the indicator mask
-// that flexes only the four margins.
 const unsigned int g_dwAutoresizingMaskFlexibleAll = 0x3f;
 const unsigned int g_dwRBWebViewIndicatorAutoresizingMask = 0x2d;
 
-// The Limelight experience-package title colours at 0x310274: twenty-four RGB triples that cycle
-// through the same six colours (blue, green, red, cyan, magenta, cyan) four times.
+// @ghidraAddress 0x310274
 const float g_afLimelightPackageTitleColorTable[] = {
     0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
     0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
@@ -93,62 +75,48 @@ const float g_afLimelightPackageTitleColorTable[] = {
     1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
 };
 
-// The two obfuscated Blowfish chart keys, transcribed verbatim from 0x2fcf50 and 0x2fcf6a. They are
-// stored back to back and are not NUL-terminated, so each carries its length in the table below.
+// The keys are not NUL-terminated, so each carries its length in the table below.
+// @ghidraAddress 0x2fcf50
 static const char kChartDecodeKeyType0[] = {
     0x4b, 0x6e, 0x6c, 0x5e, 0x69, 0x64, 0x1a, 0x4b, 0x5d, 0x5d, 0x62, 0x5a, 0x57,
     0x35, 0x57, 0x52, 0x64, 0x0f, 0x34, 0x5c, 0x5e, 0x0b, 0x53, 0x38, 0x3b, 0x15,
 };
+// @ghidraAddress 0x2fcf6a
 static const char kChartDecodeKeyType1[] = {
     0x4b, 0x6e, 0x6c, 0x5e, 0x69, 0x64, 0x1a, 0x4b, 0x5d, 0x5d, 0x62,
     0x5a, 0x57, 0x35, 0x57, 0x52, 0x64, 0x5f, 0x5a, 0x62, 0x5f, 0x19,
 };
 
-// The per-decode-type key table at 0x35b7c8: each entry pairs a key with its length, laid out on
-// the binary's 0x10 stride.
+// @ghidraAddress 0x35b7c8
 const ChartDecodeKey kChartDecodeKeys[] = {
     {kChartDecodeKeyType0, static_cast<int>(sizeof(kChartDecodeKeyType0))},
     {kChartDecodeKeyType1, static_cast<int>(sizeof(kChartDecodeKeyType1))},
 };
 
-// The gauge-parts scale table, seeded by InitializeGaugeAngleTable.
 float g_aGaugePartsScale[3];
 
-// The per-device difficulty-number image centre offsets, seeded by
-// InitializeCGAffineTransformGlobals.
 CGPoint g_difficultyNumberOffsetPad;
 CGPoint g_difficultyNumberOffsetPhone;
 
-// The extend-note view's per-device number offsets, seeded by InitializeIdentityTransformGlobals.
 CGPoint g_extendNoteNumberOffsetPad;
 CGPoint g_extendNoteNumberOffsetPhone;
 
-// The Twitter share-image element draw positions, seeded by InitializeParticleOffsetTable.
 CGPoint g_aTwitterImageDrawPos[8];
 
-// The tutorial-pastel message-bubble clip rectangles and child positions, seeded by
-// InitializeTutorialPastelLayoutTables.
 CGRect g_aTutorialPastelClipRects[4];
 CGPoint g_aTutorialPastelPositions[4];
 
-// The setting-screen layout table, seeded by InitializeSettingLayoutGlobals.
 CGPoint g_aSettingLayout[26];
 
-// The network API request table, seeded by InitializeApiRequestTable.
 NSDictionary *g_pApiRequestTable;
 
-// The three katakana normalisation lookup tables, seeded by InitializeGlobalLookupTables. They live
-// in mutable storage because they are assigned at load time, not compile time.
 NSDictionary *g_pMacronToVowelTable;
 NSDictionary *g_pLowerToUpperTable;
 NSDictionary *g_pVoiceToVoicelessTable;
 
-// The per-difficulty score-validation bounds, seeded by BuildGaugeThresholdArrays.
 NSArray *g_pScoreMinThresholds;
 NSArray *g_pScoreMaxThresholds;
 
-// The localised UI strings, seeded once at startup by CacheLocalizedUIStrings. They live in mutable
-// storage because they are assigned at load time, not compile time.
 NSString *g_pLocalizedAbort;
 NSString *g_pLocalizedAddToPlaylist;
 NSString *g_pLocalizedAll;
@@ -238,9 +206,7 @@ NSString *g_pLocalizedLimePointAddedFormat;
 NSString *g_pLocalizedSearchMusic;
 
 namespace {
-// Looks a key up in the main bundle's localisation table, defaulting to an empty string. The bundle
-// is resolved once by the caller and shared across every lookup (the binary re-fetched it per
-// call).
+// The bundle is resolved once by the caller; the binary re-fetched it per call.
 NSString *Localize(NSBundle *bundle, NSString *key) {
     return [bundle localizedStringForKey:key value:@"" table:nil];
 }
@@ -362,10 +328,7 @@ __attribute__((constructor)) void CacheLocalizedUIStrings(void) {
 }
 
 namespace {
-// The slider/section row height on the phone layout; the pad layout uses the wide metric.
 constexpr double kSliderRowHeightPhone = 20.0;
-// The cached off-white brightness and the blue accent's red and green components. The blue's blue
-// channel and every alpha are 1.
 constexpr CGFloat kOffWhiteBrightness = 0.97;
 constexpr CGFloat kBlueRed = 3.0f / 255.0f;
 constexpr CGFloat kBlueGreen = 122.0f / 255.0f;
@@ -388,9 +351,7 @@ __attribute__((constructor)) void InitializeUiColorConstants(void) {
 }
 
 namespace {
-// The dimming-cover overlay is black at half alpha.
 constexpr CGFloat kDimmingCoverAlpha = 0.5;
-// The gauge-parts scale table entries: the two per-side X scales (-/+ 8/9) and the trailing 288.
 constexpr float kGaugePartsScaleNegative = -0.88888889f;
 constexpr float kGaugePartsScalePositive = 0.88888889f;
 constexpr float kGaugePartsScaleTrailing = 288.0f;
@@ -399,8 +360,7 @@ constexpr float kGaugePartsScaleTrailing = 288.0f;
 /** @ghidraAddress 0x148a70 */
 __attribute__((constructor)) void BuildGaugeThresholdArrays(void) {
     @autoreleasepool {
-        // Per difficulty (basic, medium, hard): the minimum and maximum valid edited score. The
-        // score validator rejects an edited score below the minimum or above the maximum.
+        // Per difficulty (basic, medium, hard): the bounds the score validator accepts.
         g_pScoreMinThresholds = @[ @680, @1067, @1946 ];
         g_pScoreMaxThresholds = @[ @740, @1157, @2114 ];
     }
@@ -409,9 +369,6 @@ __attribute__((constructor)) void BuildGaugeThresholdArrays(void) {
 /** @ghidraAddress 0x3394c */
 __attribute__((constructor)) void InitializeApiRequestTable(void) {
     @autoreleasepool {
-        // Each endpoint is described by an HTTP method and a parameter list; every shipped endpoint
-        // is a GET whose only parameter is "target". The binary builds a separate descriptor
-        // instance per endpoint.
         g_pApiRequestTable = @{
             @"startup" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
             @"v3_ssl_resource" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
@@ -423,8 +380,7 @@ __attribute__((constructor)) void InitializeApiRequestTable(void) {
 /** @ghidraAddress 0x2ac00 */
 __attribute__((constructor)) void InitializeGlobalLookupTables(void) {
     @autoreleasepool {
-        // Small katakana fold to their full-size form (used to normalise a reading before
-        // matching).
+        // Small katakana fold to full size so a reading can be normalised before matching.
         g_pLowerToUpperTable = @{
             @"ァ" : @"ア",
             @"ィ" : @"イ",
@@ -439,9 +395,8 @@ __attribute__((constructor)) void InitializeGlobalLookupTables(void) {
             @"ヶ" : @"ケ",
         };
 
-        // Each katakana maps to the bare vowel of its row, so a prolonged-sound mark (ー) following
-        // it can be resolved to that vowel; ン maps to itself. The first five entries are the small
-        // vowels, so a small vowel resolves to its own row too.
+        // Each katakana maps to the bare vowel of its row, so a following prolonged-sound mark (ー)
+        // resolves to that vowel; ン maps to itself.
         g_pMacronToVowelTable = @{
             @"ァ" : @"ア",
             @"ア" : @"ア",
@@ -534,8 +489,6 @@ __attribute__((constructor)) void InitializeGlobalLookupTables(void) {
             @"ン" : @"ン",
         };
 
-        // Voiced and semi-voiced katakana fold to their base kana (dropping the
-        // dakuten/handakuten).
         g_pVoiceToVoicelessTable = @{
             @"ガ" : @"カ",
             @"ギ" : @"キ",
@@ -569,50 +522,40 @@ __attribute__((constructor)) void InitializeGlobalLookupTables(void) {
 /** @ghidraAddress 0xc933c */
 __attribute__((constructor)) void InitializeCGAffineTransformGlobals(void) {
     @autoreleasepool {
-        // The pad layout nudges the number image by (6, 12); the phone layout by (2, 10).
         g_difficultyNumberOffsetPad = CGPointMake(6.0, 12.0);
         g_difficultyNumberOffsetPhone = CGPointMake(2.0, 10.0);
     }
 }
 
 namespace {
-// The base panel origin and size the derived setting-layout points are offset from
-// (@ghidraAddress 0x301710 and 0x301720).
+// @ghidraAddress 0x301710 and 0x301720
 constexpr CGFloat kSettingPanelOriginX = 112.0;
 constexpr CGFloat kSettingPanelOriginY = 186.0;
 constexpr CGFloat kSettingPanelWidth = 179.0;
 constexpr CGFloat kSettingPanelHeight = 160.0;
 
-// The two derived button-column X positions, each a template X minus the panel origin X.
 constexpr CGFloat kSettingColumnLeftTemplateX = 257.0;  // @ghidraAddress 0x301288
 constexpr CGFloat kSettingColumnRightTemplateX = 294.0; // @ghidraAddress 0x3016f0
 
-// The per-row template Y positions the derived points offset by the panel height.
 constexpr CGFloat kSettingRowTemplateY[] = {462.0, 358.0, 566.0, 486.0, 382.0, 590.0};
 } // namespace
 
 /** @ghidraAddress 0xec450 */
 __attribute__((constructor)) void InitializeSettingLayoutGlobals(void) {
     @autoreleasepool {
-        // The base panel rectangle: its origin (slot 0) and size (slot 1).
         g_aSettingLayout[0] = CGPointMake(kSettingPanelOriginX, kSettingPanelOriginY);
         g_aSettingLayout[1] = CGPointMake(kSettingPanelWidth, kSettingPanelHeight);
 
-        // The left column's three derived points share the panel-relative X; the Y of each is a
-        // template row position minus the panel height.
         const CGFloat flLeftX = kSettingColumnLeftTemplateX - kSettingPanelOriginX;
         g_aSettingLayout[2] = CGPointMake(flLeftX, kSettingRowTemplateY[0] - kSettingPanelHeight);
         g_aSettingLayout[3] = CGPointMake(flLeftX, kSettingRowTemplateY[1] - kSettingPanelHeight);
         g_aSettingLayout[4] = CGPointMake(flLeftX, kSettingRowTemplateY[2] - kSettingPanelHeight);
 
-        // The right column's three derived points.
         const CGFloat flRightX = kSettingColumnRightTemplateX - kSettingPanelOriginX;
         g_aSettingLayout[5] = CGPointMake(flRightX, kSettingRowTemplateY[3] - kSettingPanelHeight);
         g_aSettingLayout[6] = CGPointMake(flRightX, kSettingRowTemplateY[4] - kSettingPanelHeight);
         g_aSettingLayout[7] = CGPointMake(flRightX, kSettingRowTemplateY[5] - kSettingPanelHeight);
 
-        // The per-theme button-column origins (slots 8 through 10) and step gaps (slots 14 through
-        // 19), copied verbatim from the template pool; some rows repeat across themes.
         g_aSettingLayout[8] = CGPointMake(13.0, 30.0);
         g_aSettingLayout[9] = CGPointMake(13.0, 30.0);
         g_aSettingLayout[10] = CGPointMake(13.0, 10.0);
@@ -637,7 +580,6 @@ __attribute__((constructor)) void InitializeSettingLayoutGlobals(void) {
 /** @ghidraAddress 0x88f24 */
 __attribute__((constructor)) void InitializeParticleOffsetTable(void) {
     @autoreleasepool {
-        // The share-image layout positions, in draw order.
         g_aTwitterImageDrawPos[0] = CGPointMake(80.0, 62.0);   // title
         g_aTwitterImageDrawPos[1] = CGPointMake(80.0, 89.0);   // artist
         g_aTwitterImageDrawPos[2] = CGPointMake(24.0, 60.0);   // difficulty
@@ -652,13 +594,11 @@ __attribute__((constructor)) void InitializeParticleOffsetTable(void) {
 /** @ghidraAddress 0x1b81d8 */
 __attribute__((constructor)) void InitializeTutorialPastelLayoutTables(void) {
     @autoreleasepool {
-        // The message-bubble clip rectangles cut out of the artwork atlas, indexed head, body, left
-        // tail, and right tail.
+        // Indexed head, body, left tail, and right tail.
         g_aTutorialPastelClipRects[0] = CGRectMake(361.0, 274.0, 136.0, 96.0);
         g_aTutorialPastelClipRects[1] = CGRectMake(499.0, 274.0, 48.0, 56.0);
         g_aTutorialPastelClipRects[2] = CGRectMake(498.0, 332.0, 24.0, 22.0);
         g_aTutorialPastelClipRects[3] = CGRectMake(525.0, 332.0, 24.0, 22.0);
-        // The child layout points, in the same head/body/left/right order.
         g_aTutorialPastelPositions[0] = CGPointMake(101.0, 172.0);
         g_aTutorialPastelPositions[1] = CGPointMake(100.0, 76.0);
         g_aTutorialPastelPositions[2] = CGPointMake(107.0, 120.0);
@@ -669,7 +609,6 @@ __attribute__((constructor)) void InitializeTutorialPastelLayoutTables(void) {
 /** @ghidraAddress 0x3d04c */
 __attribute__((constructor)) void InitializeIdentityTransformGlobals(void) {
     @autoreleasepool {
-        // The same per-device number offsets the extend-note view applies over its button centre.
         g_extendNoteNumberOffsetPad = CGPointMake(6.0, 12.0);
         g_extendNoteNumberOffsetPhone = CGPointMake(2.0, 10.0);
     }
@@ -710,7 +649,6 @@ __attribute__((constructor)) void InitializeUIColorPalette(void) {
                                                    green:g_PaletteColorLeafGreenGreen
                                                     blue:0.0
                                                    alpha:1.0];
-        // The doubled entries reuse the same components as their base colours.
         g_pPaletteGreenGrassColor2 = [UIColor colorWithRed:g_PaletteColorGreenGrassRed
                                                      green:g_PaletteColorGreenGrassGreen
                                                       blue:0.0

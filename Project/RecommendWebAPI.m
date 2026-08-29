@@ -10,11 +10,9 @@
 #import "ApplilinkWebAPI.h"
 #import "NSStringURLEncoding.h"
 
-// HTTP methods dispatched through the transport.
 static NSString *const kRecommendWebAPIMethodGet = @"GET";
 static NSString *const kRecommendWebAPIMethodPost = @"POST";
 
-// Endpoint paths appended to ApplilinkConsts.baseUrlSsl.
 static NSString *const kRecommendWebAPIPathCheckLoginStatus = @"/ad/auth/checkLoginStatus.php";
 static NSString *const kRecommendWebAPIPathLogin = @"/ad/auth/login.php";
 static NSString *const kRecommendWebAPIPathExternalDetail = @"/ad/external/detail.php";
@@ -33,7 +31,6 @@ static NSString *const kRecommendWebAPIPathClickRegist = @"/ad/external/click/re
 static NSString *const kRecommendWebAPIPathAppStart = @"/ad/external/app/start.php";
 static NSString *const kRecommendWebAPIPathLayoutIndex = @"/ad/external/layout/index.php";
 
-// Request parameter keys.
 static NSString *const kRecommendWebAPIParamUserId = @"user_id";
 static NSString *const kRecommendWebAPIParamCfr = @"cfr";
 static NSString *const kRecommendWebAPIParamAppliId = @"appli_id";
@@ -49,7 +46,6 @@ static NSString *const kRecommendWebAPIParamIsSdk = @"is_sdk";
 static NSString *const kRecommendWebAPIParamTestFlg = @"test_flg";
 static NSString *const kRecommendWebAPIParamTrue = @"1";
 
-// Response body keys.
 static NSString *const kRecommendWebAPIKeyStatus = @"status";
 static NSString *const kRecommendWebAPIKeyErrorCode = @"error_code";
 static NSString *const kRecommendWebAPIKeyKind = @"kind";
@@ -63,37 +59,27 @@ static NSString *const kRecommendWebAPIKeyUnreadCount = @"unread_count";
 static NSString *const kRecommendWebAPIKeyBannerDisplayStatus = @"banner_display_status";
 static NSString *const kRecommendWebAPIKeyLocation = @"Location";
 
-// kind values that map onto specific error codes.
 static NSString *const kRecommendWebAPIKindAuthorization = @"authorization";
 static NSString *const kRecommendWebAPIKindParameterError = @"parameter_error";
 
-// Status-dictionary keys used by the pre-info display-status result.
 static NSString *const kRecommendWebAPIStatusKeyUnreadCount = @"unreadCount";
 static NSString *const kRecommendWebAPIStatusKeyBannerDisplayStatus = @"bannerDisplayStatus";
 
-// NSUserDefaults keys backing the cached detail and per-model display-status cache.
 static NSString *const kRecommendWebAPIDefaultsAdDetail = @"ApplilinkRecommend.adDetail";
 static NSString *const kRecommendWebAPIDefaultsBannerInfo = @"ApplilinkRecommend.bannerInfo";
 
-// Cache-entry keys inside the per-model banner-info cache.
 static NSString *const kRecommendWebAPICacheKeyStatus = @"status";
 static NSString *const kRecommendWebAPICacheKeyExpire = @"expire";
 
-// Format that renders an integer parameter into its string form.
 static NSString *const kRecommendWebAPIIntegerFormat = @"%d";
 
-// Response sentinel values.
 enum {
-    // status true and error_code equal to this value marks a successful response.
     kRecommendWebAPISuccessSentinel = 100000000,
-    // Additional error_code values mapped to distinct network errors.
     kRecommendWebAPIErrorCodeGeneric = 999999999,
     kRecommendWebAPIErrorCodeAuthorization = 202506497,
     kRecommendWebAPIErrorCodeLoginRequired = 202508473,
 };
 
-// Applilink network error codes delivered on the various failure paths. These are the raw integers
-// the binary passes to +[ApplilinkNetworkError localizedApplilinkErrorWithCode:userInfo:].
 enum {
     kRecommendWebAPINetworkErrorMalformed = 1000,
     kRecommendWebAPINetworkErrorParameter = 1001,
@@ -103,7 +89,6 @@ enum {
     kRecommendWebAPINetworkErrorUdidUnavailable = 1026,
 };
 
-// The banner-detail cache sentinel that marks an available banner and short-circuits the request.
 static const int kRecommendWebAPIBannerAvailable = 1;
 
 // Request timeouts, in seconds.
@@ -113,22 +98,17 @@ static const float kRecommendWebAPIStandardTimeout = 10.0f;
 // Default expiry, in seconds, for a cache entry stored with a zero expiration.
 static const NSTimeInterval kRecommendWebAPIDefaultCacheExpiry = 1.0;
 
-// Lifetime, in seconds, of the cached advert-external detail (seven days).
+// Seven days, in seconds.
 static const NSTimeInterval kRecommendWebAPIAdDetailCacheExpiry = 604800.0;
 
-// NSURLErrorTimedOut, recognised on the login timeout retry path.
 static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
 
 @interface RecommendWebAPI ()
 
-// Maps the response error code and kind onto an ApplilinkNetworkError. This de-inlines the shared
-// error dispatch that the binary duplicates across the response handlers.
 + (NSError *)errorForResponse:(id)response errorCode:(int)errorCode kind:(id)kind;
 
-// Builds the generic malformed-response error the binary raises on every response it cannot parse.
 + (NSError *)malformedErrorForResponse:(id)response;
 
-// Maps a login-status response's error code and kind onto an ApplilinkNetworkError.
 + (NSError *)loginErrorForResponse:(id)response;
 
 @end

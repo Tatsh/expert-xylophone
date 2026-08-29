@@ -15,19 +15,16 @@
 
 namespace {
 
-// The media-timer scale: elapsed seconds are reported in milliseconds. @ghidraAddress 0x2eeea0
+// @ghidraAddress 0x2eeea0
 constexpr double kMediaTimeMsScale = 1000.0;
 
-// The achievement-rate thresholds for each clear rank, highest first. A rate at or above a
-// threshold earns that rank; below the lowest earns rank zero.
 constexpr float kClearRankThreshold5 = 0.95f; // @ghidraAddress 0x308d3c
 constexpr float kClearRankThreshold4 = 0.90f; // @ghidraAddress 0x2ef17c
 constexpr float kClearRankThreshold3 = 0.80f; // @ghidraAddress 0x2f856c
 constexpr float kClearRankThreshold2 = 0.70f; // @ghidraAddress 0x2fd008
 constexpr float kClearRankThreshold1 = 0.50f;
 
-// The customize-asset categories BuildCustomizeAssetPathString and GetCustomizeFrameImagePath key
-// off. The gaps (6, 8, 9) have no asset path.
+// The gaps (6, 8, 9) have no asset path.
 enum {
     kCustomizeKindBgm = 0,
     kCustomizeKindShot = 1,
@@ -39,10 +36,8 @@ enum {
     kCustomizeKindThema = 10,
 };
 
-// The listener priority the theme's title scene is registered at.
 constexpr int kTitleSceneListenerPriority = 1;
 
-// The clear-rank values the thresholds map to.
 constexpr int kClearRank5 = 5;
 constexpr int kClearRank4 = 4;
 constexpr int kClearRank3 = 3;
@@ -52,7 +47,6 @@ constexpr int kClearRank0 = 0;
 
 } // namespace
 
-// The texture-cache control singleton, lazily allocated by C_TEXTURE::EnsureCacheControl.
 TextureCacheControl *g_pTextureCacheControl = nullptr; // @ghidraAddress 0x3cff20
 
 /** @ghidraAddress 0x3198c */
@@ -86,8 +80,6 @@ int GetClearRank(float achievementRate) {
 
 /** @ghidraAddress 0x54ee0 */
 NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantIndex) {
-    // Each handled category formats a path with its variant token; the music item has no variant,
-    // and every other category (6, 8, 9) returns nil.
     switch (assetType) {
     case kCustomizeKindBgm:
         return [NSString
@@ -119,7 +111,6 @@ NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantInde
 
 /** @ghidraAddress 0x550dc */
 NSString *_Nullable GetCustomizeFrameImagePath(int kind) {
-    // Only the music item (kind 7) has a frame overlay; every other customize element returns nil.
     if (kind == kCustomizeKindMusic) {
         return [NSString stringWithFormat:@"04_customize/cus_imusic_frm"];
     }
@@ -138,8 +129,6 @@ float C_TIME::GetElapsedMilliseconds() const {
 
 /** @ghidraAddress 0x4fa24 */
 void CreateTitleLayerForTheme(void) {
-    // The selected theme picks which title scene is constructed; the binary distinguishes the three
-    // by their allocation sizes (0x168 classic, 0x898 colette, 0x628 limelight).
     rb::BaseScene *pScene = nullptr;
     switch (RBUserSettingData.sharedInstance.thema) {
     case RBUserSettingDataThemeClassic:

@@ -811,9 +811,7 @@ void ResultWindowColetteLayer::InitializeResultWindowSprites() {
     m_pBackgroundTexture = ne::C_TEXTURE::FindOrLoadCached(kBackgroundTextureName);
     m_pPartsTexture = ne::C_TEXTURE::FindOrLoadCached(kPartsTextureName);
 
-    // Screen-space batches: the bl at 0x73fb4 targets CreateSpriteInstancer, not
-    // CreateWorldSpriteBatch, so the layout bank's coordinates go straight to the orthographic
-    // projection's top-left origin.
+    // Screen-space, not world-space: the bl targets CreateSpriteInstancer. @ghidraAddress 0x73fb4
     for (int nSlot = 0; nSlot < kSlotCount; ++nSlot) {
         m_apSlots[nSlot] = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         m_apSlots[nSlot]->RegisterGlobal();
@@ -1625,7 +1623,6 @@ void ResultWindowColetteLayer::applySpriteInstancerTexture(int nSlot, ne::C_TEXT
         return;
     }
 
-    // Refresh every sprite slot to the newly bound texture's dimensions.
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flTextureScale = pTexture->GetScale();
@@ -1655,7 +1652,6 @@ void ResultWindowColetteLayer::blitSpriteInstanceHalfScale(int nSlot,
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flTextureScale = pTexture->GetScale();
-    // The quad is sized by the texture's scale factor and centred by anchoring at half its size.
     const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
     const S_VECTOR2 anchor{spriteSize.x * 0.5f, spriteSize.y * 0.5f};
     const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
@@ -1698,12 +1694,9 @@ void ResultWindowColetteLayer::renderSpriteInstanceScaled(int nSlot,
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
     const float flTextureScale = pTexture->GetScale();
-    // The quad is sized by the texture's own scale factor; the UV region is the used image area.
     const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
     const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
                            flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
-    // The alpha is the requested scale times the layer's parts scale; the colour channels reuse the
-    // layer's three glyph-base bytes as a tint.
     const unsigned int nAlpha =
         static_cast<unsigned int>(static_cast<float>(nScale) * m_flPartsScale);
     const unsigned int nRed = static_cast<unsigned int>(m_nGlyphBaseA) & 0xff;
@@ -1736,11 +1729,8 @@ void ResultWindowColetteLayer::RenderAnchoredGlyphWithAlpha(int nSlot,
     if (nCharCode < 0 || nCharCode >= kColettePhonePartsRecordCount) {
         return;
     }
-    // Resolve the base position by index and add the offset.
     S_VECTOR2 position{};
     getPosition_Phone(nPositionIndex, &position);
-    // The glyph metrics come from the phone parts table indexed by the character code; the texture
-    // rectangle from the Colette glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
     const unsigned int nIntensity = bShadowPass ? kIntensityDimmed : kIntensityFull;
@@ -1758,17 +1748,11 @@ void ResultWindowColetteLayer::RenderAnchoredGlyphWithAlpha(int nSlot,
 
 namespace {
 
-// The parts slot the number digits draw into.
 constexpr int kNumberDigitSlot = 1;
 
-// The number base the digits are extracted in, and the digit-slot buffer every decomposer
-// declares (seven ints; the binary zeroes 28 bytes in each of the four routines).
 constexpr int kDecimalBase = 10;
-constexpr int kMaxDigitSlots = 7;
+constexpr int kMaxDigitSlots = 7; // Each decomposer zeroes 28 bytes of digit slots.
 
-// The digit part-family bases and, for each, the wider leading-digit variant, the standalone prefix
-// glyph (drawn before the whole number), and the under-digit prefix glyph (drawn beneath the
-// leading digit). A family whose base is not listed uses its own base unchanged for each.
 constexpr int kFamilyScoreBase = 0xca;
 constexpr int kFamilyScoreLeading = 0xd4;
 constexpr int kFamilyScoreStandalonePrefix = 0xdf;
@@ -1791,21 +1775,16 @@ constexpr int kFamilyExpUnderPrefix = 0x10f;
 // The dim factor applied to the left-padding glyphs' alpha (@ghidraAddress 0x2fd058 = 0.7).
 constexpr float kLeftPadDimFactor = 0.7f;
 
-// The base-position-index sentinel that draws a trailing separator glyph (the achievement-rate
-// display), and the two red-channel discriminator values that select the slash or dot separator
-// (@ghidraAddress 0x2fd024 = 180, 0x2fd030 = 252).
+// Only the achievement-rate display sits at this base position index, so only it gets a separator.
 constexpr int kSeparatorPositionSentinel = 0x9f;
 constexpr int kSeparatorSlash = 0x111;
 constexpr int kSeparatorDot = 0x110;
-constexpr float kSeparatorDiscriminatorSlash = 180.0f;
-constexpr float kSeparatorDiscriminatorDot = 252.0f;
+constexpr float kSeparatorDiscriminatorSlash = 180.0f; // @ghidraAddress 0x2fd024
+constexpr float kSeparatorDiscriminatorDot = 252.0f;   // @ghidraAddress 0x2fd030
 
-// The upright rotation and unit scale every digit glyph draws with.
 constexpr float kDigitRotation = 0.0f;
 constexpr float kDigitScale = 1.0f;
 
-// Resolves the wider leading-digit variant for a digit part-family base, or the base unchanged for
-// an unlisted family.
 int LeadingDigitBaseFor(int nDigitPartBase) {
     switch (nDigitPartBase) {
     case kFamilyScoreBase:
@@ -1823,8 +1802,6 @@ int LeadingDigitBaseFor(int nDigitPartBase) {
     }
 }
 
-// Resolves the standalone prefix glyph (drawn before the whole number) for a digit part-family
-// base.
 int StandalonePrefixFor(int nDigitPartBase) {
     switch (nDigitPartBase) {
     case kFamilyScoreBase:
@@ -1838,9 +1815,7 @@ int StandalonePrefixFor(int nDigitPartBase) {
     }
 }
 
-// Resolves the under-digit prefix glyph (drawn beneath the leading digit) for a digit part-family
-// base. Unlike the standalone prefix, an unlisted family falls back to @p nFallback, which the
-// callers pass as the part id of the digit just drawn, so the leading digit redraws beneath itself.
+// Callers pass the part id of the digit just drawn as the fallback, so it redraws beneath itself.
 int UnderDigitPrefixFor(int nDigitPartBase, int nFallback) {
     switch (nDigitPartBase) {
     case kFamilyScoreBase:
@@ -1858,9 +1833,7 @@ int UnderDigitPrefixFor(int nDigitPartBase, int nFallback) {
     }
 }
 
-// The proportional renderer at 0x77118 knows only the score, rank, and rate families: the big and
-// exp arms the fixed-position renderer at 0x76ce8 carries do not exist in it, so a call in one of
-// those two families draws the plain glyph there.
+// The proportional renderer at 0x77118 has no big or exp arm, so those families draw plain here.
 int LeadingDigitBaseForProportional(int nDigitPartBase) {
     switch (nDigitPartBase) {
     case kFamilyScoreBase:
@@ -1902,11 +1875,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
                                                          float flRed,
                                                          float flGreen,
                                                          float flBlue) {
-    (void)flRotation; // The binary accepts a rotation slot (s0) but never reads it; digits are
-                      // upright.
+    (void)flRotation; // The binary accepts a rotation slot but never reads it.
 
-    // Extract the base-ten digits, least significant first, tracking the most significant non-zero
-    // digit's slot (the highest slot actually drawn).
     int aDigits[kMaxDigitSlots] = {};
     int nTopDigit = 0;
     for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
@@ -1923,9 +1893,6 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
         nTopDigit = 1;
     }
 
-    // The glyphs draw right to left, so the position index walks downward from the base. When both
-    // the wide-leading and prefix flags are set, the standalone prefix glyph is drawn first, at the
-    // base position, and the digits start one slot below.
     int nPosIndex = nBasePositionIndex;
     if (bWideLeading && bDrawPrefix) {
         RenderPartSpriteByIndex(kNumberDigitSlot,
@@ -1941,9 +1908,6 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
         nPosIndex = nBasePositionIndex - 1;
     }
 
-    // Draw each significant digit, walking down the position bank. In wide-leading mode the leading
-    // digit takes the family's wider variant and also draws the under-digit prefix glyph one slot
-    // below, consuming two positions instead of one.
     for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
         const bool bLeadingSlot = nSlot == 0 && bWideLeading;
         const int nBaseThisDigit =
@@ -1980,8 +1944,6 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
         }
     }
 
-    // Optional left padding fills the unused leading slots with the base '0' glyph at a dimmed
-    // alpha, continuing down the position bank.
     int nSeparatorIndex = nPosIndex;
     if (bLeftPad && nTopDigit + 1 < nDigitCount) {
         const unsigned int nPadAlpha = static_cast<unsigned int>(
@@ -2003,8 +1965,6 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
         }
     }
 
-    // The achievement-rate display (identified by its base position index) draws a trailing
-    // separator glyph, the slash or dot selected by the red channel discriminator.
     if (nBasePositionIndex == kSeparatorPositionSentinel &&
         (flRed == kSeparatorDiscriminatorSlash || flRed == kSeparatorDiscriminatorDot)) {
         const int nSeparator =
@@ -2024,12 +1984,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
 
 namespace {
 
-// The phone glyph slot the phone-number renderer draws into.
 constexpr int kPhoneNumberSlot = 1;
 
-// The phone digit families whose leading digit, standalone prefix, and under-digit prefix take
-// special glyph ids, keyed by the family's base part id. A family not listed uses its base
-// unchanged.
 constexpr int kPhoneFamilyRateBase = 0xf9;
 constexpr int kPhoneFamilyExpBase = 0x10f;
 constexpr int kPhoneFamilyBigBase = 0x17b;
@@ -2042,22 +1998,17 @@ constexpr int kPhoneRateUnderPrefix = 0x10d;
 constexpr int kPhoneExpUnderPrefix = 0x124;
 constexpr int kPhoneBigUnderPrefix = 0x18f;
 
-// The upright rotation and unit scale every phone glyph draws with.
 constexpr float kPhoneGlyphRotation = 0.0f;
 constexpr float kPhoneGlyphScale = 1.0f;
 
-// The half factor applied to a glyph's measured width when advancing the proportional phone cursor,
-// and the two kerning nudges it applies (@ghidraAddress 0x40000000 = 2, 0xc0800000 = -4).
+// Kerning nudges, as the pool immediates 0x40000000 and 0xc0800000.
 constexpr float kPhoneProportionalHalf = 0.5f;
 constexpr float kPhoneExpLeadingKern = 2.0f;
 constexpr float kPhoneExpUnderPrefixKern = -4.0f;
 
-// The exp-family leading-digit glyph range whose draw applies the +2 kerning nudge (part ids in
-// @c [0x11a, 0x123]), and the exp under-digit prefix glyph whose draw applies the -4 nudge.
 constexpr int kPhoneExpLeadingLow = 0x11a;
 constexpr int kPhoneExpLeadingSpan = 0xa;
 
-// Resolves the wider leading-digit glyph base for a phone digit-family base.
 int PhoneLeadingBaseFor(int nDigitPartBase) {
     switch (nDigitPartBase) {
     case kPhoneFamilyRateBase:
@@ -2071,8 +2022,6 @@ int PhoneLeadingBaseFor(int nDigitPartBase) {
     }
 }
 
-// Resolves the standalone prefix glyph (drawn before the whole number) for a phone digit-family
-// base.
 int PhoneStandalonePrefixFor(int nDigitPartBase) {
     switch (nDigitPartBase) {
     case kPhoneFamilyRateBase:
@@ -2084,15 +2033,11 @@ int PhoneStandalonePrefixFor(int nDigitPartBase) {
     }
 }
 
-// The rank-family monospace digit base the number-pair renderer draws with, its slash separator
-// part id, and the number of digit slots each of the pair's numbers extracts.
 constexpr int kPairDigitBase = 0xe0;
 constexpr int kPairSeparatorPart = 0xea;
 constexpr int kPairDigitSlots = 4;
 
-// The centring constants the number-pair renderer applies to its cursor: a separator-width fudge
-// and the half factor (@ghidraAddress 0x40000000 = 2, 0x3f000000 = 0.5), plus the separator's own
-// one-pixel advances.
+// Centring constants, as the pool immediates 0x40000000 and 0x3f000000.
 constexpr float kPairCentreFudge = 2.0f;
 constexpr float kPairCentreHalf = 0.5f;
 constexpr float kPairSeparatorGap = 1.0f;
@@ -2111,11 +2056,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
                                                              float flRed,
                                                              float flGreen,
                                                              float flBlue) {
-    // The rotation argument is accepted and never read: every glyph below emits upright.
-    (void)flRotation;
+    (void)flRotation; // The binary accepts a rotation slot but never reads it.
 
-    // Draws one phone glyph at the cursor through the coloured glyph path, then reports its
-    // measured width so the caller can advance the cursor.
     const auto drawGlyph =
         [&](int nPartId, float flX, float flY, unsigned int nGlyphAlpha) -> float {
         RenderGlyphPartFromTable(kPhoneNumberSlot,
@@ -2131,7 +2073,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
         return getPartsData_Phone(nPartId)->flWidth;
     };
 
-    // Extract the base-ten digits, least significant first, tracking the highest non-zero slot.
     int aDigits[kMaxDigitSlots] = {};
     int nTopDigit = 0;
     for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
@@ -2142,8 +2083,7 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
         nValue /= 10;
     }
 
-    // Seed the cursor from the anchored base position and centre it by half a digit width per drawn
-    // slot. The binary looks the base digit's metrics up before seeding.
+    // The binary looks the base digit's metrics up before seeding the cursor.
     S_VECTOR2 cursor{};
     getPosition_Phone(nBasePositionIndex, &cursor);
 
@@ -2155,9 +2095,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
     const float flDigitWidth = getPartsData_Phone(nDigitPartBase)->flWidth;
     cursor.x += static_cast<float>(nTopDigit) * kPhoneProportionalHalf * flDigitWidth;
 
-    // In wide-leading mode the rate and exp families pre-advance the cursor by half the standalone
-    // and under-digit prefix widths, then draw the standalone prefix glyph and step left by its
-    // width.
     if (bWideLeading) {
         const int nStandalonePrefix = PhoneStandalonePrefixFor(nDigitPartBase);
         if (nDigitPartBase == kPhoneFamilyRateBase || nDigitPartBase == kPhoneFamilyExpBase) {
@@ -2170,9 +2107,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
         cursor.x -= drawGlyph(nStandalonePrefix, cursor.x, cursor.y, nAlpha);
     }
 
-    // Draw each significant digit right to left, advancing the cursor left by each glyph's width.
-    // In wide-leading mode the leading digit takes the family's wider variant (rate/exp only) and
-    // also draws the under-digit prefix glyph, with per-family kerning nudges.
     for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
         const bool bLeadingSlot = nSlot == 0 && bWideLeading;
         int nBaseThisDigit = nDigitPartBase;
@@ -2205,8 +2139,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
         }
     }
 
-    // Optional left padding fills the unused leading slots with the family's '0' glyph at a dimmed
-    // alpha, advancing the cursor left by each glyph's width.
     if (bLeftPad && nTopDigit + 1 < nDigitCount) {
         const unsigned int nPadAlpha = static_cast<unsigned int>(
             static_cast<int>(static_cast<float>(nAlpha) * kLeftPadDimFactor));
@@ -2229,11 +2161,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
                                                        float flRed,
                                                        float flGreen,
                                                        float flBlue) {
-    // The rotation argument is accepted and never read: every glyph below emits upright.
-    (void)flRotation;
+    (void)flRotation; // The binary accepts a rotation slot but never reads it.
 
-    // Draws one phone glyph at a position-bank index. The 0x17b family draws through the dimmable
-    // glyph path (never dimmed here); every other family through the coloured path.
     const auto drawGlyph = [&](int nPartId, int nPosIndex, unsigned int nGlyphAlpha) {
         S_VECTOR2 position{};
         getPosition_Phone(nPosIndex, &position);
@@ -2260,8 +2189,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
         }
     };
 
-    // Extract the base-ten digits, least significant first, tracking the most significant non-zero
-    // digit's slot (the highest slot actually drawn).
     int aDigits[kMaxDigitSlots] = {};
     int nTopDigit = 0;
     for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
@@ -2277,18 +2204,12 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
         nTopDigit = 1;
     }
 
-    // The glyphs draw right to left down the position bank. When both the wide-leading and prefix
-    // flags are set, the standalone prefix glyph is drawn first at the base position, and the
-    // digits start one slot below.
     int nPosIndex = nBasePositionIndex;
     if (bWideLeading && bDrawPrefix) {
         drawGlyph(PhoneStandalonePrefixFor(nDigitPartBase), nBasePositionIndex, nAlpha);
         nPosIndex = nBasePositionIndex - 1;
     }
 
-    // Draw each significant digit, walking down the position bank. In wide-leading mode the leading
-    // digit takes the family's wider variant and also draws the under-digit prefix glyph one slot
-    // below, consuming two positions instead of one.
     for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
         const bool bLeadingSlot = nSlot == 0 && bWideLeading;
         const int nBaseThisDigit =
@@ -2320,8 +2241,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
         }
     }
 
-    // Optional left padding fills the unused leading slots with the base glyph at a dimmed alpha,
-    // continuing down the position bank.
     if (bLeftPad && nTopDigit + 1 < nDigitCount) {
         const unsigned int nPadAlpha = static_cast<unsigned int>(
             static_cast<int>(static_cast<float>(nAlpha) * kLeftPadDimFactor));
@@ -2339,11 +2258,8 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
                                                              unsigned int nAlpha,
                                                              int nLeftColorIndex,
                                                              int nRightColorIndex) {
-    // The monospace digit width is the rank '0' glyph's width from the device-selected parts table.
     const float flDigitWidth = getPartsData(kPairDigitBase)->flWidth;
 
-    // Extract each number's four base-ten digits (least significant first) and its
-    // significant-digit count (at least one).
     int aLeftDigits[kPairDigitSlots] = {};
     int nLeftTop = 0;
     for (int nSlot = 0; nSlot < kPairDigitSlots; ++nSlot) {
@@ -2366,7 +2282,6 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
     }
     const int nRightCount = nRightTop != 0 ? nRightTop : 1;
 
-    // Centre the cursor on the base position by half the pair's total glyph run.
     const int nLeftRun = static_cast<int>(static_cast<float>(nLeftCount) * flDigitWidth);
     const int nRightRun = static_cast<int>(static_cast<float>(nRightCount) * flDigitWidth);
     const float flCentre =
@@ -2377,7 +2292,6 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
     const ResultBonusColor &rightColor = g_aResultBonusColor[nRightColorIndex];
     const ResultBonusColor &leftColor = g_aResultBonusColor[nLeftColorIndex];
 
-    // The right number draws first, stepping the cursor left by the monospace width per digit.
     for (int nSlot = 0; nSlot < nRightCount; ++nSlot) {
         const S_VECTOR2 digitPos{position.x - flDigitWidth, position.y};
         RenderPartSpriteByIndex(kNumberDigitSlot,
@@ -2393,7 +2307,6 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
         position.x -= flDigitWidth;
     }
 
-    // The slash separator draws next, in the right number's colour, then the cursor steps past it.
     const S_VECTOR2 separatorPos{position.x - (flDigitWidth + kPairSeparatorGap), position.y};
     RenderPartSpriteByIndex(kNumberDigitSlot,
                             kPairSeparatorPart,
@@ -2407,7 +2320,6 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
                             rightColor.flBlue);
     position.x = separatorPos.x - kPairSeparatorGap;
 
-    // The left number draws last, continuing to step the cursor left per digit.
     for (int nSlot = 0; nSlot < nLeftCount; ++nSlot) {
         const S_VECTOR2 digitPos{position.x - flDigitWidth, position.y};
         RenderPartSpriteByIndex(kNumberDigitSlot,
@@ -2426,16 +2338,12 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
 
 namespace {
 
-// The phone number-pair renderer's digit family base, its slash separator glyph, the number of
-// digit slots each number extracts, and the phone glyph slot they draw into.
 constexpr int kPhonePairDigitBase = 0x10f;
 constexpr int kPhonePairSeparatorPart = 0x119;
 constexpr int kPhonePairDigitSlots = 4;
 constexpr int kPhonePairSlot = 1;
 
-// The centring constants the phone number-pair renderer applies to its cursor: a separator-width
-// fudge and the half factor (@ghidraAddress 0x40c00000 = 6, 0x3f000000 = 0.5), the separator's own
-// one-pixel advance (@ghidraAddress 0xbf800000 = -1), and the upright rotation and unit scale.
+// Centring constants, as the pool immediates 0x40c00000, 0x3f000000, and 0xbf800000.
 constexpr float kPhonePairCentreFudge = 6.0f;
 constexpr float kPhonePairCentreHalf = 0.5f;
 constexpr float kPhonePairSeparatorGap = 1.0f;
@@ -2451,12 +2359,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                                                               unsigned int nAlpha,
                                                               int nLeftColorIndex,
                                                               int nRightColorIndex) {
-    // The monospace digit width is the phone digit family's '0' glyph width from the phone parts
-    // table.
     const float flDigitWidth = g_aColettePartsPhone[kPhonePairDigitBase].flWidth;
 
-    // Extract each number's four base-ten digits (least significant first) and its
-    // significant-digit count (at least one).
     int aLeftDigits[kPhonePairDigitSlots] = {};
     int nLeftTop = 0;
     for (int nSlot = 0; nSlot < kPhonePairDigitSlots; ++nSlot) {
@@ -2482,9 +2386,7 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
     const ResultBonusColor &leftColor = g_aResultBonusColor[nLeftColorIndex];
     const ResultBonusColor &rightColor = g_aResultBonusColor[nRightColorIndex];
 
-    // Seed the cursor centred on the base position: each number's pixel width (truncated to a whole
-    // pixel separately, as the binary does), plus one digit width and a separator-width fudge,
-    // halved. The y-coordinate is carried through from the base position.
+    // Each number's pixel width is truncated to a whole pixel separately, as the binary does.
     const float flBaseY = pBasePosition->y;
     const int nLeftWidth = static_cast<int>(static_cast<float>(nLeftCount) * flDigitWidth);
     const int nRightWidth = static_cast<int>(static_cast<float>(nRightCount) * flDigitWidth);
@@ -2492,8 +2394,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                                           flDigitWidth + kPhonePairCentreFudge) *
                                              kPhonePairCentreHalf;
 
-    // The right number draws first (rightmost), in the right colour, stepping the cursor left per
-    // digit.
     for (int nSlot = 0; nSlot < nRightCount; ++nSlot) {
         flCursorX -= flDigitWidth;
         RenderGlyphPartFromTable(kPhonePairSlot,
@@ -2508,8 +2408,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                                  rightColor.flBlue);
     }
 
-    // The slash separator draws next, in the right colour, then the cursor steps past it by one
-    // pixel.
     flCursorX -= flDigitWidth;
     RenderGlyphPartFromTable(kPhonePairSlot,
                              kPhonePairSeparatorPart,
@@ -2523,7 +2421,6 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                              rightColor.flBlue);
     flCursorX -= kPhonePairSeparatorGap;
 
-    // The left number draws last, in the left colour, continuing to step the cursor left per digit.
     for (int nSlot = 0; nSlot < nLeftCount; ++nSlot) {
         flCursorX -= flDigitWidth;
         RenderGlyphPartFromTable(kPhonePairSlot,
@@ -2541,15 +2438,11 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
 
 namespace {
 
-// The half factor applied to a glyph's measured width when advancing the proportional cursor, and
-// the two kerning nudges the proportional renderer applies (@ghidraAddress 0x40a00000 = 5, and
-// 0xc0800000 = -4).
+// Kerning nudges, as the pool immediates 0x40a00000 and 0xc0800000.
 constexpr float kProportionalHalf = 0.5f;
 constexpr float kWideRankKern = 5.0f;
 constexpr float kUnderPrefixKern = -4.0f;
 
-// The under-digit prefix glyph whose draw applies the -4 kerning nudge, and the wide rank
-// leading-digit range whose draw applies the +5 kerning nudge (part ids in @c [0xeb, 0xf4]).
 constexpr int kUnderPrefixKernPart = 0xf5;
 constexpr int kWideRankLeadingLow = 0xeb;
 constexpr int kWideRankLeadingSpan = 0xa;
@@ -2568,10 +2461,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                                               float flRed,
                                                               float flGreen,
                                                               float flBlue) {
-    // The rotation argument is accepted and never read: every digit below emits upright.
-    (void)flRotation;
+    (void)flRotation; // The binary accepts a rotation slot but never reads it.
 
-    // Extract the base-ten digits, least significant first, tracking the highest non-zero slot.
     int aDigits[kMaxDigitSlots] = {};
     int nTopDigit = 0;
     for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
@@ -2588,13 +2479,10 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
         nTopDigit = 1;
     }
 
-    // Seed the cursor from the base position and centre it by half a digit width per drawn slot.
     S_VECTOR2 cursor = g_aResultLayoutPosition[nBasePositionIndex];
     const float flDigitWidth = getPartsData(nDigitPartBase)->flWidth;
     cursor.x += static_cast<float>(nTopDigit) * kProportionalHalf * flDigitWidth;
 
-    // In wide-leading mode, advance the cursor by half the standalone and under-digit prefix
-    // widths, draw the standalone prefix glyph, then step the cursor left by its full width.
     if (bWideLeading) {
         const int nStandalonePrefix = StandalonePrefixFor(nDigitPartBase);
         const int nUnderPrefix = UnderDigitPrefixForProportional(nDigitPartBase, nDigitPartBase);
@@ -2613,12 +2501,10 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                 flRed,
                                 flGreen,
                                 flBlue);
-        // The four variable-index width reads below index the pad table directly: unlike the three
-        // constant-index prefix widths above, they carry no IsPad call in the binary.
+        // The variable-index width reads hit the pad table directly, with no IsPad call.
         cursor.x -= g_aColettePartsPad[nStandalonePrefix].flWidth;
     }
 
-    // Draw each significant digit right to left, advancing the cursor left by each glyph's width.
     const int nLeadingBase = LeadingDigitBaseForProportional(nDigitPartBase);
     for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
         const bool bLeadingSlot = nSlot == 0 && bWideLeading;
@@ -2635,8 +2521,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                 flGreen,
                                 flBlue);
         cursor.x -= g_aColettePartsPad[nPartId].flWidth;
-        // A wide rank leading digit on the first slot nudges the cursor right to tighten its
-        // spacing.
+        // A wide rank leading digit on the first slot nudges the cursor right to tighten spacing.
         if (nSlot == 0 && static_cast<unsigned int>(nPartId - kWideRankLeadingLow) <
                               static_cast<unsigned int>(kWideRankLeadingSpan)) {
             cursor.x += kWideRankKern;
@@ -2661,8 +2546,6 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
         }
     }
 
-    // Optional left padding fills the unused leading slots with the family's '0' glyph at a dimmed
-    // alpha, advancing the cursor left by each glyph's width.
     if (bLeftPad && nTopDigit + 1 < nDigitCount) {
         const unsigned int nPadAlpha = static_cast<unsigned int>(
             static_cast<int>(static_cast<float>(nAlpha) * kLeftPadDimFactor));
@@ -2696,8 +2579,6 @@ void ResultWindowColetteLayer::RenderPartSpriteByIndex(int nSlot,
     if (nPartId < 0 || nPartId >= kColettePartsRecordCount) {
         return;
     }
-    // The part metrics come from the device-selected parts table; the texture rectangle from the
-    // Colette part UV palette. The float colour channels are truncated to byte channels.
     const PartsDataRecord *pRecord = getPartsData(nPartId);
     const UvPaletteEntry &palette = g_aColettePartUvPalette[pRecord->nUvPaletteIndex];
     appendSpriteToSlotRgba(nSlot,
@@ -2726,8 +2607,6 @@ void ResultWindowColetteLayer::RenderPartSpriteWithAlpha(int nSlot,
     if (nPartId < 0 || nPartId >= kColettePartsRecordCount) {
         return;
     }
-    // The part metrics come from the device-selected parts table; the texture rectangle from the
-    // Colette part UV palette.
     const PartsDataRecord *pRecord = getPartsData(nPartId);
     const UvPaletteEntry &palette = g_aColettePartUvPalette[pRecord->nUvPaletteIndex];
     const unsigned int nIntensity = bShadowPass ? kIntensityDimmed : kIntensityFull;
@@ -2755,8 +2634,6 @@ void ResultWindowColetteLayer::RenderDimmableGlyphFromTable(int nSlot,
     if (nPartId < 0 || nPartId >= kColettePhonePartsRecordCount) {
         return;
     }
-    // The glyph metrics come from the phone parts table indexed by the part id; the texture
-    // rectangle from the Colette glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nPartId];
     const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
     const unsigned int nIntensity = bDimmed ? kIntensityDimmed : kIntensityFull;
@@ -2786,9 +2663,6 @@ void ResultWindowColetteLayer::RenderGlyphPartFromTable(int nSlot,
     if (nPartId < 0 || nPartId >= kColettePhonePartsRecordCount) {
         return;
     }
-    // The glyph metrics come from the phone parts table indexed by the part id; the texture
-    // rectangle from the Colette glyph UV palette. The three colour channels arrive as floats and
-    // are truncated toward zero into byte channels.
     const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nPartId];
     const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
     appendSpriteToSlotRgba(nSlot,
@@ -2807,36 +2681,28 @@ void ResultWindowColetteLayer::RenderGlyphPartFromTable(int nSlot,
 
 namespace {
 
-// The backdrop's alpha numerator over the alpha scale, so the backdrop draws at 178/255 of the
-// frame alpha (@ghidraAddress 0x2fd004).
+// The backdrop draws at 178/255 of the frame alpha. @ghidraAddress 0x2fd004
 constexpr float kBackdropAlphaNumerator = 178.0f;
 
-// The achievement rate is stored as a normalised fraction and shown in tenths of a percent, so a
-// displayed rate is the fraction times this scale (@ghidraAddress 0x2f8540). The negated twin
-// (@ghidraAddress 0x2f8544) turns a shortfall into a positive magnitude for the delta row.
-constexpr float kRateDisplayScale = 1000.0f;
-constexpr float kRateDisplayScaleNegated = -1000.0f;
+// The rate is stored as a normalised fraction and displayed in tenths of a percent.
+constexpr float kRateDisplayScale = 1000.0f;         // @ghidraAddress 0x2f8540
+constexpr float kRateDisplayScaleNegated = -1000.0f; // @ghidraAddress 0x2f8544
 
 // The achievement rate a play must reach to earn the cleared caption (@ghidraAddress 0x2fd008).
 constexpr float kClearRateThreshold = 0.7f;
 
-// The bonus values are shown to one decimal place, as the stored value times this scale.
 constexpr float kBonusDisplayScale = 10.0f;
 
 // The vertical step between two bonus rows (@ghidraAddress 0x2fd048).
 constexpr float kBonusRowStep = 40.0f;
 
-// Centres a leader rule between the two glyphs it spans, and halves the marker alpha.
 constexpr float kHalf = 0.5f;
 
-// The upright and horizontally mirrored sprite X scales.
 constexpr float kScaleNormal = 1.0f;
 constexpr float kScaleMirrored = -1.0f;
 
-// The panel's fixed text colours, each channel in [0, 255]. The binary materialises them from its
-// own literal pool (@ghidraAddress 0x2fd00c through 0x2fd044) rather than reading the bonus
-// palette, even though the first six repeat palette entries; they reuse the palette record's plain
-// red/green/blue triple as their type.
+// Materialised from the binary's own literal pool rather than the bonus palette, which the first
+// six of them duplicate. @ghidraAddress 0x2fd00c through 0x2fd044
 constexpr ResultBonusColor kColorRate{34.0f, 149.0f, 238.0f};
 constexpr ResultBonusColor kColorJudgeCount{231.0f, 174.0f, 0.0f};
 constexpr ResultBonusColor kColorGoodCount{255.0f, 120.0f, 20.0f};
@@ -2846,24 +2712,18 @@ constexpr ResultBonusColor kColorTarget{115.0f, 101.0f, 85.0f};
 constexpr ResultBonusColor kColorWhite{255.0f, 255.0f, 255.0f};
 constexpr ResultBonusColor kColorBlack{0.0f, 0.0f, 0.0f};
 
-// The two play-record sides: the rival's column and the local player's.
 constexpr unsigned int kSideRival = 0;
 constexpr unsigned int kSideLocal = 1;
 constexpr int kResultSideCount = 2;
 
-// The sprite-instancer slots the panel draws through. Slot 1 carries every parts-atlas sprite; the
-// three single-image slots are bound by the scene (@c kResultInstancerArtwork and friends in
-// game_scene.mm).
+// The three single-image slots are bound by the scene; slot 1 carries every parts-atlas sprite.
 constexpr int kBackdropSlot = 0;
 constexpr int kArtworkSlot = 2;
 constexpr int kMusicNameSlot = 3;
 constexpr int kArtistNameSlot = 4;
 
-// The artwork quad's pixel extent, materialised on the stack by the binary as the paired immediate
-// 0x4334000043340000.
 constexpr float kArtworkExtent = 180.0f;
 
-// The digit families the number renderers draw from. The score family is chosen by the play colour.
 constexpr int kFamilyScoreRed = 0xb6;
 constexpr int kFamilyScoreBlue = 0xc0;
 constexpr int kFamilyMedium = 0xca;
@@ -2872,22 +2732,18 @@ constexpr int kFamilyRateSmall = 0x105;
 constexpr int kFamilySideStat = 0xe0;
 constexpr int kFamilyGrandTotal = 0x147;
 
-// The digit counts the panel's number rows draw.
 constexpr int kDigitsScore = 4;
 constexpr int kDigitsBonus = 3;
 constexpr int kDigitsGrandTotal = 6;
 
-// The parts-atlas ids the panel emits. Runs that a loop walks are given their base id; the rest
-// name the element they draw. The individual artwork each id selects is not recovered beyond its
-// role here.
 enum ResultPanelPart {
     kPartBackdrop = 0x00,
     kPartPanelFrame = 0x01,
     kPartTwitterButton = 0x02,
-    kPartDecorationBase = 0x03,      // Twelve alternately mirrored decorations.
-    kPartMusicInfoUpper = 0x0f,      //
-    kPartMusicInfoLower = 0x10,      //
-    kPartMusicInfoFrame = 0x11,      //
+    kPartDecorationBase = 0x03, // Twelve alternately mirrored decorations.
+    kPartMusicInfoUpper = 0x0f,
+    kPartMusicInfoLower = 0x10,
+    kPartMusicInfoFrame = 0x11,
     kPartDifficultyLabelBase = 0x12, // Plus the difficulty.
     kPartArtworkFrame = 0x16,
     kPartDifficultyNameBase = 0x17, // Plus the difficulty.
@@ -2905,16 +2761,16 @@ enum ResultPanelPart {
     kPartRateFrameLeft = 0x37,
     kPartRateFrameRight = 0x38,
     kPartRateLabel = 0x39,
-    kPartRankGlyphBase = 0x3a,       // Plus the earned rank.
-    kPartNewRecordBadge = 0x40,      //
-    kPartFullComboBadge = 0x41,      //
-    kPartTargetBeatenBadge = 0x42,   //
-    kPartNewRateBadge = 0x43,        //
-    kPartStatFrameBase = 0x44,       // Nineteen parts.
-    kPartSideColorLabelBase = 0x57,  // Plus the play colour.
-    kPartRivalColorLabelRed = 0x59,  //
-    kPartRivalColorLabelBlue = 0x5a, //
-    kPartStatRowBase = 0x5b,         // Eight parts, two of them also drawn tinted.
+    kPartRankGlyphBase = 0x3a, // Plus the earned rank.
+    kPartNewRecordBadge = 0x40,
+    kPartFullComboBadge = 0x41,
+    kPartTargetBeatenBadge = 0x42,
+    kPartNewRateBadge = 0x43,
+    kPartStatFrameBase = 0x44,      // Nineteen parts.
+    kPartSideColorLabelBase = 0x57, // Plus the play colour.
+    kPartRivalColorLabelRed = 0x59,
+    kPartRivalColorLabelBlue = 0x5a,
+    kPartStatRowBase = 0x5b, // Eight parts, two of them also drawn tinted.
     kPartStatHeaderJust = 0x63,
     kPartStatHeaderGreat = 0x64,
     kPartStatHeaderGood = 0x65,
@@ -2946,17 +2802,13 @@ enum ResultPanelPart {
     kPartBonusTotalUnit = 0x146,
 };
 
-// The layout-bank slots the panel positions its fixed elements at. Runs a loop walks are given
-// their first slot. The digit rows pass their slot to a number renderer, which walks the bank
-// itself.
 enum ResultPanelPosition {
     kPosBackdrop = 0,
     kPosPanelFrame = 1,
     kPosTwitterButton = 2,
     kPosDecorationBase = 3,
-    // The binary crosses these two: part 0x0f draws at slot 16 and part 0x10 at slot 15 (the
-    // adds at 0x75158 and 0x75184 against the part ids at 0x75164 and 0x7518c). The neighbouring
-    // frame part 0x11 is not crossed, so do not "correct" this back.
+    // Crossed in the binary at 0x75158 and 0x75184: part 0x0f draws at slot 16 and part 0x10 at
+    // slot 15. Frame part 0x11 is not crossed, so do not "correct" this back.
     kPosMusicInfoLower = 15,
     kPosMusicInfoUpper = 16,
     kPosMusicInfoFrame = 17,
@@ -3048,7 +2900,6 @@ enum ResultPanelPosition {
     kPosBonusGrandTotalDigits = 0xe3,
 };
 
-// The run lengths the panel's sprite loops walk.
 constexpr int kDecorationCount = 12;
 constexpr int kClearedCaptionCount = 6;
 constexpr int kFailedCaptionCount = 9;
@@ -3059,31 +2910,24 @@ constexpr int kBonusPanelPieceCount = 5;
 constexpr int kBonusRowCount = 6;
 constexpr int kBonusRowParts = 3;
 
-// The level-glyph family holds this many level glyphs per difficulty.
 constexpr int kLevelGlyphsPerDifficulty = 15;
 
-// Within the nineteen-part stat frame, these parts draw mirrored and these draw at the page alpha
-// rather than the frame alpha. The binary tests them as the bit masks 0x2a and 0x1c0 over the run
-// index.
+// Bit masks the binary tests over the stat-frame run index.
 constexpr unsigned int kStatFrameMirroredMask = 0x2a;
 constexpr unsigned int kStatFramePageAlphaMask = 0x1c0;
 // Only the first nine pieces are tested against those masks; the rest always draw plain.
 constexpr int kStatFrameMaskedPieceCount = 9;
 
-// Within the eight-part stat row, these two parts get a second, colour-tinted pass. The binary
-// tests them by clearing bit two and comparing against zero.
+// Two of the eight stat-row parts get a second tinted pass, selected by clearing bit two.
 constexpr unsigned int kStatRowTintedIndexMask = ~4u;
 
-// The bonus rows the two feature toggles gate: the early-play row and the hot-music row.
 constexpr int kBonusRowEarlyPlay = 4;
 constexpr int kBonusRowHotMusic = 5;
 
-// The parts whose half widths inset the two bonus-row leader rules. The binary hoists row zero's
-// label width and reuses it for every row.
+// The binary hoists row zero's label width and reuses it to inset every row's leader rules.
 constexpr int kPartBonusRowLabelRowZero = kPartBonusRowBase;
 
-// The game types that show the pair of per-side colour markers. The binary tests
-// (gameType | 2) == 2, which admits exactly these two.
+// Admits exactly the two two-player game types.
 inline bool ShowsSideColorMarkers(int nGameType) {
     return (nGameType | 2) == 2;
 }
@@ -3092,8 +2936,6 @@ inline bool ShowsSideColorMarkers(int nGameType) {
 
 /** @ghidraAddress 0x74f2c */
 void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
-    // The frame alpha drives everything on the panel; the four remaining tween channels scale it
-    // into the sub-alphas the individual element groups draw at.
     const unsigned int nFrameAlpha =
         static_cast<unsigned int>(m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale);
     const float flFrameAlpha = static_cast<float>(nFrameAlpha);
@@ -3112,16 +2954,13 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
     const int nRivalScore = pTracker->GetPlayRecordCell(kSideRival, kCellScore);
     const int nLocalRank = pTracker->GetPlayRecordRank(kSideLocal);
 
-    // Every slot's sprite list is rebuilt from scratch each frame. The binary does not null-check
-    // the instancers here, because the builder has already created all eight.
+    // The binary does not null-check the instancers here; the builder created all eight.
     for (auto *pSlot : m_apSlots) {
         pSlot->SetSpriteCount(0);
     }
 
-    // A negative target score displays as zero.
     const int nClampedTargetScore = nTargetScore < 0 ? 0 : nTargetScore;
 
-    // A fully faded panel emits nothing at all.
     if (nFrameAlpha == 0) {
         return;
     }
@@ -3130,12 +2969,10 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
     const unsigned int nAlphaMusicInfo = static_cast<unsigned int>(flAlphaMusicInfo);
     const unsigned int nAlphaStats = static_cast<unsigned int>(flAlphaStats);
 
-    // Every emit below leaves the rotation argument at zero. The number renderers take a rotation
-    // slot they never read, and the compiler correspondingly skips setting it at those call sites,
-    // which is why the disassembly leaves stale register content there.
+    // Every emit leaves rotation at zero; the disassembly's stale register content is the compiler
+    // eliding a slot the number renderers never read.
     constexpr float kNoRotation = 0.0f;
 
-    // The backdrop dims the play field behind the panel.
     RenderPartSpriteByIndex(
         kBackdropSlot,
         kPartBackdrop,
@@ -3148,7 +2985,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
         kColorBlack.flGreen,
         kColorBlack.flBlue);
 
-    // The panel frame and the share button dim while their touch regions are held.
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartPanelFrame,
                               g_aResultLayoutPosition[kPosPanelFrame],
@@ -3168,7 +3004,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                                   kScaleNormal);
     }
 
-    // The border decorations alternate their horizontal mirroring.
     for (int nDecoration = 0; nDecoration < kDecorationCount; ++nDecoration) {
         RenderPartSpriteWithAlpha(kPartsSlot,
                                   kPartDecorationBase + nDecoration,
@@ -3180,8 +3015,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                                   kScaleNormal);
     }
 
-    // The music-info block: its frame, the difficulty label, the artwork, and the music and artist
-    // name images the scene rendered into slots three and four.
     const int nDifficulty = pGameSystem->GetDifficulty();
     const int nDifficultyLevel = pGameSystem->GetDifficultyLevel();
     RenderPartSpriteWithAlpha(kPartsSlot,
@@ -3301,10 +3134,8 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kScaleNormal,
                               kScaleNormal);
 
-    // The cleared caption replaces the longer failed caption once the rate reaches the clear
-    // threshold, or whenever the menu tutorial is suppressing input. Both getters are re-fetched
-    // rather than reusing the values from the top of the frame, and the game system is fetched
-    // before the rate test rather than short-circuited behind it, as the binary does.
+    // As the binary does: both getters are re-fetched, and the game system is fetched before the
+    // rate test rather than short-circuited behind it.
     const float flClearRate = pTracker->GetPlayRecordRate(kSideLocal);
     GameSystem *pClearGameSystem = GameSystem::GetGameSystem();
     if (flClearRate >= kClearRateThreshold || pClearGameSystem->GetMenuTutorialActive()) {
@@ -3331,7 +3162,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
         }
     }
 
-    // The headline score and achievement rate, with the badges that mark a personal best.
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartScoreLabel,
                               g_aResultLayoutPosition[kPosScoreLabel],
@@ -3455,9 +3285,8 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kScaleNormal,
                               kScaleNormal);
 
-    // A vertical flick cross-fades the two result pages: the stats and bonus channels each split
-    // between the swipe progress and its complement, and which half belongs to which page swaps
-    // with the active page.
+    // A vertical flick cross-fades the two pages; which half of a channel belongs to which page
+    // swaps with the active page.
     const float flSwipe = std::fabs(m_flSwipeDir);
     const bool bSecondPageActive = m_nActive != 1;
     const float flStatsSweep = static_cast<float>(nAlphaStats);
@@ -3471,7 +3300,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
     const unsigned int nAlphaBonusFar = static_cast<unsigned int>(
         bSecondPageActive ? flBonusSweep * (1.0f - flSwipe) : flBonusSweep * flSwipe);
 
-    // The stat frame: three of its parts draw mirrored and three at the near page alpha.
     for (int nPiece = 0; nPiece < kStatFrameCount; ++nPiece) {
         const unsigned int nPieceBit = 1u << static_cast<unsigned int>(nPiece);
         unsigned int nPieceAlpha = nFrameAlpha;
@@ -3493,8 +3321,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                                   kScaleNormal);
     }
 
-    // The two side colour labels, then the eight stat rows; the first and fifth also take a tinted
-    // pass in the rotating decoration colour.
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartSideColorLabelBase + nPlayColor,
                               g_aResultLayoutPosition[kPosSideColorLabel],
@@ -3536,7 +3362,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
         }
     }
 
-    // The per-side judgement columns.
     for (int nSide = 0; nSide < kResultSideCount; ++nSide) {
         const unsigned int nUside = static_cast<unsigned int>(nSide);
         const int nJust = pTracker->GetPlayRecordCell(nUside, kCellJust);
@@ -3665,7 +3490,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kScaleNormal,
                               kScaleNormal);
 
-    // The score row: the achieved score, the target, and their signed difference.
     RenderNumberDigitsAsParts(nLocalScore,
                               kDigitsScore,
                               kPosScoreRowDigits,
@@ -3758,7 +3582,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                             kColorTarget.flGreen,
                             kColorTarget.flBlue);
 
-    // The rate row, laid out like the score row.
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartTargetRowLabelLeft,
                               g_aResultLayoutPosition[kPosTargetRowLabelLeft],
@@ -3848,7 +3671,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                             kColorTarget.flGreen,
                             kColorTarget.flBlue);
 
-    // The rank row: the earned plate, an arrow, and the plate the target rate would have earned.
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartRankRowLabel,
                               g_aResultLayoutPosition[kPosRankRowLabel],
@@ -3891,7 +3713,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kScaleNormal,
                               kScaleNormal);
 
-    // The bonus page: its decorations, panel pieces, six rows, and the two totals.
     for (int nDecoration = 0; nDecoration < kBonusDecorationCount; ++nDecoration) {
         RenderPartSpriteWithAlpha(kPartsSlot,
                                   kPartBonusDecorationBase + nDecoration,
@@ -3919,10 +3740,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                                   kScaleNormal);
     }
 
-    // The bonus rows. Each row draws its label, a leader rule stretched across the gap to the value
-    // column, the value's unit glyph, a second leader, and the row's suffix and trailing glyphs.
-    // The two leader rules are stretched by the column gap less the half widths of the glyphs
-    // flanking them; the binary hoists row zero's label width and reuses it for every row.
     const S_VECTOR2 &bonusOrigin = g_aResultLayoutPosition[kPosBonusRowOrigin];
     const float flBonusValueX = g_aResultLayoutPosition[kPosBonusValueColumn].x;
     const float flBonusUnitX = g_aResultLayoutPosition[kPosBonusUnitColumn].x;
@@ -4009,7 +3826,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                                   kScaleNormal);
     }
 
-    // The bonus total block.
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartBonusTotalLabelUpper,
                               g_aResultLayoutPosition[kPosBonusTotalLabelUpper],
@@ -4018,9 +3834,8 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kNoRotation,
                               kScaleNormal,
                               kScaleNormal);
-    // Slot 213 is (806, 816), so this 16-wide centred glyph spans x 798 to 814 and falls entirely
-    // outside the 768-wide panel. The pool holds it as the right half of the pair at 0x2fdb40 and
-    // the binary draws it anyway; it is invisible, not misplaced.
+    // This glyph falls outside the 768-wide panel, so it is invisible rather than misplaced.
+    // @ghidraAddress 0x2fdb40
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartPlusSign,
                               g_aResultLayoutPosition[kPosBonusTotalPlus],
@@ -4054,8 +3869,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kScaleNormal,
                               kScaleNormal);
 
-    // Each bonus value is shown to one decimal place. The early-play and hot-music rows only print
-    // when their feature toggle is on, but both are still summed into the totals below.
     const unsigned int nAlphaBonusValues = nAlphaStatsFar;
     RenderNumberDigitsAsParts(static_cast<int>(m_flClearBonus * kBonusDisplayScale),
                               kDigitsBonus,
@@ -4134,8 +3947,7 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                                   kColorRate.flBlue);
     }
 
-    // The subtotal sums the six bonuses; the grand total adds the experience points on top. Both
-    // sums include the early-play and hot-music bonuses whether or not their rows printed.
+    // Both sums include the early-play and hot-music bonuses whether or not their rows printed.
     const float flBonusSubtotal = m_flClearBonus + m_flMissBonus + m_flRankBonus +
                                   m_flFirstPlayBonus + m_flEarlyPlayBonus + m_flHotMusicBonus;
     RenderNumberDigitsAsParts(static_cast<int>(flBonusSubtotal * kBonusDisplayScale),
@@ -4164,8 +3976,6 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
         kColorRate.flGreen,
         kColorRate.flBlue);
 
-    // The pair of per-side colour markers only shows on the two-player game types, at half the
-    // stats alpha, each taking the bonus palette entry for its side's colour.
     if (ShowsSideColorMarkers(pGameSystem->GetGameType())) {
         const bool bSecondPage = m_nActive != 1;
         const int nLocalColorIndex =
@@ -4204,25 +4014,19 @@ namespace {
 // The backdrop quad's width; its height is the live play-field height (@ghidraAddress 0x2fd04c).
 constexpr float kPhoneBackdropWidth = 768.0f;
 
-// The artwork quad's pixel extent on the phone layout, materialised by the binary as the paired
-// immediate 0x42a4000042a40000.
 constexpr float kPhoneArtworkExtent = 82.0f;
 
-// The vertical step between two rows of the eight-row stat grid. The binary accumulates this in
-// double precision and narrows only when writing the position back.
+// The binary accumulates the row step in double precision, narrowing only on write-back.
 constexpr double kPhoneStatRowStep = 10.5;
 
-// The vertical step between two bonus rows, by the portrait flag.
 constexpr float kPhoneBonusRowStep[] = {16.0f, 17.0f};
 
-// The horizontal offset of the bonus grid's second column, by the portrait flag (@ghidraAddress
-// 0x2fd068).
+// Indexed by the portrait flag. @ghidraAddress 0x2fd068
 constexpr float kPhoneBonusColumnOffset[] = {200.0f, 130.0f};
 
 // The rank plate's horizontal scale, by the portrait flag (@ghidraAddress 0x2fd060).
 constexpr float kPhoneRankPlateScaleX[] = {157.5f, 83.0f};
 
-// The nine parts of a stretched frame, as offsets from its base part id.
 enum PhoneFramePart {
     kFramePartCornerTopLeft = 0,
     kFramePartCornerTopRight = 1,
@@ -4235,9 +4039,8 @@ enum PhoneFramePart {
     kFramePartCentreFill = 8,
 };
 
-// The five stretched frames, each as its base part id, the part whose height the vertical span also
-// subtracts, and the two anchor positions it spans. The second height part is one of the frame's
-// bottom corners, but which one differs per frame, so it cannot be derived from the base.
+// Each span-height part is a bottom corner, but which one differs per frame, so it cannot be
+// derived from the base.
 constexpr int kFrameWindowBase = 0x03;
 constexpr int kFrameWindowSpanHeightPart = 0x08;
 constexpr int kFrameMusicInfoBase = 0x4f;
@@ -4249,8 +4052,6 @@ constexpr int kFrameScoreSpanHeightPart = 0x68;
 constexpr int kFrameBonusBase = 0x151;
 constexpr int kFrameBonusSpanHeightPart = 0x158;
 
-// The phone parts-atlas ids the panel emits, named for the element each draws. The individual
-// artwork behind an id is not recovered beyond its role here.
 enum PhoneResultPart {
     kPhonePartBackdrop = 0x00,
     kPhonePartPanelFrame = 0x01,
@@ -4275,9 +4076,8 @@ enum PhoneResultPart {
     kPhonePartRateFrameLeft = 0x3e,
     kPhonePartRateFrameRight = 0x3f,
     kPhonePartRateLabel = 0x40,
-    // Two further labels the binary draws in the same run at the same alpha (0x785c8-0x78634).
-    // Neither is identified: part 0x41 is a 20x6 centred bar and part 0x42 a 45x45 centred square,
-    // so the names record only their place in the run.
+    // Unidentified: a 20x6 centred bar and a 45x45 centred square, drawn in the same run at the
+    // same alpha. @ghidraAddress 0x785c8
     kPhonePartRateLabelExtraA = 0x41,
     kPhonePartRateLabelExtraB = 0x42,
     kPhonePartRankGlyphBase = 0x43, // Plus the earned rank.
@@ -4285,8 +4085,7 @@ enum PhoneResultPart {
     kPhonePartFullComboBadge = 0x4a,
     kPhonePartNewRateBadgePortrait = 0x4c,
     kPhonePartTargetBeatenBadge = 0x4d,
-    // The one badge part both the target-beaten and new-rate badges fall back to, on opposite
-    // settings of the portrait flag.
+    // Both the target-beaten and new-rate badges fall back to this, on opposite portrait settings.
     kPhonePartSharedBadgeAlternate = 0x4e,
     kPhonePartStatRowColumnAPortrait = 0x6a,
     kPhonePartStatRowColumnBPortrait = 0x72,
@@ -4294,9 +4093,9 @@ enum PhoneResultPart {
     kPhonePartStatHeaderJust = 0x9a,
     kPhonePartStatHeaderGreat = 0x9b,
     kPhonePartStatHeaderGood = 0x9c,
-    kPhonePartSideColorLabelBase = 0x9d,  // Plus the play colour.
-    kPhonePartRivalColorLabelRed = 0x9f,  //
-    kPhonePartRivalColorLabelBlue = 0xa0, //
+    kPhonePartSideColorLabelBase = 0x9d, // Plus the play colour.
+    kPhonePartRivalColorLabelRed = 0x9f,
+    kPhonePartRivalColorLabelBlue = 0xa0,
     kPhonePartStatRowColumnADefault = 0x82,
     kPhonePartStatRowColumnBDefault = 0x8a,
     kPhonePartStatRowColumnCDefault = 0x92,
@@ -4324,8 +4123,6 @@ enum PhoneResultPart {
     kPhonePartSideColorMarker = 0x18f,
 };
 
-// The phone anchor-position indices the panel resolves. Runs a loop walks are given their first
-// index; the digit rows pass their index to a number renderer, which walks the bank itself.
 enum PhoneResultPosition {
     kPhonePosBackdrop = 0,
     kPhonePosPanelFrame = 1,
@@ -4420,7 +4217,6 @@ enum PhoneResultPosition {
     kPhonePosSideColorMarkerRival = 0xa7,
 };
 
-// The run lengths the phone panel's loops walk.
 constexpr int kPhoneStatRowCount = 8;
 constexpr int kPhoneStatDecorationCount = 8;
 
@@ -4428,7 +4224,6 @@ constexpr int kPhoneStatDecorationCount = 8;
 
 /** @ghidraAddress 0x7799c */
 void ResultWindowColetteLayer::RenderColetteResultPanel() {
-    // The alpha model is identical to the pad path's.
     const unsigned int nFrameAlpha =
         static_cast<unsigned int>(m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale);
     const float flFrameAlpha = static_cast<float>(nFrameAlpha);
@@ -4459,12 +4254,10 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         return;
     }
 
-    // As on the pad path, the ignored rotation slot is always zero; the compiler elides setting it
-    // because the number renderers provably never read it.
+    // As on the pad path, the compiler elides the rotation slot the number renderers never read.
     constexpr float kNoRotation = 0.0f;
     const int nPortrait = m_bPortrait ? 1 : 0;
 
-    // Emits one glyph at a resolved phone anchor position.
     const auto emitAt = [&](int nPartId, int nPositionIndex, unsigned int nAlpha) {
         S_VECTOR2 position{};
         getPosition_Phone(nPositionIndex, &position);
@@ -4472,11 +4265,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
             kPartsSlot, nPartId, position, nAlpha, false, kNoRotation, kScaleNormal, kScaleNormal);
     };
 
-    // The nine-part stretched frame: four corners, the four edges scaled to span the gap between
-    // the two resolved anchors, and a centre fill. Five frames on this panel share the shape, so it
-    // is de-inlined here. The vertical span subtracts half the base part's height and half a second
-    // part's height; that second part is a bottom corner, but which one differs per frame, so it is
-    // a parameter rather than something derived from the base.
     const auto emitStretchedFrame = [&](int nBasePart,
                                         int nSpanHeightPart,
                                         int nNearPositionIndex,
@@ -4523,7 +4311,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         emitPiece(kFramePartCentreFill, S_VECTOR2{flMidX, flMidY}, flSpanX, flSpanY);
     };
 
-    // The backdrop stretches to the full screen width and the live play-field height.
     S_VECTOR2 backdropPosition{};
     getPosition_Phone(kPhonePosBackdrop, &backdropPosition);
     RenderGlyphPartFromTable(
@@ -4538,7 +4325,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         kColorBlack.flGreen,
         kColorBlack.flBlue);
 
-    // The window and music-info frames.
     emitStretchedFrame(kFrameWindowBase,
                        kFrameWindowSpanHeightPart,
                        kPhonePosWindowFrameNear,
@@ -4550,8 +4336,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                        kPhonePosMusicInfoFrameFar,
                        nFrameAlpha);
 
-    // The music-info block, its artwork, and the two name images the scene rendered into slots
-    // three and four.
     const int nDifficulty = pGameSystem->GetDifficulty();
     const int nDifficultyLevel = pGameSystem->GetDifficultyLevel();
     emitAt(kPhonePartMusicInfoUpper, kPhonePosMusicInfoUpper, nAlphaMusicInfo);
@@ -4579,8 +4363,7 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
            nAlphaArtwork);
     emitAt(kPhonePartArtistNameRule, kPhonePosArtistNameRule, nAlphaMusicInfo);
 
-    // The caption walks a contiguous run of anchor positions, each part id being its position index
-    // plus a fixed offset. The cleared caption is the shorter of the two.
+    // Each caption part id is its own anchor position index plus a fixed offset.
     const bool bCleared = pTracker->GetPlayRecordRate(kSideLocal) >= kClearRateThreshold ||
                           GameSystem::GetGameSystem()->GetMenuTutorialActive();
     const int nCaptionBase = bCleared ? kPhonePosClearedCaptionBase : kPhonePosFailedCaptionBase;
@@ -4589,7 +4372,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         emitAt(nPosition + kPhonePartCaptionOffset, nPosition, nAlphaArtwork);
     }
 
-    // The target score, the signed difference from it, and the achieved score.
     emitAt(kPhonePartScoreLabel, kPhonePosScoreLabel, nAlphaMusicInfo);
     RenderPhoneNumberGlyphs(nClampedTargetScore,
                             kDigitsScore,
@@ -4636,7 +4418,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                             kColorWhite.flGreen,
                             kColorWhite.flBlue);
 
-    // The achievement rate and the personal-best badges.
     emitAt(kPhonePartRateFrameLeft, kPhonePosRateFrameLeft, nAlphaMusicInfo);
     emitAt(kPhonePartRateFrameRight, kPhonePosRateFrameRight, nAlphaMusicInfo);
     const int nDisplayRate = static_cast<int>(flLocalRate * kRateDisplayScale);
@@ -4662,8 +4443,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     if (pTracker->GetTotalNotes() == pTracker->GetPlayRecordCell(kSideLocal, kCellMaxCombo)) {
         emitAt(kPhonePartFullComboBadge, kPhonePosFullComboBadge, nAlphaArtwork);
     }
-    // The two remaining badges each fall back to the same alternate part, but on opposite settings
-    // of the portrait flag.
     if (nClampedTargetScore < nLocalScore) {
         emitAt(m_bPortrait ? kPhonePartSharedBadgeAlternate : kPhonePartTargetBeatenBadge,
                kPhonePosTargetBeatenBadge,
@@ -4675,7 +4454,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                nAlphaArtwork);
     }
 
-    // The page cross-fade, on the same two channels and in the same direction as the pad path.
     const float flSwipe = std::fabs(m_flSwipeDir);
     const bool bSecondPageActive = m_nActive != 1;
     const float flStatsSweep = static_cast<float>(static_cast<unsigned int>(flAlphaStats));
@@ -4684,12 +4462,10 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         bSecondPageActive ? flStatsSweep * flSwipe : flStatsSweep * (1.0f - flSwipe));
     const unsigned int nAlphaBonusNear = static_cast<unsigned int>(
         bSecondPageActive ? flBonusSweep * flSwipe : flBonusSweep * (1.0f - flSwipe));
-    // The stat block draws at the near page's bonus alpha, the bonus block below at the far page's,
-    // so a flick swaps the two blocks rather than fading them together.
+    // A flick swaps the stat and bonus blocks rather than fading them together.
     const unsigned int nAlphaBonusFar = static_cast<unsigned int>(
         bSecondPageActive ? flBonusSweep * (1.0f - flSwipe) : flBonusSweep * flSwipe);
 
-    // The stat and score frames, then the column headers and side colour labels.
     emitStretchedFrame(kFrameStatBase,
                        kFrameStatSpanHeightPart,
                        kPhonePosStatFrameNear,
@@ -4708,8 +4484,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
            kPhonePosRivalColorLabel,
            nAlphaBonusNear);
 
-    // The eight-row stat grid: three columns, each row stepped down by a fractional row height the
-    // binary accumulates in double precision.
     for (int nRow = 0; nRow < kPhoneStatRowCount; ++nRow) {
         const double flRowOffset = static_cast<double>(nRow) * kPhoneStatRowStep;
         const auto emitStatCell = [&](int nPositionIndex, int nPortraitBase, int nDefaultBase) {
@@ -4736,8 +4510,7 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                      kPhonePartStatRowColumnCDefault);
     }
 
-    // The eight stat-row decorations. Unlike the pad path, the first and fifth draw *instead* as a
-    // tinted pass in the rotating decoration colour rather than in addition to the plain one.
+    // Unlike the pad path, the tinted pass replaces the plain one rather than adding to it.
     for (int nDecoration = 0; nDecoration < kPhoneStatDecorationCount; ++nDecoration) {
         S_VECTOR2 position{};
         getPosition_Phone(kPhonePosStatRowDecorationBase + nDecoration, &position);
@@ -4766,7 +4539,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         }
     }
 
-    // The per-side judgement columns.
     for (int nSide = 0; nSide < kResultSideCount; ++nSide) {
         const unsigned int nUside = static_cast<unsigned int>(nSide);
         const int nJust = pTracker->GetPlayRecordCell(nUside, kCellJust);
@@ -4822,7 +4594,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
             static_cast<int>(flSideRate * kRateDisplayScale), kPhonePosStatRate, true, kColorRate);
     }
 
-    // The bonus frame and the rank row.
     emitStretchedFrame(kFrameBonusBase,
                        kFrameBonusSpanHeightPart,
                        kPhonePosBonusFrameNear,
@@ -4848,9 +4619,7 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     getPosition_Phone(kPhonePosBonusUnusedB, &unusedBonusAnchor);
     getPosition_Phone(kPhonePosBonusUnusedC, &unusedBonusAnchor);
 
-    // The bonus rows form a two-column grid: even rows in the left column, odd rows in the right,
-    // each pair sharing a row of the grid. The early-play and hot-music rows are gated by their
-    // feature toggles.
+    // A two-column grid: even rows in the left column, odd rows in the right, pairwise.
     const float flBonusRowStep = kPhoneBonusRowStep[nPortrait];
     for (int nRow = 0; nRow < kBonusRowCount; ++nRow) {
         if (nRow == kBonusRowEarlyPlay && ![AppDelegate.appDelegate isEnableEarlyBonus]) {
@@ -4884,9 +4653,8 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                       kPhonePosBonusRowSuffix);
     }
 
-    // The bonus total block. The second of these resolves its anchor position and then draws at a
-    // fixed entry of the pad layout bank instead, discarding the resolved position; reproduced as
-    // the binary has it.
+    // The rule below resolves its anchor position and then discards it, drawing at a fixed pad
+    // layout bank entry instead, as the binary has it.
     emitAt(kPhonePartBonusTotalLabelUpper, kPhonePosBonusTotalLabelUpper, nAlphaBonusFar);
     S_VECTOR2 discardedRulePosition{};
     getPosition_Phone(kPhonePosDiscardedRule, &discardedRulePosition);
@@ -4902,8 +4670,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     emitAt(kPhonePartBonusTotalLabelLower, kPhonePosBonusTotalLabelLower, nAlphaBonusFar);
     emitAt(kPhonePartBonusTotalRule, kPhonePosBonusTotalRule, nAlphaBonusFar);
 
-    // Each bonus value is shown to one decimal place, at the far page's stat alpha (the stat
-    // channel's other half, which is what the per-side columns above draw at).
     const unsigned int nAlphaBonusValues = static_cast<unsigned int>(
         bSecondPageActive ? flStatsSweep * (1.0f - flSwipe) : flStatsSweep * flSwipe);
     const auto emitBonusValue = [&](float flBonus, int nPositionIndex) {
@@ -4934,8 +4700,7 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     const float flBonusSubtotal = m_flClearBonus + m_flMissBonus + m_flRankBonus +
                                   m_flFirstPlayBonus + m_flEarlyPlayBonus + m_flHotMusicBonus;
     emitBonusValue(flBonusSubtotal, kPhonePosBonusSubtotalDigits);
-    // The grand total draws from the family that goes through the dimmable glyph path, which
-    // ignores the colour channels the call still passes as zero.
+    // This family goes through the dimmable path, which ignores the colour channels passed here.
     RenderPhoneNumberGlyphs(
         static_cast<int>((flBonusSubtotal + m_flExperienceBonus) * kBonusDisplayScale),
         kDigitsGrandTotal,
@@ -4950,7 +4715,6 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         kColorBlack.flGreen,
         kColorBlack.flBlue);
 
-    // The panel frame and share button dim while their touch regions are held.
     S_VECTOR2 panelFramePosition{};
     getPosition_Phone(kPhonePosPanelFrame, &panelFramePosition);
     RenderDimmableGlyphFromTable(kPartsSlot,
@@ -4974,10 +4738,8 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                                      kScaleNormal);
     }
 
-    // The pair of per-side colour markers. Unlike the pad path these are not gated on the game type
-    // and are not dimmed, and they take the mid and light grey palette entries. They ride the
-    // un-split stat channel, not the artwork channel: the binary loads their shared alpha from the
-    // slot holding the stat sweep.
+    // Unlike the pad path, these markers are not gated on the game type and ride the un-split stat
+    // channel rather than the artwork channel.
     const int nLocalMarkerColor =
         bSecondPageActive ? kResultBonusColorLightGray : kResultBonusColorMidGray;
     const int nRivalMarkerColor =
@@ -5001,9 +4763,7 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     emitColorMarker(kPhonePosSideColorMarkerRival, nRivalMarkerColor);
 }
 
-// Seeds every Colette result-screen layout table at load time, the largest of the three layout
-// initialisers. Its address is the __mod_init_func entry at 0x358c78, so dyld runs it at image
-// load; nothing calls it by name. The binary wraps the whole fill in an autorelease pool.
+// The __mod_init_func entry at 0x358c78; nothing calls it by name.
 /** @ghidraAddress 0x7b3b4 */
 __attribute__((constructor)) void InitializeResultLayoutTables() {
     @autoreleasepool {
@@ -9747,7 +9507,7 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aAnchorBoxPortrait[3].flX = 65.0f;
         g_aAnchorBoxPortrait[3].flY = 164.0f;
         g_aAnchorBoxPortrait[3].flWidth = 80.0f;
-        // Row 0 is one 16-byte pool copy (@ghidraAddress 0x2fe540), so its extent comes across too.
+        // @ghidraAddress 0x2fe540
         g_aAnchorBoxPortrait[0].flX = 80.0f;
         g_aAnchorBoxPortrait[0].flY = 191.0f;
         g_aAnchorBoxPortrait[0].flWidth = 160.0f;
@@ -9758,7 +9518,7 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aAnchorBoxDefault[3].flX = 147.0f;
         g_aAnchorBoxDefault[3].flY = 109.0f;
         g_aAnchorBoxDefault[3].flWidth = 80.0f;
-        // Row 0 is one 16-byte pool copy (@ghidraAddress 0x2fe550), so its extent comes across too.
+        // @ghidraAddress 0x2fe550
         g_aAnchorBoxDefault[0].flX = -80.0f;
         g_aAnchorBoxDefault[0].flY = 116.0f;
         g_aAnchorBoxDefault[0].flWidth = 160.0f;
@@ -9920,8 +9680,7 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aColetteColorMarkerPoints[77].y = 910.0f;
         g_ColetteColorMarkerOrigin.x = 384.0f;
         g_ColetteColorMarkerOrigin.y = 910.0f;
-        // Each of the three centre-position records is one 16-byte pool copy, so all four floats
-        // come across (@ghidraAddress 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0).
+        // @ghidraAddress 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0
         g_ColetteCenterPositionPhoneState.flX = 119.0f;
         g_ColetteCenterPositionPhoneState.flY = 439.0f;
         g_ColetteCenterPositionPhoneState.flWidth = 530.0f;
@@ -11182,8 +10941,6 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aColettePartsPhone[396].flWidth = g_aColettePartsPhone[390].flWidth;
         g_aColettePartsPhone[398].flX = g_aColettePartsPhone[390].flX;
         g_aColettePartsPhone[398].flWidth = g_aColettePartsPhone[390].flWidth;
-        // Rows 1 and 2 are copied from the pad table a whole 16-byte rect at a time, so the
-        // portrait and default rows end up identical to the pad's, extent included.
         g_aAnchorBoxPortrait[1].flX = g_aAnchorBoxPad[1].flX;
         g_aAnchorBoxPortrait[1].flY = g_aAnchorBoxPad[1].flY;
         g_aAnchorBoxPortrait[1].flWidth = g_aAnchorBoxPad[1].flWidth;

@@ -694,8 +694,6 @@ private:
                                        const S_VECTOR2 *pOffset,
                                        unsigned int nAlpha);
 
-    // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
-    // full; the shared low-level emit behind all the part helpers.
     // @ghidraAddress 0x12ac64
     void AppendSpriteToSlot(const S_VECTOR2 &position,
                             const S_VECTOR2 &anchor,
@@ -735,12 +733,8 @@ private:
                                      float flScaleX,
                                      float flScaleY);
 
-    // +0x08: the overall phone-part pressed state, published each frame: 1 while any touch is
-    // active, 0x100 on the frame the last touch releases, else 0.
     unsigned short m_nPressedState = {}; // +0x08
-    // +0x0a: set on a frame the side-slider commits a left/right swipe, cleared otherwise.
-    bool m_bSliderSwiped = {}; // +0x0a
-    // +0x0b..+0x0f: further descriptor state preceding the textures, still being worked out.
+    bool m_bSliderSwiped = {};           // +0x0a
     // unsigned char m_aReserved0b[5] = {};      // +0x0b
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas.
@@ -749,43 +743,30 @@ private:
         {};                // +0x28: the per-slot sprite batches.
     bool m_bBuilt = {};    // +0x68: set once the sprites are built.
     bool m_bPortrait = {}; // +0x69: selects the portrait phone anchor-position table.
-    // +0x6a..+0x6b is alignment padding before the default alpha.
     // unsigned char m_aPad6a[2]; // +0x6a (alignment padding, compiler-inserted)
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
     int m_nActive = {};       // +0x74: set once the phone result screen is initialised and running.
     float m_flSlideTimer =
         {}; // +0x78: a signed slide/settle timer, advanced toward zero each frame.
-    // +0x7c: the four phone result-panel touch/button records the constructor seeds (each a touch
-    // id reset to -1, a flags half-word, and an initialised byte).
     ResultButtonRecord m_aButtons[kButtonCount] = {}; // +0x7c
-    // +0x9c: the current result step index, reset to -1 (the "none" sentinel). The phone
-    // touch/share handler reuses this slot as the side-slider's tracked touch id (also the "none"
-    // sentinel).
+    // The phone touch/share handler reuses this slot as the side-slider's tracked touch id.
     int m_nCurrentStep = {};     // +0x9c
     float m_flSliderStartX = {}; // +0xa0: the side-slider touch's start X, for the drag threshold.
     int m_nRotationCounter =
         {};                    // +0xa4: the decoration rotation counter, wrapping each 192 frames.
     int m_nRotationFrame = {}; // +0xa8: the decoration animation frame index (0 through 3).
-    // +0xac..+0xc3: the two result-step animation slots the constructor clears (three parallel int
-    // fields per slot at +0xac, +0xb4, and +0xbc, stride 4).
     int m_aStepAnimA[kStepAnimSlotCount] = {};             // +0xac
     int m_aStepAnimB[kStepAnimSlotCount] = {};             // +0xb4
     int m_aStepAnimC[kStepAnimSlotCount] = {};             // +0xbc
     FloatTween m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4: the bonus/EX
                                                            //        animation channels.
     bool m_bBonusCueArmed = {}; // +0x13c: whether the bonus voice cue is still pending.
-    // +0x13d..+0x13f is alignment padding before the bonus-cue timer.
     // unsigned char m_aPad13d[3] = {}; // +0x13d
     float m_flBonusCueTimer = {}; // +0x140: time accumulated toward the bonus voice cue.
-    // +0x144..+0x14b: further presentation state, still being worked out.
     // unsigned char m_aReserved144[8] = {}; // +0x144
     bool m_bTwitterAvailable = {}; // +0x14c: whether the Twitter share API is available.
-    // +0x14d..+0x14f is alignment padding before the bonus values.
     // unsigned char m_aPad14d[3] = {}; // +0x14d
-    // +0x150..+0x163: the five result-bonus display values, computed by
-    // rb::GameScene::ComputeResultBonusesAndExperience and cleared together by
-    // ResetThemeSelectState.
     float m_flClearBonus = {};     // +0x150: the clear bonus.
     float m_flMissBonus = {};      // +0x154: the miss (full-combo/miss1/miss2) bonus.
     float m_flRankBonus = {};      // +0x158: the rank (B/A/AA/AAA/AAAP) bonus.

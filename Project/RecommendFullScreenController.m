@@ -1,14 +1,3 @@
-//
-//  RecommendFullScreenController.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RecommendFullScreenController).
-//  The layout maths in -setViewSize and the rotation transform in -rotateWebViewWithDuration: were
-//  recovered from the arm64 disassembly, whose soft-float register moves the decompiler folds into
-//  pseudo-variables. This is a plain Objective-C file: the class is a pure UIViewController
-//  subclass that reaches its collaborators through ordinary message sends, with no C++.
-//
-
 #import "RecommendFullScreenController.h"
 
 #import <UIKit/UIKit.h>
@@ -20,53 +9,38 @@
 #import "RecommendAdCache.h"
 #import "ShadeView.h"
 
-// The advert-type identifier the interstitial always opens its advert area with (external area).
+// Advert type 5 is the external area.
 static const int kRecommendInterstitialAdType = 5;
 
-// The Applilink error code reported when the advert HTML body could not be created on disk.
 static const NSInteger kApplilinkErrorHtmlFileCreate = 1035;
 
-// Below this screen edge length (in points) the interstitial base view uses half-size factors.
 static const CGFloat kRecommendNarrowScreenThreshold = 320.0;
 
-// The base-view sizing factors, indexed by whether the interface orientation is landscape. Each
-// pair is {portrait, landscape}.
+// Each pair is {portrait, landscape}.
 static const CGFloat kRecommendBaseWidthFactor[] = {608.0, 632.0};
 static const CGFloat kRecommendBaseHeightFactor[] = {844.0, 784.0};
 static const CGFloat kRecommendBaseMargin1[] = {24.0, 4.0};
 static const CGFloat kRecommendBaseMargin2[] = {8.0, 4.0};
 
-// The system version at and above which the SDK trusts the Xcode 6 orientation-aware bounds.
 static const CGFloat kRecommendXcode6SystemVersion = 8.0;
 
-// The system version below which the status bar height must be subtracted from the shade origin.
 static const CGFloat kRecommendStatusBarInsetSystemVersion = 7.0;
 
-// The interstitial base view fades into place a tenth of a second after the advert appears.
 static const int64_t kRecommendShowBaseViewDelayNanoseconds = 100000000;
 
-// The supported interface orientation mask: portrait, upside down, and both landscapes.
 static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown |
     UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
 
-// The class metadata declares conformance to the closed-SDK ApplilinkViewDelegate and
-// ShadeViewDelegate protocols. ApplilinkViewDelegate is only forward-declared in the reconstructed
-// tree, so its callbacks are implemented here and dispatched dynamically; ShadeViewDelegate is
-// defined in ShadeView.h and is adopted formally.
+// ApplilinkViewDelegate is only forward-declared in this tree, so its callbacks are implemented
+// here and dispatched dynamically rather than adopted formally.
 @interface RecommendFullScreenController () <ShadeViewDelegate>
 
-// The advert base view that hosts the advert area, sized for the current orientation.
 @property(nonatomic, strong, nullable) UIView *baseView;
-// The full-screen shade view that dims the screen behind the advert.
 @property(nonatomic, strong, nullable) ShadeView *shadeView;
-// The large loading spinner shown while the advert area loads.
 @property(nonatomic, strong, nullable) UIActivityIndicatorView *indicator;
-// The advert request parameters the interstitial was opened with.
 @property(copy, nonatomic, nullable) ApplilinkParameters *applilinkParams;
-// The advert delegate notified of the advert lifecycle and failures.
 @property(nonatomic, weak, nullable) id applilinkDelegate;
-// The full-view delegate (the presenting RecommendCore) asked to release this controller on close.
 @property(nonatomic, weak, nullable) id applilinkFullViewDelegate;
 
 @end

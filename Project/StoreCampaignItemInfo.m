@@ -1,12 +1,3 @@
-//
-//  StoreCampaignItemInfo.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class StoreCampaignItemInfo). Verified
-//  against the arm64 disassembly (the objectForKey:/intValue chains in the initialiser, the
-//  unlock-terms switch and its two per-entry loops in termCheck, and the granted-experience gate).
-//
-
 #import "StoreCampaignItemInfo.h"
 
 #import <UIKit/UIKit.h>
@@ -17,7 +8,6 @@
 #import "RBPurchaseManager.h"
 #import "StoreUtil.h"
 
-// The server campaign-list dictionary keys read by the initialiser.
 static NSString *const kCampaignKeyMusic = @"music";
 static NSString *const kCampaignKeyCampaignID = @"campaignId";
 static NSString *const kCampaignKeyItemID = @"itemId";
@@ -35,22 +25,18 @@ static NSString *const kCampaignKeyTermsTable = @"termsTable";
 static NSString *const kCampaignKeyUnlockType = @"unlockType";
 static NSString *const kCampaignKeyHideType = @"hideType";
 
-// The granted-experience payload keys read from the unlock dictionary by termCheck.
 static NSString *const kUnlockKeyType = @"Type";
 static NSString *const kUnlockKeyID = @"ID";
 
-// The format that turns a terms-table entry into a scheme URL probed with -canOpenURL:.
 static NSString *const kTermsURLFormat = @"%@://";
 
-// The action-button kinds carried by an item's buttonType, and the localised button titles they map
-// to.
 enum {
-    kCampaignButtonTypeDownload = 0,      // The item can be downloaded.
-    kCampaignButtonTypeDownloaded = 1,    // The item has already been downloaded.
-    kCampaignButtonTypeUnlockCond = 2,    // The unlock conditions are shown.
-    kCampaignButtonTypeUpdate = 3,        // An update is available.
-    kCampaignButtonTypeSerialInput = 4,   // A serial code must be entered.
-    kCampaignButtonTypePointUnlocked = 5, // The item was unlocked with points.
+    kCampaignButtonTypeDownload = 0,
+    kCampaignButtonTypeDownloaded = 1,
+    kCampaignButtonTypeUnlockCond = 2,
+    kCampaignButtonTypeUpdate = 3,
+    kCampaignButtonTypeSerialInput = 4,
+    kCampaignButtonTypePointUnlocked = 5,
 };
 static NSString *const kButtonNameDownload = @"ダウンロード";
 static NSString *const kButtonNameDownloaded = @"ダウンロード済み";
@@ -59,37 +45,30 @@ static NSString *const kButtonNameUpdate = @"アップデート";
 static NSString *const kButtonNameSerialInput = @"シリアル入力";
 static NSString *const kButtonNamePointUnlocked = @"ポイント解禁済み";
 
-// The unlock-terms kinds carried by the item's unlockType.
 enum {
-    kCampaignUnlockTypeOpen = 0,    // Immediately unlocked.
-    kCampaignUnlockTypeAppLink = 1, // Unlocked once every companion application can be opened.
-    kCampaignUnlockTypePack = 2,    // Unlocked once every listed pack has been purchased.
-    kCampaignUnlockTypeUpdate = 3,  // Same companion-application rule, gated behind an app update.
-    kCampaignUnlockTypeSerial = 4,  // Unlocked by a server-verified serial code.
+    kCampaignUnlockTypeOpen = 0,
+    kCampaignUnlockTypeAppLink = 1,
+    kCampaignUnlockTypePack = 2,
+    kCampaignUnlockTypeUpdate = 3,
+    kCampaignUnlockTypeSerial = 4,
 };
 
-// The action-button kinds settled into buttonType. These mirror the values the campaign view
-// controller switches on when a cell button is tapped.
+// These mirror the values the campaign view controller switches on when a cell button is tapped.
 enum {
-    kCampaignButtonInfoDownload = 0, // Download the item's info.
-    kCampaignButtonTerms = 2,        // Show the unlock-terms description.
-    kCampaignButtonUpdate = 3,       // Prompt to update the application.
-    kCampaignButtonSerialCode = 4,   // Prompt for a serial code.
-    kCampaignButtonExperience = 5,   // A granted-experience reward, already applied.
+    kCampaignButtonInfoDownload = 0,
+    kCampaignButtonTerms = 2,
+    kCampaignButtonUpdate = 3,
+    kCampaignButtonSerialCode = 4,
+    kCampaignButtonExperience = 5,
 };
 
-// The item type identifying a downloadable tune.
 static const int kCampaignItemTypeTune = 0;
 
-// The hide mode that keeps a downloadable tune visible in the row list.
 static const int kCampaignHideTypeVisible = 0;
 
 @interface StoreCampaignItemInfo () {
-    // The unlock-terms kind; see the kCampaignUnlockType* values. The binary names this ivar
-    // without an underscore prefix.
+    // The binary names these ivars without an underscore prefix.
     int unlockType;
-    // The list of terms entries (application schemes or pack identifiers) evaluated by termCheck.
-    // The binary names this ivar without an underscore prefix.
     NSArray *termsTable;
 }
 @end
@@ -97,8 +76,8 @@ static const int kCampaignHideTypeVisible = 0;
 @implementation StoreCampaignItemInfo
 
 #ifdef ENABLE_PATCHES
-// Overriding the getter of a readonly property suppresses its automatic synthesis, so the backing
-// ivar has to be named explicitly: -termCheck and -registSuccess both still assign it.
+// Overriding a readonly property's getter suppresses its synthesis, so the backing ivar that
+// -termCheck and -registSuccess assign has to be named explicitly.
 @synthesize bUnlock = _bUnlock;
 
 // Report every gift as granted even before -termCheck has run.
@@ -153,13 +132,8 @@ static const int kCampaignHideTypeVisible = 0;
 /** @ghidraAddress 0x109088 */
 - (BOOL)termCheck {
 #ifdef ENABLE_PATCHES
-    // Grant every gift outright. This also has to override the experience-point arm at the tail of
-    // the original, which clears _bUnlock whenever -unlockWithType:ID: reports the item as already
-    // granted — and in a patched build that always reports YES, so leaving this alone would lock
-    // every campaign item instead of unlocking it.
-    //
-    // -alreadyDownload keeps its real value: an unlocked song still has to be downloaded, unlike a
-    // BGM or a frame.
+    // Grant every gift outright, overriding the experience-point arm at the tail of the original
+    // that would otherwise clear _bUnlock for every campaign item.
     _bUnlock = YES;
     _alreadyDownload = [self hasItem:self.itemType itemID:self.itemID];
     _buttonType = kCampaignButtonInfoDownload;
@@ -212,8 +186,7 @@ static const int kCampaignHideTypeVisible = 0;
 
     if (_bUnlock) {
         if (_itemType == kCampaignItemTypeTune) {
-            // The binary looks the tune up twice and discards both results; the calls are kept for
-            // their caching side effect.
+            // The binary looks this up twice and discards both results; kept for the side effect.
             (void)[[RBMusicManager getInstance] getMusicData:self.itemID];
             (void)[[RBMusicManager getInstance] getMusicData:self.itemID];
             _buttonType = kCampaignButtonInfoDownload;

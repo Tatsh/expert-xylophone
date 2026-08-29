@@ -1,12 +1,3 @@
-//
-//  SystemHardware.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class SystemHardware). Verified against
-//  the arm64 disassembly (the sysctlbyname call, the model-string table, and the retaining setter
-//  are obscured by the decompiler).
-//
-
 #import "SystemHardware.h"
 
 #include <stdlib.h>
@@ -15,10 +6,8 @@
 
 #import "RBMacros.h"
 
-// The sysctl name that reports the device's machine model, for example @c iPhone3,1.
 static const char *const kMachineSysctlName = "hw.machine";
 
-// The sentinel hardware type stored by @c -init before the model has been resolved.
 static const int kHardwareTypeUnresolved = 15;
 
 /**
@@ -43,11 +32,9 @@ static const char *const kHardwareModelTable[] = {
     "i386",
 };
 
-// The number of known models in @c kHardwareModelTable.
 static const NSUInteger kHardwareModelCount = ARRAY_SIZE(kHardwareModelTable);
 
 @implementation SystemHardware {
-    // The resolved hardware type, or @c kHardwareTypeUnresolved until @c -initHardware runs.
     int m_HardwareType;
 }
 

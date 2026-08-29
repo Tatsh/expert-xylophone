@@ -1,14 +1,3 @@
-//
-//  SoundManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class SoundManager). Verified against
-//  the arm64 disassembly: the decompiler mis-modelled the float-PCM format helper as a vtable init
-//  and dropped its sample-rate argument, and it renders the AUGraph node, unit, and ivar-array
-//  arithmetic as raw pointer offsets. The render callback is a plain-C AURenderCallback, so this
-//  file wires it up through AudioToolbox C APIs rather than Objective-C.
-//
-
 #import "SoundManager.h"
 
 #import <AVFoundation/AVFoundation.h>
@@ -17,23 +6,16 @@
 #import "SoundPlayer.h"
 #import "audioformat.h"
 
-// The sample rate the mixer output format is configured for.
 static const double kSoundManagerSampleRate = 44100.0;
 
-// The mixer output is a stereo stream.
 static const int kOutputChannelCount = 2;
 
-// The number of decoded assets the pool can hold.
 static const int kSoundDataPoolCount = 10;
 
-// The number of concurrent mixer voices, one per mixer input element.
 static const int kSoundPlayerVoiceCount = 8;
 
-// The sentinel returned when the asset pool is full or no voice is free.
 static const int kInvalidSlot = -1;
 
-// The audio component descriptions of the two graph nodes: an embedded three-dimensional mixer
-// feeding a remote-I/O output.
 // @ghidraAddress 0x2eee70 (g_abMixerComponentDescription)
 static const AudioComponentDescription kMixerComponentDescription = {
     .componentType = kAudioUnitType_Mixer,
@@ -47,18 +29,14 @@ static const AudioComponentDescription kOutputComponentDescription = {
     .componentManufacturer = kAudioUnitManufacturer_Apple,
 };
 
-// The graph node whose input elements feed the output; the sole output element index.
 enum {
     kMixerBusInput = 0,
     kOutputBusOutput = 0,
 };
 
-// The mixer's input-element count.
 static const UInt32 kMixerElementCount = 8;
 
 @interface SoundManager () {
-    // The decoded-asset pool. The 32-bit offsets are documentation only; access always goes through
-    // these named fields.
     SoundData *m_SoundData[kSoundDataPoolCount];        // +0x08
     SoundPlayer *m_SoundPlayer[kSoundPlayerVoiceCount]; // +0x58
     BOOL m_InitGraph;                                   // +0x98
@@ -70,21 +48,14 @@ static const UInt32 kMixerElementCount = 8;
     AudioUnit m_OutputUnit;                             // +0xb8
 }
 
-// Configures the audio session and builds the mixer graph; called once from -init.
 - (void)setupAudioSession;
 - (void)prepareAUGraph;
 
-// Installs (or clears) the render callback and stream format on a mixer input element, and returns
-// the voice bound to a given index. Used by the file-private render callback.
 - (void)setCallBack:(int)element DataFormat:(AudioStreamBasicDescription *)format;
 - (void)unsetCallBack:(int)element;
 - (SoundPlayer *)getSoundPlayer:(int)index;
 @end
 
-// Feeds the next frames of a voice's asset into a mixer input element, stopping the voice and
-// unhooking its callback once the asset is exhausted. This is the standard AURenderCallback: the
-// reference constant is the sound manager, the bus number is the voice (and mixer input element)
-// index, and the buffer list receives the frames.
 // @ghidraAddress 0x35274 (HandleSoundStreamCallback)
 static OSStatus HandleSoundStreamCallback(void *inRefCon,
                                           AudioUnitRenderActionFlags *ioActionFlags,

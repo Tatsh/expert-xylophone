@@ -51,74 +51,62 @@
 #import "gamesystem.h"
 #import "soundeffectmanager.h"
 
-// Playlist selection identifiers stored in RBUserSettingData.playlistID.
 enum {
-    kPlaylistIDNone = 0,     // No playlist selected.
-    kPlaylistIDHotBonus = 1, // The hot-bonus playlist.
-    kPlaylistIDLevel = 2,    // A difficulty-level playlist.
-    kPlaylistIDCustom = 3,   // A named custom playlist.
-    kPlaylistIDSpecial = 4,  // The SPECIAL-chart playlist.
+    kPlaylistIDNone = 0,
+    kPlaylistIDHotBonus = 1,
+    kPlaylistIDLevel = 2,
+    kPlaylistIDCustom = 3,
+    kPlaylistIDSpecial = 4,
 };
 
-// Playlist editing modes stored in playListEditMode.
 enum {
-    kMenuModePlaylistAdd = 0,      // Adding songs to a playlist.
-    kMenuModePlaylistDelete = 1,   // Removing songs from a playlist.
-    kMenuModePlaylistFinished = 2, // Not editing; the resting mode.
+    kMenuModePlaylistAdd = 0,
+    kMenuModePlaylistDelete = 1,
+    kMenuModePlaylistFinished = 2,
 };
 
-// The popup sub-screens (how-to, customize, theme, and the rest) flex in every direction.
 constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// Tutorial-status indices passed to getTutorialStatus:/updateTutorialStatus:. The customize
-// walkthrough checks the completion flag (0x22) but records its entry step (0x18) as seen.
+// The customize walkthrough checks the completion flag (0x22) but records its entry step (0x18)
+// as seen.
 static const int kTutorialStatusMusicSelect = 0x17;
 static const int kTutorialStatusCustomize = 0x22;
 static const int kTutorialStatusCustomizeStarted = 0x18;
 
-// Tutorial step identifiers passed to the tutorial view's start/show methods.
 static const NSUInteger kTutorialTypeMusicSelect = 0;
 static const NSUInteger kTutorialTypeMusicFullScreen = 4;
 static const NSUInteger kTutorialTypeCustomize = 0x18;
 static const NSUInteger kTutorialTypeUnlock = 0x1d;
 static const NSUInteger kTutorialTypeMenuHide = 10;
 
-// Menu-item sort modes stored in RBUserSettingData.menuItemSort.
 static const int kMenuItemSortArtist = 1;
 
-// Themed sound-effect identifiers.
 static const int kSoundEffectDecide = 3;
 static const long kSoundEffectSearchBarShow = 0x11;
 static const long kSoundEffectSearchBarHide = 0x12;
 
-// The duration the cell artwork fades in over once its image has decoded.
 static const NSTimeInterval kArtworkFadeInDuration = 0.3; // @ghidraAddress 0x2ec718
 
-// Search-mascot behaviour.
 static const int kSearchMascotDefaultBias = 90; // rand()%100 threshold; below it uses image [0].
 static const float kSearchPushNotificationOverlapFactor = -0.9f;
 
-// Alpha and fade values.
 static const CGFloat kAlphaHidden = 0.0;
 static const CGFloat kAlphaOpaque = 1.0;
 static const CGFloat kCoverFadeDuration = 0.5;
 static const CGFloat kArtworkFadeInStartAlpha = 0.0;
 
-// Animation timings.
-static const int64_t kShowAnimationDelayNanos = 500000000; // 0.5 s show/hide completion delay.
+static const int64_t kShowAnimationDelayNanos = 500000000;
 static const NSTimeInterval kPlaylistEditAnimationDuration = 0.5;
 static const NSTimeInterval kPlaylistEditAnimationDelay = 0.0;
 
-// Page snap fractions used by didLayoutSubviews.
 static const float kPageSnapLowFraction = 0.3f;
 static const float kPageSnapHighFraction = 0.7f;
 static const float kPageSnapMidpoint = 0.5f;
 static const CGFloat kBackgroundVerticalOffsetFactor = -0.4;
 
-// News handling.
 static const NSTimeInterval kNewsGetTimeOffset = 0.0;
 static const NSTimeInterval kNewsCacheValiditySeconds = -300.0; // Fresh if fetched < 5 min ago.
 static const NSTimeInterval kNewsBannerDefaultInterval = 10.8;
@@ -137,38 +125,31 @@ static NSString *const kNewsKeyMessage = @"Message";
 static NSString *const kNewsKeyLink = @"Link";
 static NSString *const kNewsKeyCFBundleVersion = @"CFBundleVersion";
 
-// Terms-version request and response.
 static NSString *const kTermsRequestKeyTarget = @"target";
 static NSString *const kTermsRequestContentType = @"application/json";
 static NSString *const kTermsKeyList = @"list";
 static NSString *const kTermsKeyType = @"type";
 static NSString *const kTermsKeyVersion = @"version";
-static const NSInteger kTermsRecordTypeCurrent = 1; // The current terms-of-service record's type.
+static const NSInteger kTermsRecordTypeCurrent = 1;
 
-// The search-mascot base Y positions selected by the iPad idiom, decoded from the binary.
 static const float kSearchPastelPosBaseYWide = 85.0f;
 static const float kSearchPastelPosBaseYTall = 140.0f;
 
-// The white-theme (iPad idiom) settings-anchor rectangle offsets, decoded from the binary.
 static const CGFloat kSettingAnchorOffsetX = -102.0;
 static const CGFloat kSettingAnchorOffsetY = -24.0;
 static const CGFloat kSettingAnchorWidth = 204.0;
 static const CGFloat kSettingAnchorHeight = 48.0;
 
-// The music name of the tutorial's placeholder song, matched to find the tutorial cell. The
-// CFString is stored as UTF-16 in the binary (@0x10036c4e0).
 static NSString *const kTutorialPlaceholderMusicName = @"威風堂々";
 
-// Autoresizing masks used verbatim from the binary's raw flag values.
 static const UIViewAutoresizing kBackgroundAutoresizingMask =
-    UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight; // 0x12.
-// 0x3f: all four margins plus flexible width and height. @ghidraAddress 0x310450
+    UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+// @ghidraAddress 0x310450
 static const UIViewAutoresizing kCampaignScrollAllFlexibleMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// CreateView geometry, decoded from the binary.
 static const CGFloat kFooterLightTallHeight = 22.0;
 static const CGFloat kFooterLightWideHeight = 8.0;
 static const CGFloat kFooterCapFraction = 0.5;
@@ -194,7 +175,6 @@ static const NSInteger kRandomButtonTag = 1;
 static const int kCampaignBackgroundMaxImages = 10;
 static const int kSearchMascotMaxImages = 99;
 
-// Artwork basenames used by CreateView.
 static NSString *const kTextureBackgroundName = @"00_texture/sel_bg";
 static NSString *const kHeaderImageName = @"01_music_select/sel_header";
 static NSString *const kFooterImageName = @"01_music_select/sel_footer";
@@ -210,14 +190,8 @@ static NSString *const kSearchMascotDefaultPrefix = @"01_music_select/search_mas
 static NSString *const kSearchCancelImageNameWide = @"01_music_select/search_cancel_btn_pn2";
 static NSString *const kSearchCancelImageNameTall = @"01_music_select/search_cancel_btn";
 
-// layoutSubviews per-theme geometry metrics, decoded from the binary. The "wide" set applies when
-// the iPad idiom flag is clear (the native-resolution wide layout); the "tall" set when it is
-// set. These are the design constants the button rows and columns are laid out from.
-//
-// Their names keep the older theme labels these were first reconstructed under: "Pastel" is the
-// Colette theme (RBUserSettingDataThemeColette) and "White" is Limelight
-// (RBUserSettingDataThemeLimelight). The code and comments below use the RBUserSettingDataTheme
-// names; only these identifiers still carry the old spelling.
+// In these names "Pastel" is the Colette theme and "White" is Limelight; the "wide" set applies
+// when the iPad idiom flag is clear and the "tall" set when it is set.
 static const CGFloat kLayoutWideThemaCampaignWidthDelta = -81.0;   // @0x100300fd0
 static const CGFloat kLayoutWideThemaCampaignHeightDelta = -867.0; // @0x100300fd8
 static const CGFloat kLayoutWideThemaCampaignFooterNormal = 867.0; // @0x100300fe0
@@ -228,9 +202,7 @@ static const CGFloat kLayoutWideThemaClassicFooterNormal = 865.0;  // @0x1003010
 static const CGFloat kLayoutWideThemaClassicFooterEdit = 908.0;    // @0x100301018
 static const CGFloat kLayoutWidePastelWhiteSettingX = 49.0; // @0x100300ff0 (settingButton X).
 static const CGFloat kLayoutWideCollectionOriginY = 60.0;   // @0x1002ee948 (all wide themes).
-// The grid's height on the wide Colette arm. CreateView builds the collection view at the full
-// bounds, so layoutSubviews has to shrink it; at 60 + 797 its bottom edge is 857, which clears the
-// menu button row at 912. Recovered for that arm only. @ghidraAddress 0x300ff8
+// @ghidraAddress 0x300ff8
 static const CGFloat kLayoutWideCollectionHeight = 797.0;
 
 static const CGFloat kLayoutTallBoundsInset8 = -8.0;
@@ -241,7 +213,6 @@ static const CGFloat kLayoutTallThemaClassicFooterYExtra = 7.0;
 static const CGFloat kLayoutTallThemaCampaignFooterYExtra = 6.0;
 static const CGFloat kLayoutTallThemaWhiteFooterYExtra = 4.0;
 
-// Column and row design coordinates for the wide layout.
 static const int kLayoutWideThemaClassicCol1 = 0x107;
 static const int kLayoutWideThemaClassicCol2 = 0x1fa;
 static const int kLayoutWideThemaClassicPlaylistX = 0x7e;
@@ -255,42 +226,33 @@ static const int kLayoutWideThemaOtherRandomX = 0x260;
 static const int kLayoutWideThemaOtherCol0 = 0x363;
 static const int kLayoutWideThemaOtherPlaylistFinX = 0x390;
 
-static const int kLayoutSideButtonSizeWide = 0x2c;           // 44 points.
-static const int kLayoutSideButtonSizeTall = 0x1e;           // 30 points.
-static const int kLayoutWideCampaignHorizontalMargin = 0x28; // 40-point campaign row margin.
+static const int kLayoutSideButtonSizeWide = 0x2c;
+static const int kLayoutSideButtonSizeTall = 0x1e;
+static const int kLayoutWideCampaignHorizontalMargin = 0x28;
 
-// The settingButton X for the wide classic theme is a design double.
 static const CGFloat kLayoutWideThemaClassicSettingX = 20.0;
-// The wide white arm's collection origin X. The pool holds 0x4036000000000000, which is 22.0;
-// this was declared 44.0 while its own comment named the 0x4036 slot. @ghidraAddress 0xa2e20
+// @ghidraAddress 0xa2e20
 static const CGFloat kLayoutWideWhiteCollectionOriginX = 22.0;
 
-// The computed (base/3) tall-layout row and column arithmetic constants. The tall layouts derive
-// the button rows from a row base rather than from a fixed design coordinate.
-static const CGFloat kLayoutTallRowHalfHeightFactor = -0.5; // bounds.height * -0.5 in the row math.
-static const CGFloat kLayoutTallRowBaseBias = -4.0;         // The trailing bias on the row math.
-static const CGFloat kLayoutTallCol2BiasClassic = -4.0;     // col2 = (bounds.width + this) - width.
+static const CGFloat kLayoutTallRowHalfHeightFactor = -0.5;
+static const CGFloat kLayoutTallRowBaseBias = -4.0;
+static const CGFloat kLayoutTallCol2BiasClassic = -4.0;
 static const CGFloat kLayoutTallCol2BiasWhite = -12.0;
-static const int kLayoutTallPlaylistXBiasClassic = -11; // playlistX = sixth + this (-0xb).
+static const int kLayoutTallPlaylistXBiasClassic = -11;
 static const int kLayoutTallPlaylistXBiasWhite = -3;
-static const int kLayoutTallRandomXBias = -15;    // randomX = (sixth + col2) + this (-0xf).
-static const int kLayoutTallBaseInsetPastel = -2; // base = (bounds.width - 8) - 2.
-static const CGFloat kLayoutTallWhiteStoreInfoInset = -3.0; // storeInfoInsetWidth = width + this.
-static const CGFloat kLayoutTallWhiteWidthExtra = -22.0; // wide white storeInfoInset = width - 22.
-// The fmov at 0xa2f50 is word 0x1e611000, imm8 0x08, which expands to +3.0. The sign was
-// inverted here; the arm's width is bounds.width - 3.0, so 3 + (W - 3) = W exactly.
+static const int kLayoutTallRandomXBias = -15;
+static const int kLayoutTallBaseInsetPastel = -2;
+static const CGFloat kLayoutTallWhiteStoreInfoInset = -3.0;
+static const CGFloat kLayoutTallWhiteWidthExtra = -22.0;
+// @ghidraAddress 0xa2f50
 static const CGFloat kLayoutTallWhiteCollectionOriginXExtra = 3.0;
-static const CGFloat kLayoutTallSettingXClassicPastel = 4.0; // settingButton X (the 4.0 slot).
-static const CGFloat kLayoutTallSettingXWhite = 12.0;        // settingButton X for the tall white.
+static const CGFloat kLayoutTallSettingXClassicPastel = 4.0;
+static const CGFloat kLayoutTallSettingXWhite = 12.0;
 
-// Whether the C random generator has been seeded (from getRandamInt:max:).
 static BOOL g_bRandamIntSeeded = NO;
 
-// The not-yet-reconstructed collaborators this hub creates or messages. They are forward-declared
-// so the hub compiles ahead of their own reconstructions; each is a small overlay or controller.
-
-// The alert and page-slider delegate roles are private: the binary passes self to both, but neither
-// protocol appears in the class's public conformance list.
+// The binary passes self as both delegates, but neither protocol appears in the class's public
+// conformance list.
 @interface RBMenuView () <UIAlertViewDelegate, RBMenuPageSliderDelegate>
 
 /** Build the tall-layout header and the theme 0/1 footer. */
@@ -318,8 +280,7 @@ static BOOL g_bRandamIntSeeded = NO;
     self.prevIndex = 0;
     [self debugAlphaLog];
     if (self.currentPageIndex != 0) {
-        // Record the item roughly centred on the current page so didRotate can restore the
-        // equivalent page after the geometry changes.
+        // didRotate restores the equivalent page from this item once the geometry changes.
         NSInteger pageItemCount = self.layout.pageItemCount;
         self.prevIndex =
             static_cast<int>((static_cast<float>((self.currentPageIndex * pageItemCount)) +
@@ -393,38 +354,28 @@ static BOOL g_bRandamIntSeeded = NO;
     [super layoutSubviews];
 
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
-    // The binary dispatches on the raw iPad idiom flag: a zero flag takes the computed (base/3)
-    // layouts and a non-zero flag takes the fixed design-coordinate layouts. The named theme sets
-    // below keep the binary's own "wide" and "tall" constant names.
     BOOL isPad = IsPad();
     CGSize bounds = self.bounds.size;
 
-    // The per-theme layout metrics. Each branch fills the same set of column and row coordinates,
-    // transcribed from the decompiled soft-float computation, and drives the shared placement
-    // below.
     int footerY = 0;
-    int menuButtonWidth = 0; // A one-third column stride for the setting/rank/store row.
-    int settingRowY = 0;     // The setting/rank/store row Y.
-    int playlistRowY = 0;    // The playlist add/delete/finish row Y.
+    int menuButtonWidth = 0;
+    int settingRowY = 0;
+    int playlistRowY = 0;
     int col1 = 0, col2 = 0;
     int playlistX = 0, randomX = 0;
-    int pageLabelInnerY = 0; // The page-label origin Y (distinct from the side-button row Y).
+    int pageLabelInnerY = 0;
     int sideButtonSize = kLayoutSideButtonSizeTall;
-    CGFloat settingColX = 0.0; // The setting/add/del column X (a design double).
+    CGFloat settingColX = 0.0;
     CGFloat collectionOriginX = 0.0;
     CGFloat collectionOriginY = 0.0;
-    // Zero means keep the size the view was built with. CreateView builds the collection view at
-    // the full bounds, so every arm that does not set these keeps a full-screen grid.
+    // Zero means keep the size the view was built with.
     CGFloat collectionHeight = 0.0;
     CGFloat collectionWidth = 0.0;
-    CGFloat sideButtonRowY = 0.0; // The playlist/random side-button (and info badge) row Y.
+    CGFloat sideButtonRowY = 0.0;
     CGFloat storeInfoInsetWidth = 0.0;
     int editMode = self.playListEditMode;
 
     if (isPad) {
-        // Fixed design-coordinate layouts (the binary's "wide" constants). In every wide theme the
-        // page-label origin Y is the fixed column-0 coordinate, whereas the side-button row Y takes
-        // that fixed coordinate only while editing and is computed from the height otherwise.
         if (thema == RBUserSettingDataThemeClassic) {
             footerY = static_cast<int>((bounds.height - self.footerView.frame.size.height));
             menuButtonWidth =
@@ -512,13 +463,10 @@ static BOOL g_bRandamIntSeeded = NO;
             collectionWidth = bounds.width - kLayoutWideWhiteCollectionOriginX;
             collectionHeight = kLayoutWideCollectionHeight;
             collectionOriginY = kLayoutWideCollectionOriginY;
-            storeInfoInsetWidth = bounds.width + kLayoutTallWhiteWidthExtra; // width - 22.
+            storeInfoInsetWidth = bounds.width + kLayoutTallWhiteWidthExtra;
             sideButtonSize = kLayoutSideButtonSizeWide;
         }
     } else {
-        // Computed (base/3) layouts (the binary's "tall" arithmetic). The Classic and Colette
-        // themes share the same column tail; the Limelight theme uses wider insets and its own
-        // settingButton X.
         if (thema == RBUserSettingDataThemeClassic || thema == RBUserSettingDataThemeColette) {
             int base;
             int rowBase;
@@ -604,12 +552,11 @@ static BOOL g_bRandamIntSeeded = NO;
             settingColX = kLayoutTallSettingXWhite; // 12.0 slot reused as settingButton X.
             collectionOriginX = kLayoutTallWhiteCollectionOriginXExtra;
             collectionOriginY = 0.0;
-            storeInfoInsetWidth = bounds.width + kLayoutTallWhiteStoreInfoInset; // width - 3.
+            storeInfoInsetWidth = bounds.width + kLayoutTallWhiteStoreInfoInset;
             sideButtonSize = kLayoutSideButtonSizeTall;
         }
     }
 
-    // Shared placement of every element from the metrics computed above.
     self.footerView.frame = CGRectMake(
         0, static_cast<double>(footerY), bounds.width, self.footerView.frame.size.height);
     self.settingButton.frame = CGRectMake(settingColX,
@@ -650,15 +597,13 @@ static BOOL g_bRandamIntSeeded = NO;
                    kPageLabelWidth,
                    static_cast<double>(sideButtonSize));
     // The binary passes the view's own bounds width and a recovered height here, not the grid's
-    // current frame. Re-reading the frame left the height at the full bounds CreateView built it
-    // with, so the grid covered the menu button row and swallowed every tap on it.
+    // current frame.
     self.collectionView.frame = CGRectMake(
         collectionOriginX,
         collectionOriginY,
         collectionWidth > 0.0 ? collectionWidth : self.collectionView.frame.size.width,
         collectionHeight > 0.0 ? collectionHeight : self.collectionView.frame.size.height);
 
-    // Information badges sit beside their owning buttons.
     self.playlistInfoView.frame = CGRectMake(static_cast<double>((playlistX + sideButtonSize)),
                                              sideButtonRowY,
                                              self.playlistInfoView.frame.size.width,
@@ -684,7 +629,6 @@ static BOOL g_bRandamIntSeeded = NO;
     self.playlistInfoView.hidden = [RBUserSettingData sharedInstance].infoPlaylist;
     self.randomInfoView.hidden = [RBUserSettingData sharedInstance].infoRandom;
 
-    // The search bar and cancel button span the top strip.
     self.searchBar.frame = CGRectMake(0,
                                       self.searchBar.frame.origin.y,
                                       bounds.width - self.searchCancelButton.frame.size.width,
@@ -695,7 +639,6 @@ static BOOL g_bRandamIntSeeded = NO;
                    self.searchCancelButton.frame.size.width,
                    self.searchCancelButton.frame.size.height);
 
-    // The Colette theme parks its search mascot beside the search bar.
     if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
         self.searchMascotImages.count != 0) {
         CGFloat searchBarX = self.searchBar.frame.origin.x;
@@ -710,7 +653,6 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     if (!isPad) {
-        // Restore the correct page after a size change.
         if (self.prevIndex == 0) {
             CGFloat pageWidth = self.collectionView.frame.size.width;
             if (static_cast<long>(static_cast<int>(self.collectionView.contentOffset.x)) !=
@@ -728,7 +670,6 @@ static BOOL g_bRandamIntSeeded = NO;
         if (self.backgroundScrollView != nil) {
             [self layoutPagingBackground];
 
-            // Wrap the paging offset around the padded ends.
             NSUInteger imageCount = self.backgroundImageCount;
             NSUInteger pageOfBg =
                 (imageCount != 0) ?
@@ -762,20 +703,17 @@ static BOOL g_bRandamIntSeeded = NO;
         return;
     }
     _currentPageIndex = currentPageIndex;
-    // The label is one-based, so the stored zero-based index is shown incremented.
     self.pageLabel.text =
         [NSString stringWithFormat:@"%zd / %zd", self.currentPageIndex + 1, self.maxPage];
 }
 
 - (void)setMaxPage:(NSInteger)maxPage {
-    // The page count is clamped to at least one page.
     _maxPage = (maxPage != 0) ? maxPage : 1;
     self.pageLabel.text =
         [NSString stringWithFormat:@"%zd / %zd", self.currentPageIndex + 1, self.maxPage];
 }
 
 - (void)setShowView:(UIView *)showView {
-    // The previously shown view is torn out of its superview before the swap.
     if (_showView != nil) {
         [_showView removeFromSuperview];
     }
@@ -807,8 +745,6 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)CreateView {
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
     BOOL isPad = IsPad();
-    // Set when an animated or scrolling background (not a plain static texture) is installed. It
-    // gates the mascot and the campaign page-label colour.
     BOOL bgUsesEffectView = NO;
 
     if (thema == RBUserSettingDataThemeColette) {
@@ -846,7 +782,6 @@ static BOOL g_bRandamIntSeeded = NO;
     if (isPad) {
         [self buildHeaderAndFooter:thema];
     } else if (thema == RBUserSettingDataThemeClassic) {
-        // Wide classic theme: a horizontally resizable footer pinned to the bottom.
         UIImage *footer = [UIImage imageWithName:kFooterImageName];
         CGFloat capX = footer.size.width * kFooterCapFraction;
         footer = [footer resizableImageWithCapInsets:UIEdgeInsetsMake(0, capX, 0, capX)];
@@ -859,7 +794,6 @@ static BOOL g_bRandamIntSeeded = NO;
             UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         [self addSubview:self.footerView];
     } else if (thema == RBUserSettingDataThemeLimelight) {
-        // Wide Limelight theme: a short fixed footer strip at the origin.
         self.footerView =
             [[UIImageView alloc] initWithImage:[UIImage imageWithName:kFooterImageName]];
         self.footerView.frame = CGRectMake(0, 0, 0, kFooterLightWideHeight);
@@ -897,8 +831,6 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (BOOL)buildCampaignBackground:(BOOL)isPad {
     /** @ghidraAddress 0xa4f58 */
-    // Load up to ten numbered campaign images; when present they are shuffled into a horizontally
-    // paging scroll view, otherwise the animated effect view is installed instead.
     NSMutableArray *images = [NSMutableArray array];
     for (int i = 1; i <= kCampaignBackgroundMaxImages; ++i) {
         NSString *name = [NSString stringWithFormat:@"%@/%@%d",
@@ -969,7 +901,6 @@ static BOOL g_bRandamIntSeeded = NO;
                         isPad:(BOOL)isPad
      backgroundUsesEffectView:(BOOL)bgUsesEffectView {
     /** @ghidraAddress 0xa5380 */
-    // The six side-menu buttons; the play-list add and delete buttons start disabled.
     for (NSInteger type = 0; type < 6; ++type) {
         RBMenuButton *menuButton = [[RBMenuButton alloc] initWithType:(RBMenuButtonType)type];
         CGRect buttonFrame = menuButton.frame;
@@ -1090,7 +1021,6 @@ static BOOL g_bRandamIntSeeded = NO;
     self.collectionView.dataSource = self;
     [self addSubview:self.collectionView];
 
-    // The mascot exists only when a background effect or scroll view is in use.
     if (bgUsesEffectView) {
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
             self.mascot = [[RBMenuMascot alloc]
@@ -1104,7 +1034,6 @@ static BOOL g_bRandamIntSeeded = NO;
         [self.collectionView addSubview:self.mascot];
     }
 
-    // A grid long press must yield to any existing long-press recognisers.
     UILongPressGestureRecognizer *gridLongPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                       action:@selector(handleLongPressGesture:)];
@@ -1124,7 +1053,6 @@ static BOOL g_bRandamIntSeeded = NO;
         [self bringSubviewToFront:self.footerView];
     }
 
-    // The news ticker starts parked below the bottom edge, then fills the bottom strip.
     self.newsView = [[RBMenuNewsTickerView alloc]
         initWithFrame:CGRectMake(0, self.bounds.size.height + kNewsTickerHeightInset, 0, 0)];
     self.newsView.autoresizingMask =
@@ -1144,7 +1072,6 @@ static BOOL g_bRandamIntSeeded = NO;
     self.coverView.hidden = YES;
     [self addSubview:self.coverView];
 
-    // Swipe down shows the search bar, swipe up hides it.
     UISwipeGestureRecognizer *showSearch =
         [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(showSearchBar)];
     showSearch.numberOfTouchesRequired = 1;
@@ -1163,7 +1090,6 @@ static BOOL g_bRandamIntSeeded = NO;
     self.searchCancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.searchCancelButton.frame = CGRectMake(
         self.frame.size.width - cancelWidth, kSearchBarOriginY, cancelWidth, kSearchBarHeight);
-    // The wide layout uses the large cancel artwork, the tall/variant layout uses the small one.
     NSString *cancelName = (!IsPad()) ? kSearchCancelImageNameWide : kSearchCancelImageNameTall;
     [self.searchCancelButton setBackgroundImage:[UIImage imageWithName:cancelName]
                                        forState:UIControlStateNormal];
@@ -1189,9 +1115,8 @@ static BOOL g_bRandamIntSeeded = NO;
     [self.searchBar setBackgroundImage:[UIImage imageWithName:kSearchBackgroundName]];
     self.searchBar.placeholder = g_pLocalizedSearchMusic;
 #ifdef ENABLE_PATCHES
-    // iOS 13 moved the search bar's editable field into a UISearchTextField that draws its own
-    // translucent grey fill, so the binary's -setBackgroundColor: no longer reaches it and the
-    // field renders grey where the shipped build renders white.
+    // iOS 13 moved the search bar's editable field into a UISearchTextField, so the binary's
+    // -setBackgroundColor: no longer reaches it and the field renders grey.
     if (@available(iOS 13.0, *)) {
         self.searchBar.searchTextField.backgroundColor = UIColor.whiteColor;
     }
@@ -1204,7 +1129,6 @@ static BOOL g_bRandamIntSeeded = NO;
         self.searchArray = [[NSMutableArray alloc] init];
     }
 
-    // The Colette theme parks a mascot off the right edge (alpha 0).
     if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
         NSString *mascotPrefix = kSearchMascotDefaultPrefix;
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
@@ -1274,7 +1198,6 @@ static BOOL g_bRandamIntSeeded = NO;
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW, kShowAnimationDelayNanos), dispatch_get_main_queue(), ^{
           /** @ghidraAddress 0xaa4f8 */
-          // The opening cover animation is done: tear down the cover and route to the next screen.
           [weakSelf.showAnimationTimer invalidate];
           weakSelf.showAnimationTimer = nil;
           [weakSelf.coverView RemoveAlphaAnimation];
@@ -1282,8 +1205,6 @@ static BOOL g_bRandamIntSeeded = NO;
           weakSelf.userInteractionEnabled = YES;
           [weakSelf startNews];
 
-          // Start the menu music, retrying shortly if it has not finished loading, then bring up
-          // the ambient voice and the news information banner.
           if (![[RBBGMManager getInstance] PlayMusic:1.5]) {
               [weakSelf performSelector:@selector(ReplayMusic)
                              withObject:nil
@@ -1292,9 +1213,6 @@ static BOOL g_bRandamIntSeeded = NO;
           SoundEffectManager::GetInstance()->PlayThemedVoice(1);
           [weakSelf showInfomation];
 
-          // On the Colette theme with a pending walkthrough, start the tutorial; otherwise open the
-          // store for a pending pack, campaign, or extend-note id, or show the pending push
-          // notification or web-info page, else fall back to the store button.
           if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
               ([RBTutorialManager needStartTutorialMusicselect] ||
                [RBTutorialManager needStartTutorialCustomize])) {
@@ -1313,7 +1231,6 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)ReplayMusic {
-    // Retry on the next run-loop turn if the BGM has not finished loading yet.
     if (![[RBBGMManager getInstance] PlayMusic:1.5]) {
         [self performSelector:@selector(ReplayMusic)
                    withObject:nil
@@ -1340,10 +1257,7 @@ static BOOL g_bRandamIntSeeded = NO;
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW, kShowAnimationDelayNanos), dispatch_get_main_queue(), ^{
           /** @ghidraAddress 0xaae24 */
-          // Run the caller's completion block, then tear the menu down: stop and clear the
-          // show-animation timer, hide the menu and its cover, and drop the selected-music view.
-          hideAnimation(); // The binary invokes the captured block unconditionally, with no nil
-                           // guard.
+          hideAnimation(); // The binary invokes the captured block with no nil guard.
           [weakSelf.showAnimationTimer invalidate];
           weakSelf.showAnimationTimer = nil;
           weakSelf.hidden = YES;
@@ -1382,7 +1296,6 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (int)getRandamInt:(int)getRandamInt max:(int)max {
-    // Seed the C random generator exactly once, then map rand() into [getRandamInt, max].
     if (!g_bRandamIntSeeded) {
         srand(static_cast<unsigned int>(time(nullptr)));
         g_bRandamIntSeeded = YES;
@@ -1450,7 +1363,6 @@ static BOOL g_bRandamIntSeeded = NO;
     NSMutableArray *musics = [NSMutableArray arrayWithArray:allMusic];
     [self createSearchDictionary];
 
-    // Apply the search-text filter first.
     NSMutableArray *searchResult;
     if (self.searchBar != nil && self.searchArray.count != 0) {
         searchResult = [[NSMutableArray alloc] init];
@@ -1463,8 +1375,7 @@ static BOOL g_bRandamIntSeeded = NO;
         searchResult = [musics mutableCopy];
     }
 
-    // The csel at 0xa939c picks the artist comparator when the setting is 1 and the music one
-    // otherwise, so the sort is by artist on 1 rather than by a plain-versus-custom music name.
+    // @ghidraAddress 0xa939c
     SEL sortSelector = ([RBUserSettingData sharedInstance].menuItemSort == 1) ?
                            @selector(compareArtistNameCustom:) :
                            @selector(compareMusicNameCustom:);
@@ -1477,8 +1388,6 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     if (playlistID == kPlaylistIDHotBonus) {
-        // Keep only the tunes that have never been played: a music is dropped as soon as its score
-        // record shows a non-zero play count on any of the three difficulties.
         NSMutableArray *filtered = [NSMutableArray arrayWithArray:searchResult];
         NSMutableArray *ids = [NSMutableArray array];
         for (MusicData *music in searchResult) {
@@ -1506,7 +1415,6 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     if (playlistID == kPlaylistIDLevel) {
-        // Difficulty-level playlist: keep musics that have any chart at the selected level.
         NSMutableArray *filtered = [NSMutableArray array];
         NSInteger level = [RBUserSettingData sharedInstance].playlistLevel;
         for (MusicData *music in searchResult) {
@@ -1522,7 +1430,6 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     if (playlistID == kPlaylistIDCustom) {
-        // Named custom playlist: keep musics whose ID is in the playlist.
         NSInteger level = [RBUserSettingData sharedInstance].playlistLevel;
         NSDictionary *playlist = [[RBPlaylistManager sharedInstance] playlistAtIndex:level];
         NSArray *listIDs = playlist[@"LIST"];
@@ -1541,7 +1448,6 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     if (playlistID == kPlaylistIDSpecial) {
-        // Special playlist: keep musics that carry SPECIAL chart data.
         NSMutableArray *filtered = [NSMutableArray array];
         for (MusicData *music in searchResult) {
             if (music.spData != nil) {
@@ -1551,8 +1457,7 @@ static BOOL g_bRandamIntSeeded = NO;
         [filtered sortUsingSelector:sortSelector];
         self.musicList = filtered;
     }
-    // A playlist id past the special list matches no branch, so the binary leaves the previous
-    // music list in place rather than falling back to the unfiltered search result.
+    // A playlist id past the special list matches no branch, leaving the previous list in place.
 }
 
 #pragma mark - Store view controller
@@ -1560,11 +1465,10 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)RemoveStoreViewController {
     self.storeViewController = nil;
     if ([[RBBGMManager getInstance] isPushMusic]) {
-        // The fade is 0.2s, loaded from the pool at 0x2ec6b4 by the ldr s0 at 0xab8e8, not zero.
+        // @ghidraAddress 0x2ec6b4
         [[RBBGMManager getInstance] StopMusic:0.2f];
         [[RBBGMManager getInstance] popMusic];
     }
-    // Retry resuming the menu BGM up to 101 times until it succeeds.
     int attempt = 101;
     do {
         if ([[RBBGMManager getInstance] PlayMusic:1.5]) {
@@ -1595,7 +1499,6 @@ static BOOL g_bRandamIntSeeded = NO;
         switch ([RBUserSettingData sharedInstance].thema) {
         case RBUserSettingDataThemeLimelight:
             if (IsPad()) {
-                // Centre a fixed-size anchor rectangle on the button's centre.
                 CGPoint center = self.settingButton.center;
                 buttonFrame = CGRectMake(center.x + kSettingAnchorOffsetX,
                                          self.settingButton.center.y + kSettingAnchorOffsetY,
@@ -1610,7 +1513,6 @@ static BOOL g_bRandamIntSeeded = NO;
             buttonFrame = self.settingButton.frame;
             break;
         default:
-            // The binary's fourth arm: an unrecognised theme anchors on CGRectZero.
             buttonFrame = CGRectZero;
             break;
         }
@@ -1628,7 +1530,6 @@ static BOOL g_bRandamIntSeeded = NO;
         [self.settingButton removeFlashEffect];
         [self.settingView OpenView];
     } else {
-        // Already shown: ignore the toggle while a tutorial overlay is up, else close it.
         if (self.tutorialView != nil) {
             return;
         }
@@ -1673,12 +1574,10 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (void)showSearchView {
     if (!IsPad()) {
-        // Phone build: push a full map view controller onto the navigation stack.
         self.mapViewController = [[RBSearchMapViewController alloc] init];
         [[[AppDelegate appDelegate] navigationController] pushViewController:self.mapViewController
                                                                     animated:YES];
     } else {
-        // Pad build: overlay the search view in place.
         RBSearchView *view = [[RBSearchView alloc] initWithFrame:self.bounds];
         view.musicMenuView = self;
         view.autoresizingMask = kAutoresizingFull;
@@ -1700,12 +1599,10 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (void)showNotificationPageView {
     if (!IsPad()) {
-        // Phone build: push a full web page view controller.
         self.webViewController = [[RBNotificationPagePhoneViewController alloc] init];
         [[[AppDelegate appDelegate] navigationController] pushViewController:self.webViewController
                                                                     animated:YES];
     } else {
-        // Pad build: overlay the notification page in place.
         RBNotificationPageView *view = [[RBNotificationPageView alloc] initWithFrame:self.bounds];
         view.musicMenuView = self;
         view.autoresizingMask = kAutoresizingFull;
@@ -1726,12 +1623,10 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (void)showTermView {
     if (!IsPad()) {
-        // Phone build: push a full terms-of-use view controller.
         self.termViewController = [[RBTermPhoneViewController alloc] init];
         [[[AppDelegate appDelegate] navigationController] pushViewController:self.termViewController
                                                                     animated:YES];
     } else {
-        // Pad build: overlay the terms view in place.
         RBTermView *view = [[RBTermView alloc] initWithFrame:self.bounds];
         view.musicMenuView = self;
         view.autoresizingMask = kAutoresizingFull;
@@ -1750,7 +1645,6 @@ static BOOL g_bRandamIntSeeded = NO;
 #pragma mark - Background effect
 
 - (void)startBGEffect {
-    // The animated background and mascot only exist in the Colette theme.
     if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
         if (self.bgEffectView != nil) {
             [self.bgEffectView startAnimation];
@@ -1790,12 +1684,10 @@ static BOOL g_bRandamIntSeeded = NO;
     [self hideSettingView];
     [self releaseSelectMusic];
     if (!IsPad()) {
-        // Phone build: dismiss any modally-presented controller.
         [self.viewController dismissViewControllerAnimated:NO
                                                 completion:^{
                                                 }];
     } else {
-        // Pad build: dismiss the playlist popover instead.
         [self.viewController.playlistPopoverController dismissPopoverAnimated:NO];
     }
     if (!IsPad() && self.mapViewController != nil) {
@@ -1805,14 +1697,11 @@ static BOOL g_bRandamIntSeeded = NO;
         [self.webViewController forceClose];
     }
 #ifdef ENABLE_PATCHES
-    // Open the store without asking the server anything first. The request below exists only to
-    // compare the accepted terms version against the server's, and a patched build answers
-    // -needUpdateTerms with NO regardless, so it decides nothing. Leaving it in place makes the
-    // whole store unreachable offline, including the manage tab, which is entirely local.
+    // The terms request below only compares versions and a patched build ignores the result, so
+    // skipping it keeps the store reachable offline.
     [self StoreOpen];
     return;
 #else
-    // POST the current region to the terms endpoint and check the accepted terms version.
     NSDictionary *body = @{kTermsRequestKeyTarget : GetRegionCode()};
     NSData *postData = [Downloader dictionaryToJsonData:body];
     __weak RBMenuView *weakSelf = self;
@@ -1822,13 +1711,9 @@ static BOOL g_bRandamIntSeeded = NO;
     [weakSelf.termDownloader
         startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x35c040 */
-          // Global no-op proceed block.
         }
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0xad2c0 */
-          // Walk the terms list; for the current terms record (type 1) compare the accepted version
-          // against the server's, and either prompt to re-accept the updated terms or open the
-          // store.
           for (NSDictionary *entry in [downloader getDataInJSON][kTermsKeyList]) {
               if ([entry[kTermsKeyType] integerValue] != 1) {
                   continue;
@@ -1850,7 +1735,6 @@ static BOOL g_bRandamIntSeeded = NO;
         }
         failure:^(Downloader *downloader) {
           /** @ghidraAddress 0xad844 */
-          // Show the network-error alert on the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{
             /** @ghidraAddress 0xad8bc */
             [UIAlertView showNetworkErrorWithDelegate:weakSelf];
@@ -1861,7 +1745,6 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (void)StoreOpen {
     if (self.storeViewController == nil) {
-        // First open: create the store tab controller and push it.
         self.storeViewController = [[RBStoreTabController alloc] init];
         self.storeViewController.musicMenuView = self;
         SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
@@ -1879,7 +1762,6 @@ static BOOL g_bRandamIntSeeded = NO;
         [self stopNews];
         [self stopBGEffect];
     } else {
-        // Already created: only re-open if a pending store target is queued.
         if ([[AppDelegate appDelegate] getPackIDForOpenStore] == nil &&
             [[AppDelegate appDelegate] getCampaignIDForOpenStore] == nil &&
             [[AppDelegate appDelegate] getExtendNotePIDForOpenStore] == nil) {
@@ -2009,7 +1891,6 @@ static BOOL g_bRandamIntSeeded = NO;
         [self.newsBannerTimer invalidate];
         self.newsBannerTimer = nil;
     }
-    // On error, retry fetching the news banner after a fixed delay.
     self.newsBannerTimer = [NSTimer timerWithTimeInterval:kNewsBannerDefaultInterval
                                                    target:self
                                                  selector:@selector(startNewsFromTimer)
@@ -2021,7 +1902,6 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)startNews {
     if (self.newsGetTime != nil &&
         self.newsGetTime.timeIntervalSinceNow > kNewsCacheValiditySeconds) {
-        // The cached news is still fresh: just advance to the next text.
         [self showNextNewsText];
         return;
     }
@@ -2108,8 +1988,6 @@ static BOOL g_bRandamIntSeeded = NO;
     NSArray *musicDataArray = [[RBMusicManager getInstance] getMusicDataArray];
     self.searchDictionary = [[NSMutableDictionary alloc] init];
     for (MusicData *musicData in musicDataArray) {
-        // Normalise the name and artist: strip spaces, then fold kana and width so that
-        // hiragana/katakana and full/half-width variants all match.
         NSMutableString *nameKey =
             [[musicData.musicName stringByReplacingOccurrencesOfString:@" "
                                                             withString:@""] mutableCopy];
@@ -2171,7 +2049,6 @@ static BOOL g_bRandamIntSeeded = NO;
         return;
     }
     if (self.pushNotificationView != nil) {
-        // Abort if the push-notification view has slid far enough to overlap.
         if (self.pushNotificationView.y >
             self.pushNotificationView.height * kSearchPushNotificationOverlapFactor) {
             return;
@@ -2213,7 +2090,6 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)hideSearchBar {
-    // Only hide while the search bar is on-screen (non-negative Y) and nothing else is shown.
     if (self.searchBar.frame.origin.y >= 0.0 && self.showView == nil && self.selectedView == nil &&
         self.settingView == nil) {
         SoundEffectManager::GetInstance()->PlayThemedSoundEffect(
@@ -2290,7 +2166,6 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (BOOL)matchTitle:(MusicData *)matchTitle {
     NSArray *terms = self.searchDictionary[@(matchTitle.MusicID)];
-    // Every search token must be found somewhere in this title's term list.
     for (NSString *token in self.searchArray) {
         BOOL tokenFound = NO;
         for (NSString *term in terms) {
@@ -2331,14 +2206,11 @@ static BOOL g_bRandamIntSeeded = NO;
             ![self.playlistEditSet containsObject:@(configureCell.musicData.MusicID)];
     }
 
-    // While the grid is decelerating the artwork and score fetch is skipped.
     if (self.collectionView.isDecelerating) {
         return;
     }
 
     if (configureCell.musicData != nil) {
-        // Decode the artwork off the main thread, then hand the loaded image to the main queue to
-        // fade into the cell.
         __weak RBMusicCell *weakCell = configureCell;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
           /** @ghidraAddress 0xb28d0 */
@@ -2348,8 +2220,7 @@ static BOOL g_bRandamIntSeeded = NO;
           }
           dispatch_async(dispatch_get_main_queue(), ^{
             /** @ghidraAddress 0xb2a04 */
-            // Apply the artwork only when the list is not mid-scroll, the cell still shows the same
-            // song, and it has no image yet, to avoid dropping stale artwork onto a reused cell.
+            // Guards against dropping stale artwork onto a reused cell.
             if (!self.collectionView.isDecelerating &&
                 [weakCell.titleLabel.text isEqualToString:weakCell.musicData.musicName] &&
                 weakCell.artworkImageView.image == nil) {
@@ -2418,7 +2289,6 @@ static BOOL g_bRandamIntSeeded = NO;
         CGFloat width = self.backgroundScrollView.width;
         NSUInteger currentBg = self.backgroundCurrentPage;
         CGFloat offsetX = self.backgroundScrollView.contentOffset.x;
-        // Snap the background back to its page origin if it drifted off by more than the epsilon.
         if (fabs(width * static_cast<CGFloat>((currentBg + 1)) - offsetX) >
             g_dMascotMoveAnimDuration) {
             [self.backgroundScrollView
@@ -2542,7 +2412,6 @@ static BOOL g_bRandamIntSeeded = NO;
     if (static_cast<int>(pageWidth) != 0) {
         remainder = static_cast<int>(offsetX) % static_cast<int>(pageWidth);
     }
-    // If the resting offset is within the middle band of a page, snap to the nearest page.
     if (static_cast<CGFloat>((static_cast<float>(pageWidth) * kPageSnapLowFraction)) <
             static_cast<CGFloat>(remainder) &&
         static_cast<CGFloat>(remainder) <
@@ -2568,7 +2437,6 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)touchesEndedFromRBCollectionView:(NSSet *)touches withEvent:(UIEvent *)event {
-    // Dismiss the keyboard only while the search bar is on-screen (non-negative Y).
     if (self.searchBar.frame.origin.y < 0.0) {
         return;
     }
@@ -2651,7 +2519,6 @@ static BOOL g_bRandamIntSeeded = NO;
         self.tutorialView = nil;
     }
     if (![RBTutorialManager needStartTutorialMusicselect]) {
-        // Customize tutorial: skip if the customize status was already recorded as done.
         if ([[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStatusCustomize] != 0) {
             return;
         }
@@ -2662,7 +2529,6 @@ static BOOL g_bRandamIntSeeded = NO;
         [self addSubview:view];
         self.tutorialView = view;
     } else {
-        // Music-select tutorial: build the overlay and clear any active playlist selection.
         RBMenuTutorialView *view = [[RBMenuTutorialView alloc] initWithFrame:self.frame];
         [view setupView];
         view.musicMenuView = self;
@@ -2684,7 +2550,6 @@ static BOOL g_bRandamIntSeeded = NO;
         return;
     }
     if ([RBTutorialManager needStartTutorialMusicselect]) {
-        // Music-select tutorial: only start once a placeholder music cell is on screen.
         if ([self getTutorialMusicCell] != nil) {
             if (self.tutorialView == nil) {
                 [self preStartTutorial];
@@ -2693,7 +2558,6 @@ static BOOL g_bRandamIntSeeded = NO;
                                                 withRootView:nil];
         }
     } else {
-        // Customize tutorial: skip if the customize status was already recorded as done.
         if ([[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStatusCustomize] != 0) {
             return;
         }
@@ -2737,7 +2601,6 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)setPastelForTutorialEnd {
-    // The mascot stays hidden while the search mascot is shown at the end of a tutorial step.
     self.mascot.alpha = kAlphaHidden;
     self.searchMascot.alpha = kAlphaOpaque;
 }
@@ -2865,11 +2728,9 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (BOOL)setCurrentMenuMode:(int)currentMenuMode {
-    // The bound test is unsigned in the binary, so a negative mode takes the second arm and is
-    // rejected rather than treated as an add or delete request.
+    // The bound test is unsigned in the binary, so a negative mode is rejected by the second arm.
     if (static_cast<unsigned int>(currentMenuMode) <
         static_cast<unsigned int>(kMenuModePlaylistFinished)) {
-        // Entering add or delete requires the previous mode to be the resting mode.
         if (self.playListEditMode != kMenuModePlaylistFinished) {
             return NO;
         }
@@ -2982,7 +2843,6 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (void)layoutSearchBarActive:(BOOL)active {
     if (active) {
-        // Show layout: dock the search bar at the top strip.
         self.searchBar.frame =
             CGRectMake(0, 0, self.searchBar.frame.size.width, self.searchBar.frame.size.height);
         CGRect cancelFrame = self.searchCancelButton.frame;
@@ -2999,7 +2859,6 @@ static BOOL g_bRandamIntSeeded = NO;
         }
         self.mascot.alpha = kAlphaHidden;
     } else {
-        // Hide layout: park the search bar off-screen above the top edge.
         self.searchBar.frame = CGRectMake(0,
                                           -self.searchBar.frame.size.height,
                                           self.searchBar.frame.size.width,
@@ -3010,8 +2869,6 @@ static BOOL g_bRandamIntSeeded = NO;
                                                    cancelFrame.size.width,
                                                    cancelFrame.size.height);
         if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
-            // The mascot parks off the right edge and half its height above its docked row, so it
-            // slides out as it fades rather than fading in place.
             CGSize mascotSize = [self.searchMascotImages[0] size];
             self.searchMascot.frame =
                 CGRectMake(self.width + mascotSize.width,
@@ -3028,8 +2885,7 @@ static BOOL g_bRandamIntSeeded = NO;
     CGFloat delta = self.height - self.pageLabel.y;
     CGFloat down = entering ? delta : -delta;
 
-    // These controls slide down when entering edit mode and back up when leaving. The random
-    // information badge is only repositioned on the way in, matching the binary's two blocks.
+    // The random information badge is only repositioned on the way in, matching the binary.
     NSMutableArray<UIView *> *shiftDown = [NSMutableArray arrayWithObjects:self.settingButton,
                                                                            self.rankButton,
                                                                            self.storeButton,
@@ -3045,7 +2901,6 @@ static BOOL g_bRandamIntSeeded = NO;
         view.frame = CGRectMake(view.x, view.y + down, view.width, view.height);
     }
 
-    // The playlist add, delete, and finish controls move the opposite way.
     UIView *shiftUp[] = {self.playlistAddButton, self.playlistDelButton, self.playlistFinButton};
     for (NSUInteger i = 0; i < sizeof(shiftUp) / sizeof(shiftUp[0]); ++i) {
         UIView *view = shiftUp[i];

@@ -8,10 +8,8 @@
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkUtilities.h"
 
-// HTTP method that selects the form-encoded POST body path; any other value uses the GET query.
 static NSString *const kApplilinkWebAPIPostMethod = @"POST";
 
-// Form-encoding constants for the POST body.
 static NSString *const kApplilinkWebAPIContentTypeHeaderField = @"Content-Type";
 static NSString *const kApplilinkWebAPIFormURLEncodedContentType =
     @"application/x-www-form-urlencoded";
@@ -19,39 +17,27 @@ static NSString *const kApplilinkWebAPIQueryPairFormat = @"%@=%@";
 static NSString *const kApplilinkWebAPIQueryArrayPairFormat = @"%@[]=%@";
 static NSString *const kApplilinkWebAPIQueryPairSeparator = @"&";
 
-// The parameters every Applilink request carries. Both pairs are built inline by the
-// dictionaryWithObjectsAndKeys: at 0x221184, whose stack holds four objects and an explicit nil.
+// @ghidraAddress 0x221184
 static NSString *const kApplilinkWebAPICarrierKey = @"cr";
 static NSString *const kApplilinkWebAPICarrierValue = @"0";
 static NSString *const kApplilinkWebAPIFormatKey = @"format";
 static NSString *const kApplilinkWebAPIFormatValue = @"json";
 
-// Endpoint whose presence in a request URL marks it as the session-regeneration request; that
-// request is short-circuited rather than blocked on the session gate.
 static NSString *const kApplilinkWebAPISessionRegeneratePath = @"/app/auth/sessionRegenerate.php";
 
-// NSUserDefaults key holding the reward contents-server URL, matched to recognise a contents-server
-// response.
 static NSString *const kApplilinkWebAPIRewardAppliURLKey = @"ApplilinkReward.appliURL";
 
-// Keys used when building the session-regeneration short-circuit result and the contents-server
-// error user-info dictionaries.
 static NSString *const kApplilinkWebAPIStatusKey = @"status";
 static NSString *const kApplilinkWebAPIErrorCodeKey = @"error_code";
 static NSString *const kApplilinkWebAPIResponseKey = @"response";
 
-// Contents-server first-line status values.
 static NSString *const kApplilinkWebAPIContentsStatusOK = @"1";
 static NSString *const kApplilinkWebAPIContentsStatusMalformed = @"2";
 
-// Format that renders a numeric HTTP status code into the error user-info string.
 static NSString *const kApplilinkWebAPIStatusCodeFormat = @"%ld";
 
-// GCD queue label for the asynchronous request timer.
 static const char *const kApplilinkWebAPIQueueLabel = "requestAsynchronousWithURL";
 
-// Applilink network error codes delivered on the various failure paths. These are the raw integers
-// the binary passes to +[ApplilinkNetworkError localizedApplilinkErrorWithCode:].
 enum {
     kApplilinkNetworkErrorCodeConnectionFailed = 1003,
     kApplilinkNetworkErrorCodeContentsMalformed = 1006,
@@ -61,46 +47,34 @@ enum {
     kApplilinkNetworkErrorCodeMalformedJSON = 1000,
 };
 
-// Session-regeneration success payload: the reward server that has already granted a session
-// receives a synthesised result with this reward point total.
 static const NSInteger kApplilinkWebAPISessionRegenerateResult = 100000000;
 
-// Retry policy: the request is attempted at most twice before the counter is forced to the cap.
 static const int kApplilinkWebAPIRetryCap = 2;
 
-// HTTP status codes in the 4xx and 5xx server-error ranges are retried.
 enum {
     kApplilinkWebAPIServerErrorStatusBase4xx = 400,
     kApplilinkWebAPIServerErrorStatusBase5xx = 500,
     kApplilinkWebAPIServerErrorStatusSpan = 100,
 };
 
-// Synchronous request timeout, in seconds.
 static const float kApplilinkWebAPISynchronousTimeout = 10.0f;
 
-// Interval, in seconds, that an asynchronous request sleeps while polling the session gate.
 static const NSTimeInterval kApplilinkWebAPISessionWaitPollInterval = 0.1;
 
-// Extra seconds added to the retry timer beyond the request's own timeout.
 static const double kApplilinkWebAPIRetryTimerSlack = 2.0;
 
-// Minimum operating-system version that supports the network-retry policy.
 static const float kApplilinkWebAPIRetryMinimumOSVersion = 6.0f;
 
-// Delay, in seconds, before the armed session gate auto-clears.
 static const NSTimeInterval kApplilinkWebAPISessionConnectionWaitTimeout = 10.0;
 
-// Session state shared by every ApplilinkWebAPI request.
-//
-// @ghidraAddress 0x3df698 -init sets this, +retryCancel clears it.
+// @ghidraAddress 0x3df698
 static BOOL g_bApplilinkWebAPIRetryActive;
-// @ghidraAddress 0x3df699 +setSessionConnectionWait: sets it, +calcelSessionConnection clears it.
+// @ghidraAddress 0x3df699
 static BOOL g_bApplilinkWebAPISessionConnectionWait;
-// @ghidraAddress 0x3df69a +setSessionStatus: sets it; gates the session-regeneration short circuit.
+// @ghidraAddress 0x3df69a
 static BOOL g_bApplilinkWebAPISessionStatus;
 
 @implementation ApplilinkWebAPI {
-    // The binary keeps this as a plain, non-property @c int ivar without an underscore.
     int retryCount;
 }
 
@@ -116,8 +90,7 @@ static BOOL g_bApplilinkWebAPISessionStatus;
 }
 
 - (void)dealloc {
-    // The binary defines -dealloc as a bare super chain; under ARC the runtime inserts that chain,
-    // so the body is empty.
+    // The binary's -dealloc is a bare super chain, which ARC inserts.
 }
 
 #pragma mark Request building
@@ -477,8 +450,6 @@ static BOOL g_bApplilinkWebAPISessionStatus;
         return response;
     }
 
-    // The body is line-delimited: line 0 carries the status field and is captured into
-    // @c firstLine, and every later line is appended into the accumulator string.
     __block int lineIndex = 0;
     __block NSString *firstLine = nil;
     NSMutableString *accumulator = [[NSMutableString alloc] init];

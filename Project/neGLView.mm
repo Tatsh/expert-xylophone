@@ -8,29 +8,20 @@
 #import "GameSystem/src/OpenGL/neGLES.h"
 #import "touchmanager.h"
 
-// The most recently created GL view. The binary keeps a single file-scope pointer that
-// -initWithFrame: writes last and -dealloc clears; +GetInstance returns it. Only one instance is
-// ever live.
 static neGLView *g_pGLView = nil;
 
 @interface neGLView ()
 
-// The backing EAGL context that owns the drawable and its GL objects.
 @property(nonatomic, strong, nullable) EAGLContext *glContext;
 
 @end
 
 @implementation neGLView {
-    // The engine GL ES backend that owns the framebuffer helpers. It is the shared render-state
-    // singleton, not a per-view object.
     neGLESRenderer *m_GLInterface;
-    // The GL framebuffer object bound while drawing.
     GLuint m_DefaultFramebuffer;
-    // The GL colour renderbuffer whose storage tracks the layer's drawable.
     GLuint m_ColorRenderbuffer;
-    // The GL_RENDERBUFFER_OES bind target constant used when presenting and resizing.
+    // The GL_RENDERBUFFER_OES bind target constant, despite the name.
     GLuint m_RenderBufferID;
-    // The current front-buffer size, queried from the renderbuffer after each layout.
     GLint m_FrontBufferWidth;
     GLint m_FrontBufferHeight;
 }
@@ -107,8 +98,7 @@ static neGLView *g_pGLView = nil;
                            fromDrawable:static_cast<CAEAGLLayer *>(self.layer)];
     m_GLInterface->GetRenderbufferWidth(&m_FrontBufferWidth);
     m_GLInterface->GetRenderbufferHeight(&m_FrontBufferHeight);
-    neGLESRenderer::IsFramebufferComplete(); // The completeness check is issued for its GL side
-                                             // effect only.
+    neGLESRenderer::IsFramebufferComplete(); // Issued for its GL side effect only.
 
     if ([self.delegate respondsToSelector:@selector(LayoutedGLView:)]) {
         [self.delegate LayoutedGLView:self];
@@ -132,14 +122,12 @@ static neGLView *g_pGLView = nil;
 
 - (void)SetDefaultFrameBuffer {
     /** @ghidraAddress 0x3a4d8 */
-    // The binary body is empty: this build binds the framebuffer once at initialisation and leaves
-    // the hook as a no-op.
+    // The binary's body is empty: the framebuffer is bound once at initialisation.
 }
 
 - (void)SetDefaultColorBuffer {
     /** @ghidraAddress 0x3a4dc */
-    // The binary body is empty: this build binds the colour renderbuffer once at initialisation and
-    // leaves the hook as a no-op.
+    // The binary's body is empty: the colour renderbuffer is bound once at initialisation.
 }
 
 - (BOOL)Present {
@@ -151,14 +139,13 @@ static neGLView *g_pGLView = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     /** @ghidraAddress 0x3a550 */
-    // The owning-view key pair is this view's frame size, correlating each touch to the GL surface.
     CGRect frame = self.frame;
-    int key1 = static_cast<int>(CGRectGetWidth(frame));
-    int key2 = static_cast<int>(CGRectGetHeight(frame));
+    int viewWidth = static_cast<int>(CGRectGetWidth(frame));
+    int viewHeight = static_cast<int>(CGRectGetHeight(frame));
     for (UITouch *touch in touches) {
         CGPoint location = [touch locationInView:self];
         TouchManager::FetchSharedSingleton()->AddTouchPoint(
-            static_cast<int>(location.x), static_cast<int>(location.y), key1, key2);
+            static_cast<int>(location.x), static_cast<int>(location.y), viewWidth, viewHeight);
     }
 }
 
@@ -178,7 +165,6 @@ static neGLView *g_pGLView = nil;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     /** @ghidraAddress 0x3a8b0 */
     if (touches.count == [event touchesForView:self].count) {
-        // Every touch on this view ended at once: mark them all ended in a single pass.
         TouchManager::FetchSharedSingleton()->MarkAllTouchesEnded();
         return;
     }

@@ -9,18 +9,6 @@
 
 #pragma once
 
-//
-//  linear_tween.h
-//  REFLEC BEAT plus
-//
-//  A recurring engine idiom: a five-float linear-interpolation channel embedded in a UI layer
-//  (a start value, an end value, a duration, the elapsed time, and the current interpolated value).
-//  Many layers advance one such channel per frame; each owning layer has its own header.
-//
-//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
-//  the program image base.
-//
-
 /**
  * A five-float linear-interpolation channel: current = start + t*(end - start), where
  * t = elapsed / duration clamped to 1.

@@ -12,7 +12,7 @@
 
 constexpr int kColorSlotCount = 3;
 
-// Any colour value other than these two is the "both" slot, resolved with a coin flip later.
+// Any colour value other than these two is the "both" slot.
 enum {
     kColorSlot0 = 0,
     kColorSlot1 = 1,

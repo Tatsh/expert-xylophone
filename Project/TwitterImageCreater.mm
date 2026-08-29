@@ -1,16 +1,3 @@
-//
-//  TwitterImageCreater.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class TwitterImageCreater). Verified
-//  against the arm64 disassembly: the CoreGraphics compositing helpers take their coordinates and
-//  scale in VFP registers, so the decompiler drops several float parameters and scrambles the
-//  CGContextDrawImage rectangle; the true signatures and the rectangle layout
-//  {x, m_Height - y - scale*h, scale*w, scale*h} were recovered from the register reads. The
-//  per-element layout coordinates and asset names come from the binary's static position tables and
-//  the twitter/tw_* image set.
-//
-
 #import "TwitterImageCreater.h"
 
 #import <CoreGraphics/CoreGraphics.h>
@@ -20,41 +7,29 @@
 #import "UIImage+RB.h"
 #import "engineruntime.h"
 
-// The number of score columns: index 0 is the local player, index 1 is the rival.
 static const int kScoreColumnCount = 2;
 
-// The bits per component of the RGBA compositing context.
 static const size_t kBitsPerComponent = 8;
 
-// The number of bytes per pixel in the RGBA compositing context.
 static const int kBytesPerPixel = 4;
 
-// The theme identifier whose result layout uses the alternate level-badge coordinates.
 static const int kThemaAlternateLayout = 2;
 
-// The game mode that draws the rival-battle two-column layout.
 static const int kGameTypeRivalBattle = 1;
 
-// The player-side values that select which badge a column draws.
 static const int kColorSideYou = 0;
 static const int kColorSideRival = 1;
 
-// The maximum clear-rank value; the rank badge asset number counts down from it.
 static const int kMaxClearRank = 5;
 
-// The digit count drawn for an achievement rate, and the factor that turns the rate into that many
-// fixed-point digits.
 // @ghidraAddress 0x2f8540 (g_flAchievementRateHashScale)
 static const float kAchievementRateHashScale = 1000.0f;
 static const int kAchievementRateDigits = 4;
 
-// The vertical nudge applied to the leading dot tile drawn beside a number.
 static const int kDotTileVerticalOffset = 8;
 
-// The largest single-digit value; digit counting stops once the remaining value is no larger.
 static const int kMaxSingleDigit = 9;
 
-// The twitter share-image asset names.
 static NSString *const kAssetBackground = @"12_twitter/tw_bg";
 static NSString *const kAssetScorePlus = @"12_twitter/tw_sc_p";
 static NSString *const kAssetLine = @"12_twitter/tw_line";
@@ -71,8 +46,6 @@ static NSString *const kAssetRivalBadgeAlt = @"12_twitter/tw_r_rival";
 static NSString *const kAssetDigitFormat = @"12_twitter/tw_sc_%d";
 static NSString *const kAssetRankFormat = @"12_twitter/tw_ran_%d";
 
-// The difficulty-badge asset names, indexed by grade. The binary keeps them as a static table of
-// literals and indexes it, rather than formatting a name at the point of use.
 // @ghidraAddress 0x35b4e0
 static NSString *const kAssetDifficultyNames[] = {
     @"12_twitter/tw_dif_1",
@@ -81,12 +54,8 @@ static NSString *const kAssetDifficultyNames[] = {
     @"12_twitter/tw_dif_4",
 };
 
-// The number of levels one difficulty grade can carry, which is the width of a row of the
-// level-badge table.
 constexpr int kLevelsPerGrade = 15;
 
-// The level-badge asset names, indexed by grade and then by the zero-based level. As with the
-// difficulty badges, the binary indexes a static table rather than formatting a name.
 // @ghidraAddress 0x35b500
 static NSString *const kAssetLevelNames[][kLevelsPerGrade] = {
     {@"12_twitter/tw_lev_b_1",
@@ -151,8 +120,6 @@ static NSString *const kAssetLevelNames[][kLevelsPerGrade] = {
      @"12_twitter/tw_lev_s_15"},
 };
 
-// One score column's layout coordinates. The binary keeps these as a table of raw doubles indexed
-// by the column, at a stride of 0x1b0 bytes per column.
 typedef struct {
     CGPoint icon;
     CGPoint combo;
@@ -168,7 +135,6 @@ typedef struct {
     CGPoint maxCombo;
 } TwitterImageCreaterColumnLayout;
 
-// The two per-column layouts, recovered from the static position table at raw 0x1002fea70.
 // @ghidraAddress 0x2fea70
 static const TwitterImageCreaterColumnLayout kColumnLayouts[] = {
     {
@@ -201,9 +167,6 @@ static const TwitterImageCreaterColumnLayout kColumnLayouts[] = {
     },
 };
 
-// The composite-element coordinates. The binary copies these fixed constants from rodata into a
-// global table at start-up (InitializeParticleOffsetTable, raw 0x100088f3c); the source values are
-// inlined here since they never change.
 // @ghidraAddress 0x2fe9f0
 static const CGPoint g_TwitterTitlePos = {80.0, 62.0};
 static const CGPoint g_TwitterArtistPos = {80.0, 89.0};
@@ -216,42 +179,31 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
 
 @interface TwitterImageCreater ()
 
-// Allocates the off-screen RGBA bitmap context of the given pixel dimensions. The binary's selector
-// really is createContext:: with an unnamed second piece, so the spelling below is correct even
-// though it reads like the parameter name was meant to be part of it.
+// The binary's selector really is createContext:: with an unnamed second piece.
 // @ghidraAddress 0x87ae4
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-selector-name"
 - (void)createContext:(int)width:(int)height;
 #pragma clang diagnostic pop
-// Draws an image with the given scale, bottom-left anchored at (x, y) in flipped context space.
 // @ghidraAddress 0x87ba0
 - (void)drawImage:(nullable UIImage *)image X:(int)x Y:(int)y Scale:(float)scale;
-// Draws an image at unit scale, bottom-left anchored at (x, y).
 // @ghidraAddress 0x87c78
 - (void)drawImage:(nullable UIImage *)image X:(int)x Y:(int)y;
-// Loads the named asset and draws it at the current scale, anchored at (x, y).
 // @ghidraAddress 0x87d40
 - (void)drawImageFileName:(nullable NSString *)name X:(int)x Y:(int)y;
-// Loads the named asset and draws it at the current scale, anchored at a layout point.
 // @ghidraAddress 0x87dd4
 - (void)drawImageFileName:(nullable NSString *)name Position:(CGPoint)position;
-// Draws text at a layout point using a font and colour, in flipped context space.
 // @ghidraAddress 0x87e68
 - (void)drawText:(nullable NSString *)text
         Position:(CGPoint)position
             Font:(nullable UIFont *)font
            Color:(nullable UIColor *)color;
-// Draws a right-aligned run of digit tiles for a number, optionally leading with a dot tile.
 // @ghidraAddress 0x87fa4
 - (void)drawNumber:(int)number Position:(CGPoint)position Keta:(int)keta Dot:(BOOL)dot;
-// Returns the number of significant decimal digits in a value, at least one.
 // @ghidraAddress 0x881fc
 - (int)getDigitNum:(int)number;
-// Draws one score column: its badge, combo, rank, and per-judgement counts.
 // @ghidraAddress 0x88244
 - (void)drawScore:(int)side Pos:(int)pos Dot:(BOOL)dot;
-// Releases the bitmap context, colour space, and backing buffer.
 // @ghidraAddress 0x87848
 - (void)reset;
 
@@ -419,7 +371,6 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
     /** @ghidraAddress 0x87e68 */
     UIGraphicsPushContext(m_Context);
     [color set];
-    // The context is flipped to draw the text upright, then restored afterwards.
     CGContextTranslateCTM(m_Context, position.x, m_Height - position.y);
     CGContextScaleCTM(m_Context, 1.0, -1.0);
     [text drawAtPoint:CGPointZero withFont:font];

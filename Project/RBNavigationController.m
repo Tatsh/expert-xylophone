@@ -1,12 +1,3 @@
-//
-//  RBNavigationController.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBNavigationController). Verified
-//  against the arm64 disassembly: the rotation overrides forward to -visibleViewController and the
-//  status-bar override returns a constant.
-//
-
 #import "RBNavigationController.h"
 
 @implementation RBNavigationController

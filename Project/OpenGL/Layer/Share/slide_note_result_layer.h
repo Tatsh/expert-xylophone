@@ -112,8 +112,6 @@ private:
      */
     SlideNoteResultLayer();
 
-    // One queued result mark: whether the slot is in use, its judge, and its position. Laid out on
-    // a 0x14-byte stride in the queue.
     struct ResultMark {
         bool bActive = {};       /*!< Whether the slot holds a queued result mark. +0x00 */
         int nJudge = {};         /*!< The slide point's judge grade. +0x04 */

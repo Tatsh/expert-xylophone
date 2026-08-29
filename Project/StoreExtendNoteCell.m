@@ -1,7 +1,5 @@
 #import "StoreExtendNoteCell.h"
 
-// The two product views are a fixed 364x140 point rectangle each; the right view sits immediately
-// to the right of the left view.
 static const CGFloat kProductViewWidth = 364.0;
 static const CGFloat kProductViewHeight = 140.0;
 

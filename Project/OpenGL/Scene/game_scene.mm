@@ -456,8 +456,6 @@ void GameScene::Init() {
     m_flIntroSecondDelay = kIntroSecondDelay;
     m_flReadyDelay = kReadyDelay;
 
-    // The rival side's effects are drawn at full strength in a versus play, or whenever the rival
-    // alpha has been set; otherwise they are suppressed.
     const bool bRivalShown = nGameType == kGameTypeVersus || pGameSystem->GetRivalAlpha() != 0.0f;
     const float flEffect = bRivalShown ? kEffectShown : kEffectHidden;
     const int nLightLane = pGameSystem->GetPlayColor() == 0 ? 1 : 0;
@@ -470,12 +468,10 @@ void GameScene::Init() {
 /** @ghidraAddress 0x14b228 */
 void GameScene::StopBgmAndAllowRotation() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
-    // Only act while the background music is still marked playing.
     if (!pGameSystem->GetBgmPlaying()) {
         return;
     }
     pGameSystem->SetBgmPlaying(false);
-    // Re-enable device auto-rotation, which play locks out.
     [UIViewController attemptRotationToDeviceOrientation];
     [[RBBGMManager getInstance] StopMusic:0.0f];
     m_flFirstPathSpeed = 0.0f;
@@ -503,14 +499,12 @@ void GameScene::EnterMusicReleaseState() {
 /** @ghidraAddress 0x14b010 */
 void GameScene::PausePlayTimerAndBgm() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
-    // Already paused: nothing to do.
     if (pGameSystem->GetPaused()) {
         return;
     }
 
     const int nState = m_nState;
     if (nState < kStateBound) {
-        // A state that ignores pause requests entirely.
         if ((1U << nState & kIgnorePauseStateMask) != 0) {
             return;
         }
@@ -524,7 +518,6 @@ void GameScene::PausePlayTimerAndBgm() {
         }
     }
 
-    // The general pause path latches the game-wide paused flag as well.
     pGameSystem->SetPaused(true);
     PlayTimer::shared()->MarkPaused(CACurrentMediaTime());
     if (pGameSystem->GetBgmPlaying()) {
@@ -536,7 +529,7 @@ void GameScene::PausePlayTimerAndBgm() {
 void GameScene::CheckAutoPauseByNotePosition() {
     // The vertical hit-band the note must fall in (in the 1024x-scaled screen space), and the x
     // convergence threshold (in the 768-wide note space; the field midpoint is 384).
-    constexpr int kScrollFixedShift = 10;     // The <<10 (1024x) scroll-space scale.
+    constexpr int kScrollFixedShift = 10;
     constexpr float kNoteFieldWidth = 768.0f; // @ghidraAddress 0x2fd04c
     constexpr int kBandCurrentBase = 0x19c;
     constexpr int kBandCurrentSpan = 0xc8;
@@ -559,7 +552,6 @@ void GameScene::CheckAutoPauseByNotePosition() {
     bool bRightConverged = false;
     for (int i = 0; i < nCount; ++i) {
         const TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
-        // Normalise the touch's y by the owning view height into the 1024x scroll space.
         const float flHeight = static_cast<float>(pTouch->nKey2);
         const int nCurrentY = static_cast<int>((static_cast<float>(pTouch->nCurrentY) / flHeight) *
                                                (1 << kScrollFixedShift));
@@ -572,7 +564,6 @@ void GameScene::CheckAutoPauseByNotePosition() {
             continue;
         }
 
-        // Normalise the x positions by the owning view width into the note field's width.
         const float flWidth = static_cast<float>(pTouch->nKey1);
         const int nCurrentX =
             static_cast<int>((static_cast<float>(pTouch->nCurrentX) / flWidth) * kNoteFieldWidth);
@@ -594,13 +585,11 @@ void GameScene::CheckAutoPauseByNotePosition() {
 /** @ghidraAddress 0x14b6e0 */
 bool GameScene::RefreshPauseGaugeAndGetActiveFlag() {
     if (!GameSystem::GetGameSystem()->GetPaused()) {
-        // Not paused: release any charge and report gameplay active.
         if (m_pPauseGauge != nullptr) {
             m_pPauseGauge->ClearCharging();
         }
         return true;
     }
-    // Paused: charge the gauge unless it is being held down, and report gameplay inactive.
     if (!m_bPauseGaugeHeld && m_pPauseGauge != nullptr) {
         m_pPauseGauge->SetCharging();
     }
@@ -609,7 +598,6 @@ bool GameScene::RefreshPauseGaugeAndGetActiveFlag() {
 
 /** @ghidraAddress 0x14f0dc */
 void GameScene::ComputeResultBonusesAndExperience() {
-    // Classic theme: advance the level/experience progression and unlock custom items.
     if (m_nThema == kThemaClassic) {
         LevelTables *pTables = LevelTables::GetInstance();
         GameSystem *pGameSystem = GameSystem::GetGameSystem();
@@ -622,11 +610,8 @@ void GameScene::ComputeResultBonusesAndExperience() {
         const int nGained = LevelTables::ComputeLevelExpStep(
             flRate, pGameSystem->GetDifficultyLevel(), bAllJudged, pGameSystem->GetIsFirstPlay());
 
-        // Publish the starting level/experience and the gained amount to the game system.
         pGameSystem->SetResultLevelExp(nLevel, nExp, nGained);
 
-        // Roll the gained experience into the level, unlocking a new custom item for each level up,
-        // until the next threshold is unreachable (the level cap).
         unsigned int nThreshold = LevelTables::GetLevelExpThreshold(nLevel);
         if (nThreshold != kNoLevelThreshold) {
             nExp += nGained;
@@ -648,12 +633,10 @@ void GameScene::ComputeResultBonusesAndExperience() {
             nExp = 0;
         }
 
-        // Persist the updated {level, experience} record.
         pTables->SetLevelExp(nLevel, nExp);
         LevelTables::SavePlayerLevelData(pTables->GetLevelExpRecord());
     }
 
-    // Limelight theme: store the five shared bonuses and award their sum.
     if (m_nThema == kThemaLimelight) {
         GameSystem *pGameSystem = GameSystem::GetGameSystem();
         ScoreTracker *pTracker = ScoreTracker::shared();
@@ -671,7 +654,6 @@ void GameScene::ComputeResultBonusesAndExperience() {
         [RBExperienceData.sharedInstance save];
     }
 
-    // Colette theme: the shared bonuses plus early-play and hot-music bonuses.
     if (m_nThema == kThemaColette) {
         GameSystem *pGameSystem = GameSystem::GetGameSystem();
         ScoreTracker *pTracker = ScoreTracker::shared();
@@ -706,7 +688,6 @@ void GameScene::ComputeResultBonusesAndExperience() {
 
 /** @ghidraAddress 0x14be88 */
 void GameScene::EnterResultThemeState() {
-    // Initialise the active theme's grade/score-gauge display state.
     if (m_nThema == kThemaColette) {
         ColetteThemeLayer::shared()->ResetGradeDisplayState();
     } else if (m_nThema == kThemaLimelight) {
@@ -715,11 +696,8 @@ void GameScene::EnterResultThemeState() {
         ClassicThemeLayer::shared()->InitializeScoreGaugeState();
     }
 
-    // Start the result-voice cue.
     SoundEffectManager::GetInstance()->PlayThemedVoice(kResultVoiceCue);
 
-    // Play the clear cue when the play cleared: the achievement rate reached the clear threshold,
-    // or this is a tutorial play.
     if (ScoreTracker::shared()->GetPlayRecordRate(kResultSide) >= kClearRateThreshold ||
         [RBTutorialManager isTutorialPlay]) {
         SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kClearCueSoundEffect);
@@ -730,20 +708,13 @@ void GameScene::EnterResultThemeState() {
 }
 
 namespace {
-// The themed voice cue fired as the result screen crosses the one-second mark, and the play-time
-// mark (in play-time units) it fires at.
 constexpr int kResultReadyVoiceCue = 6;
 constexpr int kResultVoiceMark = 1000;
-// The confirm sound played when the player acknowledges the result.
 constexpr int kResultConfirmSoundEffect = 1;
-// The fade-out time the result confirm stops the music over.
 constexpr float kResultStopMusicFade = 1.5f;
-// The tutorial status representing "music-select tutorial seen", set once the result is submitted,
-// and the highest tutorial status still inside the in-play walkthrough (the result submit waits for
-// the walkthrough to pass it).
+// The status the binary sets once the result is submitted is the music-select tutorial status.
 constexpr unsigned int kTutorialResultSeenStatus = RBTutorialStatusMusicSelectSeen;
 constexpr unsigned int kTutorialInPlayStatusMax = 0x16;
-// The play-record cells the submit reads: the side-one score and its just-reflec count.
 constexpr unsigned int kSubmitScoreCell = 0;
 constexpr unsigned int kSubmitJustReflecCell = 7;
 } // namespace
@@ -755,7 +726,6 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
         SoundEffectManager::GetInstance()->PlayThemedVoice(kResultReadyVoiceCue);
     }
 
-    // Wait for the active theme's result window to report the confirm tap.
     bool bConfirmed = false;
     if (m_nThema == kThemaClassic) {
         bConfirmed = ResultWindowClassicLayer::shared()->GetCustomizeReloadFlag();
@@ -775,7 +745,6 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
         return;
     }
 
-    // Acknowledge the confirm: play the sound, stop the music, and clear the theme's confirm latch.
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kResultConfirmSoundEffect);
     [RBBGMManager.getInstance StopMusic:kResultStopMusicFade];
     if (m_nThema == kThemaColette) {
@@ -804,7 +773,6 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
                                                 jr:nJustReflec
                                              score:nScore];
 
-        // Mark the music-select tutorial seen the first time, and tear down the tutorial guide.
         if ([RBUserSettingData.sharedInstance getTutorialStatus:kTutorialResultSeenStatus] == 0) {
             [RBUserSettingData.sharedInstance updateTutorialStatus:kTutorialResultSeenStatus
                                                              value:1];
@@ -812,9 +780,8 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
         if (pGameSystem->GetMenuTutorialActive()) {
             [RBTutorialManager
                 updateStatus:static_cast<RBTutorialStatus>(kTutorialResultSeenStatus)];
-            // The binary materialises the guide singleton (allocating it if absent) immediately
-            // before destroying it, discarding the result; destroyShared alone would leave a
-            // never-built guide untouched. @ghidraAddress 0x14c53c
+            // The binary materialises the guide singleton only to destroy it, discarding the
+            // result. @ghidraAddress 0x14c53c
             (void)TutorialGuideLayer::shared();
             TutorialGuideLayer::destroyShared();
             pGameSystem->SetMenuTutorialActive(false);
@@ -827,16 +794,11 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
 }
 
 namespace {
-// The play-time (in play-time units) the result screen waits past before it builds itself.
 constexpr int kResultBuildDelay = 500;
-// The result-window sprite-instancer slots the three loaded textures bind to.
 constexpr unsigned int kResultInstancerArtwork = 2;
 constexpr unsigned int kResultInstancerMusicName = 3;
 constexpr unsigned int kResultInstancerArtistName = 4;
-// The result show/open tween duration.
 constexpr float kResultShowTweenDuration = 500.0f; // @ghidraAddress 0x2feff4
-// The result-screen state the build advances to, the themed voice bank it loads, and the tutorial
-// status it advances a tutorial play to.
 constexpr int kStateResultSubmit = 0xc;
 constexpr int kResultVoiceBank = 6;
 constexpr unsigned int kTutorialResultStartStatus = 0x13;
@@ -852,7 +814,6 @@ void GameScene::LoadResultScreenAndMusic() {
         return;
     }
 
-    // Wait for the active theme's intro/reveal to finish before building the result window.
     if (m_nThema == kThemaClassic && ClassicThemeLayer::shared()->IsAnimActive()) {
         return;
     }
@@ -863,14 +824,10 @@ void GameScene::LoadResultScreenAndMusic() {
         return;
     }
 
-    // Load the song artwork and artist-name textures for the result window (the music-name texture
-    // was loaded during set-up).
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     pGameSystem->LoadArtworkTexture(AppDelegate.appDelegate.musicData);
     pGameSystem->LoadArtistNameTexture(AppDelegate.appDelegate.musicData);
 
-    // Bind the three result-window instancer textures (artwork, music name, artist name), reset the
-    // result flags, start the show tween, and clear the confirm latch — per theme.
     ne::C_TEXTURE *pArtwork = pGameSystem->GetArtworkTexture();
     ne::C_TEXTURE *pMusicName = pGameSystem->GetMusicNameTexture();
     ne::C_TEXTURE *pArtistName = pGameSystem->GetArtistNameTexture();
@@ -900,14 +857,12 @@ void GameScene::LoadResultScreenAndMusic() {
         pResult->ClearCustomizeReloadFlag();
     }
 
-    // Load the result voice, start the looping result music, and advance to the submit state.
     SoundEffectManager::GetInstance()->LoadThemedVoiceData(kResultVoiceBank);
     [RBBGMManager.getInstance LoadMusicResultWithLoop:YES];
     [RBBGMManager.getInstance PlayMusic:0.0f];
     m_nState = kStateResultSubmit;
     m_nPlayTime = 0;
 
-    // A tutorial play advances the walkthrough to the result step and resets the guide.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive()) {
         [RBTutorialManager updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
         TutorialGuideLayer::shared()->Reset();
@@ -916,12 +871,10 @@ void GameScene::LoadResultScreenAndMusic() {
 
 /** @ghidraAddress 0x14b86c */
 void GameScene::StartGameplayPresentation() {
-    // Wait until play time has begun advancing.
     if (m_nPlayTime <= 0) {
         return;
     }
 
-    // Play the intro-voice cue and run the active theme's intro layer.
     SoundEffectManager::GetInstance()->PlayThemedVoice(kIntroVoiceCue);
     if (m_nThema == kThemaColette) {
         NumberLayer::shared()->SetReady();
@@ -931,7 +884,6 @@ void GameScene::StartGameplayPresentation() {
         BackgroundSpriteManager::shared()->SetActiveAndResetCounter();
     }
 
-    // Fade in the background, player-field score, and judge-effect layers together.
     BgLayer::GetBackgroundLayer()->StartBackgroundFadeIn(kPresentationFadeInDuration);
     PlayerFieldLayer::shared()->StartScoreFadeIn(kPresentationFadeInDuration);
     JudgeEffectLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
@@ -942,16 +894,12 @@ void GameScene::StartGameplayPresentation() {
 
 /** @ghidraAddress 0x14b734 */
 void GameScene::AdvanceToPlayReadyState() {
-    // Wait until play time passes the presentation intro threshold.
     if (static_cast<float>(m_nPlayTime) <= m_flPresentationDelay) {
         return;
     }
 
-    // Build the note-result layout for the current chart.
     NoteResultLayer::shared()->BuildQuadPositions();
 
-    // Build and fade in the on-screen frame (the alternate frame on iPad, the main frame
-    // elsewhere).
     if (m_bIsPad) {
         AltFrameLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
     } else {
@@ -959,16 +907,13 @@ void GameScene::AdvanceToPlayReadyState() {
         MainFrameLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
     }
 
-    // Fade in and rebuild the thema-marker frame.
     ThemaMarkerLayer::shared()->StartFadeIn(kPresentationFadeInDuration, kGaugeGrowFromValue);
     ThemaMarkerLayer::shared()->RenderThemaMarkerFrame();
 
-    // Grow the play-colour gauge and resync its part positions.
     PlayColorLayer::shared()->StartGaugeGrowAnimation(kPresentationFadeInDuration,
                                                       kGaugeGrowFromValue);
     PlayColorLayer::shared()->SyncGaugeValuesFromGameSystem();
 
-    // Fade in the reflec and clear gauges.
     ReflecGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
     ClearGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
 
@@ -978,14 +923,12 @@ void GameScene::AdvanceToPlayReadyState() {
 
 /** @ghidraAddress 0x14b914 */
 void GameScene::BeginMusicPlaybackAndTimer() {
-    // Keep waiting until the active theme's intro animation has finished.
     if (IsThemeIntroStillAnimating(m_nThema)) {
         return;
     }
 
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
 
-    // Start the background music once, then start the play timer running from now.
     if (!pGameSystem->GetBgmPlaying()) {
         [RBBGMManager.getInstance PlayMusic:0.0f];
         GameSystem::GetGameSystem()->SetBgmPlaying(true);
@@ -993,11 +936,9 @@ void GameScene::BeginMusicPlaybackAndTimer() {
     }
     PlayTimer::shared()->StartPlayback(CACurrentMediaTime(), true);
 
-    // Activate the due notes and cache the chart's first path speed.
     ActivateDueNotes();
     m_flFirstPathSpeed = m_pMusicSheet->GetFirstPathSpeed();
 
-    // In a tutorial play, start the guide and fade it in.
     if (pGameSystem->GetMenuTutorialActive()) {
         TutorialGuideLayer::shared()->Start();
         TutorialGuideLayer::shared()->StartFadeIn();
@@ -1054,7 +995,6 @@ void GameScene::ActivateDueNotes() {
         }
     }
 
-    // Advance the cursor past the notes spawned this pass.
     if (nLastSpawned >= m_nPlayCursor) {
         m_nPlayCursor = nLastSpawned;
     }
@@ -1094,12 +1034,9 @@ void GameScene::LoadMusicAndSheet() {
 void GameScene::SetupPreviewPlayback() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
 
-    // Apply the current theme to the note manager and build the note-result layout.
     NoteEffectMgr::shared()->ApplyTheme();
     NoteResultLayer::shared()->BuildQuadPositions();
 
-    // Prime the on-screen frame (the alternate frame on iPad, the main frame elsewhere), shown at
-    // once; the main frame is also enabled.
     if (m_bIsPad) {
         AltFrameLayer::shared()->StartFadeIn(0.0f);
     } else {
@@ -1107,8 +1044,6 @@ void GameScene::SetupPreviewPlayback() {
         MainFrameLayer::shared()->SetMainFrameEnabled(false);
     }
 
-    // Prime the thema-marker, play-colour gauge, and gauge/background/score/judge layers to their
-    // fully-shown state.
     ThemaMarkerLayer::shared()->StartFadeIn(0.0f, 0.0f);
     ThemaMarkerLayer::shared()->RenderThemaMarkerFrame();
     ThemaMarkerLayer::shared()->SetDangerLevel(1.0f);
@@ -1124,7 +1059,6 @@ void GameScene::SetupPreviewPlayback() {
     NumberEffectLayer::shared()->StartFadeIn(0.0f);
     NumberEffectLayer::shared()->SetBrightness(pGameSystem->GetBackgroundBrightness());
 
-    // Load the selected chart, or a synthetic default when no music is selected.
     const bool bHasMusic = [AppDelegate.appDelegate musicData] != nil;
     if (bHasMusic) {
         LoadMusicAndSheet();
@@ -1133,8 +1067,6 @@ void GameScene::SetupPreviewPlayback() {
     }
     m_flFirstPathSpeed = m_pMusicSheet->GetFirstPathSpeed();
 
-    // Start the play timer, beginning the background music when there is a chart and it is not
-    // already playing.
     PlayTimer *pTimer = PlayTimer::shared();
     bool bRunning = false;
     if (bHasMusic && !pGameSystem->GetBgmPlaying()) {
@@ -1145,7 +1077,6 @@ void GameScene::SetupPreviewPlayback() {
     }
     pTimer->StartPlayback(CACurrentMediaTime(), bRunning);
 
-    // Show the preview through the app's root view controller and advance to the playing state.
     [AppDelegate.appDelegate.viewController showPreview];
     m_nState = kStatePlaying;
     m_nPlayTime = 0;
@@ -1155,17 +1086,14 @@ void GameScene::SetupPreviewPlayback() {
 void GameScene::ClosePreviewAndReturnToList() {
     ShutdownNoteEffectSystem();
 
-    // Stop the music and re-enable rotation only when a music is selected.
     if ([AppDelegate.appDelegate musicData] != nil) {
         StopBgmAndAllowRotation();
     }
     ResetAllPlayFieldLayers();
 
-    // Fade out and free the number-effect layer.
     NumberEffectLayer::shared()->StartFadeOut(0.0f);
     NumberEffectLayer::FreeInstance();
 
-    // Hide the preview through the app's root view controller and flush the texture cache.
     [AppDelegate.appDelegate.viewController hidePreview];
     (void)ne::C_TEXTURE::GetCacheList(); // The binary discards this call's result.
     ne::C_TEXTURE::ReleaseAllHandles();
@@ -1176,7 +1104,6 @@ void GameScene::ClosePreviewAndReturnToList() {
 
 /** @ghidraAddress 0x14c5bc */
 void GameScene::ExitToMusicList() {
-    // Wait out the exit delay before tearing down.
     if (m_nPlayTime <= kExitDelay) {
         return;
     }
@@ -1185,7 +1112,6 @@ void GameScene::ExitToMusicList() {
     ReleaseResultTexturesAndFrames();
     ResetNotePlaybackState(false);
 
-    // Return to the music list and flush the texture cache.
     [AppDelegate.appDelegate.viewController showMusicListView];
     (void)ne::C_TEXTURE::GetCacheList(); // The binary discards this call's result.
     ne::C_TEXTURE::ReleaseAllHandles();
@@ -1196,7 +1122,6 @@ void GameScene::ExitToMusicList() {
 
 /** @ghidraAddress 0x14c690 */
 void GameScene::ReloadMusicForRestart() {
-    // Wait out the exit delay before restarting.
     if (m_nPlayTime <= kExitDelay) {
         return;
     }
@@ -1222,7 +1147,6 @@ void GameScene::ReloadMusicForRestart() {
 
 /** @ghidraAddress 0x14d23c */
 void GameScene::ResetAllPlayFieldLayers() {
-    // Fade out the shared play-field layers immediately.
     PlayerFieldLayer::shared()->StartScoreFadeOut(0.0f);
     JudgeEffectLayer::shared()->StartFadeOut(0.0f);
     BgLayer::GetBackgroundLayer()->StartBackgroundFadeOut(0.0f);
@@ -1237,7 +1161,6 @@ void GameScene::ResetAllPlayFieldLayers() {
         MainFrameLayer::shared()->StartFadeOut(0.0f);
     }
 
-    // Reset the active theme's full-combo, effect, and result layers.
     if (m_nThema == kThemaColette) {
         FullComboColetteLayer::shared()->ClearEffectFlags();
         NumberLayer::shared()->ClearReady(0.0f);
@@ -1261,11 +1184,9 @@ void GameScene::ResetAllPlayFieldLayers() {
 
 /** @ghidraAddress 0x14b818 */
 void GameScene::WaitForIntroThenStartNotes() {
-    // Wait until the accumulated play time passes the intro ready-delay threshold.
     if (m_flReadyDelay >= static_cast<float>(m_nPlayTime)) {
         return;
     }
-    // Both arms converge on one merged store, so either transition also clears the play time.
     if (GameSystem::GetGameSystem()->GetPastelBonusType() == 0) {
         m_nState = kStateWaitNotes;
     } else {
@@ -1282,7 +1203,6 @@ void GameScene::ResumePreviewPlayback() {
     if (GameSystem::GetGameSystem()->GetBgmPlaying()) {
         [RBBGMManager.getInstance PlayMusic:0.0f];
     }
-    // Un-pause the play timer, shifting its origin forward by the interval it spent paused.
     PlayTimer *pTimer = PlayTimer::shared();
     if (pTimer->IsPaused()) {
         pTimer->Resume(CACurrentMediaTime());
@@ -1291,9 +1211,6 @@ void GameScene::ResumePreviewPlayback() {
 
 /** @ghidraAddress 0x14cb4c */
 void GameScene::AdvancePreviewPlaybackFrame(int nDeltaFrames) {
-    // Loop the preview once its clock has run past the chart: only while the Limelight full-combo
-    // effect is not blocking, and the chart end time has fallen behind the play clock's scaled
-    // position (offset by the spawn look-ahead).
     const float flChartEnd = static_cast<float>(m_pMusicSheet->GetChartEndTime());
     const float flClockPos =
         PlayTimer::shared()->GetPlayTime() * kNoteLineScale + kNoteSpawnLookahead;
@@ -1304,8 +1221,6 @@ void GameScene::AdvancePreviewPlaybackFrame(int nDeltaFrames) {
         PlayTimer *pTimer = PlayTimer::shared();
         MusicData *pMusicData = AppDelegate.appDelegate.musicData;
         if (pMusicData.MusicID == kPreviewMusicID) {
-            // The no-song demo loops its background music from the top and runs a music-driven
-            // timer.
             [RBBGMManager.getInstance StopMusic:0.0f];
             [RBBGMManager.getInstance SeekToTop];
             [RBBGMManager.getInstance PlayMusic:0.0f];
@@ -1317,7 +1232,6 @@ void GameScene::AdvancePreviewPlaybackFrame(int nDeltaFrames) {
         return;
     }
 
-    // Otherwise advance one frame of the preview.
     NumberEffectLayer::shared()->Update(static_cast<float>(nDeltaFrames));
     PlayTimer::shared()->Update();
     NoteEffectMgr::shared()->ProcessActiveNotes();
@@ -1326,15 +1240,12 @@ void GameScene::AdvancePreviewPlaybackFrame(int nDeltaFrames) {
 
 /** @ghidraAddress 0x14f9a4 */
 void GameScene::ReleaseResultTexturesAndFrames() {
-    // Clear the on-screen frame's bound texture: the alternate frame on iPad, the main frame
-    // elsewhere.
     if (m_bIsPad) {
         AltFrameLayer::shared()->SetAltFrameTexture(nullptr);
     } else {
         MainFrameLayer::shared()->SetMainFrameTexture(nullptr);
     }
 
-    // Clear the active theme result layer's three text-instancer textures (slots 2, 3, and 4).
     if (m_nThema == kThemaColette) {
         ResultWindowColetteLayer::shared()->applySpriteInstancerTexture(kResultTextSlot0, nullptr);
         ResultWindowColetteLayer::shared()->applySpriteInstancerTexture(kResultTextSlot1, nullptr);
@@ -1352,8 +1263,6 @@ void GameScene::ReleaseResultTexturesAndFrames() {
                                                                                nullptr);
     }
 
-    // Release and null the three cached song textures on the game system (artwork, music name, and
-    // artist name).
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     if (pGameSystem->m_pArtworkTexture != nullptr) {
         pGameSystem->m_pArtworkTexture->Release();
@@ -1371,7 +1280,6 @@ void GameScene::ReleaseResultTexturesAndFrames() {
 
 /** @ghidraAddress 0x14facc */
 void GameScene::BuildChartReaderFromGameSystem() {
-    // Build a synthetic default chart (the auto-play preview path, when no music is selected).
     CMusicSheet2 *pSheet = new CMusicSheet2();
     pSheet->BuildDefaultNoteChart(GameSystem::GetGameSystem());
     BindMusicSheetToNoteMgr(pSheet);
@@ -1379,7 +1287,6 @@ void GameScene::BuildChartReaderFromGameSystem() {
 
 /** @ghidraAddress 0x14fb24 */
 void GameScene::LoadNoteSheet(NSData *sheetData) {
-    // Parse the selected difficulty's sheet data into a fresh chart and bind it.
     CMusicSheet2 *pSheet = new CMusicSheet2();
     pSheet->ParseNoteChartFile(sheetData.bytes, GameSystem::GetGameSystem());
     BindMusicSheetToNoteMgr(pSheet);
@@ -1387,24 +1294,20 @@ void GameScene::LoadNoteSheet(NSData *sheetData) {
 
 /** @ghidraAddress 0x14fcd8 */
 void GameScene::BindMusicSheetToNoteMgr(CMusicSheet2 *pMusicSheet) {
-    // Tear down any previous chart, store the new one, and hand it to the note-effect manager.
     ShutdownNoteEffectSystem();
     m_pMusicSheet = pMusicSheet;
     NoteEffectMgr *pMgr = NoteEffectMgr::shared();
     pMgr->SetActiveMusicSheet(m_pMusicSheet);
     pMgr->IterateNoteRecords();
-    // Seed the score tracker's total-note count from the chart, then reset playback with the ghost.
     ScoreTracker::shared()->SetTotalNotes(m_pMusicSheet->GetChartNoteCount(0));
     ResetNotePlaybackState(true);
 }
 
 /** @ghidraAddress 0x14fbd4 */
 void GameScene::LoadResultBgmForMusic(NSData *musicData) {
-    // Swap the background music to the result track: stop, release, then load it non-looping.
     [RBBGMManager.getInstance StopMusic:0.0f];
     [RBBGMManager.getInstance RelaseMusic];
     [RBBGMManager.getInstance LoadMusic:musicData Loop:NO];
-    // Load the themed result voice bank (voice id 2 = result).
     SoundEffectManager::GetInstance()->LoadThemedVoiceData(kResultVoiceId);
 }
 
@@ -1412,7 +1315,6 @@ void GameScene::LoadResultBgmForMusic(NSData *musicData) {
 void GameScene::ShutdownNoteEffectSystem() {
     ResetNotePlaybackState(false);
     NoteEffectMgr::shared()->SetActiveMusicSheet(nullptr);
-    // Destroy the owned chart, if any.
     if (m_pMusicSheet != nullptr) {
         delete m_pMusicSheet;
         m_pMusicSheet = nullptr;
@@ -1423,7 +1325,6 @@ void GameScene::ShutdownNoteEffectSystem() {
 void GameScene::ResetNotePlaybackState(bool bApplyGhost) {
     NoteEffectMgr::shared()->ResetAllNoteModels();
 
-    // On a fresh play, apply the saved replay ghost when the user's ghost style selects it.
     if (bApplyGhost && [RBUserSettingData sharedInstance].ghostStyle == 1) {
         ApplyReplayGhostToNotes();
     }
@@ -1434,7 +1335,6 @@ void GameScene::ResetNotePlaybackState(bool bApplyGhost) {
     ReflecGaugeLayer::shared()->ResetSideGauges();
     ClearGaugeLayer::shared()->ClearValues();
 
-    // Clear the active theme's full-combo effect flags.
     if (m_nThema == kThemaColette) {
         FullComboColetteLayer::shared()->ClearEffectFlags();
     } else if (m_nThema == kThemaLimelight) {
@@ -1450,8 +1350,6 @@ void GameScene::LoadMusicNameAndFrameTexture() {
     MusicData *musicData = [AppDelegate appDelegate].musicData;
     pGameSystem->LoadMusicNameTexture(musicData);
 
-    // The iPad build uses the wide alternate-frame layer; the phone build uses the main-frame
-    // layer.
     if (IsPad()) {
         AltFrameLayer::shared()->SetAltFrameTexture(pGameSystem->GetMusicNameTexture());
     } else {
@@ -1476,7 +1374,6 @@ void GameScene::EnterModeAlt() {
 /** @ghidraAddress 0x14b144 */
 void GameScene::ResumePlayTimerAndBgm() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
-    // Nothing to resume unless the game is paused.
     if (!pGameSystem->GetPaused()) {
         return;
     }
@@ -1486,7 +1383,6 @@ void GameScene::ResumePlayTimerAndBgm() {
         [[RBBGMManager getInstance] PlayMusic:0.0f];
     }
 
-    // Resume the timer, advancing its origin past the interval it spent paused.
     PlayTimer *pTimer = PlayTimer::shared();
     if (pTimer->IsPaused()) {
         pTimer->Resume(CACurrentMediaTime());
@@ -1524,12 +1420,8 @@ void EnsureOrientationNotificationsEnabled(void) {
 }
 
 namespace {
-// The listener-list priority the pause-gauge layer is registered at.
 constexpr int kPauseGaugeListenerPriority = 2;
 
-// The play states the dispatcher handles that no other step names: the entry state that builds the
-// layers, the state a bound chart advances to, the state a finished play advances to, the state a
-// restart re-enters, the preview set-up and resume states, and the second preview-exit state.
 constexpr int kStateInit = 0;
 constexpr int kStateChartBound = 3;
 constexpr int kStatePlayFinished = 0xa;
@@ -1538,7 +1430,6 @@ constexpr int kStatePreviewSetup = 0x10;
 constexpr int kStatePreviewResume = 0x12;
 constexpr int kStatePreviewExit = 0x14;
 
-// The game type identifying a networked match, whose result is never scored or banked.
 constexpr int kGameTypeNetworkMatch = 1;
 
 // The play-record's match outcome (judgement cell index 10).
@@ -1546,10 +1437,8 @@ constexpr int kMatchResultWin = 0;
 constexpr int kMatchResultLose = 1;
 constexpr int kMatchResultDraw = 2;
 
-// The play colour drawn in blue; the other side is red.
 constexpr int kPlayColorBlue = 1;
 
-// The themed voice cues the end of a play loads, indexing the voice-name table.
 constexpr int kVoiceCueTitle = 0;
 constexpr int kVoiceCueWin = 3;
 constexpr int kVoiceCueLose = 4;
@@ -1561,14 +1450,11 @@ constexpr int kVoiceCueRedWin = 16;
 constexpr int kFirstScoredMusicId = 100000001;
 constexpr int kLastScoredMusicId = 899999999;
 
-// The base the intro fade level counts down from while the note path is still negative. The binary
-// really does store negative zero here, so the level is the negated fractional part.
+// The binary really does store negative zero here, so the level is the negated fractional part.
 constexpr float kFadeInBase = -0.0f; // @ghidraAddress 0x308ddc
 
-// The two player sides the judgement tally covers.
 constexpr int kPlayerSideCount = 2;
 
-// The judgement grades a note — or an individual slide point — resolves to.
 enum JudgeGrade {
     kJudgeGradeJust = 0,
     kJudgeGradeGreat = 1,
@@ -1577,8 +1463,6 @@ enum JudgeGrade {
     kJudgeGradeCount = 4,
 };
 
-// The per-grade base-score weights, the just-reflec weight, and the low-miss bonuses that together
-// make up a side's final score.
 constexpr int kScoreJust = 3;
 constexpr int kScoreGreat = 2;
 constexpr int kScoreGood = 1;
@@ -1587,7 +1471,6 @@ constexpr int kNoMissBonus = 50;
 constexpr int kOneMissBonus = 25;
 constexpr int kTwoMissBonus = 10;
 
-// The miss tallies the three low-miss bonuses key on.
 constexpr int kNoMisses = 0;
 constexpr int kOneMiss = 1;
 constexpr int kTwoMisses = 2;
@@ -1595,7 +1478,6 @@ constexpr int kTwoMisses = 2;
 // The note type whose judgement lives on its slide points rather than on the note itself.
 constexpr int kSlideNoteType = 3;
 
-// The play-record cells the persisted score and the replay header read.
 constexpr unsigned int kRecordScoreCell = 0;
 constexpr unsigned int kRecordComboCell = 1;
 constexpr unsigned int kRecordJustCell = 3;
@@ -1634,7 +1516,6 @@ void GameScene::OnFrame(int nElapsedMs) {
         m_nPlayTime = 0;
         break;
     case kStateResetPlayback:
-        // The state the exit transitions land on: it resets note playback without a ghost.
         ResetNotePlaybackState(false);
         break;
     case kStateBindChart:
@@ -1651,7 +1532,6 @@ void GameScene::OnFrame(int nElapsedMs) {
         StartGameplayPresentation();
         break;
     case kStatePastEffect:
-        // The event effect holds the presentation back until it has finished animating.
         if (!EventEffectLayer::shared()->IsEffectActive()) {
             m_nState = kStateWaitNotes;
             m_nPlayTime = 0;
@@ -1707,7 +1587,6 @@ void GameScene::ExecMain() {
     NoteEffectMgr::shared()->ProcessActiveNotes();
     ActivateDueNotes();
 
-    // Hold the play open while the theme's full-combo effect is still animating.
     switch (m_nThema) {
     case kThemaColette:
         if (FullComboColetteLayer::shared()->IsAnyEffectActive()) {
@@ -1728,7 +1607,6 @@ void GameScene::ExecMain() {
         break;
     }
 
-    // Wait until the play clock's scroll line has run past the chart's end.
     const int nChartEndTime = m_pMusicSheet->GetChartEndTime();
     const float flScrollLine =
         PlayTimer::shared()->GetPlayTime() * kNoteLineScale + kNoteSpawnLookahead;
@@ -1742,7 +1620,6 @@ void GameScene::ExecMain() {
 
     // A network match never scores or banks a replay; it goes straight to the winner's voice cue.
     if (GameSystem::GetGameSystem()->GetGameType() != kGameTypeNetworkMatch) {
-        // Pick the theme's win, lose, or draw voice cue.
         int nVoiceCue = kVoiceCueTitle;
         switch (m_nThema) {
         case kThemaColette:
@@ -1780,7 +1657,6 @@ void GameScene::ExecMain() {
             return;
         }
 
-        // Only a real (non-preview, non-tutorial) song's play is banked and reported.
         bool bComputeBonuses = false;
         MusicData *pPlayedMusic = [AppDelegate.appDelegate musicData];
         const int nMusicId = pPlayedMusic.MusicID;
@@ -1801,14 +1677,11 @@ void GameScene::ExecMain() {
         // A song outside both windows falls through to the network match's winner-cue path.
     }
 
-    // Republish the stored level and experience with nothing gained, and clear the new-record flag.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     LevelTables *pTables = LevelTables::GetInstance();
     pGameSystem->SetResultLevelExp(pTables->GetCurrentLevel(), pTables->GetCurrentExp(), 0);
     pGameSystem->SetNewRecord(false);
 
-    // Cue the winning side's colour voice: the player's own colour when they won, the opponent's
-    // when they lost, and the draw cue otherwise.
     const int nPlayColor = GameSystem::GetGameSystem()->GetPlayColor();
     const int nResult = ScoreTracker::shared()->GetPlayRecordField10(kResultSide);
     int nWinnerCue = kVoiceCueDraw;
@@ -1913,18 +1786,15 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
 
 /** @ghidraAddress 0x14a298 */
 void GameScene::InitializePlayFieldLayersForTheme() {
-    // Restart the diagnostic frame count here so the one-frame sprite snapshot lands a fixed number
-    // of frames into the play screen rather than a fixed number after launch. Counting from launch
-    // put it on the title screen, which is where the first attempt captured its five sprites.
+    // The diagnostic frame count restarts here so the sprite snapshot lands inside the play screen
+    // rather than on the title screen.
     NE_DBG(g_nDebugFrameCounter = 0);
 
-    // Re-read the active theme only when the user has changed it since the last play.
     if (m_nThema != static_cast<int>(RBUserSettingData.sharedInstance.thema)) {
         m_nThema = static_cast<int>(RBUserSettingData.sharedInstance.thema);
     }
 
     BgLayer::GetBackgroundLayer()->InitializeBackgroundLayer();
-    // The iPad draws the alternate play-field frame; every other device draws the main frame.
     if (IsPad()) {
         AltFrameLayer::shared()->BuildSprites();
     } else {
@@ -1999,12 +1869,9 @@ void GameScene::PersistScoreAndSaveReplay() {
     const int nPlaySide = pGameSystem->GetPlayColor();
     const int nNoteCount = m_pMusicSheet->GetNoteCount();
     const int nSideNoteCount = m_pMusicSheet->GetChartNoteCount(nPlaySide);
-    // A perfect play scores three per note plus ten per just-reflec opportunity, over the no-miss
-    // bonus.
     const int nMaxScore = m_pMusicSheet->GetJustReflecQuota() * kScoreJustReflec + kNoMissBonus +
                           nSideNoteCount * kScoreJust;
 
-    // Tally both sides' judgements, counting a slide note's points individually.
     int aJudgeCounts[kPlayerSideCount][kJudgeGradeCount] = {};
     for (int nIndex = 0; nIndex < nNoteCount; ++nIndex) {
         NoteModel *pNote = NoteEffectMgr::shared()->FindNoteByIndex(nIndex);
@@ -2029,7 +1896,6 @@ void GameScene::PersistScoreAndSaveReplay() {
             static_cast<unsigned int>(nSide == nPlaySide), kRecordJustReflecCell);
     }
 
-    // Fold each side's tallies into its base score.
     int aBaseScores[kPlayerSideCount] = {};
     for (int nSide = 0; nSide < kPlayerSideCount; ++nSide) {
         int nMissBonus = 0;
@@ -2052,7 +1918,6 @@ void GameScene::PersistScoreAndSaveReplay() {
                              aJustReflecCounts[nSide] * kScoreJustReflec;
     }
 
-    // Read the stored best for the played difficulty's columns.
     NSNumber *storedScore = nil;
     NSNumber *storedRate = nil;
     switch (pGameSystem->GetDifficulty()) {
@@ -2073,8 +1938,6 @@ void GameScene::PersistScoreAndSaveReplay() {
     const int nStoredScore = storedScore.intValue;
     const float flStoredRate = storedRate.floatValue;
 
-    // The recorded score is the smallest of what the tracker banked, what the tally computes, and
-    // what the chart can award.
     int nFinalScore = pTracker->GetPlayRecordCell(kResultSide, kRecordScoreCell);
     if (nFinalScore > aBaseScores[nPlaySide]) {
         nFinalScore = aBaseScores[nPlaySide];
@@ -2104,7 +1967,6 @@ void GameScene::PersistScoreAndSaveReplay() {
         pGameSystem->SetNewRecord(false);
     }
 
-    // The rate and its rank follow the same rule against the stored rate.
     const float flRate = pTracker->GetPlayRecordRate(kResultSide);
     if (flStoredRate > kMaxStoredRate || flRate > flStoredRate) {
         const int nRank = pTracker->GetPlayRecordRank(kResultSide);
@@ -2140,7 +2002,6 @@ void GameScene::PersistScoreAndSaveReplay() {
         }
     }
 
-    // Re-stamp the tamper hash only when a stored value actually changed.
     if (bDirty) {
         record.chksco = [ScoreData hashScore:record];
     }
@@ -2157,7 +2018,6 @@ void GameScene::PersistScoreAndSaveReplay() {
         break;
     }
 
-    // The tutorial song's play is never written back to the store.
     if (pMusicData.MusicID != kTutorialMusicId) {
         NSError *error = nil;
         if (![context save:&error]) {
@@ -2169,7 +2029,6 @@ void GameScene::PersistScoreAndSaveReplay() {
         }
     }
 
-    // Write a replay ghost when this tune and difficulty has none yet, or the play set a record.
     if (![ReplayData isExistReplayData:nMusicId difficulty:pGameSystem->GetDifficulty()] ||
         pGameSystem->IsNewRecord()) {
         ReplayData *replay = [[ReplayData alloc] init];
@@ -2213,7 +2072,6 @@ void GameScene::PersistScoreAndSaveReplay() {
                 }
                 [notes addObject:note];
             } else if (pNote->IsShotResolved()) {
-                // The opposing side contributes only the notes its ghost shot resolved.
                 ReplayNote *note = [[ReplayNote alloc] init];
                 note.index = @(nIndex);
                 note.judge = @(kGhostShotJudge);
@@ -2228,11 +2086,9 @@ void GameScene::PersistScoreAndSaveReplay() {
 
 /** @ghidraAddress 0x14ef34 */
 void ReportTotalScoreToGameCenter(void) {
-    // Skip entirely when Game Center is disabled for this build/device.
     if (!GetHasGameCenterFlag()) {
         return;
     }
-    // Report only when the local player is authenticated.
     if (!GKLocalPlayer.localPlayer.isAuthenticated) {
         return;
     }

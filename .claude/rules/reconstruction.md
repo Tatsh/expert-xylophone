@@ -29,10 +29,13 @@ faithful C, C++, and Objective-C. The coding style of the resulting source lives
 - Model real types, not decompiler artifacts. Use real struct fields (never `field_0xNN`) and real
   pointer, enum, and `BOOL` types (never `void *` for a typed pointer, an `int` that holds a
   pointer, or `undefined`/`undefined4`).
-- Document the original 32-bit struct layout with trailing `// +0xNN` offset comments, but treat
-  those offsets as documentation only: do not `#pragma pack` or `static_assert` the layout, and
-  never read or write a struct by a hardcoded offset. The 32-bit offsets do not hold on the 64-bit
-  target, so always go through named fields.
+- Trailing `// +0xNN` offset comments record a struct layout that is still being recovered. A
+  structure whose every member is settled does not need them and may be written without them; keep
+  them only where the layout still has gaps — a reserved or padding placeholder, or a member whose
+  purpose is undetermined — because there the offset is the only record of the gap. Where they do
+  appear they are documentation only: do not `#pragma pack` or `static_assert` the layout, and
+  never read or write a struct by a hardcoded offset. The recorded offsets do not hold on the
+  64-bit target, so always go through named fields.
 - `reinterpret_cast` is a smell: it usually hides a type or signature bug, especially a
   function-pointer callback ABI. Prefer real types and typed access, and replace such casts at crash
   sites. `void *` is likewise a major smell: use it only for a genuinely opaque raw byte buffer (for

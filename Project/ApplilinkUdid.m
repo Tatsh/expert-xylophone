@@ -1,22 +1,3 @@
-//
-//  ApplilinkUdid.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkUdid). This is a plain
-//  Objective-C file: the keychain is reached through the Security framework's SecItem C API and the
-//  MD5 digest through CommonCrypto, so there is no C++. AdSupport is linked and +getAdUdid reaches
-//  ASIdentifierManager indirectly, by decoding the class and selector names at runtime, while
-//  +isAdvertisingTrackingEnabled messages the class directly.
-//
-//  ApplilinkUdid is the Applilink reward-network SDK's device-identifier manager. It is a lazily
-//  created singleton owning a serial dispatch queue, which +allocWithZone: creates, and one
-//  ApplilinkPasteBoard, which +sharedInstance creates; every operation is a class method that
-//  routes through that shared pasteboard and the keychain.
-//
-//  In the KONAMI PopnRhythmin build this class is RewardNetworkUdid; rb458 renamed it to
-//  ApplilinkUdid and added a few nil guards, but the algorithms match.
-//
-
 #import "ApplilinkUdid.h"
 
 #import <AdSupport/ASIdentifierManager.h>

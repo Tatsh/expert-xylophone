@@ -36,11 +36,8 @@
 // @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
 extern const double g_dMascotMessageAnimDuration;
 
-// The per-difficulty score, achievement-rate, rank, play-count, and full-combo tables are indexed
-// by difficulty. Four difficulty slots exist (basic, medium, hard, and the extended chart).
 constexpr int kDifficultyCount = 4;
 
-// The three setting pages hosted by the paged setting scroll.
 enum {
     kSettingPageColor = 0,
     kSettingPageDifficulty = 1,
@@ -48,17 +45,14 @@ enum {
     kSettingPageCount = 3,
 };
 
-// The five setting title images cycled by the setting scroll on the default (non-variant) layout.
 constexpr int kSettingTitleImageCount = 5;
 
-// The game types written into m_GameType.
 enum {
     kGameTypeSingle = 0,
     kGameTypeDouble = 1,
     kGameTypeReplay = 2,
 };
 
-// The extended (level 4) difficulty selects the extended music record.
 constexpr int kDifficultyExtended = 3;
 enum {
     kDifficultyBasic = 0,
@@ -66,90 +60,66 @@ enum {
     kDifficultyHard = 2,
 };
 
-// The extended chart stores its replay under difficulty slot 0.
 constexpr int kExtendedReplayDifficulty = 0;
 
-// The user's ghost style; style 1 shows the ghost fully opaque, any other style dims it.
 constexpr int kGhostStyleReplay = 1;
 
-// The themed sound-effect slot played by the detail-view close animation.
 constexpr int kSoundEffectCancel = 4;
 
-// The tutorial song's music id, loaded by playTutorialGame.
 static const int kTutorialMusicID = 0x3b9ac9fe;
 
-// The tutorial CPU combo count seeded before the tutorial game.
 static const int kTutorialComboCount = 10;
 
-// The pastel bonus type stored on the game system for each pastel selection.
 enum {
     kPastelBonusNone = 0,
     kPastelBonusWhite = 1,
     kPastelBonusBlack = 2,
 };
 
-// The combo counts the pastel modes seed on the game system.
 enum {
     kPastelWhiteCombo = 2,
     kPastelBlackComboLow = 0xb,
     kPastelBlackComboHigh = 0xc,
 };
 
-// The two ghost-indicator opacities.
 static const CGFloat kGhostAlphaOpaque = 1.0;
 static const CGFloat kGhostAlphaDimmed = 0.5;
 
-// The two setting-button highlight opacities.
 static const CGFloat kSettingButtonAlphaSelected = 1.0;
 static const CGFloat kSettingButtonAlphaDimmed = 0.5;
 
-// The music-view dimming cover colour is the first entry of the shared UIColor palette
-// (RBPaletteIndexDimmingCover): 50%-translucent black.
 static UIColor *MusicViewCoverColor(void) {
     return [UIColor rbPaletteColorAtIndex:RBPaletteIndexDimmingCover];
 }
 
-// The base-view fade opacities used by the show/hide animations.
 static const CGFloat kBaseViewAlphaVisible = 1.0;
 static const CGFloat kBaseViewAlphaHidden = 0.0;
 
-// The BPM digit column is at most three digits wide.
 constexpr int kBpmDigitCount = 3;
 
-// The number of animated select-line images and layers.
 constexpr int kLineImageCount = 10;
 
-// The autoresizing mask applied to the line overlay and its layers: the four flexible margins
-// (0x2d = flexible left, right, top, and bottom margins).
 static const UIViewAutoresizing kLineAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// Background-music fade durations, in seconds: the pause fade applied when the detail view animates
-// in, the fade used to retry the select BGM, and the fade of the base-view intro cross-fade.
+// Background-music fade durations, in seconds.
 static const float kBgmPauseFadeDuration = 0.25f;
 static const float kBgmReplayFadeDuration = 1.5f;
 static const NSTimeInterval kMusicViewCoverFadeDuration = 0.25;
 
-// The delay, in seconds, before the setting-scroll hint advances to its next step.
 static const NSTimeInterval kFirstInfoScrollRetryDelay = 0.5;
 
-// The full rival alpha seeded for the tutorial game.
 static const float kTutorialRivalAlpha = 1.0f;
 
-// The play-colour coin-flip threshold: when both colours are allowed, a unit-interval random draw
-// at or above this value selects colour 1, otherwise colour 0.
 static const float kPlayColorRandomThreshold = 0.5f;
 
-// The black-pastel combo roll: a random draw modulo kPastelBlackComboRollModulo above
-// kPastelBlackComboRollThreshold seeds the higher combo count, otherwise the lower.
 enum {
     kPastelBlackComboRollModulo = 0x65,
     kPastelBlackComboRollThreshold = 0x59,
 };
 
-// The setting-scroll page index that shows each setting title image on the default layout. Pages 2
-// and 3 map to title images 3 and 4 (images 2 and 5 are shown on other layouts).
+// Pages 2 and 3 map to title images 3 and 4; images 2 and 5 are shown on other layouts.
 enum {
     kSettingTitlePage0 = 0,
     kSettingTitlePage1 = 1,
@@ -163,18 +133,12 @@ enum {
     kSettingTitleImagePage3 = 4,
 };
 
-// The setting-scroll page-snap rounding threshold: a fractional page above this rounds up.
 static const float kSettingPageSnapThreshold = 0.5f;
 
-// 1 / RAND_MAX, used to fold rand() into the unit interval, and the multiplier that expands a unit
-// float into the full 32-bit random-seed range.
 static const float kInverseRandMax = 1.0f / static_cast<float>(RAND_MAX);
 static const float kRandSeedScale = 4294967300.0f;
-// The scale SetupView applies to the unit float when it seeds the score readout, giving a
-// random value in [0, 9998].
 static const float kSeedScoreScale = 9999.0f; // @ghidraAddress 0x3014d4
 
-// The BPM digit image names, indexed by digit value.
 static NSString *const kBpmDigitImageNames[] = {
     @"02_music_detail/det_bpm_0",
     @"02_music_detail/det_bpm_1",
@@ -188,8 +152,7 @@ static NSString *const kBpmDigitImageNames[] = {
     @"02_music_detail/det_bpm_9",
 };
 
-// The rank badge images, indexed by rank code (0 is the highest clear rank). The binary's table
-// starts at det_ran_5 and descends.
+// Indexed by rank code; 0 is the highest clear rank, so the table starts at det_ran_5 and descends.
 static NSString *const kRankImageNames[] = {
     @"02_music_detail/det_ran_5",
     @"02_music_detail/det_ran_4",
@@ -199,9 +162,7 @@ static NSString *const kRankImageNames[] = {
     @"02_music_detail/det_ran_0",
 };
 
-// The animated select-line overlay layer geometry (anchor point and layer position per line),
-// decoded from the guard-initialised static table at @0x3dc700 (sourced from @0x301440). Verified
-// store-by-store against the disassembly at @0xd27c4..@0xd2868.
+// @ghidraAddress 0x3dc700, sourced from 0x301440; stores at 0xd27c4..0xd2868
 namespace {
 struct SelLineLayer {
     double anchorX;
@@ -223,7 +184,7 @@ static const SelLineLayer kSelLineLayout[] = {
     {0.0, 1.0, 528.0, 657.0}, // 9
 };
 
-// The ten select-line overlay images (from the CFString table at @0x35a5f8).
+// @ghidraAddress 0x35a5f8
 static NSString *const kSelLineImageNames[] = {
     @"01_music_select/sel_line1_1",
     @"01_music_select/sel_line1_2",
@@ -237,34 +198,23 @@ static NSString *const kSelLineImageNames[] = {
     @"01_music_select/sel_line4_2",
 };
 
-// The wide-popup base frame the line overlay container uses, decoded from g_dPopupBaseOriginXWide
-// (112.0), DAT_1003013f0 (161.0), g_dPopupBaseWidthWide (546.0), and g_dPopupBaseHeightWide
-// (680.0).
+// @ghidraAddress 0x3013f0 (the origin y)
 static const CGFloat kPopupBaseOriginXWide = 112.0;
 static const CGFloat kPopupBaseOriginYWide = 161.0;
 static const CGFloat kPopupBaseWidthWide = 546.0;
 static const CGFloat kPopupBaseHeightWide = 680.0;
 
-// The half scale applied to the line overlay on the compact (non-variant) layout.
 static const CGFloat kSelLineHalfScale = 0.5;
-// The select-line layer transaction is committed with no animation and the layers start hidden.
 static const CFTimeInterval kSelLineAnimationDuration = 0.0;
 static const float kSelLineOpacity = 0.0f;
 
-// ---- SetupView constants (all decoded from the raw arm64 of the decompiler-crashing method) ----
-
-// The RBUserSettingData.difficulty sentinel: the "white hard" slot (3) is clamped back to HARD (2).
 constexpr int kDifficultyWhiteHard = 3;
 
-// The autoresizing masks used by SetupView: the outer view keeps its top and bottom margins
-// flexible; the base panel keeps the four flexible margins; the first-info overlay keeps its width
-// and height flexible.
 static const UIViewAutoresizing kSetupOuterAutoresizingMask =
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 static const UIViewAutoresizing kSetupFirstInfoAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The setting-scroll page counts: the iPad idiom carries a fifth page, every other idiom four.
 enum {
     kSettingPagesNormal = 5,
     kSettingPagesAlt = 4,
@@ -272,18 +222,15 @@ enum {
 static const CGFloat kScrollPagesNormal = 5.0;
 static const CGFloat kScrollPagesAlt = 4.0;
 
-// The page control's transform scale (0.8) and its two indicator tint whites (0.666 and 0.5).
 static const CGFloat kPageScale = 0.8;
 static const CGFloat kPageTintWhite = 0.6666666865;
 static const CGFloat kPageTintWhiteCurrent = 0.5;
 
-// The dimmed alpha applied to the name images on the Limelight theme (0.7).
 static const CGFloat kNameAlphaDim = 0.699999988;
 static const CGFloat kNameAlphaFull = 1.0;
 
-// The setting sub-view page indices (page X = index * scroll width). The CPU and other sub-views
-// sit at pages 3 and 4 on the wide (iPad) layout, and at pages 2 and 3 on the narrow one — the
-// narrow CPU view deliberately shares the speed view's page, exactly as the binary lays it out.
+// On the narrow layout the CPU view deliberately shares the speed view's page, as the binary lays
+// it out.
 static const CGFloat kColorPage = 0.0;
 static const CGFloat kDifficultyPage = 1.0;
 static const CGFloat kSpeedPage = 2.0;
@@ -292,15 +239,11 @@ static const CGFloat kOtherPageWide = 4.0;
 static const CGFloat kCpuPageNarrow = 2.0;
 static const CGFloat kOtherPageNarrow = 3.0;
 
-// The theme-2 overlay is centred at half the jacket size; the first-info overlay is centred at half
-// the view width.
 static const CGFloat kOverlayHalf = 0.5;
 static const CGFloat kFirstInfoCenterXFactor = 0.5;
 
-// The initial selected setting page.
 constexpr int kSetupInitialSetting = 1;
 
-// The base-panel image table (thema 0/1), indexed by frame-bonus type.
 static NSString *const kDetMbgTable[] = {
     @"02_music_detail/det_mbg_d",
     @"02_music_detail/det_mbg_g",
@@ -310,7 +253,7 @@ static NSString *const kDetMbgTable[] = {
     @"02_music_detail/det_mbg_r2",
 };
 
-// The theme-2 overlay-over-jacket image table (@0x35afa0), indexed by frame-bonus type.
+// @ghidraAddress 0x35afa0
 static NSString *const kDetMbgTheme2Table[] = {
     @"02_music_detail/det_mbg_r1",
     @"02_music_detail/det_mbg_r2",
@@ -320,7 +263,7 @@ static NSString *const kDetMbgTheme2Table[] = {
     @"02_music_detail/det_sel_spd",
 };
 
-// The setting title images (@0x35afb8): colour, difficulty, speed, level, and other.
+// @ghidraAddress 0x35afb8
 static NSString *const kSettingTitleTable[] = {
     @"02_music_detail/det_sel_col",
     @"02_music_detail/det_sel_dif",
@@ -329,13 +272,7 @@ static NSString *const kSettingTitleTable[] = {
     @"02_music_detail/det_sel_oth",
 };
 
-// The theme decide-button image table (@0x35b010), indexed by frame-bonus type; the brown theme
-// picks its fixed index-3 entry (det_dec_s).
-// The binary keeps two separate button-image tables, each indexed by the frame-bonus type and each
-// followed by the fixed image the Colette theme uses instead. Classic and Limelight index their
-// table; Colette takes the fixed entry. The two sets are theme-exclusive on disk: 01_Classic ships
-// det_dec_ds/gs/ps and dd/gd/pd but no det_dec_s or det_dec_d, and Colette ships only the latter
-// pair, so indexing the wrong table yields a nil image and a zero-sized button.
+// The two image sets are theme-exclusive on disk, so indexing the wrong table yields a nil image.
 // @ghidraAddress 0x35b010
 static NSString *const kDetDecSingleTable[] = {
     @"02_music_detail/det_dec_ds",
@@ -354,12 +291,9 @@ static NSString *const kDetDecDoubleTable[] = {
 static NSString *const kDetDecDoubleColette =
     @"02_music_detail/det_dec_d"; // @ghidraAddress 0x35b048
 
-// The detail-view geometry per (iPad idiom, theme) leg. The block at @0xcca64..@0xccf30 branches
-// on IsPad and then on _thema, giving six legs, and spills the chosen one into callee-saved d
-// registers and stack slots; every value below was recovered by running that block per leg and
-// chasing each call site's arguments back to the home that fed it. The layout structure holds one
-// leg's values. The address trailing each row is the call site that consumes it, not the pool the
-// number is stored in, so these are deliberately not @ghidraAddress tags.
+// The detail-view geometry per (iPad idiom, theme) leg, recovered from the six-leg block at
+// 0xcca64..0xccf30. The address trailing each row is the call site that consumes it, not the pool
+// the value is stored in, so these are deliberately not @ghidraAddress tags.
 namespace {
 struct DetailGeometry {
     CGFloat jacketX, jacketY, jacketSize;
@@ -378,16 +312,13 @@ struct DetailGeometry {
 };
 } // namespace
 
-// The standalone (leg-independent) geometry consumed after the big block.
 static const CGFloat kDecideX = 44.0;
 static const CGFloat kDecideY = 546.0;
 static const CGFloat kWhitePastelCenterX = 160.0;
 static const CGFloat kWhitePastelCenterY = 297.0;
 static const CGFloat kBlackPastelCenterX = 160.0;
 static const CGFloat kBlackPastelCenterY = 287.0;
-// The right-hand slot of the lower button row, shared by the double-play button and the second
-// pastel button, which are alternates for the same position. Both frames take their size straight
-// from their background image. @ghidraAddress 0x3013d8 (x) and 0x3013d0 (y).
+// @ghidraAddress 0x3013d8 (x) and 0x3013d0 (y)
 static const CGFloat kDecideRightX = 282.0;
 static const CGFloat kDecideRightY = 546.0;
 static const CGFloat kBlackPastel2X = 282.0;
@@ -396,11 +327,8 @@ static const CGFloat kHistoryOffsetX = 110.0;
 static const CGFloat kHistoryOffsetY = 160.0;
 static const CGFloat kFirstInfoCenterY = 40.0;
 
-// The geometry and table identifiers below keep the older theme labels they were first
-// reconstructed under: "Brown" and "Theme2" are the Colette theme
-// (RBUserSettingDataThemeColette), and "White" is Limelight (RBUserSettingDataThemeLimelight).
-// The code and comments use the RBUserSettingDataTheme names; only these identifiers still carry
-// the old spelling.
+// In the identifiers below, "Brown" and "Theme2" mean the Colette theme and "White" means
+// Limelight.
 
 // The iPad idiom Brown-theme leg (@0xccafc). Uses the setFrame: name path.
 static const DetailGeometry kGeometryWideBrown = {
@@ -419,9 +347,8 @@ static const DetailGeometry kGeometryWideBrown = {
     387.0, 235.0,               // ghost @0xcf104
 };
 
-// The iPad idiom non-Brown leg (@0xccd44). jacketX, jacketY, and the setting-title y are picked
-// from two-entry theme tables (non-white then white); the white values are recorded here and the
-// non-white overrides are applied in-line. Every other value is shared by both themes.
+// The iPad idiom non-Brown leg (@0xccd44). The rows hold the white values; the non-white overrides
+// are applied in-line.
 static const DetailGeometry kGeometryWideOther = {
     53.0,  67.0,  180.0,        // jacket @0xcd2b8 (white; non-white: x 52, y 66)
     263.0, 69.0,  94.0,         // name-frame (variant path) @0xcd468, @0xcd64c
@@ -458,8 +385,7 @@ static const DetailGeometry kGeometryNarrowBrown = {
     220.0, 124.0,              // ghost @0xcf104
 };
 
-// The narrow non-Brown leg (@0xcce50). Only the setting-title y is theme-picked, from a two-entry
-// table (non-white then white); every other value is shared by both themes.
+// The narrow non-Brown leg (@0xcce50). Only the setting-title y is theme-picked.
 static const DetailGeometry kGeometryNarrowOther = {
     20.0,  56.0,  74.0,        // jacket @0xcd2b8
     0.0,   0.0,   0.0,         // name-frame (unused on the default path)
@@ -478,9 +404,6 @@ static const DetailGeometry kGeometryNarrowOther = {
 static const CGFloat kNarrowOtherTitleYNonWhite = 150.0;
 
 @interface RBMusicView () {
-    // Private ivars, named exactly as in the binary's ivar list (some carry a leading m_, some a
-    // leading underscore). The score, achievement-rate, rank, play-count, and full-combo tables are
-    // indexed by difficulty.
     int m_GameType;
     int m_SelectedSetting;
     int m_Score[kDifficultyCount];      // +0x10, per-difficulty score
@@ -492,11 +415,9 @@ static const CGFloat kNarrowOtherTitleYNonWhite = 150.0;
     BOOL m_FirstInfo;
     int _thema;
 }
-// The themed music-name image accessor factored out of the switchWithDifficulty: dispatch (the
-// binary inlines the twelve theme-by-difficulty accessor calls).
+// De-inlined from switchWithDifficulty:; not a selector in the binary.
 - (nullable UIImage *)musicNameImageOfMusic:(MusicData *)music forDifficulty:(int)difficulty;
-// De-inlined SetupView helper (the binary draws the BPM strip inline via UIGraphics); not a
-// distinct selector in the binary.
+// De-inlined SetupView helper; not a selector in the binary.
 - (void)buildBpmImageForMin:(int)bpmMin max:(int)bpmMax;
 - (nullable UIImage *)bpmImageForMin:(int)bpmMin max:(int)bpmMax;
 @end
@@ -530,16 +451,12 @@ static const CGFloat kNarrowOtherTitleYNonWhite = 150.0;
 
 #pragma mark Music data
 
-// The plain background's index in kDetMbgTable, which the non-white themes always take.
 constexpr int kDetMbgPlainIndex = 3;
 
 - (void)setMusicData:(MusicData *)musicData {
     /** @ghidraAddress 0xca818 */
-    // The binary implements this setter rather than letting the property synthesise one, because
-    // assigning the music data is what repopulates the card: the jacket, the score readout, the
-    // name and artist strips, the background and the BPM strip are all filled here. SetupView
-    // builds the subviews; this fills them for the tune being shown, so a synthesised setter
-    // leaves every one of them empty.
+    // The binary implements this setter by hand: SetupView builds the subviews, and assigning the
+    // music data is what fills them for the tune being shown.
     _musicData = musicData;
     self.jacketImage = musicData.artwork;
 
@@ -563,7 +480,6 @@ constexpr int kDetMbgPlainIndex = 3;
     m_Rank[kDifficultyHard] = GetClearRank(m_AR[kDifficultyHard]);
     m_PlayCount[kDifficultyHard] = [score.pcHar intValue];
 
-    // The extended chart is a separate tune record, and its basic row supplies the extended slot.
     NSArray *extendNotes =
         [[RBExtendNoteManager getInstance] getExtendNoteDataWithMusicID:musicData.MusicID];
     if (extendNotes != nil && extendNotes.count != 0) {
@@ -579,14 +495,12 @@ constexpr int kDetMbgPlainIndex = 3;
 
     int frameBonusType = [score getFrameBonusType];
 
-    // Only the two lowest themes vary the background by frame bonus; the rest take the plain one.
     NSString *backgroundName = self->_thema <= RBUserSettingDataThemeLimelight ?
                                    kDetMbgTable[frameBonusType] :
                                    kDetMbgTable[kDetMbgPlainIndex];
     self.bgImageView.image = [UIImage imageWithName:backgroundName];
 
-    // Theme 0 takes the white strips and themes 1 and 2 the black ones; any other theme leaves
-    // both images untouched, which is what the binary's fall-through does.
+    // Any other theme leaves both images untouched, as the binary's fall-through does.
     UIImage *musicNameSrc = nil;
     UIImage *artistNameSrc = nil;
     if (self->_thema == RBUserSettingDataThemeClassic) {
@@ -600,7 +514,6 @@ constexpr int kDetMbgPlainIndex = 3;
 
     self.jacketImageView.image = self.jacketImage;
 
-    // Each strip keeps its origin and takes the new artwork's size.
     if (musicNameSrc != nil) {
         self.musicNameImageView.image = musicNameSrc;
         CGRect nameFrame = self.musicNameImageView.frame;
@@ -632,14 +545,10 @@ constexpr int kDetMbgPlainIndex = 3;
 #pragma mark View construction
 
 - (void)SetupView {
-    // Builds the whole detail panel. Worked from raw arm64 (the decompiler crashes on this method
-    // with the known RBCoreDataManager broken-struct error); every geometry constant was decoded
-    // from the .const pools. @ghidraAddress 0xcc078
+    // @ghidraAddress 0xcc078
     NSManagedObjectContext *moc = [RBCoreDataManager sharedInstance].managedObjectContext;
     ScoreData *score = [ScoreData getScoreData:self.musicData.MusicID inManagedObjectContext:moc];
 
-    // Each row: score, full-combo, achievement rate, the clear rank derived from the AR, and the
-    // play count. m_Rank holds GetClearRank(m_AR); m_AR keeps the raw achievement-rate float.
     m_Score[kDifficultyBasic] = [score.scoBas intValue];
     m_FullCombo[kDifficultyBasic] = [score.fcBas boolValue];
     m_AR[kDifficultyBasic] = [score.arBas floatValue];
@@ -677,7 +586,6 @@ constexpr int kDetMbgPlainIndex = 3;
         m_PlayCount[kDifficultyExtended] = 0;
     }
 
-    // A saved "white hard" difficulty is clamped back down to the hard chart.
     if ([RBUserSettingData sharedInstance].difficulty == kDifficultyWhiteHard) {
         [RBUserSettingData sharedInstance].difficulty = kDifficultyHard;
     }
@@ -709,9 +617,7 @@ constexpr int kDetMbgPlainIndex = 3;
     bgImageView.exclusiveTouch = YES;
     [self.baseView addSubview:bgImageView];
 
-    // The big geometry block: pick the leg for the current iPad idiom and theme. The dispatch ivar
-    // is _thema (the binary reads it at 0xcca80 through the ivar-offset global at 0x3c8b7c): the
-    // Colette theme takes its own leg, and the other legs pick Classic/non-Classic overrides.
+    // The dispatch ivar is _thema (read at 0xcca80 through the ivar-offset global at 0x3c8b7c).
     BOOL isPad = IsPad();
     BOOL themaIsClassic = thema == RBUserSettingDataThemeClassic;
     DetailGeometry geometry;
@@ -851,8 +757,6 @@ constexpr int kDetMbgPlainIndex = 3;
     for (NSUInteger i = 0; i < kSettingPagesNormal; ++i) {
         UIImageView *titleView =
             [[UIImageView alloc] initWithImage:[UIImage imageWithName:kSettingTitleTable[i]]];
-        // Every page's title shares one frame, the strip directly above the settings scroll; only
-        // the selected page's title is unhidden.
         titleView.frame =
             CGRectMake(geometry.titleX, geometry.titleY, geometry.titleW, geometry.titleH);
         titleView.hidden = i != static_cast<NSUInteger>(m_SelectedSetting);
@@ -863,8 +767,7 @@ constexpr int kDetMbgPlainIndex = 3;
     self.settingScroll = [[UIScrollView alloc]
         initWithFrame:CGRectMake(
                           geometry.scrollX, geometry.scrollY, geometry.scrollW, geometry.scrollH)];
-    // The page count is an idiom branch (the binary calls IsPad() at 0xce340 and branches at
-    // 0xce34c), not two successive writes: the iPad idiom carries a fifth settings page.
+    // The page count is an idiom branch (IsPad() at 0xce340, branch at 0xce34c).
     self.settingScroll.contentSize = CGSizeMake(self.settingScroll.bounds.size.width *
                                                     (isPad ? kScrollPagesNormal : kScrollPagesAlt),
                                                 self.settingScroll.bounds.size.height);
@@ -901,11 +804,8 @@ constexpr int kDetMbgPlainIndex = 3;
                               kDifficultyPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
         MusicSelectedBase:self];
     [self.settingScroll addSubview:self.difficultyView];
-    // The speed page is the pad's alone. The idiom test at 0xceaa8 skips straight to the CPU view
-    // at 0xcee20 on the phone, which is why the pages below renumber rather than leaving a gap: the
-    // narrow layout has no page 2 to leave. Creating it unconditionally put it at the same page
-    // index the phone gives the CPU view, stacking the two in the same slot. Nothing reads the view
-    // on the phone either, since -playGame only asks it for a speed under IsPad().
+    // The speed page is the pad's alone: the idiom test at 0xceaa8 skips straight to the CPU view
+    // at 0xcee20 on the phone, so the narrow layout renumbers rather than leaving a gap.
     if (isPad) {
         self.speedView = [[RBMusicSpeedView alloc]
                 initWithFrame:CGRectMake(
@@ -914,8 +814,7 @@ constexpr int kDetMbgPlainIndex = 3;
         [self.settingScroll addSubview:self.speedView];
     }
 
-    // The CPU and other sub-view pages split by iPad idiom (IsPad at 0xceaa8): 3 and 4 on the wide
-    // layout, 2 and 3 on the narrow one.
+    // The CPU and other pages split by iPad idiom (IsPad at 0xceaa8).
     CGFloat cpuPage = isPad ? kCpuPageWide : kCpuPageNarrow;
     CGFloat otherPage = isPad ? kOtherPageWide : kOtherPageNarrow;
     self.cpuView = [[RBMusicCPUView alloc]
@@ -937,7 +836,6 @@ constexpr int kDetMbgPlainIndex = 3;
 
     UIButton *decideButton = [UIButton buttonWithType:UIButtonTypeCustom];
     int decideThema = [RBUserSettingData sharedInstance].thema;
-    // Classic and Limelight share one arm in the binary; only Colette takes the fixed image.
     UIImage *decideImage = decideThema == RBUserSettingDataThemeColette ?
                                [UIImage imageWithName:kDetDecSingleColette] :
                                [UIImage imageWithName:kDetDecSingleTable[frameBonusType]];
@@ -1040,9 +938,8 @@ constexpr int kDetMbgPlainIndex = 3;
     [self.randomButton addTarget:self.musicMenuView
                           action:@selector(selectRandom:)
                 forControlEvents:UIControlEventTouchUpInside];
-    // Added to the view itself rather than to baseView: self is the half-alpha dimming backdrop, so
-    // the button layers above it and shows through the dimmed song grid. Its frame arrives from
-    // -[RBMenuView selectRandom:], which copies the menu's own random-button frame and unhides it.
+    // Added to self rather than baseView so it layers above the dimming backdrop; its frame arrives
+    // from -[RBMenuView selectRandom:].
     [self addSubview:self.randomButton];
 
     self.historyView =
@@ -1066,8 +963,7 @@ constexpr int kDetMbgPlainIndex = 3;
     [self updateDecideButton];
 }
 
-// Builds the BPM strip image by drawing the digit images (and a range separator when the minimum
-// and maximum BPM differ) side by side into a single image. @ghidraAddress 0xcd744
+// @ghidraAddress 0xcd744
 - (void)buildBpmImageForMin:(int)bpmMin max:(int)bpmMax {
     UIImage *bpmImage = [self bpmImageForMin:bpmMin max:bpmMax];
     self.bpmImageView = [[UIImageView alloc] initWithImage:bpmImage];
@@ -1077,8 +973,6 @@ constexpr int kDetMbgPlainIndex = 3;
     [self.baseView addSubview:self.bpmImageView];
 }
 
-// The BPM strip itself. SetupView wraps this in a fresh image view; -setMusicData: reuses the one
-// already built, so the drawing is shared rather than written twice.
 - (UIImage *)bpmImageForMin:(int)bpmMin max:(int)bpmMax {
     NSMutableArray<UIImage *> *digitImages = [NSMutableArray array];
     CGFloat totalWidth = 0.0;
@@ -1133,10 +1027,7 @@ constexpr int kDetMbgPlainIndex = 3;
 }
 
 - (void)SetUpLineView {
-    // Builds the animated select-line overlay: a container inserted below baseView, plus ten
-    // select-line images, each wrapped in a UIImageView whose layer anchor point, position,
-    // opacity, and contents scale are set inside a zero-duration transaction. On the compact layout
-    // every frame and position is halved. @ghidraAddress 0xd2764
+    // @ghidraAddress 0xd2764
     CGRect selfBounds = self.bounds;
     BOOL isPad = IsPad();
 
@@ -1256,8 +1147,8 @@ constexpr int kDetMbgPlainIndex = 3;
 - (void)SetRankView:(int)SetRankView {
     if (SetRankView == -1) {
         [self.rankView setImage:nil];
-        // The badge keeps its origin but collapses to nothing: only d0 and d1 survive the -frame
-        // call, and the width and height passed to setFrame: are zeroed at 0xd2f6c and 0xd2f70.
+        // The width and height are zeroed at 0xd2f6c and 0xd2f70, so the badge keeps its origin
+        // and collapses to nothing.
         CGRect frame = self.rankView.frame;
         [self.rankView setFrame:CGRectMake(frame.origin.x, frame.origin.y, 0.0, 0.0)];
     } else {
@@ -1283,9 +1174,7 @@ constexpr int kDetMbgPlainIndex = 3;
     }
 
     // The binary dispatches through a four-entry jump table (@0xd2754) whose difficulty-0 and
-    // difficulty-3 arms share the basic artwork. Each arm refreshes the jacket image when the
-    // difficulty's artwork differs from the cached default artwork, then the shared tail refreshes
-    // the themed music-name image.
+    // difficulty-3 arms share the basic artwork.
     UIImage *artwork;
     switch (switchWithDifficulty) {
     case kDifficultyMedium:
@@ -1310,13 +1199,8 @@ constexpr int kDetMbgPlainIndex = 3;
                                                   forDifficulty:switchWithDifficulty];
 }
 
-// The themed music-name image, keyed on the current theme alone. The difficulty argument is kept
-// because the binary's three jump-table arms each carry their own copy of this selection, but all
-// three call the same base accessor: switchWithDifficulty: sends musicNameImageBlack, ...Brown and
-// ...White three times each and never the per-difficulty variants. That distinction matters rather
-// than being cosmetic — the per-difficulty accessors read archive members (title_b_b and friends)
-// that no .rb file carries, so selecting them returns nil and hands -setColor:withColor: a zero
-// size, which throws on a modern iOS.
+// Keyed on the theme alone: the per-difficulty accessors read archive members (title_b_b and
+// friends) that no .rb file carries, so selecting them returns nil and throws on a modern iOS.
 - (UIImage *)musicNameImageOfMusic:(MusicData *)music forDifficulty:(int)difficulty {
     (void)difficulty; // Yes, the binary ignores it here; every arm picks by theme only.
     switch (self->_thema) {
@@ -1698,8 +1582,7 @@ constexpr int kDetMbgPlainIndex = 3;
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0xd5b88 (PlaySelectedMusicBlockInvoke) */
-          // Resume the select BGM that showAnimation: paused, retrying shortly if the pop has not
-          // finished restoring it yet.
+          // Retry shortly if the pop has not finished restoring the select BGM.
           if (![[RBBGMManager getInstance] PlayMusic:kBgmReplayFadeDuration]) {
               [weakSelf1 performSelector:@selector(ReplayMusic)
                               withObject:nil

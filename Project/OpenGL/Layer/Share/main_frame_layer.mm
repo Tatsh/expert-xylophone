@@ -12,50 +12,37 @@
 #include "s_vector3.h"
 #include "sprite_uv_table.h"
 
-// The process-wide main-frame layer, created lazily by shared().
 static MainFrameLayer *g_pMainFrameLayer = nullptr; // @ghidraAddress 0x3dedb0
 
-// The shared parts atlas the frame's overlay mesh and sprites draw from.
 static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8
 
 namespace {
 
-// The fields the constructor seeds: the default frame type and the default marker.
 constexpr int kDefaultFrameType = 0x20;
 constexpr int kDefaultMarker = 5;
 
-// The frame's fully-opaque alpha endpoint (255).
 constexpr float kFrameAlphaOpaque = 255.0f;
 constexpr float kFrameAlphaTransparent = 0.0f;
 
-// The frame mesh's single textured slot.
 constexpr int kFrameMeshSlot = 0;
 
-// The vertex counts of the two meshes the per-frame step fades: the 3D frame border and the 2D
-// overlay mesh.
 constexpr int kFrameMesh3dVertexCount = 16;
 constexpr int kFrameMesh2dVertexCount = 24;
 
-// The alpha at or below which the marker mesh counts as invisible and is hidden outright.
 constexpr float kAlphaInvisibleEpsilon = 0.001f; // @ghidraAddress 0x30c244
 
-// Halves a scaled dimension into a half-pixel UV offset.
 constexpr float kUvHalf = 0.5f;
 
-// The overlay sprite's fully-opaque channel value.
 constexpr unsigned int kOverlayChannelMax = 255;
 
-// One record of the main-frame overlay-layout table: the anchor, pixel size, and UV atlas-frame
-// index of one overlay sprite, keyed by its sprite kind.
 struct MainFrameOverlayLayout {
     S_VECTOR2 anchor;  // +0x00: the sprite's pivot offset.
     S_VECTOR2 size;    // +0x08: the sprite's pixel size.
     int nUvFrameIndex; // +0x10: the frame index into the shared sprite UV atlas.
 };
 
-// The main-frame overlay-layout table, keyed by sprite kind. Static read-only data embedded in the
-// binary; @c EmitMainFrameSprite indexes it for the overlay instancer. The final entry is unused
-// padding (the sprite-kind bound is one past the last live record). @ghidraAddress 0x30ce98
+// The final entry is unused padding; the sprite-kind bound is one past the last live record.
+// @ghidraAddress 0x30ce98
 const MainFrameOverlayLayout g_aMainFrameOverlayLayout[] = {
     {{17.0f, 2.0f}, {34.0f, 5.0f}, 0x179},  {{17.0f, 2.0f}, {34.0f, 5.0f}, 0x17a},
     {{15.0f, 5.0f}, {29.0f, 10.0f}, 0x17b}, {{15.0f, 5.0f}, {29.0f, 10.0f}, 0x17c},
@@ -96,57 +83,38 @@ const MainFrameOverlayLayout g_aMainFrameOverlayLayout[] = {
     {{0.0f, 0.0f}, {0.0f, 0.0f}, 0},
 };
 
-// The sprite-kind bound the emitter rejects at or above (the overlay-layout table's element count).
 constexpr unsigned int kMainFrameSpriteKindBound = 0x49;
 
-// The overlay-layout geometry, all in points. The frame mesh is two horizontal bands: a short
-// centre tab (top edge at y=0) and the full-width bottom strip (top edge at y=7), both sharing the
-// bottom edge at y=21. Each band is a run of columns; consecutive vertex indices give a column its
-// top vertex then its bottom vertex. The two inner columns sit a fixed span either side of the
-// screen centre; the strip's outer columns sit fixed insets in from the screen edges.
-constexpr float kFrameInnerEdgeOffset = -123.5f; // @ghidraAddress 0x30ce1c: the left inner column's
-                                                 //   offset from the screen centre.
-constexpr float kFrameInnerEdgeSpan = 247.0f; // @ghidraAddress 0x30ce20: the span from the left to
-                                              //   the right inner column (twice the half-offset).
-constexpr float kFrameTabTopY = 0.0f;         // The centre tab's top edge.
-constexpr float kFrameStripTopY = 7.0f;       // The bottom strip's top edge.
-constexpr float kFrameBandBottomY = 21.0f;    // The shared bottom edge of both bands.
-constexpr float kFrameColumnInset = 11.0f; // A column's inset from an inner edge or a screen edge.
-constexpr float kFrameColumnMargin = 2.0f; // A column's small margin from an inner or screen edge.
+constexpr float kFrameInnerEdgeOffset = -123.5f; // @ghidraAddress 0x30ce1c
+constexpr float kFrameInnerEdgeSpan = 247.0f;    // @ghidraAddress 0x30ce20
+constexpr float kFrameTabTopY = 0.0f;
+constexpr float kFrameStripTopY = 7.0f;
+constexpr float kFrameBandBottomY = 21.0f;
+constexpr float kFrameColumnInset = 11.0f;
+constexpr float kFrameColumnMargin = 2.0f;
 
-// The label and marker sprite Y positions, and the centring divisor for the label-panel X spans.
-constexpr float kFrameLabelTopY = 2.0f;    // The two top label sprites' Y.
-constexpr float kFrameLabelMidY = 14.0f;   // The marker and difficulty label sprites' Y.
-constexpr float kFrameMarkerY = 10.0f;     // The frame-mesh marker sprite's Y.
-constexpr float kFrameCentreFactor = 0.5f; // Halves a span to centre a label panel within it.
+constexpr float kFrameLabelTopY = 2.0f;
+constexpr float kFrameLabelMidY = 14.0f;
+constexpr float kFrameMarkerY = 10.0f;
+constexpr float kFrameCentreFactor = 0.5f;
 
-// The overlay sprite kinds. The Colette theme (thema == 2) uses a distinct set of label and marker
-// sprites; every other theme uses the base set.
-constexpr unsigned int kFrameLabelSpriteLeft = 0;       // The left label, base themes.
-constexpr unsigned int kFrameLabelSpriteRight = 1;      // The right label, base themes.
-constexpr unsigned int kFrameMarkerSpriteOffset = 2;    // The marker sprite's base, base themes.
-constexpr unsigned int kColetteLabelSpriteLeft = 0x42;  // The left label, Colette theme.
-constexpr unsigned int kColetteLabelSpriteRight = 0x43; // The right label, Colette theme.
-constexpr unsigned int kColetteMarkerSpriteOffset =
-    0x44; // The marker sprite's base, Colette theme.
-constexpr unsigned int kFrameMeshMarkerSprite =
-    0x48; // The centred marker sprite on the frame mesh.
+constexpr unsigned int kFrameLabelSpriteLeft = 0;
+constexpr unsigned int kFrameLabelSpriteRight = 1;
+constexpr unsigned int kFrameMarkerSpriteOffset = 2;
+constexpr unsigned int kColetteLabelSpriteLeft = 0x42;
+constexpr unsigned int kColetteLabelSpriteRight = 0x43;
+constexpr unsigned int kColetteMarkerSpriteOffset = 0x44;
+constexpr unsigned int kFrameMeshMarkerSprite = 0x48;
 
-// The per-marker base sprite kind the difficulty index is added to for the difficulty label.
 // @ghidraAddress 0x30ce88
 constexpr int kFrameDifficultyMarkerBase[] = {6, 21, 36, 51};
 
-// The 3D border's geometry, all in sheet units. The border is a picture frame of four quads: a
-// bottom band, a top band, and a left and right vertical strip spanning between them. The band
-// width is the hardcoded design width rather than the measured far width, so it only reaches the
-// right edge on a 640-unit-wide sheet.
+// The band width is the hardcoded design width rather than the measured far width.
 constexpr float kFrameBorderBandWidth = 640.0f; // @ghidraAddress 0x30531c
 constexpr float kFrameBorderBandHeight = 33.0f; // @ghidraAddress 0x302d50, negated at 0x30ce24.
-constexpr float kFrameBorderStripWidth = 24.0f; // The left and right strips' width.
+constexpr float kFrameBorderStripWidth = 24.0f;
 
-// The factor the marker ring's outer corners are pushed out by. At 1000x the ring's outer edge is
-// far off screen, so the ring covers everything outside the sheet rectangle. The binary reads this
-// from the pooled 1000.0 literal it shares with unrelated call sites.
+// At 1000x the ring's outer edge is far off screen, so it covers everything outside the sheet.
 constexpr float kMarkerRingOuterScale = 1000.0f; // @ghidraAddress 0x2f8540
 
 } // namespace

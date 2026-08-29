@@ -1,11 +1,3 @@
-//
-//  note_effect_mgr.mm
-//  REFLEC BEAT plus
-//
-//  The process-wide note manager (NoteEffectMgr). Reconstructed from Ghidra project rb458, program
-//  rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "note_effect_mgr.h"
 
 #include <cstdlib>
@@ -25,13 +17,10 @@
 #include "touch_point.h"
 #include "touchmanager.h"
 
-// The process-wide note manager, created lazily by shared().
 static NoteEffectMgr *g_pNoteEffectMgr = nullptr; // @ghidraAddress 0x3de050
 
 namespace {
 
-// The play-record grade cells summed to detect chart completion (the four judged grades), and the
-// theme identifiers selecting the full-combo layer.
 constexpr unsigned int kGradeMiss = 3;
 constexpr unsigned int kGradeGood = 4;
 constexpr unsigned int kGradeGreat = 5;
@@ -39,7 +28,6 @@ constexpr unsigned int kGradeJust = 6;
 constexpr int kThemaClassic = 0;
 constexpr int kThemaLimelight = 1;
 
-// The final judged grade values (the last note's grade) selecting the completion handler.
 constexpr int kFinalGradeFullCombo = 0;
 constexpr int kFinalGradeClear = 1;
 constexpr int kFinalGradeMiss = 2;
@@ -48,8 +36,6 @@ constexpr int kFinalGradeMiss = 2;
 
 /** @ghidraAddress 0x136bec */
 NoteEffectMgr::NoteEffectMgr() {
-    // The header, combo, tier, and render sub-table are zeroed by the member initialisers; the
-    // binary clears them explicitly. Only the active-slot indices start at the -1 empty marker.
     for (long &nSlot : m_aActiveSlot) {
         nSlot = kActiveSlotNone;
     }
@@ -60,12 +46,9 @@ NoteEffectMgr::NoteEffectMgr() {
 void NoteEffectMgr::HandleNoteScored(int nUnused, int nSide) {
     (void)nUnused; // The caller passes a note index the binary does not read here.
 
-    // The score-record side is the tracker row for whether the scored side is the active play side.
     const unsigned int nRecordSide = GameSystem::GetGameSystem()->GetPlayColor() == nSide ? 1 : 0;
     ScoreTracker *pTracker = ScoreTracker::shared();
 
-    // Sum the four judged-grade tallies (grades 3 through 6); the chart is complete once they reach
-    // the total note count.
     const int nJudged = pTracker->GetPlayRecordCell(nRecordSide, kGradeMiss) +
                         pTracker->GetPlayRecordCell(nRecordSide, kGradeGood) +
                         pTracker->GetPlayRecordCell(nRecordSide, kGradeGreat) +
@@ -74,8 +57,6 @@ void NoteEffectMgr::HandleNoteScored(int nUnused, int nSide) {
         return;
     }
 
-    // Finalise by the final judged grade: grade 2 and grade 1 set their judge scores; grade 0 is a
-    // full combo, which triggers the current theme's full-combo layer before setting judge score 0.
     const int nFinalGrade = pTracker->GetPlayRecordCell(nRecordSide, kGradeJust);
     if (nFinalGrade == kFinalGradeMiss) {
         pTracker->SetJudgeScore3(nRecordSide);
@@ -103,15 +84,14 @@ void NoteEffectMgr::ClearNotePositionCache() {
 
 /** @ghidraAddress 0x136e38 */
 const S_VECTOR2 *NoteEffectMgr::GetOrCacheNotePosition(int nTouchId) {
-    // Return the already-cached projected position for this touch id, if present.
     for (RenderEntry &entry : m_aRenderTable) {
         if (entry.nCachedKey == nTouchId) {
             return &entry.cachedPosition;
         }
     }
 
-    // Otherwise claim the last empty slot; a full cache drops the request. The binary's scan is
-    // branchless and keeps overwriting the candidate, so the highest free slot wins.
+    // The binary's scan is branchless and keeps overwriting the candidate, so the highest free
+    // slot wins.
     int nSlot = -1;
     for (int i = 0; i < kRenderEntryCount; ++i) {
         if (m_aRenderTable[i].nCachedKey == -1) {
@@ -122,8 +102,6 @@ const S_VECTOR2 *NoteEffectMgr::GetOrCacheNotePosition(int nTouchId) {
         return nullptr;
     }
 
-    // Find the live touch with this id, normalise its position by the view size it began in,
-    // project it into note-field space, and cache it.
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     const int nActive = pTouchManager->GetActiveTouchCount();
     for (int i = 0; i < nActive; ++i) {
@@ -162,7 +140,6 @@ void NoteEffectMgr::IterateNoteRecords() {
 }
 
 namespace {
-// The note-record flag bits the effect manager queries.
 constexpr unsigned int kNoteFlagScoreExcluded = 1u << 2;
 constexpr unsigned int kNoteFlag40 = 1u << 6;
 } // namespace
@@ -191,25 +168,20 @@ bool NoteEffectMgr::IsNoteFlag40Set(int nIndex) {
 }
 
 namespace {
-// Folds a rand() result into the unit interval (@ghidraAddress 0x3014d0 = 1 / RAND_MAX).
+// @ghidraAddress 0x3014d0
 constexpr float kInverseRandMax = 1.0f / 2147483647.0f;
 
-// The colour-spread lerp table, indexed by the combo count (@ghidraAddress 0x308c4c). Consecutive
-// entries are the lo/hi endpoints a random factor interpolates between to pick the grey-note
-// proportion; higher combos skew towards more grey (colour zero).
+// Consecutive entries are the lo/hi endpoints a random factor interpolates between.
+// @ghidraAddress 0x308c4c
 constexpr float kColorSpreadByCombo[] = {
     0.45f, 0.525f, 0.525f, 0.575f, 0.575f, 0.63f, 0.63f, 0.70f, 0.70f, 0.73f, 0.73f,
     0.77f, 0.77f,  0.80f,  0.80f,  0.83f,  0.83f, 0.85f, 0.85f, 0.91f, 1.0f,  1.0f,
 };
 
-// The four note colours the random assignment draws from.
 constexpr int kNoteColorCount = 4;
-// The number of player sides the full-combo colour-count pass walks.
 constexpr int kSideCount = 2;
-// The two-side versus game types: type zero or two.
 constexpr int kGameTypeVersusA = 2;
 constexpr int kGameTypeVersusB = 0;
-// The colour full-combo notes are forced to.
 constexpr int kFullComboColor = 0;
 } // namespace
 
@@ -222,8 +194,6 @@ void NoteEffectMgr::AssignNoteColors() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const int nCombo = pGameSystem->GetComboCount();
 
-    // Interpolate the grey-note proportion between the combo band's lo/hi endpoints by a random
-    // factor, then clamp it to the unit interval.
     const int nSpreadIndex = nCombo < 0 ? 0 : nCombo;
     const float flLo = kColorSpreadByCombo[nSpreadIndex * 2];
     const float flHi = kColorSpreadByCombo[nSpreadIndex * 2 + 1];
@@ -235,16 +205,12 @@ void NoteEffectMgr::AssignNoteColors() {
         flGreyProportion = 0.0f;
     }
 
-    // The four colours partition the unit interval as {grey², up to grey, up to grey + remainder,
-    // else the fourth}: grey² is colour 0, the next band colour 1, then 2, then 3.
     const float flThreshold0 = flGreyProportion * flGreyProportion;
     const float flThreshold1 = flThreshold0 + (flGreyProportion - flThreshold0);
     const float flThreshold2 = (flGreyProportion - flThreshold0) + flThreshold1;
 
     for (int nIndex = 0; nIndex < m_nNoteCount; ++nIndex) {
         NoteModel *pNote = FindNoteByIndex(nIndex);
-        // A note carrying a locked colour keeps that colour; otherwise it draws a random one from
-        // the colour bands. A missing note object still consumes no random draw only when locked.
         if (pNote != nullptr && pNote->IsColorLocked()) {
             pNote->SetColorKind(pNote->GetLockedColor());
             continue;
@@ -265,8 +231,6 @@ void NoteEffectMgr::AssignNoteColors() {
         }
     }
 
-    // When either player achieved a full combo, force every note on the matching side to colour
-    // zero.
     const bool bUserFullCombo = pGameSystem->GetUserFullCombo();
     const bool bCpuFullCombo = pGameSystem->GetCpuFullCombo();
     if (bUserFullCombo || bCpuFullCombo) {
@@ -291,8 +255,6 @@ void NoteEffectMgr::AssignNoteColors() {
         }
     }
 
-    // The binary then re-tallies the per-colour counts for each side, but discards the totals; the
-    // pass is kept only for its record and note lookups.
     for (int nSide = 0; nSide < kSideCount; ++nSide) {
         int aColorCount[kNoteColorCount] = {};
         for (int nIndex = 0; nIndex < m_nNoteCount; ++nIndex) {
@@ -308,14 +270,12 @@ void NoteEffectMgr::AssignNoteColors() {
 
 /** @ghidraAddress 0x137018 */
 NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
-    // A valid in-range index maps straight to its pooled object (when the pool covers it).
     if (nIndex >= 0 && nIndex < m_nNoteCount) {
         if (m_nPoolCapacity <= nIndex) {
             return nullptr;
         }
         return m_ppNotePool[nIndex];
     }
-    // Otherwise scan the pool for an object whose note index matches.
     for (int i = 0; i < m_nPoolCapacity; ++i) {
         NoteModel *pNote = m_ppNotePool[i];
         if (pNote != nullptr && pNote->GetNoteIndex() == nIndex) {
@@ -325,8 +285,7 @@ NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     return nullptr;
 }
 
-// The note-state bit that marks a note finished; a note survives compaction while any other bit
-// is set.
+// A note survives compaction while any state bit other than this one is set.
 namespace {
 constexpr unsigned int kNoteStateFinishedBit = 0x8;
 } // namespace
@@ -340,7 +299,6 @@ void NoteEffectMgr::ActivateNoteByIndex(int nChartIndex) {
         return;
     }
     NoteModel *pNote = FindNoteByIndex(nChartIndex);
-    // Skip a note that is missing from the pool or already active (its state is non-zero).
     if (pNote == nullptr || pNote->GetState() != 0) {
         return;
     }
@@ -357,14 +315,12 @@ void NoteEffectMgr::ApplyTheme() {
 
 /** @ghidraAddress 0x137124 */
 void NoteEffectMgr::ResetAllNoteModels() {
-    // Reset every pooled note to its pre-play defaults.
     for (int i = 0; i < m_nPoolCapacity; ++i) {
         NoteModel *pNote = m_ppNotePool[i];
         if (pNote != nullptr) {
             pNote->ResetPlayState();
         }
     }
-    // Clear the active list and the running counters.
     for (int i = 0; i < m_nPoolCapacity; ++i) {
         m_ppActiveList[i] = nullptr;
     }
@@ -385,7 +341,6 @@ void NoteEffectMgr::CompactActiveNotes() {
     for (int i = 0; i < m_nActiveCount; ++i) {
         NoteModel *pNote = m_ppActiveList[i];
         if ((static_cast<unsigned int>(pNote->GetState()) & ~kNoteStateFinishedBit) != 0) {
-            // Keep the note, swapping it down to the survivor prefix.
             m_ppActiveList[i] = m_ppActiveList[nSurvivors];
             m_ppActiveList[nSurvivors] = pNote;
             ++nSurvivors;

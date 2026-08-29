@@ -1,18 +1,6 @@
-//
-//  NSString+RB.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (category NSString(RB)). Verified against
-//  the arm64 disassembly. The sizing and drawing helpers re-implement the pre-iOS-7
-//  NSString(UIStringDrawing) API on top of the attributed-string measurement and drawing methods;
-//  each builds its attribute dictionary on the stack via
-//  +[NSDictionary dictionaryWithObjects:forKeys:count:], matching the binary.
-//
-
 #import "NSString+RB.h"
 
-// The reserved characters escaped by -encodeURIComponent, matching JavaScript's encodeURIComponent
-// (the RFC 3986 reserved set plus the percent sign and square brackets).
+// The RFC 3986 reserved set plus the percent sign and square brackets, as JavaScript escapes.
 static NSString *const kURIComponentEscapedCharacters = @"!*'();:@&=+$,/?%#[]";
 
 @implementation NSString (RB)

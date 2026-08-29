@@ -1,13 +1,3 @@
-//
-//  RBMenuNewsTickerView.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuNewsTickerView). The
-//  soft-float CGRect layout, the marquee keyframe timing, and the rbplus:// link routing were
-//  recovered from the arm64 disassembly, whose register/stack float moves the decompiler folds into
-//  pseudo-variables.
-//
-
 #import "RBMenuNewsTickerView.h"
 
 #import <QuartzCore/QuartzCore.h>
@@ -16,69 +6,46 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The news-ticker banner background image, whose height sets the ticker's overall bounds.
 static NSString *const kNewsTickerBackgroundImageName = @"01_music_select/sel_news";
 
-// The leading icon label's text. The binary builds it through a "%@" format rather than using the
-// literal directly.
+// The binary routes the icon text through a format rather than using the literal directly.
 static NSString *const kNewsTickerIconFormat = @"%@";
 static NSString *const kNewsTickerIconText = @"NEWS";
 
-// The point size of the news text, chosen by the active iPad idiom. The pad uses the larger glyph.
 static const CGFloat kNewsTickerFontSizePad = 18.0;
 static const CGFloat kNewsTickerFontSizePhone = 12.0;
 
-// The horizontal inset of the clipping text base view within the ticker, chosen by the iPad idiom.
-// It is also the width consumed by the leading news icon.
 static const CGFloat kNewsTickerTextInsetPad = 100.0;
 static const CGFloat kNewsTickerTextInsetPhone = 50.0;
 
-// The theme index whose news text and background use the light (white-on-black) colour scheme. The
-// two darker themes draw black text on a near-white translucent background.
 enum {
     kNewsTickerThemeLight = 0,
     kNewsTickerThemeDarkOne = 1,
     kNewsTickerThemeDarkTwo = 2,
 };
 
-// The near-white background colour component used by the two darker themes. It is 0xda/0xff
-// rounded to single precision and widened again, which is how the constant sits in the pool.
 static const CGFloat kNewsTickerDarkThemeBackgroundComponent =
     218.0f / 255.0f; /** @ghidraAddress 0x300fa8 */
 static const CGFloat kNewsTickerDarkThemeBackgroundAlpha = 1.0;
 
-// The marquee scroll speed, expressed as the divisor that converts the text's overflow width in
-// points into extra scroll seconds.
 static const CGFloat kNewsTickerScrollPointsPerSecond = 75.0; /** @ghidraAddress 0x300fb0 */
 
-// The fixed number of seconds added to every overflowing marquee scroll on top of the
-// overflow-width term and the base duration.
 static const CGFloat kNewsTickerScrollConstantSeconds = 3.0;
 
-// The two y-coordinates the scrolling text layer's position alternates between. The label's anchor
-// point is its top-left corner, so the parked value drops the text clear of the clipping base view
-// and the visible value seats it against the base view's top edge. Every marquee begins and ends
-// parked, which is why a finished animation leaves the ticker blank until it is restarted.
+// Every marquee begins and ends parked, so a finished animation leaves the ticker blank.
 static const CGFloat kNewsTickerTextLayerParkedY = 40.0; /** @ghidraAddress 0x2ee950 */
 static const CGFloat kNewsTickerTextLayerVisibleY = 0.0;
 
-// The anchor-point x-coordinate the ticker's own layer animates to at startup.
 static const CGFloat kNewsTickerAnchorCenterX = 0.5;
 
-// The anchor-point y-coordinate the ticker's own layer animates to, and the text label's anchor
-// point, both of which the binary pins to the top edge.
 static const CGFloat kNewsTickerAnchorTopY = 0.0;
 
-// The relative time, within a scroll cycle, at which the text sits fully centred.
 static const CGFloat kNewsTickerScrollMidpointFraction = 0.5;
 
-// The animation keys under which the marquee animations are stored on the text layer.
 static NSString *const kNewsTickerAnchorAnimationKey = @"NEWS_INFO_SET_ANCHOR";
 static NSString *const kNewsTickerPositionAnimationKey = @"NEWS_INFO_SET_POSITION";
 static NSString *const kNewsTickerPositionEndAnimationKey = @"NEWS_INFO_SET_POSITION_END";
 
-// The rbplus:// link scheme and the host, path, and query tokens that select each in-app
-// destination.
 static NSString *const kNewsTickerLinkScheme = @"rbplus";
 static NSString *const kNewsTickerLinkHostStore = @"store";
 static NSString *const kNewsTickerLinkHostInfo = @"info";
@@ -89,14 +56,11 @@ static NSString *const kNewsTickerLinkPathWeb = @"web";
 static NSString *const kNewsTickerLinkQuerySeparator = @"=";
 static NSString *const kNewsTickerLinkQueryKeyID = @"id";
 
-// The number of key/value tokens a well-formed "id=value" link query splits into.
 static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
 
 @implementation RBMenuNewsTickerView {
-    // Whether the current link routes to an in-app store, pack, campaign, sequence, or web
-    // destination rather than an external URL. Backs isLinkToStore; it has no accessor property.
     BOOL m_LinkToStore;
-    // A selector slot declared by the class but never read or written by any of its methods.
+    // Declared by the class but never read or written by any of its methods.
     SEL m_Selector;
 }
 
@@ -167,8 +131,7 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     [baseView addSubview:newsLabel];
     self.textView = newsLabel;
 
-    // The text label anchors on its top-left corner, so its layer position is its origin rather
-    // than its centre.
+    // Anchoring top-left makes the layer position the text's origin rather than its centre.
     newsLabel.layer.anchorPoint = CGPointZero;
 
     // The anchor-point animation runs on the ticker's own layer, not the text label's.
@@ -188,15 +151,11 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
 - (float)setText:(NSString *)text LINK:(NSURL *)LINK {
     self.textView.text = text;
     CGSize textSize = [text sizeWithFont:self.font];
-    // The label is sized to the text, not to the base view: only the width comes from the measured
-    // text, while the height is the one the base view's frame left behind.
     self.textView.frame = CGRectMake(0.0, 0.0, textSize.width, self.textBaseView.frame.size.height);
     CGFloat overflow = textSize.width - self.textBaseView.bounds.size.width;
 
     float duration = 0.0;
     if (overflow <= 0.0) {
-        // The text fits: no horizontal travel, so the marquee only lifts the text from its parked
-        // y into view and drops it back at the end.
         CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
         animation.duration = self.baseDuration;
         animation.repeatCount = 0.0;
@@ -221,8 +180,6 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
         self.textView.layer.position = CGPointMake(0.0, kNewsTickerTextLayerParkedY);
         [self.textView.layer addAnimation:animation forKey:kNewsTickerPositionAnimationKey];
     } else {
-        // The text overflows: scroll it left by the overflow distance over a duration proportional
-        // to that distance, plus the fixed and base terms.
         float scrollSeconds =
             overflow / kNewsTickerScrollPointsPerSecond + kNewsTickerScrollConstantSeconds;
         duration = scrollSeconds;

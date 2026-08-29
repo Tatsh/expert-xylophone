@@ -1,11 +1,3 @@
-//
-//  bounds_effect_layer.mm
-//  REFLEC BEAT plus
-//
-//  The play-field bounds effect layer (BoundsEffectLayer). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "bounds_effect_layer.h"
 
 #include <cassert>
@@ -18,52 +10,38 @@
 #include "s_vector2.h"
 
 namespace {
-// The effect size the constructor seeds.
 constexpr float kInitialEffectSize = 1.0f;
 
-// The lane-light alpha the constructor seeds each lane to: fully lit.
 constexpr unsigned char kLaneLightOn = 0xff;
 
-// The fixed anchor and size, in points, every bounds sprite draws with (@ghidraAddress 0x30bf28
-// anchor, 0x30bf2c size).
+// @ghidraAddress 0x30bf28 anchor, 0x30bf2c size
 constexpr float kEffectAnchor = 84.0f;
 constexpr float kEffectSize = 168.0f;
 
-// The bounds atlas cell's UV size (@ghidraAddress 0x30c0c0 U; the V is an inline constant).
+// @ghidraAddress 0x30c0c0
 constexpr float kEffectUvSizeU = 0.041015625f;
 constexpr float kEffectUvSizeV = 0.1640625f;
 
-// The half-turn rotation applied to a sprite on the left bound (a negative x), in radians
-// (@ghidraAddress 0x2fe894).
+// @ghidraAddress 0x2fe894
 constexpr float kMirrorRotation = 3.1415927f;
 
-// The effect atlas for each bounds-effect style (default, limelight, colette).
 constexpr const char *kEffectTextureNames[] = {
     "00_texture/gm_eff", "00_texture/gm_eff_limelight", "00_texture/gm_eff_colette"};
 constexpr int kEffectStyleCount = 3;
 
-// The sprite-batch capacity and its additive blend mode.
 constexpr int kSpriteCapacity = 0x5c;
 constexpr int kAdditiveBlendMode = 1;
 
-// The bounds-effect animation timing and frame table (@ghidraAddress 0x2feff4 lifetime, 0x30bf20
-// frame step). An effect lives kEffectLifetime frame-time units; its timer divided by
-// kEffectFrameStep gives its animation frame, clamped to the last frame.
+// @ghidraAddress 0x2feff4 lifetime, 0x30bf20 frame step
 constexpr float kEffectLifetime = 500.0f;
 constexpr float kEffectFrameStep = 20.833334f;
 constexpr int kEffectFrameCount = 24;
 
-// The animation-frame count each bounds-effect style draws (an effect at or past its style's count
-// has faded out and is not emitted). The default style stops two frames early and the Colette style
-// one frame early, relative to the Limelight style's full run.
 constexpr int kEffectFrameCountByStyle[] = {0x14, 0x17, 0x16};
 
-// The per-bank UV-frame origin table the effect sprites draw from, one row of kEffectFrameCount
-// frames per colour bank, indexed flatly as nBank * kEffectFrameCount + nFrame. The binary keeps
-// this as a load-once function-local static copied from ROM (@ghidraAddress 0x30c0d0). The ROM
-// block holds only 46 entries (bank 1's last two frames are absent); the second bank's final two
-// slots are zero here to keep the flat index in range, matching the empty UV the binary would
-// resolve for the rare limelight effect that survives to its last frame.
+// @ghidraAddress 0x30c0d0
+// The ROM block holds only 46 entries; bank 1's last two slots are zeroed here to keep the flat
+// index in range.
 constexpr S_VECTOR2 kEffectUvOrigins[BoundsEffectLayer::kBankCount][kEffectFrameCount] = {
     {
         {0.0f, 0.6640625f},        {0.041992188f, 0.6640625f}, {0.083984375f, 0.6640625f},
@@ -104,7 +82,6 @@ constexpr S_VECTOR2 kEffectUvOrigins[BoundsEffectLayer::kBankCount][kEffectFrame
 };
 } // namespace
 
-// The process-wide bounds-effect layer, created lazily by shared().
 static BoundsEffectLayer *g_pBoundsEffectLayer = nullptr; // @ghidraAddress 0x3de9b0
 
 /** @ghidraAddress 0x17528c */
@@ -117,8 +94,6 @@ BoundsEffectLayer *BoundsEffectLayer::shared() {
 
 /** @ghidraAddress 0x175210 */
 BoundsEffectLayer::BoundsEffectLayer() {
-    // The base constructor and member initialisers clear the layer; both lane-light alphas start
-    // fully on and the effect size seeds to one.
     m_nLaneLightAlpha0 = kLaneLightOn;
     m_nLaneLightAlpha1 = kLaneLightOn;
     m_flEffectSize = kInitialEffectSize;
@@ -150,7 +125,6 @@ void BoundsEffectLayer::InitializeSprites() {
 void BoundsEffectLayer::SetStyle() {
     RefreshThema();
     m_nStyle = [RBUserSettingData sharedInstance].boundsEffectStyle;
-    // Styles 0..2 pick a themed atlas; any other style keeps the current texture.
     if (m_nStyle >= 0 && m_nStyle < kEffectStyleCount) {
         m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kEffectTextureNames[m_nStyle]);
     }
@@ -163,7 +137,7 @@ void BoundsEffectLayer::CreateBoundsEffect(unsigned int nColor, float flPosX, fl
         InitializeSprites();
     }
     assert(static_cast<int>(nColor) >= 0 && static_cast<int>(nColor) < kBankCount);
-    // Claim the first inactive record in the colour's bank; a full bank drops the effect.
+    // A full bank silently drops the effect.
     for (EffectRecord &effect : m_aEffects[nColor]) {
         if (!effect.bActive) {
             effect.bActive = true;
@@ -180,24 +154,20 @@ void BoundsEffectLayer::Process(float flDelta) {
     m_nSpriteCount = 0;
 
     for (int nBank = 0; nBank < kBankCount; ++nBank) {
-        // Bank 1 draws at the first lane's light alpha, bank 0 at the second lane's.
         const unsigned char nLaneAlpha = nBank == 1 ? m_nLaneLightAlpha0 : m_nLaneLightAlpha1;
         for (EffectRecord &effect : m_aEffects[nBank]) {
             if (!effect.bActive) {
                 continue;
             }
-            // Advance the effect; it dies once its timer passes the lifetime.
             effect.flTimer += flDelta;
             if (effect.flTimer > kEffectLifetime) {
                 effect.bActive = false;
                 continue;
             }
-            // A dark lane draws none of its effects.
             if (nLaneAlpha == 0) {
                 continue;
             }
 
-            // Map the timer to an animation frame, clamped to the frame table's range.
             int nFrame = static_cast<int>(effect.flTimer / kEffectFrameStep);
             if (nFrame < 0) {
                 nFrame = 0;
@@ -205,8 +175,7 @@ void BoundsEffectLayer::Process(float flDelta) {
                 nFrame = kEffectFrameCount - 1;
             }
 
-            // Emit the sprite only while the frame is within this style's animation (an unknown
-            // style, which the sprite build never sets, draws nothing).
+            // An unknown style, which the sprite build never sets, draws nothing.
             if (m_nStyle >= 0 && m_nStyle < kEffectStyleCount &&
                 nFrame < kEffectFrameCountByStyle[m_nStyle]) {
                 const S_VECTOR2 position{effect.flPosX, effect.flPosY};
@@ -215,7 +184,6 @@ void BoundsEffectLayer::Process(float flDelta) {
         }
     }
 
-    // Publish the emitted sprite count into the instancer's draw count.
     m_pSprite->SetSpriteCount(m_nSpriteCount);
 }
 
@@ -244,15 +212,12 @@ void BoundsEffectLayer::SetBoundsEffectSprite(const S_VECTOR2 *pPosition,
 
     m_pSprite->SetSpritePosition(nIndex, *pPosition);
     m_pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{kEffectAnchor, kEffectAnchor});
-    // The width really is the anchor value and not the size: the binary loads 84 once at 0x175934,
-    // passes it as both anchor components, and then reuses that same register as the width at
-    // 0x175954 while loading 168 only for the height. The sprite is therefore half as wide as it
-    // is tall and sits entirely left of its position. Faithful, however odd it reads.
+    // Faithful: the binary reuses the anchor's 84 as the width at 0x175954, so the sprite is half
+    // as wide as it is tall.
     m_pSprite->SetSpriteSize(nIndex, S_VECTOR2{kEffectAnchor, kEffectSize});
     m_pSprite->SetSpriteUvOrigin(nIndex, *pUvOrigin);
     m_pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{kEffectUvSizeU, kEffectUvSizeV});
     m_pSprite->SetSpriteScale(nIndex, flScale, flScale);
-    // A sprite on the left bound (a negative x) is mirrored with a half-turn.
     m_pSprite->SetSpriteRotation(nIndex, pPosition->x < 0.0f ? kMirrorRotation : 0.0f);
     m_pSprite->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, static_cast<unsigned int>(nAlpha));
     ++m_nSpriteCount;

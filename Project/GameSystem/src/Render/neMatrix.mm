@@ -6,25 +6,21 @@
 #import "s_vector3.h"
 #import "vectormath.h"
 
-// The order (row and column count) of the square matrices this module operates on.
 constexpr int kMatrix4Order = 4;
 
-// Element indices of the translation column in a column-major 4x4 matrix.
 enum {
     kMatrixTranslateX = 12,
     kMatrixTranslateY = 13,
     kMatrixTranslateZ = 14,
 };
 
-// Row indices of the rotation basis in a column-major view matrix.
 enum {
     kViewMatrixRowRight = 0,
     kViewMatrixRowUp = 1,
     kViewMatrixRowForward = 2,
 };
 
-// Squared-length threshold below which a vector is treated as zero-length and left
-// unnormalised. In the binary this is the rodata float at 0x2eea50 (0x179abe15 == 1e-24f).
+// @ghidraAddress 0x2eea50
 constexpr float kNormalizeLengthSquaredEpsilon = 1e-24f;
 
 /** @ghidraAddress 0x20cf8 */
@@ -128,14 +124,11 @@ void SetMatrixIdentity(float *pMatrix) {
         0.0f,
         1.0f, //
     };
-    // The binary vectorises this as four constant identity-row stores.
     std::memcpy(pMatrix, kIdentity, sizeof(kIdentity));
 }
 
 /** @ghidraAddress 0x1966c */
 void MakeTranslationMatrix(float *pOutMatrix, const float *pTranslation) {
-    // The binary copies the three identity basis rows, sets the homogeneous element, and stores the
-    // translation column; that is the identity-then-translate the scalar overload already performs.
     MakeTranslationMatrix(pOutMatrix, pTranslation[0], pTranslation[1], pTranslation[2]);
 }
 
@@ -149,9 +142,7 @@ void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z) {
 
 /** @ghidraAddress 0x19990 */
 void MakeOrthoMatrix(float flWidth, float flHeight, float flNear, float flFar, float *pOutMatrix) {
-    // Top-left-origin orthographic projection (column-major): x [0, width] -> [-1, 1], y
-    // [0, height] -> [1, -1] (flipped for screen space), and z [near, far] -> [0, 1]. The binary
-    // zeroes the off-diagonal elements with vector stores.
+    // Top-left-origin projection, so y maps [0, height] -> [1, -1] rather than [-1, 1].
     static const float kZeroMatrix[16] = {};
     std::memcpy(pOutMatrix, kZeroMatrix, sizeof(kZeroMatrix));
     const float flDepth = flFar - flNear;
@@ -167,10 +158,8 @@ void MakeOrthoMatrix(float flWidth, float flHeight, float flNear, float flFar, f
 /** @ghidraAddress 0x199f4 */
 float *
 MakePerspectiveMatrix(float flFovY, float flAspect, float flNear, float flFar, float *pOutMatrix) {
-    // Perspective projection (column-major) from vertical field of view and aspect ratio. The
-    // focal term is tan(fovY / 2); m[11] = -1 supplies the perspective divide. The depth terms use
-    // the engine's own sign convention (positive m[10] and m[14]), not the textbook GL negative
-    // form. The binary zeroes the remaining elements with vector stores.
+    // The depth terms keep the engine's sign convention (positive m[10] and m[14]), not the
+    // textbook GL negative form.
     const float flFocal = std::tan(flFovY * 0.5f);
     const float flDepth = flFar - flNear;
     static const float kZeroMatrix[16] = {};
@@ -188,11 +177,6 @@ float *MakeRotationMatrixX(float flAngle, float *pOut) {
     SetMatrixIdentity(pOut);
     const float flSin = std::sin(flAngle);
     const float flCos = std::cos(flAngle);
-    // Rotate in the Y-Z plane, leaving the X axis fixed (column-major):
-    //   [ 1    0     0    0 ]
-    //   [ 0   cos  -sin   0 ]
-    //   [ 0   sin   cos   0 ]
-    //   [ 0    0     0    1 ]
     pOut[5] = flCos;
     pOut[6] = flSin;
     pOut[9] = -flSin;
@@ -204,13 +188,6 @@ float *MakeRotationMatrixX(float flAngle, float *pOut) {
 float *MakeRotationMatrixZ(float flAngle, float *pOut) {
     const float flSin = std::sin(flAngle);
     const float flCos = std::cos(flAngle);
-    // Rotate in the X-Y plane, leaving the Z axis fixed (column-major). Unlike MakeRotationMatrixX
-    // the binary writes the whole matrix inline instead of calling SetMatrixIdentity, and computes
-    // the sine and cosine together with the combined sincos routine:
-    //   [ cos  -sin   0   0 ]
-    //   [ sin   cos   0   0 ]
-    //   [  0     0    1   0 ]
-    //   [  0     0    0   1 ]
     pOut[0] = flCos;
     pOut[1] = flSin;
     pOut[2] = 0.0f;
@@ -232,13 +209,7 @@ float *MakeRotationMatrixZ(float flAngle, float *pOut) {
 
 /** @ghidraAddress 0x18e40 */
 void MultiplyMatrix4x4(float *pResult, float *pLeft, float *pRight) {
-    // Column-major product pResult = pLeft * pRight. Each result column is a linear
-    // combination of pLeft's four columns, weighted by the matching right-hand column's
-    // components. The binary broadcasts each pRight component across a NEON lane
-    // (fmul-by-lane) and accumulates the four scaled columns (fadd); the loops below are
-    // the scalar equivalent. Like the binary, pLeft is read afresh for every output
-    // column, so the routine is not safe when pResult aliases an operand — ComposeMatrices
-    // copies the accumulator to a temporary for exactly this reason.
+    // pLeft is reread for every output column, so pResult must not alias either operand.
     for (int col = 0; col < kMatrix4Order; ++col) {
         const float *pRightColumn = &pRight[col * kMatrix4Order];
         float *pResultColumn = &pResult[col * kMatrix4Order];
@@ -261,9 +232,7 @@ void ComposeMatrices(float *pAccumulator, float *pSource) {
 
 /** @ghidraAddress 0x18d9c */
 void MultiplyMatrixInPlace(float *pMatrix, float *pRight) {
-    // pMatrix := pMatrix * pRight. As in ComposeMatrices the left operand is copied first, because
-    // MultiplyMatrix4x4 rereads it for every output column and so cannot alias the result. Unlike
-    // ComposeMatrices, the in-place matrix is the left operand here, not the right.
+    // The in-place matrix is the left operand, which MultiplyMatrix4x4 cannot alias.
     float matrixCopy[16];
     std::memcpy(matrixCopy, pMatrix, sizeof(matrixCopy));
     MultiplyMatrix4x4(pMatrix, matrixCopy, pRight);
@@ -271,8 +240,6 @@ void MultiplyMatrixInPlace(float *pMatrix, float *pRight) {
 
 /** @ghidraAddress 0x19660 */
 void SetMatrixTranslation(float *pMatrix, float x, float y, float z) {
-    // Overwrite only the translation column, leaving the rotation/scale block and bottom row
-    // intact.
     pMatrix[kMatrixTranslateX] = x;
     pMatrix[kMatrixTranslateY] = y;
     pMatrix[kMatrixTranslateZ] = z;
@@ -280,8 +247,6 @@ void SetMatrixTranslation(float *pMatrix, float x, float y, float z) {
 
 /** @ghidraAddress 0x197ec */
 void MakeScaleMatrix(float *pOutMatrix, float flScaleX, float flScaleY, float flScaleZ) {
-    // Diagonal scale matrix (column-major); the binary zeroes the off-diagonal elements with vector
-    // stores. Elements [0], [5], and [10] hold the per-axis scale and [15] the homogeneous 1.
     static const float kZeroMatrix[16] = {};
     std::memcpy(pOutMatrix, kZeroMatrix, sizeof(kZeroMatrix));
     pOutMatrix[0] = flScaleX;
@@ -292,12 +257,6 @@ void MakeScaleMatrix(float *pOutMatrix, float flScaleX, float flScaleY, float fl
 
 /** @ghidraAddress 0x19798 */
 float *SetMatrixRotationZ3x3(float *pMatrix, float flAngle) {
-    // Z rotation in the upper-left 3x3 (column-major), leaving the translation column and bottom
-    // row intact. The binary computes the sine and cosine together with the combined sincos
-    // routine.
-    //   [ cos  -sin   0 ]
-    //   [ sin   cos   0 ]
-    //   [  0     0    1 ]
     const float flSin = std::sin(flAngle);
     const float flCos = std::cos(flAngle);
     pMatrix[0] = flCos;
@@ -314,8 +273,6 @@ float *SetMatrixRotationZ3x3(float *pMatrix, float flAngle) {
 
 /** @ghidraAddress 0x19824 */
 void SetMatrixScale3x3(float *pMatrix, float flScaleX, float flScaleY, float flScaleZ) {
-    // Diagonal scale in the upper-left 3x3, zeroing the off-diagonal 3x3 elements and leaving the
-    // translation column and bottom row intact.
     pMatrix[0] = flScaleX;
     pMatrix[1] = 0.0f;
     pMatrix[2] = 0.0f;
@@ -327,8 +284,6 @@ void SetMatrixScale3x3(float *pMatrix, float flScaleX, float flScaleY, float flS
     pMatrix[10] = flScaleZ;
 }
 
-// Writes one basis axis into a view-matrix row: the axis components spread across the three
-// rotation columns, and -dot(eye, axis) into the translation column.
 static inline void SetViewMatrixAxisRow(float *pOut, int row, S_VECTOR3 *pAxis, S_VECTOR3 *pEye) {
     pOut[row] = pAxis->x;
     pOut[row + kMatrix4Order] = pAxis->y;
@@ -338,28 +293,22 @@ static inline void SetViewMatrixAxisRow(float *pOut, int row, S_VECTOR3 *pAxis, 
 
 /** @ghidraAddress 0x19844 */
 float *MakeLookAtMatrix(float *pOut, S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp) {
-    // Camera basis. forward points from the target back towards the eye.
     S_VECTOR3 forward{pEye->x - pTarget->x, pEye->y - pTarget->y, pEye->z - pTarget->z};
     NormalizeVector3(&forward);
 
-    // right = normalize(up x forward). CrossProductVector3 overwrites its first argument, which
-    // starts out holding the caller's up vector.
+    // CrossProductVector3 overwrites its first argument, which holds the caller's up vector.
     S_VECTOR3 right = *pUp;
     CrossProductVector3(&right, &forward);
     NormalizeVector3(&right);
 
-    // up = normalize(forward x right), re-orthogonalising the up vector against the basis.
     S_VECTOR3 up = forward;
     CrossProductVector3(&up, &right);
     NormalizeVector3(&up);
 
-    // The rotation rows hold the basis vectors (the view matrix is the transpose of the camera
-    // orientation); each translation-column entry is -dot(eye, axis).
     SetViewMatrixAxisRow(pOut, kViewMatrixRowRight, &right, pEye);
     SetViewMatrixAxisRow(pOut, kViewMatrixRowUp, &up, pEye);
     SetViewMatrixAxisRow(pOut, kViewMatrixRowForward, &forward, pEye);
 
-    // Bottom row (0, 0, 0, 1).
     pOut[3] = 0.0f;
     pOut[7] = 0.0f;
     pOut[11] = 0.0f;
@@ -369,7 +318,6 @@ float *MakeLookAtMatrix(float *pOut, S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECT
 
 /** @ghidraAddress 0x20e7c */
 void MultiplyVector4ByMatrix(float *pOut, float *pVec4, float *pMatrix) {
-    // Row-vector times column-major matrix: pOut[j] = sum over i of pVec4[i] * pMatrix[i * 4 + j].
     // Every input component is read before any output is written, so an in-place call is safe.
     const float x = pVec4[0];
     const float y = pVec4[1];
@@ -388,9 +336,7 @@ void MultiplyVector4ByMatrixInPlace(float *pVec4, float *pMatrix) {
 
 /** @ghidraAddress 0x194b4 */
 float Matrix4x4Determinant(float *pMatrix) {
-    // Full permutation expansion of the 4x4 determinant: twelve positive product terms summed,
-    // then twelve negative terms subtracted, matching the binary's fmul/fadd accumulation order
-    // (the binary uses separate multiplies and adds, not fused multiply-adds).
+    // The term grouping follows the binary's accumulation order to keep the rounding identical.
     return (pMatrix[3] * pMatrix[6] * pMatrix[9] * pMatrix[12] +
             pMatrix[11] * pMatrix[2] * pMatrix[5] * pMatrix[12] +
             pMatrix[7] * pMatrix[10] * pMatrix[1] * pMatrix[12] +
@@ -419,10 +365,8 @@ float Matrix4x4Determinant(float *pMatrix) {
 
 /** @ghidraAddress 0x18fe0 */
 float *InvertMatrix4x4(float *pMatrix) {
-    // Adjugate-over-determinant inverse in place. A singular matrix (zero determinant) is returned
-    // unchanged. Pure scalar arithmetic. The shared two-factor products below are the ones the
-    // binary computes once and reuses across the cofactors; they are kept so the floating-point
-    // multiplication grouping matches the binary exactly.
+    // A singular matrix is returned unchanged. The shared two-factor products keep the
+    // multiplication grouping identical to the binary's.
     const float flDet = Matrix4x4Determinant(pMatrix);
     if (flDet == 0.0f) {
         return pMatrix;
@@ -509,8 +453,7 @@ float *InvertMatrix4x4(float *pMatrix) {
 
 /** @ghidraAddress 0x20db0 */
 void TransformPointByMatrix(S_VECTOR3 *pPoint, const float *pMatrix) {
-    // Transform a 3D point by a column-major matrix with the perspective divide: the point is taken
-    // as (x, y, z, 1), transformed, then divided by the resulting homogeneous w (assumed non-zero).
+    // The resulting homogeneous w is assumed non-zero.
     const float x = pPoint->x;
     const float y = pPoint->y;
     const float z = pPoint->z;

@@ -741,14 +741,9 @@ private:
      */
     void BeginCustomizeMainAsset();
 
-    // Updates the four result-screen gesture hit-box regions for the frame: for each region, resets
-    // a disabled region, then either claims a fresh touch that presses inside the region's layout
-    // box or tracks its held touch, latching a tap-edge when the held touch lifts inside the box.
     // @ghidraAddress 0x1171a0
     void UpdateGestureTouchTracking();
 
-    // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
-    // full; the shared low-level emit behind the part helpers.
     // @ghidraAddress 0x116808
     void AppendSpriteToSlot(const S_VECTOR2 &position,
                             const S_VECTOR2 &anchor,

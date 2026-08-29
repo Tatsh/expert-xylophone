@@ -84,7 +84,6 @@ public:
     static constexpr int kChannelCount = 2;
 
 private:
-    // Constructs the manager: clears the loaded flags and marks every resource id unloaded.
     // @ghidraAddress 0x1ccf30
     ShotSoundManager();
 

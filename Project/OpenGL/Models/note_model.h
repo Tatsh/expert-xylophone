@@ -734,8 +734,6 @@ private:
     int m_nActiveIndex = {}; // +0x6c: the active segment index (-1 = none).
     int m_nActiveKind2 = {}; // +0x70: a second active segment kind (5 = none).
 
-    // One per-note sub-entry (a hold/slide segment slot): its kind, source note index, and seeded
-    // state, filled by the constructor. The 0x48-byte stride and field roles are from the ctor.
     struct SubEntry {
         int nKind = {};  /*!< The segment kind (5 = none). +0x00 */
         int nIndex = {}; /*!< The source note index (-1 = none). +0x04 */

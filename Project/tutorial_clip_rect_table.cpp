@@ -1,17 +1,6 @@
-//
-//  tutorial_clip_rect_table.cpp
-//  REFLEC BEAT plus
-//
-//  The tutorial artwork atlas clip-rectangle table (g_pTutorialClipRect), seeded at load time.
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
-//  the program image base.
-//
-
 #include <CoreGraphics/CoreGraphics.h>
 
-// The per-texture-type source rectangles into the tutorial artwork atlas, read by
-// -[RBMenuTutorialView getClipRect:]. Seeded once at load by SetupDialogLayoutCoordTable; the
-// consumer views it read-only. @ghidraAddress 0x3de058
+// @ghidraAddress 0x3de058
 extern "C" CGRect g_pTutorialClipRect[34];
 CGRect g_pTutorialClipRect[34] = {};
 

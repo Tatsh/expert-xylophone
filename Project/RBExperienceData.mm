@@ -1,26 +1,12 @@
-//
-//  RBExperienceData.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBExperienceData). Verified
-//  against the arm64 disassembly (the coder msgSends are variadic and their float arguments travel
-//  the soft-float path, so the decompiler drops or garbles them; the takeover point accumulator is
-//  reconstructed from the raw disassembly of -takeoverPoint).
-//
-
 #import "RBExperienceData.h"
 
-#import "RBMacros.h"
-
-// Collaborator classes reached from the persistence, unlock, and takeover paths. Their headers are
-// not yet reconstructed in this tree; the imports resolve once those classes land, matching the
-// speculative-import style already used by AppDelegate.mm, ScoreData.m, and ReplayData.m.
 #import "AppDelegate.h"
 #import "BFCodec.h"
 #import "MusicData.h"
 #import "NSArray+RB.h"
 #import "RBBonusData.h"
 #import "RBCoreDataManager.h"
+#import "RBMacros.h"
 #import "RBMusicManager.h"
 #import "RBUserSettingData.h"
 #import "ScoreData.h"
@@ -57,21 +43,17 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1bd0cc
  */
 - (void)writeLog:(NSString *)message;
-// Reports whether the premium theme identifier is present. This factors out the fast enumeration
-// that @c takeover repeats inline for each cosmetic category.
 - (BOOL)themaContainsPremium;
 
 @end
 
 NS_ASSUME_NONNULL_END
 
-// Archive keys for each persisted field. They match the property names bar the abbreviations here.
 static NSString *const kVersionCoderKey = @"kVersionKey";
 static NSString *const kPointCoderKey = @"kPointKey";
 
 #ifdef ENABLE_PATCHES
-// The balance -getPoint reports in a patched build. RBNumberLabel splits a number into ten digit
-// slots and always draws one fractional digit, so this stays well inside what it can render.
+// Stays inside the ten digit slots RBNumberLabel can draw.
 static const float kPatchedMaxPoint = 999999.0f;
 #endif
 static NSString *const kDataCoderKey = @"kDataKey";
@@ -86,8 +68,7 @@ static NSString *const kMusicItemsCoderKey = @"kMusicItemsKey";
 static NSString *const kThemaItemsCoderKey = @"kThemaItemsKey";
 static NSString *const kInstalledAppliIdDataCoderKey = @"kInstalledAppliIdDataKey";
 
-// Diagnostic log messages. The receiver's @c writeLog: is a stub, so these travel no further than
-// the call, but they are retained here for fidelity with the shipped build.
+// @c writeLog: is a stub, so these travel no further than the call.
 static NSString *const kLogEncodeCheckPoint = @"encode check ng - save";
 static NSString *const kLogEncodeCheckPointB = @"encode check [pointB] NG - save";
 static NSString *const kLogDecodePointDataNull = @"decodepoint - data is null";
@@ -95,67 +76,47 @@ static NSString *const kLogDecodeErrorNoVersion = @"decode error - init without 
 static NSString *const kLogDecodeErrorWithVersion = @"decode error - init with version";
 static NSString *const kLogDecodeError = @"decode error";
 
-// The largest tolerated absolute difference between a point value and the value recovered from its
-// enciphered round trip before a decode error is logged.
 // @ghidraAddress 0x2ee878 (g_flPointRoundTripTolerance)
 constexpr double kPointRoundTripTolerance = 1.0e-5;
 
-// The initial capacity reserved for the mutable dictionary of reward application identifiers and
-// for the mutable buffers that the cipher helpers build.
 constexpr NSUInteger kInstalledAppliIdsCapacity = 20;
 constexpr NSUInteger kCipherBufferCapacity = 128;
 
-// The length in bytes of the random salt word prefixed to enciphered point and reward data.
 constexpr NSUInteger kCipherSaltLength = 4;
 
-// The value @c indexOfObject: returns when an object is absent.
 constexpr NSUInteger kNotFoundIndex = NSNotFound;
 
-// The Limelight theme drives @c point and the Colette theme drives @c pointB. The Classic theme
-// earns no campaign points.
-
-// The minimum clear rank that awards a clear bonus in the takeover point recomputation. It matches
-// the "cleared" threshold applied to each difficulty's stored rank.
 constexpr int kClearedRank = 2;
 
-// The default theme identifiers seeded by @c initialized.
 constexpr int kDefaultThemaIds[] = {0, 1, 2};
 
-// The default unlocked item identifiers seeded by @c initialized.
 constexpr int kDefaultBgmItemIds[] = {15, 1, 0};
 constexpr int kDefaultShotItemIds[] = {0, 1, 2};
 constexpr int kDefaultExprosionItemIds[] = {12, 1, 0};
 constexpr int kDefaultFrameItemIds[] = {14, 7};
 constexpr int kDefaultBackgroundItemIds[] = {13, 6};
 
-// The theme identifier that widens the takeover default items for background music, explosions,
-// frames, and backgrounds.
+// The theme whose presence widens the takeover default items.
 constexpr int kTakeoverPremiumThemaId = 2;
 
-// The premium default item added to a category during takeover when @c kTakeoverPremiumThemaId is
-// present.
 constexpr int kTakeoverPremiumBgmId = 15;
 constexpr int kTakeoverPremiumExprosionId = 12;
 constexpr int kTakeoverPremiumFrameId = 14;
 constexpr int kTakeoverPremiumBackgroundId = 13;
 
-// The base default item unconditionally added to a category during takeover.
 constexpr int kTakeoverBaseBgmId = 1;
 constexpr int kTakeoverBaseExprosionId = 1;
 constexpr int kTakeoverBaseFrameId = 7;
 constexpr int kTakeoverBaseBackgroundId = 6;
 
-// The level-table category indices passed to @c LevelTables::CheckThresholdReached.
 constexpr int kLevelCategoryBgm = 0;
 constexpr int kLevelCategoryShot = 1;
 constexpr int kLevelCategoryExprosion = 2;
 constexpr int kLevelCategoryFrame = 3;
 constexpr int kLevelCategoryBackground = 4;
-// The inclusive upper bound of the level-table category indices the takeover pass scans; indices
-// above @c kLevelCategoryBackground carry no takeover items and fall through to the default case.
+// Indices above @c kLevelCategoryBackground carry no takeover items.
 constexpr int kLevelCategoryMax = 8;
 
-// Takeover level-threshold-gated item identifier tables, one per cosmetic category.
 // @ghidraAddress 0x2ef190 (g_anTakeoverBgmTypeIds)
 constexpr int kTakeoverBgmTypeIds[] = {0, 2, 3, 4, 5, 6};
 // @ghidraAddress 0x2ef274 (g_anTakeoverShotTypeIds)
@@ -168,8 +129,7 @@ constexpr int kTakeoverFrameTypeIds[] = {0, 1, 2, 3, 4, 5, 6};
 // @ghidraAddress 0x2ef52c (g_anTakeoverBackgroundTypeIds)
 constexpr int kTakeoverBackgroundTypeIds[] = {0, 1, 2, 3, 4, 5};
 
-// The default-item baselines @c noUnlocked compares against: a fresh install holds at most this
-// many of each category, and an empty tune set. Any surplus counts as an unlock.
+// A fresh install holds at most this many of each category; any surplus counts as an unlock.
 constexpr NSUInteger kDefaultBgmItemCount = 3;
 constexpr NSUInteger kDefaultShotItemCount = 14;
 constexpr NSUInteger kDefaultExprosionItemCount = 3;
@@ -274,8 +234,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
         }
         self.version = [coder decodeObjectForKey:kVersionCoderKey];
         if (self.version == nil) {
-            // A pre-versioning archive stored only the plain point; stamp the current version,
-            // round trip it through the cipher, and log any drift.
+            // A pre-versioning archive stored only the plain point.
             self.version = GetBundleVersionString();
             NSMutableData *encoded = [self encodePoint:self.point];
             float recovered = [self decodePoint:encoded];
@@ -378,8 +337,8 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 
 - (NSMutableData *)encodePoint:(float)point {
     /** @ghidraAddress 0x1bc554 */
-    // The binary calls the variadic arrayWithObjects: with a single object and the nil terminator,
-    // not the singular arrayWithObject:; the str xzr,[sp] at 0x1bc59c is that terminator.
+    // The binary calls the variadic arrayWithObjects:, not arrayWithObject: (the nil terminator is
+    // the str xzr,[sp] at 0x1bc59c).
     NSArray *boxed = [NSArray arrayWithObjects:[NSNumber numberWithFloat:point], nil];
     NSData *plist = (__bridge_transfer NSData *)CFPropertyListCreateXMLData(
         kCFAllocatorDefault, (__bridge CFPropertyListRef)boxed);
@@ -680,9 +639,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 - (float)getPoint {
     /** @ghidraAddress 0x1bb2fc */
 #ifdef ENABLE_PATCHES
-    // Report a full purse on every theme. The binary reads a different balance per theme and
-    // answers zero on Classic, so patching the raw point property would leave two of the three
-    // themes unchanged. See PATCHES.md.
+    // Report a full purse on every theme; the binary reads a per-theme balance. See PATCHES.md.
     return kPatchedMaxPoint;
 #else
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
@@ -777,7 +734,6 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
     [self save];
 }
 
-// Reports whether the premium theme identifier is present, widening the takeover default items.
 - (BOOL)themaContainsPremium {
     for (NSNumber *item in self.themaItems) {
         if (item.intValue == kTakeoverPremiumThemaId) {

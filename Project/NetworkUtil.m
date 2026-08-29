@@ -1,12 +1,3 @@
-//
-//  NetworkUtil.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class NetworkUtil). Verified against the
-//  arm64 disassembly (the stringWithFormat: argument lists are variadic and dropped by the
-//  decompiler).
-//
-
 #import "NetworkUtil.h"
 
 #import "AppDelegate.h"
@@ -16,28 +7,21 @@
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 
-// The secure API endpoint scheme, host, and the common CGI base path every endpoint is built under,
-// all build-configurable so a build can be pointed at a replacement server; see RBMacros.h.
 static NSString *const kSecureAPIScheme = @RB_API_SCHEME;
 static NSString *const kSecureAPIHost = @RB_API_HOST;
 static NSString *const kSecureAPIBasePath = @RB_API_BASE_PATH;
 
-// The APNs device-token registration endpoint, relative to the CGI base path.
 static NSString *const kTokenSetAPIPath = @"push/token/";
 
-// The searchable-spot campaign-master and list endpoints, relative to the CGI base path.
 static NSString *const kSearchMasterAPIPath = @"search_master/";
 static NSString *const kSearchListAPIPath = @"gamecenter/";
 
-// The device user-info query and the searchable-spot master query format strings.
 static NSString *const kUserInfoFormat = @"uuid=%@&version=%@&device=%@&os=%@&locale=%@";
 static NSString *const kSearchMasterParamFormat = @"target=%@&%@";
 
-// The unlock-catalogue-list and music-unlock query format strings.
 static NSString *const kUnlockListParamFormat = @"target=%@&thema=%@";
 static NSString *const kUnlockMusicParamFormat = @"target=%@&music=%d&key=%d&%@";
 
-// The CGI endpoint paths, relative to the CGI base path, of the remaining authenticated endpoints.
 static NSString *const kPlayedV2APIPath = @"log/play/";
 static NSString *const kUnlockListAPIPath = @"unlock/";
 static NSString *const kUnlockMusicAPIPath = @"unlockmusic/";
@@ -45,7 +29,6 @@ static NSString *const kUnlockedAPIPath = @"unlocked/";
 static NSString *const kTutorialAPIPath = @"tutorial/";
 static NSString *const kStartupAPIPath = @"startup/";
 
-// The startup / web-info query format string.
 static NSString *const kStartupParamFormat = @"target=%@";
 static NSString *const kResourceAPIPath = @"v3/ssl_resource/";
 static NSString *const kTermListAPIPath = @"v3/terms/list/";
@@ -54,13 +37,10 @@ static NSString *const kTermAgreeAPIPath = @"v3/terms/log/";
 static NSString *const kExtendNoteListAPIPath = @"v3/extmusiclist/";
 static NSString *const kExtendNoteInfoAPIPath = @"v3/extmusicinfo/";
 
-// The extend-note list and info query format strings. The list and the user-open info variant carry
-// the device user-info parameters; the non-user-open info variant does not.
 static NSString *const kExtendNoteListParamFormat = @"target=%@&head=%d&limit=%d&%@";
 static NSString *const kExtendNoteInfoParamFormat = @"target=%@&extitem=%d";
 static NSString *const kExtendNoteInfoUserOpenParamFormat = @"target=%@&extitem=%d&%@";
 
-// The store pack/music/campaign and miscellaneous endpoint paths, relative to the CGI base path.
 static NSString *const kLineMessageAPIPath = @"new2/";
 static NSString *const kPackListAPIPath = @"v3/packlist/";
 static NSString *const kPackInfoAPIPath = @"v3/packinfo/";
@@ -72,8 +52,6 @@ static NSString *const kCampaignSerialCheckAPIPath = @"campaign/verify/";
 static NSString *const kManageSortListAPIPath = @"manage_sort/";
 static NSString *const kUserAgeAPIPath = @"v3/age/";
 
-// The store pack/music query format strings. The user-open pack variant and the music query carry
-// the device user-info parameters; the closed pack variant does not.
 static NSString *const kLineMessageParamFormat = @"target=%@&%@";
 static NSString *const kPackListParamFormat = @"target=%@&head=%d&limit=%d&genre=%d&%@";
 static NSString *const kPackInfoParamFormat = @"target=%@&pack=%d";
@@ -81,14 +59,11 @@ static NSString *const kPackInfoUserOpenParamFormat = @"target=%@&pack=%d&%@";
 static NSString *const kMusicInfoParamFormat = @"target=%@&music=%d&%@";
 static NSString *const kManageSortListParamFormat = @"target=%@";
 
-// The suffix appended to the device UUID key before hashing it into the request fingerprint.
 static NSString *const kIdentifierKeySuffix = @"STORE";
 
-// The number of random characters a generated nonce holds per iteration and its formatting.
 static NSString *const kNonceCharFormat = @"%c";
 
 @interface NetworkUtil ()
-// The common device fingerprint query appended to authenticated requests.
 + (NSString *)userInfo;
 @end
 
@@ -133,13 +108,10 @@ static NSString *const kNonceCharFormat = @"%c";
 
 /** @ghidraAddress 0x327b0 */
 + (NSString *)identifierParams {
-    // The fingerprint is computed once from the device UUID key with a fixed suffix and cached for
-    // the lifetime of the process.
     static NSString *sIdentifierParams = nil;
     if (sIdentifierParams == nil) {
 #ifdef ENABLE_PATCHES
-        // The identity, not the list key: those are the same value in the original, and the patched
-        // list key is a fixed one every install would share.
+        // The identity, not the list key, whose patched value is fixed and shared by every install.
         NSString *seed = [RBDeviceIdentityUUID() stringByAppendingString:kIdentifierKeySuffix];
 #else
         NSString *seed = [[AppDelegate musicListKey] stringByAppendingString:kIdentifierKeySuffix];
@@ -195,7 +167,6 @@ static NSString *const kNonceCharFormat = @"%c";
     if (length == 0) {
         return @"";
     }
-    // Draw each character uniformly from the 62-character alphanumeric alphabet.
     static const char kNonceAlphabet[] =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     static const unsigned int kNonceAlphabetSize = 62;

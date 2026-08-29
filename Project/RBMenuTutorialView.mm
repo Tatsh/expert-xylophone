@@ -1,14 +1,3 @@
-//
-//  RBMenuTutorialView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuTutorialView). Verified
-//  against the arm64 disassembly: the soft-float spotlight geometry, the per-step clip-target
-//  selection, and the reveal/reset keyframe groups were recovered from the register moves the
-//  decompiler folds into pseudo-variables. This is an Objective-C++ file because the customize-item
-//  reward path plays a themed sound effect through the C++ SoundEffectManager engine singleton.
-//
-
 #import "RBMenuTutorialView.h"
 
 #include <cmath>
@@ -31,43 +20,29 @@
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
 
-// The view sets itself as the delegate of the spotlight animation groups it builds, and implements
-// -animationDidStop:finished: to advance the walkthrough.
 @interface RBMenuTutorialView () <CAAnimationDelegate>
 @end
 
-// The per-texture-type source rectangles into the tutorial artwork atlas, read by -getClipRect:.
-// Seeded at load time by SetupDialogLayoutCoordTable. @ghidraAddress 0x3de058 (g_pTutorialClipRect)
+// @ghidraAddress 0x3de058 (g_pTutorialClipRect)
 extern "C" CGRect g_pTutorialClipRect[];
 
-// The tutorial message artwork atlas the per-step message and marker clips are cut from.
 static NSString *const kTutorialArtworkImageName = @"10_tutorial/tu_tex01";
 
-// The key under which the bouncing cursor's stay-in-place bob is attached to the cursor layer.
 static NSString *const kCursorAnimationKey = @"here";
 
-// The layer key path the content-view move animation is built on.
 static NSString *const kContentPositionKeyPath = @"position";
 
-// The message content-view dimensions, chosen by the iPad idiom. The default (narrow) variant
-// uses a smaller bubble than the wide variant. These are single precision, matching the
-// contentViewWidth/contentViewHeight properties they are assigned to.
 constexpr float kContentWidthNarrow = 300.0f;
 constexpr float kContentHeightNarrow = 100.0f;
 constexpr float kContentWidthWide = 640.0f;
 constexpr float kContentHeightWide = 300.0f;
 
-// The experience points granted once, the first time the customize-item tutorial step is reached.
 constexpr float kCustomizeTutorialRewardPoints = 1000.0f;
 
-// The value the persisted tutorial-status map stores once a step has been seen.
 constexpr unsigned int kTutorialSeenValue = 1;
 
-// The themed sound-effect slot played when the customize-item reward is first granted.
 constexpr int kSoundEffectDecide = 9;
 
-// Clip-target texture-type identifiers, indexing the per-step message-artwork rectangle table read
-// by -getClipRect:. The message, cursor, and touch-marker clips share this table.
 enum {
     kTutorialTexTypeCursor = 0x19,
     kTutorialTexTypeTouch = 0x1a,
@@ -80,9 +55,6 @@ enum {
     kTutorialTexTypeCornerBR = 0x21,
 };
 
-// Tutorial step identifiers, as mirrored into -tutorialStatus. The music-select steps occupy the
-// low range, the in-play steps the middle range, and the customize steps the high range. The step
-// value selects which control the spotlight points at in -startTutorialWithType:withAnimation:.
 enum {
     kTutorialStepMusicSelectA = 0,
     kTutorialStepMusicSelectB = 1,
@@ -111,67 +83,48 @@ enum {
     kTutorialStepNone = 0x28,
 };
 
-// The three difficulty buttons the in-play tutorial highlights, in order.
 enum {
     kDifficultyButtonBasic = 0,
     kDifficultyButtonMedium = 1,
     kDifficultyButtonHard = 2,
 };
 
-// The fade-in/fade-out overlay animation duration.
 constexpr NSTimeInterval kOverlayFadeDuration = 0.25;
 
-// Rotation dims the whole overlay to half opacity behind the black cover.
 constexpr CGFloat kRotationDimAlpha = 0.5;
 
-// The spotlight rectangle is snapped a half-pixel out when its origin is not already pixel-aligned.
 constexpr CGFloat kSpotlightPixelSnap = 0.5;
 constexpr CGFloat kSpotlightPixelGrow = 1.0;
 
-// The gap left between the spotlight and the message content view when the content view has to be
-// slid clear of it.
 constexpr CGFloat kContentViewSpotlightGap = 10.0;
 
-// The message-window layer is inset within the content view by a idiom-dependent margin.
 constexpr CGFloat kMessageWindowInsetXWide = 20.0;
 constexpr CGFloat kMessageWindowInsetXNarrow = 26.0;
 constexpr CGFloat kMessageWindowInsetYWide = 16.0;
 constexpr CGFloat kMessageWindowInsetYNarrow = 8.0;
 
-// On the narrow idiom the message window is pushed back left of the content view's centre by this
-// fraction of its own width.
 constexpr CGFloat kMessageWindowNarrowOffsetScale = -0.85; // @ghidraAddress 0x308cb8
 
-// The pastel bubble hangs below the message window's top edge by this multiple of its own height,
-// chosen by the iPad idiom. The wide value is an fmov immediate rather than a pool load.
 constexpr CGFloat kPastelDropScaleWide = 1.5;
 constexpr CGFloat kPastelDropScaleNarrow = 0.8; // @ghidraAddress 0x2eea40
 
-// On the narrow idiom the pastel bubble is also nudged left by a third of its own width.
 constexpr CGFloat kPastelNarrowInsetDivisor = 3.0;
 
-// The message layer is sized from the decide-step message artwork rectangle, read straight out of
-// the clip table rather than through -getClipRect:. The wide idiom takes the full-size entry; the
-// narrow idiom takes its own entry at half scale.
 constexpr unsigned int kTutorialClipRectMessageWide = 9;
 constexpr unsigned int kTutorialClipRectMessageNarrow = 10;
 constexpr CGFloat kNarrowClipRectScale = 0.5;
 
-// The bouncing cursor's stay-in-place bob runs for half a second and never repeats.
 constexpr CGFloat kCursorBobDuration = 0.5;
 constexpr int kCursorBobRepeatCount = 0;
 
-// The overlay and its full-cover tap target flex in every direction.
 // @ghidraAddress 0x310450 (g_dwAutoresizingMaskFlexibleAll)
 constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// The reveal arms of -startAnimation: (0x13de2c) and the snap arms of -resetAnimation: (0x13f7f0).
-// The binary emits each of these inline inside its parent, and the class carries no selector for
-// them, so they are file-static functions rather than methods: adding a method here would invent
-// runtime metadata the shipped class does not have.
+// The reveal arms of -startAnimation: (0x13de2c) and the snap arms of -resetAnimation: (0x13f7f0),
+// which the binary emits inline with no selector of their own.
 static inline void RevealBubbleOnly(RBMenuTutorialView *view);
 static inline void RevealBubbleAndMessage(RBMenuTutorialView *view);
 static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect targetFrame);
@@ -200,9 +153,8 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
 - (void)dealloc {
     /** @ghidraAddress 0x140cd0 */
-    // The binary's -dealloc only chains to [super dealloc], which ARC does automatically. The
-    // strong subview ivars and the weak layer/view references are cleared by the compiler-generated
-    // .cxx_destruct (0x141334).
+    // The binary's -dealloc only chains to [super dealloc], which ARC does automatically; the
+    // ivars are cleared by the compiler-generated .cxx_destruct (0x141334).
 }
 
 #pragma mark - Layout
@@ -215,7 +167,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
     BOOL narrow = !IsPad();
 
-    // The dimming base fills the whole overlay at half opacity and hosts the eight grey layers.
     self.baseView = [[UIImageView alloc] initWithFrame:self.frame];
     self.baseView.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -224,7 +175,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
     self.messageImage = [UIImage imageWithName:kTutorialArtworkImageName useCache:NO];
 
-    // The message content view is centred in the overlay at its idiom-derived size.
     self.contentView =
         [[UIView alloc] initWithFrame:CGRectMake(self.width * 0.5 - self.contentViewWidth * 0.5f,
                                                  self.height * 0.5 - self.contentViewHeight * 0.5f,
@@ -232,7 +182,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
                                                  self.contentViewHeight)];
     [self addSubview:self.contentView];
 
-    // The framed message-window layer holds the message artwork window.
     CALayer *windowLayer = [CALayer layer];
     UIImage *windowClip =
         narrow ?
@@ -256,7 +205,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     [self.contentView.layer addSublayer:windowLayer];
     self.messageWindowLayer = windowLayer;
 
-    // The pastel speech bubble sits beside the window layer.
     RBTutorialPastelLayer *pastel = [[RBTutorialPastelLayer alloc] init];
     [pastel setupView:self.messageImage];
     if (narrow) {
@@ -275,7 +223,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     [self.contentView.layer addSublayer:pastel];
     self.pastelLayer = pastel;
 
-    // The message-text layer sits inside the window layer, inset by a iPad idiom margin.
     CALayer *messageLayer = [CALayer layer];
     messageLayer.anchorPoint = CGPointMake(0.5, 0.5);
     CGRect windowFrame = self.messageWindowLayer.frame;
@@ -297,20 +244,17 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     [self.contentView.layer addSublayer:messageLayer];
     self.messageLayer = messageLayer;
 
-    // The bouncing cursor image marks the highlighted control.
     UIImage *cursorClip =
         [self.messageImage clipImageWithRect:[self getClipRect:kTutorialTexTypeCursor]];
     self.cursorView = [[UIImageView alloc] initWithImage:cursorClip];
     self.cursorView.hidden = YES;
     [self addSubview:self.cursorView];
 
-    // The pulsing touch marker alternates between two frames.
     UIImage *touchClip =
         [self.messageImage clipImageWithRect:[self getClipRect:kTutorialTexTypeTouch]];
     UIImage *touchFrameClip =
         [self.messageImage clipImageWithRect:[self getClipRect:kTutorialTexTypeTouchFrame]];
-    // Both dimensions come from the first frame; the second frame's clip only supplies an
-    // animation image.
+    // The frame size comes from the first clip only; the second supplies just an animation image.
     self.touchView = [[UIImageView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, touchClip.size.width, touchClip.size.height)];
     self.touchView.animationImages = @[ touchClip, touchFrameClip ];
@@ -319,8 +263,7 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     self.touchView.hidden = YES;
     [self addSubview:self.touchView];
 
-    // The eight grey layers dim everything but the spotlight hole. The four quadrant layers cover
-    // the outer regions; the four corner layers trim the rounded hole edges.
+    // The grayC* corner layers trim the rounded spotlight-hole edges; the rest are quadrants.
     self.grayTL = [self addGrayLayerToBase];
     self.grayTR = [self addGrayLayerToBase];
     self.grayBL = [self addGrayLayerToBase];
@@ -330,8 +273,7 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     self.grayCBL = [self addGrayCornerLayerToBase:kTutorialTexTypeCornerBL];
     self.grayCBR = [self addGrayCornerLayerToBase:kTutorialTexTypeCornerBR];
 
-    // The four quadrant layers start pushed fully off the overlay, so nothing is dimmed until a
-    // spotlight is laid out.
+    // The quadrants start pushed off the overlay so nothing is dimmed until a spotlight exists.
     self.grayTL.frame = CGRectMake(0.0, -self.height, self.width, self.height);
     self.grayTR.frame = CGRectMake(self.width, 0.0, self.width, self.height);
     self.grayBR.frame = CGRectMake(0.0, self.height, self.width, self.height);
@@ -350,7 +292,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
                                     cornerClip.size.width,
                                     cornerClip.size.width);
 
-    // The opaque black full-cover tap target sits on top and absorbs the tap that advances a step.
     self.fullCoverView = [[UIView alloc] initWithFrame:self.frame];
     self.fullCoverView.backgroundColor = UIColor.blackColor;
     self.fullCoverView.alpha = 0.0;
@@ -360,7 +301,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     [self addTarget:self action:@selector(tap:) forControlEvents:UIControlEventTouchUpInside];
 }
 
-// Build a flat grey quadrant layer and add it to the base view's layer.
 - (CALayer *)addGrayLayerToBase {
     CALayer *layer = [CALayer layer];
     // The original spelled this out as colorWithRed:0 green:0 blue:0 alpha:1.
@@ -369,7 +309,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     return layer;
 }
 
-// The grey spotlight layers, in the order the teardown clears them.
 - (NSArray<CALayer *> *)grayLayers {
     return @[
         self.grayTL,
@@ -383,8 +322,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     ];
 }
 
-// Build a rounded-corner grey trim layer from the given artwork clip and add it to the base view's
-// layer, starting hidden.
 - (CALayer *)addGrayCornerLayerToBase:(unsigned int)texType {
     CALayer *layer = [CALayer layer];
     UIImage *cornerClip = [self.messageImage clipImageWithRect:[self getClipRect:texType]];
@@ -441,9 +378,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
         }];
 }
 
-// Fully tear the overlay down after the fade-out completes: stop and delete every layer, clear the
-// grey layers' contents, close the customize popup if that was the final step, detach from the menu
-// hub, and remove from the superview.
 - (void)teardown {
     /** @ghidraAddress 0x139fdc */
     self.animating = NO;
@@ -476,8 +410,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
 - (void)tap:(id)sender {
     /** @ghidraAddress 0x13aac4 */
-    // A tap dismisses the overlay only outside the music-select walkthrough and outside the running
-    // customize walkthrough (up to its final visible step).
     if ([RBTutorialManager isTutorialMusicselect]) {
         return;
     }
@@ -502,8 +434,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     [self stopTouchAnimation:self];
     self.clipTargetForTouch = NO;
 
-    // The customize-item step grants a one-off experience reward and plays the decide sound the
-    // first time it is reached.
     if (tutorialType == kTutorialStepSettingButton) {
         RBUserSettingData *settings = [RBUserSettingData sharedInstance];
         if ([settings getTutorialStatus:kTutorialStepSettingButton] != kTutorialSeenValue) {
@@ -518,13 +448,10 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     [RBTutorialManager updateStatus:static_cast<RBTutorialStatus>(self.tutorialStatus)];
     self.animating = YES;
 
-    // The clip-root view is one of several step-specific provider views (the difficulty selector,
-    // the customize popup, and so on). The binary messages its per-step button getters through a
-    // bare view with no shared protocol, so they are dispatched dynamically here too.
+    // The per-step button getters live on several unrelated provider views with no shared
+    // protocol, so the binary dispatches them dynamically through a bare view.
     id clipRoot = self.clipRootView;
 
-    // touchAnim shows the pulsing touch marker; cursorAnim shows the bouncing cursor; stay keeps
-    // the content view where it is rather than nudging it clear of the spotlight.
     BOOL touchAnim = NO;
     BOOL cursorAnim = NO;
     BOOL stay = NO;
@@ -654,8 +581,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
 #pragma mark - Spotlight layout
 
-// Convert the highlighted control's frame into this view's coordinates and store it as the
-// spotlight clip rectangle. Called only when a clip target exists.
 - (void)setClipRect {
     /** @ghidraAddress 0x13b974 */
     if (self.clipTargetView == nil) {
@@ -668,10 +593,8 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 - (void)layoutBackground:(UIView *)targetView withAnimation:(BOOL)withAnimation {
     /** @ghidraAddress 0x13ba8c */
     if (targetView == nil) {
-        // No spotlight: dim the whole overlay opaque and hide the grey cut-out layers.
         [CATransaction begin];
-        // The binary never reads withAnimation: it passes a literal zero duration here, and the
-        // spotlight branch below sets no duration at all.
+        // The binary never reads withAnimation; it passes a literal zero duration here.
         [CATransaction setAnimationDuration:0.0];
         [CATransaction
             setAnimationTimingFunction:[CAMediaTimingFunction
@@ -690,12 +613,9 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
         return;
     }
 
-    // Convert the highlighted control's frame into this view's coordinates, snapping any fractional
-    // origin a half-pixel out so the spotlight aligns to the pixel grid.
     CGRect targetRect = [targetView.superview convertRect:targetView.frame toView:self];
     CGRect clip = targetRect;
-    // Snap only when the origin is not already on an integral pixel boundary. The test narrows to
-    // single precision and floors (fcvt/frintm), rather than truncating towards zero.
+    // The test narrows to single precision and floors (fcvt/frintm) rather than truncating.
     if (static_cast<double>(std::floor(static_cast<float>(targetRect.origin.x))) !=
         targetRect.origin.x) {
         clip.origin.x = targetRect.origin.x - kSpotlightPixelSnap;
@@ -724,8 +644,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     self.grayCBR.hidden = NO;
 
     CGRect spot = self.clipRect;
-    // The four quadrant layers butt against the four spotlight edges; the four corner layers trim
-    // the rounded hole corners.
     self.grayTL.frame = CGRectMake(spot.origin.x + spot.size.width - self.width,
                                    spot.origin.y - self.height,
                                    self.width,
@@ -769,14 +687,10 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     CGRect content = self.contentView.frame;
     CGRect spot = self.clipRect;
 
-    // Unless the content view actually has to move, the reveal is handed CGRectZero rather than the
-    // content view's own frame; -startAnimation:/-resetAnimation: test for exactly that to decide
-    // whether to run the move group.
+    // CGRectZero means "no move": -startAnimation:/-resetAnimation: test for it to decide whether
+    // to run the move group.
     CGRect placed = CGRectZero;
 
-    // When the content view would overlap the spotlight (and the step does not force it to stay),
-    // slide it clear to whichever side of the screen midline leaves the most room, clamped to the
-    // overlay bounds.
     if (spot.origin.y <= content.origin.y + content.size.height && !stay &&
         content.origin.y <= spot.origin.y + spot.size.height) {
         CGFloat spotBottom = spot.origin.y + spot.size.height;
@@ -859,8 +773,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
 #pragma mark - Message reveal animations
 
-// Remove the animations from a layer and each of its sublayers, then wipe the layer's own
-// animations. Does nothing when the layer has no animation keys.
 - (void)animationDelete:(CALayer *)layer {
     /** @ghidraAddress 0x13dc6c */
     if (layer.animationKeys == nil || layer.animationKeys.count == 0) {
@@ -874,7 +786,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
 
 - (void)startAnimation:(CGRect)targetFrame {
     /** @ghidraAddress 0x13de2c */
-    // Clear any previous message-layer animations tagged for removal, then rebuild the reveal.
     for (CALayer *sublayer in self.messageLayer.sublayers) {
         if ([sublayer.name isEqualToString:self.showLayerTag]) {
             [sublayer removeAllAnimations];
@@ -882,7 +793,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     }
     [self animationDelete:self.contentView.layer];
 
-    // Position the message layer for the current step's message clip within the window layer.
     CGRect messageClip = [self getClipRect:[self getTextureType]];
     CGSize atlasSize = self.messageImage.size;
     CGRect windowFrame = self.messageWindowLayer.frame;
@@ -914,11 +824,8 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
     }
 }
 
-// The message-select intro and the no-target step just pop the pastel bubble, window, and message
-// in with a bound-scale group; no content-view move.
 static inline void RevealBubbleOnly(RBMenuTutorialView *view) {
-    // The bound-bob group is the pastel bubble's, not the window's: the binary builds it first and
-    // hands it to -pastelLayer, and it is the group that carries the delegate.
+    // The pastel group, not the window's, carries the delegate that ends the step.
     CAAnimationGroup *pastelGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *pastelFade = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                               toValue:1.0
@@ -961,8 +868,7 @@ static inline void RevealBubbleOnly(RBMenuTutorialView *view) {
                                                                                  delay:0.2
                                                                               duration:0.1];
     messageGroup.animations = @[ messageFade ];
-    // The fade must finish at the group end (0.2 + 0.1); starting it at 0.3 would place it exactly
-    // at the boundary, so the clip would drop it and the text would never appear.
+    // The group must reach 0.2 + 0.1 or the clip drops the fade and the text never appears.
     messageGroup.duration = 0.3;
     messageGroup.removedOnCompletion = NO;
     messageGroup.fillMode = kCAFillModeForwards;
@@ -973,8 +879,6 @@ static inline void RevealBubbleOnly(RBMenuTutorialView *view) {
     [view.messageLayer addAnimation:messageGroup forKey:nil];
 }
 
-// A step whose content-view move is zero: fade the message layer in with a bound bob on the pastel
-// bubble.
 static inline void RevealBubbleAndMessage(RBMenuTutorialView *view) {
     CAAnimationGroup *messageGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *messageFadeOut = [RBAnimationFactory createFadeAnimWithFromValue:0.0
@@ -986,7 +890,6 @@ static inline void RevealBubbleAndMessage(RBMenuTutorialView *view) {
                                                                                    delay:0.2
                                                                                 duration:0.1];
     messageGroup.animations = @[ messageFadeOut, messageFadeIn ];
-    // The group runs exactly as long as its last animation ends: 0.2 + 0.1.
     messageGroup.duration = 0.3;
     messageGroup.removedOnCompletion = NO;
     messageGroup.fillMode = kCAFillModeForwards;
@@ -1007,9 +910,6 @@ static inline void RevealBubbleAndMessage(RBMenuTutorialView *view) {
     [view.pastelLayer addAnimation:pastelGroup forKey:nil];
 }
 
-// A step that also slides the content view to its new place: run the fade/scale groups and move the
-// content-view layer from its current position to the target frame.
-// This is the arm every music-select step that nudges the content view takes.
 static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect targetFrame) {
     CGPoint contentOrigin = CGPointMake(view.contentView.x, view.contentView.y);
 
@@ -1023,7 +923,6 @@ static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect t
                                                                                    delay:0.6
                                                                                 duration:0.1];
     messageGroup.animations = @[ messageFadeOut, messageFadeIn ];
-    // The text fades in only after the window has finished its scale swap: 0.6 + 0.1.
     messageGroup.duration = 0.7;
     messageGroup.removedOnCompletion = NO;
     messageGroup.fillMode = kCAFillModeForwards;
@@ -1046,8 +945,8 @@ static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect t
                                                                           delay:0.5
                                                                        duration:0.3];
     pastelGroup.animations = @[ pastelScaleUp, pastelScaleDown, pastelBound ];
-    // A CAAnimationGroup clips its children to its own duration, so this must reach the end of the
-    // bound bob (0.5 + 0.3) or the bubble is frozen shrunk by the forwards fill.
+    // A group clips its children, so this must reach the bound bob's end (0.5 + 0.3) or the
+    // forwards fill freezes the bubble shrunk.
     pastelGroup.duration = 0.8;
     pastelGroup.removedOnCompletion = NO;
     pastelGroup.fillMode = kCAFillModeForwards;
@@ -1066,8 +965,7 @@ static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect t
                                                                                       delay:0.4
                                                                                    duration:0.2];
     windowGroup.animations = @[ windowScaleUp, windowScaleDown ];
-    // Must reach the end of the scale restore (0.4 + 0.2). A shorter duration clips the restore
-    // away, and the forwards fill then leaves the quote box collapsed to zero width for good.
+    // Must reach 0.4 + 0.2 or the forwards fill leaves the quote box collapsed to zero width.
     windowGroup.duration = 0.6;
     windowGroup.removedOnCompletion = NO;
     windowGroup.fillMode = kCAFillModeForwards;
@@ -1085,8 +983,7 @@ static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect t
     [view.messageWindowLayer addAnimation:windowGroup forKey:nil];
     [view.messageLayer addAnimation:messageGroup forKey:nil];
 
-    // Snap the content view to the target frame once the bubble has finished shrinking. The move is
-    // effectively instant (0.01s) rather than a visible slide.
+    // The 0.01s move is effectively instant rather than a visible slide.
     __weak UIView *weakContentView = view.contentView;
     [UIView animateWithDuration:0.01
         delay:0.3
@@ -1103,8 +1000,6 @@ static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect t
 
 - (void)resetAnimation:(CGRect)targetFrame {
     /** @ghidraAddress 0x13f7f0 */
-    // The no-animation counterpart of -startAnimation:; snap every layer straight to its final,
-    // fully opaque state.
     for (CALayer *sublayer in self.messageLayer.sublayers) {
         if ([sublayer.name isEqualToString:self.showLayerTag]) {
             [sublayer removeAllAnimations];
@@ -1142,8 +1037,6 @@ static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect t
     }
 }
 
-// Snap the window and pastel layers fully opaque and unscaled, moving the content-view layer to the
-// target frame's origin without animation.
 static inline void SnapContentViewOpaqueMovingTo(RBMenuTutorialView *view, CGRect targetFrame) {
     CGPoint contentOrigin = CGPointMake(view.contentView.x, view.contentView.y);
     [CATransaction begin];
@@ -1160,7 +1053,6 @@ static inline void SnapContentViewOpaqueMovingTo(RBMenuTutorialView *view, CGRec
     view.contentView.layer.opacity = 1.0;
 }
 
-// Snap the window and pastel layers fully opaque and unscaled without moving the content view.
 static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
@@ -1176,8 +1068,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
 
 - (unsigned int)getTextureType {
     /** @ghidraAddress 0x14040c */
-    // Map the live tutorial step to the message-artwork texture-type index. The decide step splits
-    // by device idiom; the rest are a fixed remap.
     switch (self.tutorialStatus) {
     case kTutorialStepMusicSelectA:
     case kTutorialStepMusicSelectB:
@@ -1219,8 +1109,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
 
 - (CGRect)getClipRect:(unsigned int)texType {
     /** @ghidraAddress 0x140544 */
-    // Look up the artwork rectangle for the texture type in the per-step clip table. The table
-    // holds the pad's rectangles; off the pad every one is halved.
     CGRect rect = g_pTutorialClipRect[texType];
     if (!IsPad()) {
         rect.origin.x *= 0.5;
@@ -1239,9 +1127,7 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
                                       delay:(double)delay
                                    duration:(double)duration {
     /** @ghidraAddress 0x1405c8 */
-    // Build a grouped keyframe move: an ease-in position.x and position.y keyframe pair driving the
-    // content-view layer from fromValue to toValue. The keyPath argument names the group; the two
-    // component key paths are fixed at position.x and position.y.
+    // The keyPath argument is unused; the component key paths are fixed at position.x/position.y.
     CAKeyframeAnimation *xAnim = [CAKeyframeAnimation animationWithKeyPath:@"position.x"];
     xAnim.beginTime = delay;
     xAnim.duration = duration;
@@ -1281,7 +1167,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
     }
 
     if (self.clipRect.size.width == 0.0) {
-        // No spotlight: any tap advances the step.
         self.tutorialStatus = self.tutorialStatus + 1;
         if (self.tutorialStatus == kTutorialStepSettingButton &&
             [[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStepSettingButton] ==
@@ -1293,8 +1178,7 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
     }
 
     if (!self.clipTargetForTouch) {
-        // A spotlight that does not pass touches through: any tap advances the step, skipping the
-        // double-button step on the phone (narrow) layout, which has no DOUBLE-play button.
+        // The phone layout has no DOUBLE-play button, so its step is skipped.
         self.tutorialStatus = self.tutorialStatus + 1;
         if (!IsPad() && self.tutorialStatus == kTutorialStepDoubleButton) {
             self.tutorialStatus = self.tutorialStatus + 1;
@@ -1303,8 +1187,7 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
         return self;
     }
 
-    // A spotlight that passes touches through: swallow the tap only when it lands inside the
-    // spotlight (so the highlighted control receives it).
+    // Returning nil lets a tap inside the spotlight fall through to the highlighted control.
     CGRect spot = self.clipRect;
     BOOL inside = spot.origin.x <= point.x && point.x <= spot.origin.x + spot.size.width &&
                   spot.origin.y <= point.y && point.y <= spot.origin.y + spot.size.height;

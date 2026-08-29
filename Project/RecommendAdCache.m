@@ -7,31 +7,24 @@
 #import "RecommendCore.h"
 #import "RecommendWebAPI.h"
 
-// Advert-type identifiers returned by RecommendAdData and used to pick the banner list, the URL
-// key, and the HTML template.
 typedef enum {
     RecommendAdCacheAdTypeBanner = 2,
     RecommendAdCacheAdTypeIcon = 3,
     RecommendAdCacheAdTypeInterstitial = 5,
 } RecommendAdCacheAdType;
 
-// The result of caching a single banner image.
 typedef enum {
     RecommendAdCacheBannerResultFailed = 0,
     RecommendAdCacheBannerResultDownloaded = 1,
     RecommendAdCacheBannerResultAlreadyCached = 2,
 } RecommendAdCacheBannerResult;
 
-// The Applilink error code reported when the advert cache cannot be created.
 static const NSInteger kRecommendAdCacheErrorCodeCacheCreate = 0x40b;
 
-// The amount by which a display counter is incremented per impression.
 static const int kRecommendAdCacheDisplayCountIncrement = 1;
 
-// The initial capacity of the per-record target-URL parameter dictionary.
 static const NSUInteger kRecommendAdCacheTargetParamCapacity = 13;
 
-// A banner image older than one day is treated as expired and removed from the cache.
 static const NSTimeInterval kRecommendAdCacheBannerImageTtlSeconds = 86400.0;
 
 #pragma mark - NSUserDefaults keys
@@ -104,7 +97,6 @@ static NSString *const kRecommendAdCacheFormatZeroMatch =
 static NSString *const kRecommendAdCacheUnknownAdTypeMessage =
     @"advertising type is unknown problem";
 
-// The user-info keys the cache-creation errors file their strings under.
 static NSString *const kErrorUserInfoKey = @"Error";
 static NSString *const kSettingUserInfoKey = @"Setting";
 
@@ -368,7 +360,6 @@ static NSString *const kSettingUserInfoKey = @"Setting";
     NSArray *components = [path componentsSeparatedByString:kRecommendAdCacheFormatPathSeparator];
     NSError *error = nil;
     for (NSString *component in components) {
-        // The final path component is the file name itself; only the directory parts are created.
         if ([component isEqualToString:file]) {
             continue;
         }

@@ -17,59 +17,45 @@ namespace ne {
 
 namespace {
 
-// The scale mapping a normalised [0, 1] UV coordinate to the signed 16-bit value stored per vertex
-// (@ghidraAddress 0x2eed04 for U as a float, 0x2eed08 for V as a double; both are 32767).
+// @ghidraAddress 0x2eed04
+// @ghidraAddress 0x2eed08
 constexpr double kUvPackScale = 32767.0;
-// The divisor normalising an 8-bit colour channel to the [0, 1] alpha weight (@ghidraAddress
-// 0x2eed00).
+// @ghidraAddress 0x2eed00
 constexpr float kColorChannelMax = 255.0f;
-// The number of quad corners per sprite and the interleaved per-vertex byte stride (a 2D position,
-// a packed short2 UV, and a packed RGBA8 colour).
 constexpr int kQuadCorners = 4;
 constexpr int kVertexStride = 0x10;
-// The number of triangle-list indices per sprite (two triangles).
 constexpr int kIndicesPerSprite = 6;
-// The engine primitive index for a triangle list.
 constexpr int kPrimitiveTriangles = 6;
 
-// The neIGLES render-capability indices the sprite pass touches by name; every capability from
-// kEnableAlphaTest + 1 through kEnableStateResetMax is force-disabled in the state reset.
 enum {
-    kEnableAlphaTest = 0,        // GL_ALPHA_TEST: disabled.
-    kEnableBlend = 1,            // GL_BLEND: enabled for the sprite pass.
-    kEnableStateResetMax = 0x21, // The last general capability cleared by the reset loop.
-    kEnableTexture2d = 0x22,     // GL_TEXTURE_2D: on only when the batch has a texture.
-    kEnableMatrixPalette = 0x23, // GL_MATRIX_PALETTE_OES: on for the per-instance-matrix slow path.
+    kEnableAlphaTest = 0,
+    kEnableBlend = 1,
+    kEnableStateResetMax = 0x21,
+    kEnableTexture2d = 0x22,
+    kEnableMatrixPalette = 0x23,
 };
 
-// The neIGLES vertex-array client-state indices the sprite pass toggles.
 enum {
-    kClientColor = 0,       // The colour array.
-    kClientMatrixIndex = 1, // The palette matrix-index array.
-    kClientNormal = 2,      // The normal array (always off here).
-    kClientTexCoord = 4,    // The texture-coordinate array.
-    kClientVertex = 5,      // The position array.
-    kClientWeight = 6,      // The skinning weight array.
+    kClientColor = 0,
+    kClientMatrixIndex = 1,
+    kClientNormal = 2,
+    kClientTexCoord = 4,
+    kClientVertex = 5,
+    kClientWeight = 6,
 };
 
-// The neIGLES blend factors: the source is always GL_ONE; the destination is
-// GL_ONE_MINUS_SRC_ALPHA for a normal alpha blend or GL_ONE for an additive blend.
 enum {
     kBlendOne = 1,
     kBlendOneMinusSrcAlpha = 5,
 };
 
-// The neIGLES matrix modes used: the model-view matrix and the per-instance palette matrix.
 enum {
     kMatrixModeModelView = 0,
     kMatrixModePalette = 3,
 };
 
-// The number of sampler parameters re-applied to a bound texture each draw.
 constexpr int kTextureParamCount = 4;
 
-// One interleaved vertex in the per-frame scratch: a 2D position, a signed-short UV pair, and a
-// packed RGBA8 colour, sixteen bytes in total; four make one sprite quad.
 struct InstancedVertex {
     float flX = {};
     float flY = {};
@@ -81,15 +67,11 @@ struct InstancedVertex {
     unsigned char nA = {};
 };
 
-// The byte offsets of the UV and colour attributes within an @c InstancedVertex, passed to the GL
-// texcoord- and colour-pointer calls (the position is at offset 0).
 constexpr int kVertexUvOffset = 8;
 constexpr int kVertexColorOffset = 0xc;
 
-// Packs the four quad corners' UV coordinates and their shared colour. The quad's UV runs from
-// uvOrigin to uvOrigin + uvSize; V is flipped to the texture's top-left origin. The corner order is
-// (origin, +u, +v, +uv), matching the quad's two-triangle index order. The colour channels are
-// pre-scaled by the normalised alpha, and the raw alpha is stored in the alpha byte.
+// V is flipped to the texture's top-left origin, and the colour channels are pre-scaled by the
+// normalised alpha.
 void PackQuadUvColor(InstancedVertex *pQuad,
                      const S_VECTOR2 &uvOrigin,
                      const S_VECTOR2 &uvSize,
@@ -128,8 +110,7 @@ void PackQuadUvColor(InstancedVertex *pQuad,
 
 } // namespace
 
-// The sprite-batch precondition check (the binary's tempAssert): aborts when the condition is
-// false. The compiler emits it both inlined into the colour accessors and out-of-line.
+// The compiler emits this both inlined into the colour accessors and out-of-line.
 /** @ghidraAddress 0x2f638 */
 static void tempAssert(bool bCondition) {
     assert(bCondition);
@@ -137,49 +118,32 @@ static void tempAssert(bool bCondition) {
 
 namespace {
 
-// The static quad geometry the batch builds once: four vertices and six indices (two triangles)
-// per sprite.
 constexpr int kSpriteVertexCount = 4;
 constexpr int kSpriteIndexCount = 6;
 
-// Bytes per sprite in the per-frame vertex-assembly scratch the renderer fills each frame.
 constexpr unsigned int kVertexScratchStride = 64;
 
-// The default texture-sampler parameters (min filter, mag filter, s wrap, t wrap).
-// The default texture parameters the screen-space constructor seeds: nearest-filter min/mag and
-// the shared wrap mode. The world-space class seeds linear-filter min/mag instead.
 // @ghidraAddress 0x2eecf0
 constexpr int kScreenTexParams[] = {0, 0, 7, 7};
 
-// One corner of a sprite's initial quad, as uploaded to the GL array buffer: a constant 1.0 and the
-// index of the sprite the corner belongs to. The trailing bytes are padding the binary leaves
-// uninitialised.
+// The trailing padding bytes are left uninitialised, as the binary leaves them.
 struct InitialSpriteVertex {
     float flConstantW;
     unsigned char nSpriteIndex;
 };
 
-// The weight and matrix-index arrays are sourced from the template VBO by byte offset, so both the
-// stride and the two offsets are the template vertex's own layout.
 constexpr int kTemplateVertexStride = static_cast<int>(sizeof(InitialSpriteVertex));
 constexpr int kTemplateWeightOffset = static_cast<int>(offsetof(InitialSpriteVertex, flConstantW));
 constexpr int kTemplateMatrixIndexOffset =
     static_cast<int>(offsetof(InitialSpriteVertex, nSpriteIndex));
-// One weight and one matrix index per vertex: each sprite rides a single palette matrix.
 constexpr int kTemplateComponentCount = 1;
 
 } // namespace
 
 /** @ghidraAddress 0x2f668 */
 C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
-    // The base C_RENDER constructor and the derived vtable are installed by the compiler; the nine
-    // attribute-array pointers and the remaining scalars are zero from their member initialisers.
-    // The world-space batch additionally clears the batch flag (the screen-space one leaves it
-    // default).
     m_dwCapacity = nCapacity;
 
-    // Per-sprite attribute arrays. The five vec2 arrays are value-initialised to zero; the rotation
-    // and scale arrays are filled in the build loop below, and the colour array by the caller.
     m_pSpritePositionArray = new S_VECTOR2[nCapacity];
     m_pSpriteSizeArray = new S_VECTOR2[nCapacity];
     m_pSpriteAnchorArray = new S_VECTOR2[nCapacity];
@@ -191,9 +155,6 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
     m_pSpriteColorArray = new unsigned int[nCapacity];
     m_pVertexScratch = new unsigned char[nCapacity * kVertexScratchStride];
 
-    // Build the static geometry into temporaries: one quad per sprite. Each vertex carries a
-    // constant 1.0 and its sprite index; the per-sprite positions are applied from the arrays at
-    // draw time. The two triangles of each quad are (0, 1, 2) and (2, 1, 3).
     auto *pVertexTemplate = new InitialSpriteVertex[nCapacity * kSpriteVertexCount];
     auto *pIndexData = new unsigned short[nCapacity * kSpriteIndexCount];
     for (unsigned int nSprite = 0; nSprite < nCapacity; ++nSprite) {
@@ -217,8 +178,6 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
         }
     }
 
-    // Upload the index and vertex templates to GL element and array buffers, then free the
-    // temporaries.
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     pRenderer->GenBuffer(&m_dwIndexVbo);
     pRenderer->BindIndexBuffer(m_dwIndexVbo);
@@ -242,18 +201,12 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
     m_aTexParams[3] = pTexParams[3];
 }
 
-// The deleting-destructor variant at 0x2fa70 (the D0 vtable thunk the compiler emits for
-// `delete pBatch`: it runs this destructor, then frees the object) shares this reconstruction; it
-// is a compiler artifact with no distinct source function.
 /**
  * @ghidraAddress 0x30c80
  * @ghidraAddress 0x2f968
  * @ghidraAddress 0x2fa70
  */
 C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
-    // Release the texture reference, free the per-sprite arrays and the vertex scratch, and delete
-    // the GL index buffer; the compiler chains to the C_RENDER base destructor. (The binary guards
-    // each free with the engine's safe-delete pattern; delete[] on a null pointer is a no-op.)
     if (m_pTexture != nullptr) {
         m_pTexture->Release();
         m_pTexture = nullptr;
@@ -268,8 +221,7 @@ C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     delete[] m_pSpriteScaleYArray;
     delete[] m_pSpriteColorArray;
     delete[] static_cast<unsigned char *>(m_pVertexScratch);
-    // Only the index buffer is deleted. The binary reads +0x130 here and never +0x134, so
-    // m_dwArrayVbo leaks by design rather than by omission; do not add a matching DeleteBuffer.
+    // The binary never deletes m_dwArrayVbo, so do not add a matching DeleteBuffer.
     neGLESRenderer::GetShared()->DeleteBuffer(m_dwIndexVbo);
 }
 
@@ -322,7 +274,6 @@ unsigned int C_SPRITE_INSTANCING_2D::GetColorAlpha(int nIndex) const {
 /** @ghidraAddress 0x17b1c8 */
 void C_SPRITE_INSTANCING_2D::SetColorAlpha(int nIndex, unsigned char nAlpha) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
-    // The colour is packed RGBA little-endian; the alpha is the high byte.
     m_pSpriteColorArray[nIndex] =
         (m_pSpriteColorArray[nIndex] & 0x00ffffff) | (static_cast<unsigned int>(nAlpha) << 24);
 }
@@ -407,8 +358,6 @@ void C_SPRITE_INSTANCING_2D::SetSpriteColor(int nIndex, unsigned int nColor) {
     m_pSpriteColorArray[nIndex] = nColor;
 }
 
-// Force-disables every general render capability for the sprite pass, leaving only blending (set up
-// by the caller) enabled. Runs once before the sprite loop.
 void C_SPRITE_INSTANCING_2D::ResetRenderState(neGLESRenderer *pRenderer) {
     pRenderer->SetGlEnableState(kEnableAlphaTest, 0);
     pRenderer->SetGlEnableState(kEnableBlend, 1);
@@ -417,8 +366,6 @@ void C_SPRITE_INSTANCING_2D::ResetRenderState(neGLESRenderer *pRenderer) {
     }
 }
 
-// Binds the batch's texture (or disables texturing when it has none) and points the texture-unit's
-// coordinate array into the vertex scratch. Shared by both draw paths.
 void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
     if (m_pTexture == nullptr) {
         pRenderer->SetGlEnableState(kEnableTexture2d, 0);
@@ -436,19 +383,7 @@ void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
 }
 
 /** @ghidraAddress 0x2faa8 */
-// Dump every sprite this batch is about to draw, once, on the armed frame. Defined on the base so
-// both this class and the world-space subclass can call it: the subclass overrides Render outright
-// and never reaches the base, which is why an earlier attempt captured only the one layer that
-// happens to use a screen-space batch.
 void C_SPRITE_INSTANCING_2D::DebugSnapshot() {
-    // One whole frame of every sprite this batch will draw, complete: by the time Render runs, the
-    // position, anchor, size, scale, rotation, UV and colour are all settled in the arrays, so a
-    // single pass describes the frame exactly as it will appear. Dumping one frame rather than a
-    // bounded burst means a misplaced item can be compared against the items around it.
-    //
-    // The frame is chosen late enough that the play field has settled. Each line carries the batch
-    // pointer, so sprites belonging to one layer group together, and the UV origin identifies which
-    // atlas cell -- and therefore which artwork -- each sprite actually is.
     NE_DBG(if (g_nDebugSnapshotFrame != 0 && g_nDebugFrameCounter == g_nDebugSnapshotFrame &&
                m_nSpriteCount > 0) {
         for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
@@ -483,8 +418,6 @@ void C_SPRITE_INSTANCING_2D::Render() {
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
 
-    // Count the live (non-transparent) sprites and decide the path: any sprite with a rotation or a
-    // non-unit scale forces the per-instance-matrix slow path.
     int nLiveCount = 0;
     bool bNeedsMatrix = false;
     for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
@@ -502,8 +435,6 @@ void C_SPRITE_INSTANCING_2D::Render() {
         return;
     }
 
-    // Bind the current projection camera and copy its world matrix into this node's, then reset the
-    // render state and select the blend mode (additive when the blend flag is set, else alpha).
     SetCurrentCamera(pRenderer, g_pCurrentProjection);
     std::memcpy(GetWorldMatrix(), GetParent()->GetWorldMatrix(), sizeof(float) * 16);
     ResetRenderState(pRenderer);
@@ -516,11 +447,7 @@ void C_SPRITE_INSTANCING_2D::Render() {
     }
 }
 
-// The slow path: one draw per sprite carries its own translation*rotation*scale matrix through the
-// palette-matrix slot. Quads are built in local space around the sprite anchor and flushed in
-// batches of nMaxPerBatch.
 void C_SPRITE_INSTANCING_2D::RenderWithMatrices(neGLESRenderer *pRenderer, int nMaxPerBatch) {
-    // The screen-space path composes each sprite against the parent's world matrix directly.
     EmitMatrixSprites(pRenderer, nMaxPerBatch, GetParent()->GetWorldMatrix());
 }
 
@@ -528,22 +455,12 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
                                                int nMaxPerBatch,
                                                const float *pComposeMatrix) {
     auto *pScratch = static_cast<InstancedVertex *>(m_pVertexScratch);
-    // Point the fixed vertex/colour/texture arrays into the scratch and enable the arrays the
-    // per-instance-matrix path needs (weight and matrix-index arrays plus the palette). The
-    // explicit unbind first is the binary's (BindArrayBuffer(0) at 0x310cc): the client pointers
-    // below only take effect with no array buffer bound.
+    // The explicit unbind is the binary's (0x310cc): the client pointers below only take effect
+    // with no array buffer bound.
     pRenderer->BindArrayBuffer(0);
 #ifdef ENABLE_PATCHES
-    // GL_OES_matrix_palette is not advertised by every driver a modern build runs on. The binary
-    // never checks, because its armv7 targets always had it; where it is missing, the palette and
-    // the weight/matrix-index client arrays below are enabled but their OES pointer calls never
-    // take effect, so the draw walks an enabled array whose pointer is still NULL and faults at
-    // address zero. When the extension is present this is the binary's path exactly.
-    // The weight and matrix-index pointers are only set when an array buffer is actually bound --
-    // ClearWeightPointer and ClearMatrixIndexPointer both guard on that -- while the client-state
-    // enables below are unconditional. So a zero array buffer leaves both arrays enabled with
-    // their pointers never set, and the draw walks a NULL client array. Requiring the buffer here
-    // keeps the enable and the pointer on the same condition.
+    // Without GL_OES_matrix_palette, or with no array buffer bound, the weight and matrix-index
+    // arrays would be enabled with NULL pointers and the draw would fault.
     const bool bMatrixPalette = pRenderer->HasMatrixPalette() && m_dwArrayVbo != 0;
 #else
     constexpr bool bMatrixPalette = true;
@@ -553,8 +470,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
-    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as
-    // bytes.
     pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
                                kVertexStride);
     BindPassTexture(pRenderer);
@@ -567,8 +482,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
         pRenderer->ClearMatrixIndexPointer(
             kTemplateVertexStride, kTemplateComponentCount, kTemplateMatrixIndexOffset);
     } else {
-        // Without the palette the transform is baked into each quad below, so the two skinning
-        // arrays stay disabled and the model-view carries nothing.
         pRenderer->SetGlClientState(kClientWeight, 0);
         pRenderer->SetGlClientState(kClientMatrixIndex, 0);
         float identity[16];
@@ -583,8 +496,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
             continue;
         }
 
-        // Build the four quad corners in local space: corner 0 at the anchor offset, spanning the
-        // sprite size, with UV and colour packed by the shared helper.
         InstancedVertex *pQuad = &pScratch[nQueued * kQuadCorners];
         const S_VECTOR2 &size = m_pSpriteSizeArray[nSprite];
         pQuad[0].flX = 0.0f;
@@ -635,8 +546,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     }
 }
 
-// Builds the per-sprite transform matrix for the slow path: a translation of the anchor to the
-// sprite position, composed with any rotation about the anchor and any non-unit scale.
 void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     const S_VECTOR2 &position = m_pSpritePositionArray[nSprite];
     const S_VECTOR2 &anchor = m_pSpriteAnchorArray[nSprite];
@@ -646,25 +555,13 @@ void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     const bool bNoRotation = flRotation == 0.0f;
     const bool bUnitScale = flScaleX == 1.0f && flScaleY == 1.0f;
 
-    // Only the wholly untransformed case takes the short path. The binary requires all three of
-    // rotation zero, scale x one and scale y one before it subtracts the raw anchor: the three
-    // compares at 0x3160c, 0x3161c and 0x3162c each branch away to the general arm at 0x3167c. A
-    // scale without a rotation therefore goes through that arm, where the anchor is multiplied by
-    // the scale, and reconstructing it as its own case left every scaled-but-unrotated sprite
-    // offset by anchor * (scale - 1). On the play field's targets that is four points, which is
-    // why one row of them sat beside the other.
+    // The binary takes the short path only when rotation is zero and both scales are one (0x3160c,
+    // 0x3161c, 0x3162c); a scaled-but-unrotated sprite goes through the general arm at 0x3167c.
     if (bNoRotation && bUnitScale) {
-        // No rotation or scale: the quad only needs to be translated so its anchor sits at
-        // position.
         MakeTranslationMatrix(pOutMatrix, position.x - anchor.x, position.y - anchor.y, 0.0f);
         return;
     }
 
-    // Rotation (with or without scale): a translate-to-position * rotate matrix, composed with a
-    // second matrix that scales and shifts the anchor back to the origin so the rotation pivots on
-    // the anchor.
-    //
-    // This is the binary's general arm at 0x3167c, reached by anything that is rotated or scaled.
     // The anchor is multiplied by the scale, by the fnmul pair at 0x316f4 and 0x316fc.
     MakeTranslationMatrix(pOutMatrix, position.x, position.y, 0.0f);
     SetMatrixRotationZ3x3(pOutMatrix, -flRotation);
@@ -678,8 +575,6 @@ void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     MultiplyMatrixInPlace(pOutMatrix, anchorMatrix);
 }
 
-// The fast path: every live sprite is an axis-aligned quad, so world positions are baked straight
-// into the scratch and a single indexed draw covers the whole batch under the node's world matrix.
 void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
     auto *pScratch = static_cast<InstancedVertex *>(m_pVertexScratch);
     int nQueued = 0;
@@ -689,8 +584,6 @@ void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
             continue;
         }
 
-        // The quad spans from (position - anchor) to (position - anchor + size), baked in world
-        // space; the two triangles read corners (0, 1, 2) and (2, 1, 3).
         const S_VECTOR2 &position = m_pSpritePositionArray[nSprite];
         const S_VECTOR2 &anchor = m_pSpriteAnchorArray[nSprite];
         const S_VECTOR2 &size = m_pSpriteSizeArray[nSprite];
@@ -720,15 +613,11 @@ void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
         return;
     }
 
-    // Point the arrays at the freshly-built scratch and issue one indexed draw for the whole batch
-    // under the node's world matrix.
     pRenderer->SetGlEnableState(kEnableMatrixPalette, 0);
     pRenderer->SetGlClientState(kClientVertex, 1);
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
-    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as
-    // bytes.
     pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
                                kVertexStride);
     BindPassTexture(pRenderer);

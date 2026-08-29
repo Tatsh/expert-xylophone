@@ -2,52 +2,37 @@
 
 #import "RBMacros.h"
 
-// The default starting point: the first plotted point sits this far in from the left edge, and the
-// plot content is inset from the bottom of the view by this margin.
 static const CGFloat kDefaultStartX = 30.0;
 static const CGFloat kBottomMargin = 10.0;
 
-// The plot content is inset from the top and bottom by this margin when mapping values to y.
 static const CGFloat kPlotVerticalMargin = 10.0;
 
-// The dashed polyline pattern (a five-point dash followed by a two-point gap) and its length.
 static const CGFloat kLineDashPattern[] = {5.0, 2.0};
 
-// Each per-point marker is a small circle of this diameter, drawn centred on the point.
 static const CGFloat kDotDiameter = 4.0;
 static const CGFloat kDotRadius = 2.0;
 
-// The horizontal inset applied at each end of the plot when four or more points are shown, and the
-// fraction of the width used to inset the ends when two or three points are shown.
+// @c kFewPointEndFraction divides the width to inset each end.
 static const CGFloat kWideEndInset = 30.0;
 static const CGFloat kFewPointEndFraction = 5.0;
 
-// The value labels use this system font size, occupy a box of this width and height, and are laid
-// out flush right. The top label sits at this y; the bottom label sits this far above the bottom
-// edge.
 static const CGFloat kLabelFontSize = 10.0;
 static const CGFloat kLabelWidth = 20.0;
 static const CGFloat kLabelHeight = 10.0;
 static const CGFloat kTopLabelY = 10.0;
 static const CGFloat kBottomLabelInset = 20.0;
 
-// The value labels are drawn in fully-opaque black.
-
-// After drawing, the plot reveals itself at full opacity.
 static const CGFloat kVisibleAlpha = 1.0;
 
-// The shared translucent-panel background alpha (g_dTranslucentAlpha @0x1002ee6a0-adjacent, 0.8).
-// It is a cross-file palette global; it is cached here rather than re-declared as a shared external
-// constant until that global is recovered.
+// A cross-file palette global (g_dTranslucentAlpha, near 0x1002ee6a0) cached here until it is
+// recovered.
 static const CGFloat kTranslucentAlpha = 0.8;
 
-// The point-count thresholds selecting how the horizontal layout is derived.
 static const NSUInteger kSinglePointCount = 1;
 static const NSUInteger kFewPointLowerCount = 2;
 static const NSUInteger kFewPointUpperCount = 3;
 
-// The comparison tolerance and the descending round thresholds the movable minimum line snaps down
-// to. The first threshold that the minimum value is not below (within tolerance) is used.
+// The minimum line snaps down to the first threshold it is not below.
 static const double kSnapTolerance = 0.001;
 static const float kMinLineSnapThresholds[] = {
     0.0f, 25.0f, 50.0f, 60.0f, 70.0f, 80.0f, 90.0f, 95.0f, 100.0f};

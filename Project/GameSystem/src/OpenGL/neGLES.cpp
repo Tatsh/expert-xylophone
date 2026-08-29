@@ -8,17 +8,13 @@
 
 namespace {
 
-// Engine texture formats. Format 0 is the compressed sentinel, which the uploader rejects; 1..3
-// are the uncompressed formats mapped below.
 enum {
     kTexFormatCompressed = 0,
     kTexFormatMax = 4,
 };
 
-// Maps an engine texture format (1..3) to its unsized GL ES 1.1 pixel format.
 constexpr GLenum kEngineFormatToGl[] = {GL_RGBA, GL_RGB, GL_LUMINANCE_ALPHA};
 
-// Maps an engine primitive index (0..6) to its GL ES draw mode.
 constexpr GLenum kPrimitiveToGlMode[] = {
     GL_POINTS,         //
     GL_LINE_STRIP,     //

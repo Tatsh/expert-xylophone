@@ -3,7 +3,6 @@
 #import "StorePackInfo.h"
 #import "StoreUtil.h"
 
-// The key under which the pack-detail JSON carries a server-side error description.
 static NSString *const kStorePackInfoErrorKey = @"Error";
 
 @implementation StorePackInfoDownloader
@@ -39,7 +38,6 @@ static NSString *const kStorePackInfoErrorKey = @"Error";
 - (void)downloadDetail:(BOOL)userOpen {
     self.downloader = nil;
     NSURL *url = [StoreUtil packInfoURL:self.packInfo.packID UserOpen:userOpen];
-    // A detail download is a plain GET, so its response is not saved to a file.
     Downloader *downloader = [[Downloader alloc] initWithURL:url save:nil];
     self.downloader = downloader;
     [downloader startDownloadingWithDelegate:self];

@@ -5,7 +5,6 @@
 #import "ApplilinkConsts.h"
 #import "NSStringURLEncoding.h"
 
-// User-agent parameter dictionary keys.
 static NSString *const kUserAgentAppliIdKey = @"ua_appli_id";
 static NSString *const kUserAgentDeviceKey = @"ua_device";
 static NSString *const kUserAgentOSKey = @"ua_os";
@@ -14,41 +13,31 @@ static NSString *const kUserAgentAppliVersionKey = @"ua_appli_ver";
 static NSString *const kUserAgentLanguageKey = @"ua_lang";
 static NSString *const kUserAgentRegionKey = @"ua_region";
 
-// The user-agent parameter dictionary always carries these seven entries.
 static const NSUInteger kUserAgentParameterCount = 7;
 
-// SDK identity reported in the user-agent SDK field.
 static NSString *const kApplilinkSdkName = @"ApplilinkNetwork";
 static NSString *const kApplilinkSdkVersion = @"2.2.2";
 
-// Fallbacks used when the device provides no locale information.
 static NSString *const kDefaultLanguage = @"ja";
 static NSString *const kDefaultCountryCode = @"JP";
 
-// Query-string assembly.
 static NSString *const kQueryPairSeparator = @"&";
 static NSString *const kQueryStart = @"?";
 static NSString *const kArrayParameterFormat = @"%@[]=%@";
 static NSString *const kScalarParameterFormat = @"%@=%@";
 
-// The sysctl key that reports the hardware model, and the exception domain and messages raised when
-// reading it fails.
 static const char *const kHardwareModelSysctlName = "hw.machine";
 static NSString *const kDeviceNameExceptionName = @"Warn";
 static NSString *const kSysctlFailureFormat = @"Failed in sysctlbyname. errno=%d";
 static NSString *const kMallocFailureMessage = @"Failed in malloc in deviceName.";
 
-// The alphabet and length of a generated impression identifier.
 static NSString *const kImpressionIdAlphabet =
     @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 static const int kImpressionIdLength = 64;
 
-// The predicate used to narrow a list by a key path, and the path separator used to trim a file
-// name.
 static NSString *const kNarrowListPredicateFormat = @"%K MATCHES %@";
 static NSString *const kPathSeparator = @"/";
 
-// Cached device model name; read once from the hardware sysctl.
 static NSString *gApplilinkDeviceName = nil; // @ghidraAddress 0x3df610
 
 @implementation ApplilinkUtilities
@@ -180,8 +169,6 @@ static NSString *gApplilinkDeviceName = nil; // @ghidraAddress 0x3df610
 #pragma mark - View hierarchy
 
 + (BOOL)hasParentViewController:(UIResponder *)hasParentViewController {
-    // A window or application returns NO here; only a view walks the responder chain, and only a
-    // view controller is treated as an attached parent. This matches the binary.
     if ([hasParentViewController isKindOfClass:[UIWindow class]]) {
         return NO;
     }
@@ -213,8 +200,7 @@ static NSString *gApplilinkDeviceName = nil; // @ghidraAddress 0x3df610
                            object:(NSString *)object
                            forKey:(NSString *)forKey {
     NSDictionary *substitution = [NSDictionary dictionaryWithObject:object forKey:forKey];
-    // The binary builds a concrete predicate from the format and then re-binds the same variables
-    // through the substitution dictionary; both steps are kept.
+    // The re-bind through the substitution dictionary is redundant, but the binary does it.
     NSPredicate *predicate =
         [NSPredicate predicateWithFormat:kNarrowListPredicateFormat, forKey, object];
     predicate = [predicate predicateWithSubstitutionVariables:substitution];

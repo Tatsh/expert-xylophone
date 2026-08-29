@@ -295,40 +295,33 @@ private:
      */
     NoteEffectMgr();
 
-    // The chart note-count thresholds that select the density tier (0, 1, or 2).
     static constexpr int kDensityTierThreshold1 = 201;
     static constexpr int kDensityTierThreshold2 = 401;
-    // The per-note render sub-table entry count and byte stride.
     static constexpr int kRenderEntryCount = 20;
     static constexpr int kRenderEntryStride = 0xc;
-    // The empty marker held by an unused active-slot index.
     static constexpr long kActiveSlotNone = -1;
 
-    int m_nShotSoundSlot = {}; // +0x00: the shot-sound slot id dispatched on a note judge.
-    // unsigned char m_aReserved04[4] = {};  // +0x04: header state, still being worked out.
-    NoteModel **m_ppNotePool = {};   // +0x08: the pooled NoteModel-object array.
-    NoteModel **m_ppActiveList = {}; // +0x10: the active-note pointer array.
-    int m_nNoteCount = {};           // +0x18: the active note count (the chart's note count).
-    int m_nPoolCapacity = {};        // +0x1c: the note-object pool/array capacity.
-    int m_nActiveCount = {};         // +0x20: the number of active notes.
+    int m_nShotSoundSlot = {}; // +0x00: dispatched on a note judge.
+    // unsigned char m_aReserved04[4] = {};  // +0x04
+    NoteModel **m_ppNotePool = {};   // +0x08
+    NoteModel **m_ppActiveList = {}; // +0x10
+    int m_nNoteCount = {};           // +0x18: the bound chart's note count.
+    int m_nPoolCapacity = {};        // +0x1c
+    int m_nActiveCount = {};         // +0x20
     // unsigned char m_aReserved24[4] = {};  // +0x24
-    rb::CMusicSheet2 *m_pMusicSheet = {}; // +0x28: the bound active chart, or null.
-    int m_nDensityTier = {};              // +0x30: the note-density tier (0, 1, or 2).
-    int m_nFrameTouchScratch =
-        {}; // +0x34: per-frame touch-scratch, cleared at the end of a process pass.
-    // +0x38..+0x60: the six active-slot note indices, seeded to the -1 empty marker.
-    long m_aActiveSlot[6] = {}; // +0x38
+    rb::CMusicSheet2 *m_pMusicSheet = {}; // +0x28: null when no chart is bound.
+    int m_nDensityTier = {};              // +0x30: 0, 1, or 2.
+    int m_nFrameTouchScratch = {};        // +0x34: cleared at the end of a process pass.
+    long m_aActiveSlot[6] = {};           // +0x38
 
-    // One per-note render entry: the cached note position (-1 when empty) and its render state.
     struct RenderEntry {
         int nCachedKey = {};      /*!< The touch id this slot caches, or -1 when empty. +0x00 */
         S_VECTOR2 cachedPosition; /*!< The touch's projected note-field position. +0x04 */
     };
-    // +0x68..+0x157: the 20-entry per-note render sub-table (each kRenderEntryStride bytes).
     RenderEntry m_aRenderTable[kRenderEntryCount] = {}; // +0x68
-    bool m_bIsPad = {};                                 // +0x158: whether the device is an iPad.
+    bool m_bIsPad = {};                                 // +0x158
     // unsigned char m_aReserved159[3] = {};               // +0x159
-    int m_nThema = {};    // +0x15c: the active player theme, from the user settings.
-    int m_nHitCount = {}; // +0x160: the accumulated hit (judged-note) count.
+    int m_nThema = {};    // +0x15c: from the user settings.
+    int m_nHitCount = {}; // +0x160
     // unsigned char m_aReserved164[4] = {}; // +0x164
 };

@@ -1,29 +1,8 @@
-//
-//  UIView+RB.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (categories UIView(RB)). Verified against
-//  the arm64 disassembly: the flash pulse is a CABasicAnimation (or, when rotating, a
-//  CAAnimationGroup of twelve staggered opacity pulses plus a full-turn transform.rotation.z spin)
-//  on the "opacity" key path that repeats forever (repeat count is the FLT_MAX bit pattern
-//  0x7f7fffff), keeps its final value (removedOnCompletion = NO), and is installed under the
-//  "FLUSH_ANIM" key. The single pulse auto-reverses and eases with the cubic control points
-//  (0.5, 0.0, 0.75, 0.8); the multi-pulse steps do not auto-reverse and alternate between that
-//  curve and its mirror (0.8, 0.75, 0.0, 0.5) on odd steps. The rotation turns through 2π. The
-//  alpha transition installs an "ALPHA_ANIM" opacity animation from the layer's current opacity to
-//  the target; the jump/pop bounce installs a "PopAnim" position keyframe path that overshoots
-//  upward (-40, -10, -5, -2, then settles) before returning to the anchor. The opacity, offset, and
-//  duration endpoints reach their setters as raw float bit patterns recovered from the referenced
-//  float constants. The frame getters read self.frame and return one of its four components (the
-//  left/top edges alias origin.x/origin.y; the right/bottom edges add the size).
-//
-
 #import <QuartzCore/QuartzCore.h>
 
 #import "RBMacros.h"
 #import "UIView+RB.h"
 
-// The layer animation keys, and the key paths they animate.
 static NSString *const kFlashAnimationKey = @"FLUSH_ANIM";
 static NSString *const kAlphaAnimationKey = @"ALPHA_ANIM";
 static NSString *const kPopAnimationKey = @"PopAnim";
@@ -31,14 +10,11 @@ static NSString *const kOpacityKeyPath = @"opacity";
 static NSString *const kRotationKeyPath = @"transform.rotation.z";
 static NSString *const kPositionKeyPath = @"position";
 
-// The forever-repeating repeat count (the FLT_MAX bit pattern 0x7f7fffff).
 // @ghidraAddress 0x301648 (g_flFlashRepeatCountForever)
 static const float kFlashRepeatCountForever = FLT_MAX;
 
-// The number of opacity pulses in the rotating multi-pulse group animation.
 static const int kFlashMultiPulseStepCount = 12;
 
-// The default flash pulse duration and its dimmed end opacity, and the rotating variant's duration.
 // @ghidraAddress 0x2fefb8 (g_flFlashDefaultDuration)
 static const float kFlashDefaultDuration = 0.333333343f;
 // @ghidraAddress 0x2ec6b4 (g_flFlashMinOpacity)
@@ -46,25 +22,18 @@ static const float kFlashMinOpacity = 0.2f;
 static const float kFlashRotatingDuration = 4.0f;
 static const float kFlashFullOpacity = 1.0f;
 
-// A full turn, in radians, for the rotating flash spin.
 // @ghidraAddress 0x310448 (g_flFlashRotationTwoPi)
 static const float kFlashRotationTwoPi = 6.28318548f;
 
-// The cubic timing-function control points of a flash pulse, and their mirror used on the odd
-// multi-pulse steps. Only the last reaches the code from the constant pool; the other three are
-// immediates.
 static const float kFlashTimingControlPoint1X = 0.5f;
 static const float kFlashTimingControlPoint1Y = 0.0f;
 static const float kFlashTimingControlPoint2X = 0.75f;
 // @ghidraAddress 0x2f856c (g_flFlashTimingControlPointY2)
 static const float kFlashTimingControlPoint2Y = 0.8f;
 
-// The pop/bounce keyframe overshoot Y offsets above the anchor, then the settle back to it. Only
-// the first reaches the code from the constant pool; the rest are immediates.
 // @ghidraAddress 0x2f8574 (g_flJumpEffectOvershootOffsetY)
 static const float kPopBounceOffsets[] = {-40.0f, -10.0f, -5.0f, -2.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
-// The pop/bounce animation duration, in seconds, and its cubic timing-function control points.
 static const CFTimeInterval kPopBounceDuration = 3.0;
 static const float kPopBounceTimingControlPoint1X = 0.25f;
 // @ghidraAddress 0x2fd000 (g_flPopAnimTimingControlPointY1)

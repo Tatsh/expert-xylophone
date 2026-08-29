@@ -15,7 +15,6 @@ static BOOL RBHasModernPropertyListAPI(void) {
 }
 
 static CFPropertyListRef RBCreatePropertyList(NSData *data) {
-    // Both parsers request an immutable tree; a mutable result is copied out afterwards.
     if (RBHasModernPropertyListAPI()) {
         return CFPropertyListCreateWithData(
             kCFAllocatorDefault, (__bridge CFDataRef)data, kCFPropertyListImmutable, NULL, NULL);

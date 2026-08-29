@@ -1,15 +1,5 @@
-//
-//  RBBonusData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBBonusData). Verified against
-//  the arm64 disassembly (the coder msgSends are variadic and their float arguments travel the
-//  soft-float path, so the decompiler drops them).
-//
-
 #import "RBBonusData.h"
 
-// Archive and user-defaults keys for each bonus multiplier. They match the property names.
 static NSString *const kClearBonusCoderKey = @"kClearBonus";
 static NSString *const kFullComboBonusCoderKey = @"kFullComboBonus";
 static NSString *const kMiss1BonusCoderKey = @"kMiss1Bonus";
@@ -25,7 +15,6 @@ static NSString *const kPastelBonusCoderKey = @"kPastelBonus";
 static NSString *const kEarlyPlayBonusCoderKey = @"kEarlyPlayBonus";
 static NSString *const kHotMusicBonusCoderKey = @"kHotMusicBonus";
 
-// The default multipliers seeded into a fresh instance by @c init.
 static const float kDefaultClearBonus = 1.0f;
 static const float kDefaultFullComboBonus = 2.0f;
 static const float kDefaultMiss1Bonus = 1.5f;

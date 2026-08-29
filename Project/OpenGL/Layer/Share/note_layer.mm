@@ -1,11 +1,3 @@
-//
-//  note_layer.mm
-//  REFLEC BEAT plus
-//
-//  The note particle layer (NoteLayer). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "note_layer.h"
 
 #include <cassert>
@@ -18,13 +10,11 @@
 #include "neTexture.h"
 #include "s_vector2.h"
 
-// The shared particle active index (defined here as the note layer owns it).
 int g_nParticleActiveIndex = {}; // @ghidraAddress 0x3df228
 
 namespace {
 
-// One sprite-type descriptor (@ghidraAddress 0x30f754, stride 0x14): the sprite anchor, its pixel
-// size, and the index into the UV table below.
+// @ghidraAddress 0x30f754
 struct NoteSpriteDescriptor {
     float flAnchorX;
     float flAnchorY;
@@ -47,12 +37,10 @@ constexpr NoteSpriteDescriptor kNoteSpriteDescriptors[] = {
     {31.0f, 31.0f, 62.0f, 62.0f, 22},
 };
 
-// The batch each sprite type is drawn through (@ghidraAddress 0x30f6f4): the background type uses
-// the first batch, the shot type the third, everything else the second.
+// @ghidraAddress 0x30f6f4
 constexpr int kNoteSpriteBatch[] = {0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1};
 
-// The UV rectangles the descriptors index (@ghidraAddress 0x2ef668, stride 0x10): UV origin and UV
-// size.
+// @ghidraAddress 0x2ef668
 struct NoteUvRect {
     float flOriginU;
     float flOriginV;
@@ -85,40 +73,29 @@ constexpr NoteUvRect kNoteUvRects[] = {
     {0.5546875f, 0.41015625f, 0.09375f, 0.09375f},
 };
 
-// The scroll-phase wrap limits and per-frame steps. Phases A and B share the wide wrap; phase C
-// uses the narrow one. @ghidraAddress 0x2f8540/0x2f8544 and 0x2fcf88/0x2fcf8c.
-constexpr float kScrollWrapWide = 1000.0f;
-constexpr float kScrollStepWide = -1000.0f;
-constexpr float kScrollWrapNarrow = 133.33333f;
-constexpr float kScrollStepNarrow = -133.33333f;
+constexpr float kScrollWrapWide = 1000.0f;       // @ghidraAddress 0x2f8540
+constexpr float kScrollStepWide = -1000.0f;      // @ghidraAddress 0x2f8544
+constexpr float kScrollWrapNarrow = 133.33333f;  // @ghidraAddress 0x2fcf88
+constexpr float kScrollStepNarrow = -133.33333f; // @ghidraAddress 0x2fcf8c
 
-// The rotation is phase A converted to radians (2*pi / 1000). @ghidraAddress 0x30f6e8.
-constexpr double kPhaseToRadians = 0.006283185307179587;
+constexpr double kPhaseToRadians = 0.006283185307179587; // @ghidraAddress 0x30f6e8
 
-// The triangle-wave global fade constants (@ghidraAddress 0x2feff4 midpoint, 0x2fee0c rising
-// divisor, 0x30f6f0 falling offset, 0x2ee910 falling divisor).
-constexpr float kFadeMidpoint = 500.0f;
-constexpr float kFadeRiseDivisor = -66.66667f;
-constexpr float kFadeFallOffset = -0.3f;
-constexpr float kFadeFallDivisor = 0.3f;
+constexpr float kFadeMidpoint = 500.0f;        // @ghidraAddress 0x2feff4
+constexpr float kFadeRiseDivisor = -66.66667f; // @ghidraAddress 0x2fee0c
+constexpr float kFadeFallOffset = -0.3f;       // @ghidraAddress 0x30f6f0
+constexpr float kFadeFallDivisor = 0.3f;       // @ghidraAddress 0x2ee910
 constexpr float kFadeHalf = 0.5f;
 constexpr float kFadeOne = 1.0f;
 
-// The alpha channel scale (@ghidraAddress 0x2eed00).
-constexpr float kAlphaScale = 255.0f;
+constexpr float kAlphaScale = 255.0f; // @ghidraAddress 0x2eed00
 
-// The number of scroll phases and the play-colour-selected multiplier index.
 constexpr int kPhaseA = 0;
 constexpr int kPhaseB = 1;
 constexpr int kPhaseC = 2;
 constexpr int kPlayColorPrimary = 1;
 
-// The particle kinds and the sprite type / colour multiplier each emits. The first (background)
-// kind and kinds six and seven use the global fade; the others split between the two lane-colour
-// multipliers. Kinds four and five emit a second trail sprite.
 constexpr unsigned int kOpaque = 0xff;
 
-// Advances one scroll phase by the delta and wraps it back into range.
 inline void AdvanceScrollPhase(float &flPhase, float flDelta, float flWrap, float flStep) {
     flPhase += flDelta;
     while (flPhase > flWrap) {
@@ -159,19 +136,14 @@ void NoteLayer::Update(float flDelta) {
         nCount = 0;
     }
 
-    // Advance the three scroll phases, wrapping each back into its range.
     AdvanceScrollPhase(m_aScrollPhase[kPhaseA], flDelta, kScrollWrapWide, kScrollStepWide);
     AdvanceScrollPhase(m_aScrollPhase[kPhaseB], flDelta, kScrollWrapWide, kScrollStepWide);
     AdvanceScrollPhase(m_aScrollPhase[kPhaseC], flDelta, kScrollWrapNarrow, kScrollStepNarrow);
 
-    // The frame rotation is phase A in radians.
     const float flRotation =
         static_cast<float>(static_cast<double>(m_aScrollPhase[kPhaseA]) * kPhaseToRadians);
 
-    // The global fade is a triangle wave over phase C: it rises to one before the midpoint and
-    // falls back after it, clamped to the unit interval, then scaled to an alpha. The binary folds
-    // the additive constant into the shared fadd whose operand differs per branch (1.0 rising, 0.5
-    // falling); there is no separate unconditional addition. @ghidraAddress 0x188ddc
+    // @ghidraAddress 0x188ddc
     float flFade;
     if (m_aScrollPhase[kPhaseC] < kFadeMidpoint) {
         flFade = m_aScrollPhase[kPhaseC] / kFadeRiseDivisor * kFadeHalf + kFadeOne;
@@ -187,8 +159,6 @@ void NoteLayer::Update(float flDelta) {
     }
     const float flGlobalAlpha = flFade * kAlphaScale;
 
-    // The play colour selects which of the two lane multipliers is full and which fades; the colour
-    // scale multiplies each particle's stored X scale.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const bool bPrimary = pGameSystem->GetPlayColor() == kPlayColorPrimary;
     const float flRivalAlpha = pGameSystem->GetRivalAlpha();
@@ -196,12 +166,10 @@ void NoteLayer::Update(float flDelta) {
     const float flColorB = bPrimary ? kFadeOne : flRivalAlpha;
     const float flColorScale = pGameSystem->GetSheetRadiusScaled();
 
-    // Walk the live particles up to the shared active index; each is consumed and emits its
-    // sprites.
     for (int nSlot = 0; nSlot < kParticleCount; ++nSlot) {
         Particle &particle = m_aParticles[nSlot];
-        // A slot at or past the shared active index is retired rather than left set; the inactive
-        // arm below continues without storing, matching the branch at 0x188e44.
+        // A slot at or past the shared active index is retired rather than left set.
+        // @ghidraAddress 0x188e44
         if (nSlot >= g_nParticleActiveIndex) {
             particle.bActive = false;
             continue;
@@ -214,8 +182,6 @@ void NoteLayer::Update(float flDelta) {
         const S_VECTOR2 pos{particle.flX, particle.flY};
         const float flScale = particle.flScaleX * flColorScale;
 
-        // Each kind maps to a sprite type and one of the colour multipliers; kinds four and five
-        // emit an extra trail sprite, and kinds six and seven use the global fade.
         switch (particle.nKind) {
         case 0:
             CreateSprite(1,
@@ -251,8 +217,6 @@ void NoteLayer::Update(float flDelta) {
                          static_cast<int>(particle.flScaleY * flColorA * kAlphaScale),
                          flScale,
                          particle.flRotation);
-            // The trail sprite scales by the particle's own X scale times the colour scale and
-            // takes the frame's rotation.
             CreateSprite(7,
                          &pos,
                          static_cast<int>(particle.flScaleY * flColorA * kAlphaScale),
@@ -318,7 +282,6 @@ void NoteLayer::Update(float flDelta) {
         }
     }
 
-    // Publish each batch's slot count to its instancer and reset the shared active index.
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
         m_apSprites[nBatch]->SetSpriteCount(m_anBatchCount[nBatch]);
     }
@@ -326,26 +289,22 @@ void NoteLayer::Update(float flDelta) {
 }
 
 namespace {
-// The particle kinds: type 1 spawns kind 7, every other type kind 6.
 constexpr int kParticleKindDefault = 6;
 constexpr int kParticleKindAlt = 7;
 constexpr int kParticleTypeAlt = 1;
 
-// The per-batch capacity seed tables: for each of the twelve entries, the destination batch index
-// and the count added to that batch's capacity (@ghidraAddress 0x30f6f4 indices, 0x30f724 counts).
+// @ghidraAddress 0x30f6f4
 constexpr int kBatchSeedIndex[] = {0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1};
+// @ghidraAddress 0x30f724
 constexpr int kBatchSeedCount[] = {512, 256, 256, 256, 256, 256, 256, 512, 256, 256, 256, 256};
 constexpr int kBatchSeedEntryCount = 12;
 
-// The atlas the particle sprites draw from.
 constexpr const char *kAtlasTextureName = "00_texture/gm_parts1";
 
-// The particle batches draw additively; the middle batch seeds two texture parameters.
 constexpr int kAdditiveBlendMode = 1;
 constexpr int kTexParamValue = 1;
 } // namespace
 
-// The process-wide note particle layer, created lazily by shared().
 static NoteLayer *g_pNoteLayer = nullptr; // @ghidraAddress 0x3df230
 
 /** @ghidraAddress 0x188904 */
@@ -358,8 +317,6 @@ NoteLayer *NoteLayer::shared() {
 
 /** @ghidraAddress 0x188850 */
 NoteLayer::NoteLayer() {
-    // The base constructor and member initialisers clear the header and particle pool; reset the
-    // shared active index and accumulate each batch's capacity from the seed tables.
     g_nParticleActiveIndex = 0;
     for (int i = 0; i < kBatchSeedEntryCount; ++i) {
         m_anBatchCapacity[kBatchSeedIndex[i]] += kBatchSeedCount[i];
@@ -382,11 +339,9 @@ void NoteLayer::CreateSpriteBatches() {
         pSprite->SetVisible(true);
         pSprite->SetRefCountedMember(m_pTexture);
         pSprite->SetSpriteCount(0);
-        // The outer two batches (0 and 2) draw additively.
         if (i != 1) {
             pSprite->SetBlendMode(kAdditiveBlendMode);
         }
-        // The middle batch seeds two texture parameters on a non-tutorial build.
         if (i == 1 && !IsHardwareType9()) {
             pSprite->SetTexParam(1, kTexParamValue);
             pSprite->SetTexParam(0, kTexParamValue);
@@ -400,7 +355,7 @@ void NoteLayer::CreateSpriteBatches() {
 /** @ghidraAddress 0x188c50 */
 void NoteLayer::SpawnParticle(float flX, float flY, float flScaleX, float flScaleY, int nType) {
     const int nKind = nType == kParticleTypeAlt ? kParticleKindAlt : kParticleKindDefault;
-    // Scan from the shared active index for a free slot; a full pool drops the particle.
+    // A full pool drops the particle.
     for (int nSlot = g_nParticleActiveIndex; nSlot < kParticleCount; ++nSlot) {
         Particle &particle = m_aParticles[nSlot];
         if (!particle.bActive) {
@@ -418,17 +373,11 @@ void NoteLayer::SpawnParticle(float flX, float flY, float flScaleX, float flScal
 }
 
 namespace {
-// The two note end types the spawner accepts.
 constexpr int kEndTypeHead = 0;
 constexpr int kEndTypeTail = 1;
-// The player-colour count.
 constexpr int kPlayerColorMax = 2;
-// The quarter-turn added to a tail particle's travel-direction angle (@ghidraAddress 0x2fedd8).
-constexpr double kTailAngleBias = 1.5707963267948966;
-// The half-turn a head particle is mirrored by when its colour differs from the play colour
-// (@ghidraAddress 0x2fe894).
-constexpr float kHeadMirrorRotation = 3.1415927f;
-// The tail particle sprite kinds, by colour.
+constexpr double kTailAngleBias = 1.5707963267948966; // @ghidraAddress 0x2fedd8
+constexpr float kHeadMirrorRotation = 3.1415927f;     // @ghidraAddress 0x2fe894
 constexpr int kTailKindColor0 = 4;
 constexpr int kTailKindColor1 = 5;
 } // namespace
@@ -451,23 +400,19 @@ void NoteLayer::Create(int nColor,
     int nKind;
     float flRotation;
     if (nEndType != kEndTypeHead) {
-        // A tail faces its travel direction, a quarter turn past the raw angle.
         nKind = nColor == 1 ? kTailKindColor1 : kTailKindColor0;
         flRotation = static_cast<float>(
             std::atan2(static_cast<double>(-flDirY), static_cast<double>(flDirX)) + kTailAngleBias);
     } else {
-        // A head selects one of four fixed kinds from the two shape flags, per colour.
         if (nColor == 1) {
             nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 0xb : 0xa) : (nShapeFlagB != 0 ? 3 : 1);
         } else {
             nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 9 : 8) : (nShapeFlagB != 0 ? 2 : 0);
         }
-        // It is mirrored a half turn when its colour differs from the current play colour.
         flRotation =
             GameSystem::GetGameSystem()->GetPlayColor() == nColor ? 0.0f : kHeadMirrorRotation;
     }
 
-    // Store the particle in the first free pool slot from the shared active index.
     for (int nSlot = g_nParticleActiveIndex; nSlot < kParticleCount; ++nSlot) {
         Particle &particle = m_aParticles[nSlot];
         if (!particle.bActive) {
@@ -479,7 +424,6 @@ void NoteLayer::Create(int nColor,
             particle.flScaleX = flScaleX;
             particle.flScaleY = flScaleY;
             ++g_nParticleActiveIndex;
-            // Optionally spawn a trailing particle at the same position and scale.
             if (bSpawnTrail != 0) {
                 SpawnParticle(flX, flY, flScaleX, flScaleY, nColor);
             }

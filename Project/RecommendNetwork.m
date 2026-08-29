@@ -1,19 +1,3 @@
-//
-//  RecommendNetwork.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RecommendNetwork). Verified
-//  against the arm64 disassembly: the CGRect passed to +openAdAreaWithParentView:rect:... is
-//  carried in the d0-d3 vector registers and forwarded verbatim to the requestCode: variant, so
-//  there is no soft-float arithmetic to recover. This is a plain Objective-C file because every
-//  collaborator is reached through ordinary message sends, with no C++.
-//
-//  The class is a thin facade over the Applilink recommend SDK: each entry point asks
-//  ApplilinkConsts whether it may run, then either forwards to the shared RecommendCore
-//  (dispatching the status queries onto a global queue) or reports a localised error straight back
-//  to the caller.
-//
-
 #import "RecommendNetwork.h"
 
 #import "ApplilinkConsts.h"
@@ -24,21 +8,15 @@
 #import "RecommendCore.h"
 #import "RecommendWebView.h"
 
-// Applilink error codes. The SDK-unavailable code is reported when the SDK may not run at all; the
-// fail-open code is reported when an open request is rejected because the SDK never finished
-// initialising.
 static const NSInteger kApplilinkErrorSdkUnavailable = 0x401;
 static const NSInteger kApplilinkErrorOpenFailed = 0x3f2;
 
-// The keys of the display-status dictionary handed to the callback on the SDK-unavailable path.
 static NSString *const kRecommendUnreadCountKey = @"unreadCount";
 static NSString *const kRecommendBannerDisplayStatusKey = @"bannerDisplayStatus";
 
-// The zero-count and zero-status placeholders for the SDK-unavailable display-status dictionary.
 static const int kRecommendUnreadCountNone = 0;
 static const int kRecommendBannerDisplayStatusNone = 0;
 
-// The vertical alignment the app-list and interstitial flows request; they do not expose it.
 static const int kRecommendVerticalAlignDefault = 0;
 
 @implementation RecommendNetwork

@@ -1,15 +1,3 @@
-//
-//  RBMusicCPUView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicCPUView). Verified against
-//  the arm64 disassembly: -SetupView's per-theme, per-idiom slider and container geometry was
-//  recovered from the soft-float register moves and constant-pool loads that the decompiler folds
-//  into pseudo-variables, and the marker-glide animation was confirmed against the block literal
-//  the decompiler emits. This is an Objective-C++ file because -SelectLevel: reaches the C++
-//  SoundEffectManager engine singleton.
-//
-
 #import "RBMusicCPUView.h"
 
 #import "RBMusicView.h"
@@ -18,91 +6,68 @@
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
 
-// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
+// @ghidraAddress 0x2eedc0
 extern const double g_dMascotMessageAnimDuration;
 
-// The number of CPU-rival LEVEL slots the bar is divided into. The marker glides across nine equal
-// slots and LEVEL is clamped to zero through nine.
 constexpr int kLevelSlotCount = 9;
 constexpr int kLevelMax = 9;
 
-// The themed sound-effect slot played when the LEVEL changes.
 constexpr int kSoundEffectLevelChange = 2;
 
-// The sentinel stored in m_PrevSound before any level-change sound effect has played.
 constexpr unsigned int kNoSoundHandle = 0xffffffff;
 
-// The Colette theme selects the wide (iPad) slider layout.
 constexpr int kThemeColette = 2;
 
-// The slider-type variants written by -initWithFrame:MusicSelectedBase:.
 constexpr int kSliderTypeDefault = 0;
 constexpr int kSliderTypeColetteWide = 1;
 
-// The full flexible autoresizing mask (all four margins plus flexible width and height).
 constexpr UIViewAutoresizing kAutoresizingFlexibleAll =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// The slider bar and level marker image names.
 static NSString *const kSliderBarImageName = @"02_music_detail/det_lev_bar";
 static NSString *const kLevelMarkerImageName = @"02_music_detail/det_lev_sel";
 
-// The slider bar frame per (theme, idiom). The Colette theme's wide bar spans the whole view
-// width with x zero and a themed top inset; every other combination uses a fixed constant-pool
-// rectangle. Decoded from the constant pool at 0x1002fcfd8 (280), 0x100301158 (36), 0x1002ec6e0
-// (50), 0x100301198 (274), 0x1002ec6c8 (80), and 0x1002eecd8 (64), plus the inline immediate
-// values.
-constexpr CGFloat kSliderBarColetteTopInset = 80.0;
-constexpr CGFloat kSliderBarWideTopInset = 64.0;
+constexpr CGFloat kSliderBarColetteTopInset = 80.0; // 0x1002ec6c8
+constexpr CGFloat kSliderBarWideTopInset = 64.0;    // 0x1002eecd8
 constexpr CGFloat kSliderBarColetteDefaultX = 10.0;
-constexpr CGFloat kSliderBarColetteDefaultY = 36.0;
-constexpr CGFloat kSliderBarColetteDefaultWidth = 280.0;
+constexpr CGFloat kSliderBarColetteDefaultY = 36.0;      // 0x100301158
+constexpr CGFloat kSliderBarColetteDefaultWidth = 280.0; // 0x1002fcfd8
 constexpr CGFloat kSliderBarColetteDefaultHeight = 30.0;
 constexpr CGFloat kSliderBarDefaultX = 15.0;
 constexpr CGFloat kSliderBarDefaultY = 27.0;
-constexpr CGFloat kSliderBarDefaultWidth = 274.0;
-constexpr CGFloat kSliderBarDefaultHeight = 50.0;
+constexpr CGFloat kSliderBarDefaultWidth = 274.0; // 0x100301198
+constexpr CGFloat kSliderBarDefaultHeight = 50.0; // 0x1002ec6e0
 
-// The bar-container frame per (theme, idiom). Decoded from the constant pool at 0x1002eeef0
-// (54), 0x1003011b0 (41), 0x1003011c0 (378), 0x1003011b8 (220), 0x1003011c8 (82), 0x1002ec6e0 (50),
-// 0x1002ee9a8 (42), 0x1002ee950 (40), 0x1003011a8 (370), 0x1003011a0 (261), 0x1002eea00 (68), and
-// 0x1002ef170 (56), plus the 0.0, 12.0, 9.0, and 19.0 inline immediate values.
-constexpr CGFloat kBarBaseColetteWideX = 54.0;
+constexpr CGFloat kBarBaseColetteWideX = 54.0; // 0x1002eeef0
 constexpr CGFloat kBarBaseColetteWideY = 12.0;
-constexpr CGFloat kBarBaseColetteWideWidth = 378.0;
-constexpr CGFloat kBarBaseColetteWideHeight = 82.0;
-constexpr CGFloat kBarBaseColetteX = 41.0;
+constexpr CGFloat kBarBaseColetteWideWidth = 378.0; // 0x1003011c0
+constexpr CGFloat kBarBaseColetteWideHeight = 82.0; // 0x1003011c8
+constexpr CGFloat kBarBaseColetteX = 41.0;          // 0x1003011b0
 constexpr CGFloat kBarBaseColetteY = 0.0;
-constexpr CGFloat kBarBaseColetteWidth = 220.0;
-constexpr CGFloat kBarBaseColetteHeight = 50.0;
-constexpr CGFloat kBarBaseWideX = 42.0;
-constexpr CGFloat kBarBaseWideY = 40.0;
-constexpr CGFloat kBarBaseWideWidth = 370.0;
-constexpr CGFloat kBarBaseWideHeight = 68.0;
+constexpr CGFloat kBarBaseColetteWidth = 220.0; // 0x1003011b8
+constexpr CGFloat kBarBaseColetteHeight = 50.0; // 0x1002ec6e0
+constexpr CGFloat kBarBaseWideX = 42.0;         // 0x1002ee9a8
+constexpr CGFloat kBarBaseWideY = 40.0;         // 0x1002ee950
+constexpr CGFloat kBarBaseWideWidth = 370.0;    // 0x1003011a8
+constexpr CGFloat kBarBaseWideHeight = 68.0;    // 0x1002eea00
 constexpr CGFloat kBarBaseDefaultX = 19.0;
 constexpr CGFloat kBarBaseDefaultY = 9.0;
-constexpr CGFloat kBarBaseDefaultWidth = 261.0;
-constexpr CGFloat kBarBaseDefaultHeight = 56.0;
+constexpr CGFloat kBarBaseDefaultWidth = 261.0; // 0x1003011a0
+constexpr CGFloat kBarBaseDefaultHeight = 56.0; // 0x1002ef170
 
-// Half a bar, used to centre the marker within the container and to centre the wide slider bar.
 constexpr CGFloat kHalf = 0.5;
 
-// The tap dead-zone at each end of the bar, per (theme, idiom): a tap within this margin of
-// the left edge selects LEVEL zero, and one within it of the right edge selects LEVEL nine.
 constexpr CGFloat kTapDeadZoneColetteWide = 56.0;
 constexpr CGFloat kTapDeadZoneColetteDefault = 30.0;
 constexpr CGFloat kTapDeadZoneWide = 30.0;
 constexpr CGFloat kTapDeadZoneDefault = 20.0;
 
-// The eight interior LEVEL steps between the two dead zones (LEVEL one through eight span the bar
-// interior; a tap maps to floor((x - deadZone) / stepWidth) + 1).
+// LEVEL one through eight span the bar interior between the two dead zones.
 constexpr CGFloat kInteriorStepDivisor = 8.0;
 
 @interface RBMusicCPUView () {
-    // Named exactly as in the binary's ivar list. The previous level-change sound-effect play
-    // handle, or kNoSoundHandle when none has played.
     unsigned int m_PrevSound; // +0x8
 }
 @end
@@ -143,9 +108,6 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
     CGRect sliderFrame;
     if (colette) {
         if (isPad) {
-            // The Colette wide bar keeps the image's natural size, centred horizontally at a fixed
-            // top inset. The binary reads its own frame for the view width and the slider view's
-            // frame three times for the slider's width, width, and height.
             CGFloat selfWidth = self.frame.size.width;
             CGSize sliderSize = self.sliderView.frame.size;
             sliderFrame = CGRectMake((selfWidth - sliderSize.width) * kHalf,
@@ -219,7 +181,6 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
     self.selectedImage.autoresizingMask = kAutoresizingFlexibleAll;
     [self.barBase addSubview:self.selectedImage];
 
-    // The marker's origin is truncated to whole pixels.
     CGRect markerFrame = self.selectedImage.frame;
     markerFrame.origin.x = static_cast<int>(markerFrame.origin.x);
     markerFrame.origin.y = static_cast<int>(markerFrame.origin.y);

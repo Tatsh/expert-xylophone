@@ -1,35 +1,13 @@
-//
-//  RBNumberLabel.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBNumberLabel). Verified against
-//  the arm64 disassembly: the glyph tables and their asset names, the number-by-ten scaling for the
-//  decimal style, the ten-digit split, the two-pass layout that measures the run before centring
-//  the lime style, the bottom-aligned right-to-left glyph placement, and the small decimal-point
-//  marker drawn after the fractional digit.
-//
-
 #import "RBNumberLabel.h"
 
 #import "UIImage+RB.h"
 
-// The number of decimal digits the split buffer holds.
 static const NSInteger kMaxDigits = 10;
-
-// The radix the number is split into digits with.
 static const int kDecimalRadix = 10;
-
-// The number of decimal places the decimal style shows; the number is scaled by ten so the single
-// fractional digit falls into the least-significant slot.
 static const float kDecimalScale = 10.0f;
-
-// The decimal style always shows at least an integer digit and one fractional digit.
 static const NSInteger kDecimalMinDigits = 2;
-
-// The fraction of the measured run width the lime style shifts left by to centre it.
 static const CGFloat kCenterFactor = 0.5;
 
-// The whole-number digit glyphs (cus_unlock_nm_0 … cus_unlock_nm_9).
 static NSString *const kNormalDigitNames[] = {
     @"04_customize/cus_unlock_nm_0",
     @"04_customize/cus_unlock_nm_1",
@@ -43,7 +21,6 @@ static NSString *const kNormalDigitNames[] = {
     @"04_customize/cus_unlock_nm_9",
 };
 
-// The big integer-part digit glyphs of the decimal style (cus_unlock_nmb_0 … cus_unlock_nmb_9).
 static NSString *const kBigDigitNames[] = {
     @"04_customize/cus_unlock_nmb_0",
     @"04_customize/cus_unlock_nmb_1",
@@ -57,7 +34,6 @@ static NSString *const kBigDigitNames[] = {
     @"04_customize/cus_unlock_nmb_9",
 };
 
-// The small fractional-digit glyphs of the decimal style (cus_unlock_nms_0 … cus_unlock_nms_9).
 static NSString *const kSmallDigitNames[] = {
     @"04_customize/cus_unlock_nms_0",
     @"04_customize/cus_unlock_nms_1",
@@ -71,7 +47,6 @@ static NSString *const kSmallDigitNames[] = {
     @"04_customize/cus_unlock_nms_9",
 };
 
-// The lime-badged digit glyphs (cus_unlock_0 … cus_unlock_9).
 static NSString *const kLimeDigitNames[] = {
     @"04_customize/cus_unlock_0",
     @"04_customize/cus_unlock_1",
@@ -85,10 +60,7 @@ static NSString *const kLimeDigitNames[] = {
     @"04_customize/cus_unlock_9",
 };
 
-// The small decimal-point glyph drawn after the fractional digit of the decimal style.
 static NSString *const kSmallDecimalPointName = @"04_customize/cus_unlock_nms_dp";
-
-// The prefix badge drawn with the lime style.
 static NSString *const kLimePrefixName = @"04_customize/cus_unlock_lime";
 
 @implementation RBNumberLabel
@@ -103,9 +75,6 @@ static NSString *const kLimePrefixName = @"04_customize/cus_unlock_lime";
 }
 
 #pragma mark - Properties
-
-// Both setters compare before storing and redraw only on a change, which is why neither can be
-// left to synthesis: a synthesized setter stores the value and the control never repaints.
 
 - (void)setNumber:(float)number {
     if (_number == number) {
@@ -125,8 +94,6 @@ static NSString *const kLimePrefixName = @"04_customize/cus_unlock_lime";
 
 #pragma mark - Drawing
 
-// Look up the glyph image for a digit under a style, honouring the small/big split of the decimal
-// style's fractional slot.
 static UIImage *
 RBNumberLabelGlyphImage(RBNumberLabelImageType imageType, int digit, NSInteger slot) {
     switch (imageType) {
@@ -172,7 +139,6 @@ RBNumberLabelGlyphImage(RBNumberLabelImageType imageType, int digit, NSInteger s
 
     CGFloat pen = CGRectGetWidth(rect);
 
-    // First pass: for the lime style, measure the run width so it can be centred horizontally.
     if (self.imageType == RBNumberLabelImageTypeLime) {
         for (NSInteger slot = 0; slot < count; ++slot) {
             if (slot == 0) {
@@ -185,7 +151,6 @@ RBNumberLabelGlyphImage(RBNumberLabelImageType imageType, int digit, NSInteger s
         pen = CGRectGetMinX(rect) + pen * -kCenterFactor;
     }
 
-    // Second pass: draw each glyph bottom-aligned, laid out right to left from the pen position.
     CGFloat bottom = CGRectGetHeight(rect);
     for (NSInteger slot = 0; slot < count; ++slot) {
         if (slot == 0 && self.imageType == RBNumberLabelImageTypeLime) {

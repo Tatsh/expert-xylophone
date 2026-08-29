@@ -1,10 +1,3 @@
-//
-//  AppDelegate.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class AppDelegate).
-//
-
 #import "AppDelegate.h"
 
 #import <stdlib.h>
@@ -50,17 +43,13 @@
 #import "sheetlayer.h"
 #import "touchmanager.h"
 
-// Messaged from the startup-request success block, which the binary emits inline there.
 @interface AppDelegate ()
 - (void)setPreWebInfoURL:(nullable NSString *)preWebInfoURL;
 @end
 
-// rb::GameScene state-machine value referenced at launch. The state enum lives with the
-// rb::GameScene class; only the value used here is named.
 constexpr int kGameSceneStateMusicSelect = 1;
 
-// Note-sheet layout geometry, recovered from the launch decompile. Float DAT_ values were read from
-// the binary (0x1002ef180 = 96.0, 0x1002ef184 = 64.0, 0x1003ce930 = 1024).
+// Pool values: 0x1002ef180 = 96.0, 0x1002ef184 = 64.0, 0x1003ce930 = 1024.
 static constexpr float kSheetWidth = 70.0f;
 static constexpr float kSheetHeight = 25.0f;
 static constexpr float kSheetMarginX = 24.0f;
@@ -72,50 +61,34 @@ static constexpr float kSheetVariantMargin = 64.0f;
 static constexpr int kVariantScreenHeightPoints = 1024;
 static constexpr int kSheetVariantHeightInset = 44;
 
-// The reference (4") screen envelope, in points, that the standard sheet layout is clamped to, and
-// the 2x-pixel insets applied to the fitted sheet size.
 static constexpr int kReferenceScreenWidthPoints = 320;
 static constexpr int kReferenceScreenHeightPoints = 568;
 static constexpr int kRetinaScale = 2;
 static constexpr int kSheetSizeInsetX = 48;
 static constexpr int kSheetSizeInsetY = 98;
 
-// Launch miscellany: the render-loop period, the logo-scene listener priority, and the initial
-// capacity of the pending-push-notification list.
 static constexpr float kGameLoopTimeMs = 1.0f;
 static constexpr int kLogoSceneListenerPriority = 1;
 static constexpr NSUInteger kPushListInitialCapacity = 3;
 
-// The App Store product page for REFLEC BEAT plus, opened by @c -launchAppStore.
 static NSString *const kAppStoreURLString =
     @"https://itunes.apple.com/jp/app/reflec-beat-plus/id472140433?mt=8";
 
-// Server-data placeholder strings rejected before remote-notification registration: a usable value
-// must be neither nil nor either textual form of "null".
 static NSString *const kNullPlaceholder = @"null";
 static NSString *const kNullPlaceholderDescription = @"(null)";
 
-// The Keychain generic-password account name and the field separator backing @c +getServerData.
 static NSString *const kServerIdKeychainAccount = @"ReflecBeatPlusServerID";
 static NSString *const kServerDataSeparator = @"@@@";
 
-// The number of @c "@@@"-separated fields a valid server-data value holds: the user identifier and
-// its paired token. Remote-notification registration is skipped unless both are present.
 static constexpr NSUInteger kServerDataFieldCount = 2;
 
-// Indices into the @c "@@@"-separated server-data pair returned by @c +getServerData.
 enum { kServerDataUserIdIndex = 0, kServerDataTokenIndex = 1 };
 
-// The minimum iOS version supporting the do-not-back-up extended attribute, and the attribute name
-// itself, used by @c +setNoBackupAttribute:.
 static NSString *const kMinSystemVersionForNoBackup = @"5.0.1";
 
-// The minimum iOS version the keychain accessibility attribute is set on, used by
-// @c +setServerData:andB:. It is a different version from the do-not-back-up one above.
+// Deliberately a different version from the do-not-back-up minimum above.
 static NSString *const kMinSystemVersionForKeychainAccessible = @"4.0";
 
-// The keychain account name the music-list key is stored under, and the empty string the binary
-// files as that item's label and description.
 static NSString *const kApplicationUniqueIDAccount = @"ApplicationUniqueID";
 static NSString *const kEmptyKeychainAttribute = @"";
 
@@ -125,46 +98,35 @@ static NSString *const kFixedMusicListKey = @"00000000-0000-0000-0000-0000000000
 #endif
 static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 
-// The value written into the do-not-back-up extended attribute to mark a file as excluded.
 static constexpr uint8_t kDoNotBackUpXattrValue = 1;
 
-// The Applilink application identifier and server environment ("0" is production) passed at init.
 static NSString *const kApplilinkAppId = @RB_APPLILINK_APP_ID;
 static NSString *const kApplilinkEnv = @RB_APPLILINK_ENV;
 
-// The ad-location the recommend-unread-count fetch queries.
 static NSString *const kRecommendUnreadAdLocation = @"ADL_MYPAGE";
 
-// The total-score leaderboard category identifiers for the two device idioms.
 static NSString *const kTotalScoreLeaderboardPad = @"rbplus.totalscore";
 static NSString *const kTotalScoreLeaderboardPhone = @"rbplus.totalscorephone";
 
-// The delay before the theme title layer is built, and the corporate-button target fade alpha.
 static constexpr int64_t kTitleLayerBuildDelayNs = 100000000;
 static constexpr float kCorporateButtonFadeAlpha = 1.0f;
 
-// The terms-URL format (base, region, terms id), the bonus-list music-id key format, and the fixed
-// save-data passphrase.
 static NSString *const kTermURLFormat = @"%@/?target=%@&type=%@";
 static NSString *const kBonusListKeyFormat = @"%d";
 static NSString *const kSaveDataPassphrase = @"Copyright 2014 KDE.";
 
-// The interruption-type key, spelled as a literal rather than referencing AVFoundation's
-// AVAudioSessionInterruptionTypeKey symbol, which is what the binary does.
+// Spelled as a literal rather than AVFoundation's symbol, which is what the binary does.
 static NSString *const kAudioSessionInterruptionTypeKey = @"AVAudioSessionInterruptionTypeKey";
 
-// The device OS versions whose timing behaviour differs, compared numerically at startup.
 static NSString *const kOsVersion80 = @"8.0";
 static NSString *const kOsVersion81 = @"8.1";
 
-// The resource-info request payload keys.
 static NSString *const kResourceInfoKeyTarget = @"target";
 static NSString *const kResourceInfoKeyVersion = @"version";
 static NSString *const kResourceInfoKeyUserID = @"user_id";
 static NSString *const kResourceInfoKeyPasswd = @"passwd";
 static NSString *const kResourceInfoKeyUUID = @"uuid";
 
-// The startup response JSON keys and the mandatory-update-off flag value.
 static NSString *const kStartupKeyVersion = @"Version";
 static NSString *const kStartupKeyItemURL = @"ItemURL";
 static NSString *const kStartupKeyType = @"Type";
@@ -175,13 +137,10 @@ static NSString *const kStartupKeyCol = @"Col";
 static NSString *const kStartupKeyTermsVersion = @"terms_version";
 static NSString *const kMustUpdateFlagOff = @"0";
 
-// The alert-view tags that route the delegate callback.
 static const NSInteger kResourceUpdateAlertTag = 2;
 static const NSInteger kNewVersionAlertTag = 3;
 static const NSInteger kStartupNetworkErrorTag = 10;
 
-// The web-info response JSON keys, its timestamp format, and the epoch fallback used when the
-// stored timestamp cannot be parsed.
 static NSString *const kWebInfoKeyURL = @"URL";
 static NSString *const kWebInfoKeyUpdateTime = @"UpdateTime";
 static NSString *const kWebInfoKeyAnotherURL = @"AnotherURL";
@@ -204,9 +163,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 + (NSArray *)getServerData {
     NSString *bundleIdentifier = NSBundle.mainBundle.bundleIdentifier;
 
-    // First pass: fetch the generic-password item's attributes for this app's server-ID account.
-    // Built with the nil-terminated variadic constructor, not a dictionary literal, which would
-    // send +dictionaryWithObjects:forKeys:count: instead.
+    // The binary sends the nil-terminated variadic constructor, not a dictionary literal.
     NSDictionary *attributeQuery =
         [NSDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
                                                    (__bridge id)kSecClass,
@@ -226,9 +183,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     }
     NSDictionary *attributes = (__bridge_transfer NSDictionary *)attributesResult;
 
-    // Second pass: re-query with those attributes to retrieve the stored password bytes.
     NSMutableDictionary *dataQuery = [NSMutableDictionary dictionaryWithDictionary:attributes];
-    // -setObject:forKey:, not the subscript form, which would send -setObject:forKeyedSubscript:.
+    // The binary sends -setObject:forKey:, not the subscript form.
     [dataQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
     [dataQuery setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
     CFTypeRef dataResult = nullptr;
@@ -247,7 +203,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 }
 
 + (BOOL)setNoBackupAttribute:(NSString *)path {
-    // The com.apple.MobileBackup exclude-from-backup attribute only exists on iOS 5.0.1 and later.
     if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
                                               options:NSNumericSearch] == NSOrderedAscending) {
         return NO;
@@ -262,16 +217,13 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // RBPDBG: stamp the build's git SHA at startup so any captured log identifies exactly which
-    // build produced it. idevicesyslog | grep RBPDBG.
+    // RBPDBG: stamps the build's git SHA so a captured log identifies the build that produced it.
     neDebugLog("build sha=%s", RBPDBG_BUILD_SHA);
 
     InitializeDeviceEnvironment();
 
-    // RBPDBG: the keychain key whose MD5 is the BFCodec key for the purchased-content lists
-    // (mulist, prodlist, nolist), so those blobs can be decrypted offline, plus the resolved
-    // filesystem paths and the free-space reading. The keychain query and the volume stat are real
-    // side effects, so they stay inside the block that compiles away entirely.
+    // The keychain query and the volume stat are real side effects, so they stay inside the block
+    // that compiles away entirely.
     if (NE_DBG_FIRST(1)) {
         NSString *listKey = [AppDelegate musicListKey];
         neDebugLog("mulist/prodlist key uuid=%s", listKey.length ? listKey.UTF8String : "(nil)");
@@ -288,11 +240,9 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                    UIScreen.mainScreen.bounds.size.width,
                    UIScreen.mainScreen.bounds.size.height,
                    UIScreen.mainScreen.scale);
-        // The theme selects which of the three title scenes runs.
         neDebugLog("thema=%d", static_cast<int>(RBUserSettingData.sharedInstance.thema));
     }
 
-    // Grow the shared URL cache to disk-back it under Caches, keeping the memory cap at 0.
     NSURLCache *cache =
         [[NSURLCache alloc] initWithMemoryCapacity:0
                                       diskCapacity:NSURLCache.sharedURLCache.diskCapacity
@@ -317,8 +267,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         gameSystem->SetScreenScale(1.0f);
     }
 
-    // The GL layers, including the title screen's parts, position themselves from these values
-    // rather than from any UIKit view's bounds.
     neDebugLog("gameSystemScreen=(%.0f,%.0f %.0fx%.0f) scale=%.2f",
                gameSystem->GetScreenX(),
                gameSystem->GetScreenY(),
@@ -326,7 +274,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                gameSystem->GetScreenHeight(),
                gameSystem->GetScreenScale());
 
-    // Ensure the private Documents directory exists and is excluded from backup.
     NSString *privateDocuments = GetPrivateDocumentsPath();
     if (![NSFileManager isDirectoryExist:privateDocuments] &&
         [NSFileManager createDirectory:privateDocuments]) {
@@ -338,7 +285,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
     LevelTables::LoadPlayerLevelData(LevelTables::GetInstance()->GetLevelExpRecord());
 
-    // Seed the GameSystem from the persisted user settings.
     RBUserSettingData *settings = RBUserSettingData.sharedInstance;
     gameSystem->SetGameType(settings.gameType);
     gameSystem->SetDifficulty(settings.difficulty);
@@ -363,9 +309,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     [RBMusicManager.getInstance loadPurchasedMusics];
     [RBMusicManager.getInstance setMusicDataArrayDirty];
 
-    // Lay out the note sheet against the screen. The iPad idiom (large-text) build uses a fixed
-    // 640-wide sheet; the standard build fits the sheet to the screen, clamped to the 4" 640x1136
-    // envelope (0x140 x 0x238 points).
     gameSystem->SetSheetWidth(kSheetWidth);
     gameSystem->SetSheetHeight(kSheetHeight);
     gameSystem->SetSheetLayerFlags(0);
@@ -397,17 +340,12 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         gameSystem->SetCameraTargetY(0.0f);
     }
 
-    // Build the window, root view controller, and its (bar-hidden) navigation controller.
     self.window = [[neWindow alloc] initWithFrame:screenBounds];
     self.window.backgroundColor = UIColor.blackColor;
 #ifdef ENABLE_PATCHES
-    // The app predates dark mode by years and has no dark assets, and iOS 15 additionally makes an
-    // unconfigured bar transparent at its scroll edge, which shows this black window straight
-    // through the store's navigation and tab bars — the bars then appear to flip between black and
-    // light as the content behind them scrolls. Pin the window light and give both bar kinds an
-    // opaque background so they stay light whatever is under them. The Info.plist's
-    // UIUserInterfaceStyle covers the first half of this; the appearance proxies are what stop the
-    // bars going transparent, and they must be set before any store view controller is built.
+    // The app has no dark assets, and since iOS 15 an unconfigured bar is transparent at its
+    // scroll edge, showing this black window through the store's bars. These must be set before
+    // any store view controller is built.
     if (@available(iOS 13.0, *)) {
         self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
 
@@ -440,13 +378,9 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
 
-    // Bring up the touch manager and texture caches, register the startup listener, then start the
-    // view controller's 60 fps game loop.
     TouchManager::EnsureSingleton();
     ne::C_TEXTURE::EnsureCacheList();
     ne::C_TEXTURE::EnsureCacheControl(0);
-    // The launch handler builds the logo scene and registers it in the sorted listener list; it is
-    // a BaseScene, so the listener node is a real base and InsertSorted is inherited.
     (new rb::LogoScene())->InsertSorted(kLogoSceneListenerPriority);
     [self.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
     [self.viewController StartLoop];
@@ -456,7 +390,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     self.campaignIDForOpenStore = nil;
     self.extendNotePIDForOpenStore = nil;
 
-    // News-info and terms endpoint URLs, built against the current API host.
     self.urlBaseWebInfo = [NSURL
         URLWithString:[NSString stringWithFormat:@"https://%@/akx/main/news/info.jsp?target=JP",
                                                  GetApiHostString()]];
@@ -464,7 +397,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         URLWithString:[NSString
                           stringWithFormat:@"https://%@/akx/main/news/passed_info.jsp?target=JP",
                                            GetApiHostString()]];
-    // The terms endpoint is stored as a string, not wrapped in an NSURL like the two above.
+    // Stored as a string, not wrapped in an NSURL like the two above.
     self.urlBaseTerm =
         [NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/", GetApiHostString()];
 
@@ -475,7 +408,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
     [self startRegisterForRemoteNotification];
 
-    // A remote notification that launched the app is handed straight to the URL-scheme router.
     NSDictionary *remote = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remote) {
         [RBUrlSchemeManager.sharedManager parseURL:remote[@"url"]];
@@ -483,7 +415,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
     self.pushList = [[NSMutableArray alloc] initWithCapacity:kPushListInitialCapacity];
 
-    // A local notification that launched the app is cancelled and its body/sound/url captured.
     UILocalNotification *local = launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
     if (local) {
         [UIApplication.sharedApplication cancelLocalNotification:local];
@@ -509,20 +440,16 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     [AudioManager.sharedManager systemResume];
     [self.viewController RestartLoop];
 
-    // Warn once about low free space, unless the alert is already visible.
     if (![NSFileManager isFreeSystemSize] && !self.strageAlertView.isVisible) {
         [self.strageAlertView show];
     }
 
-    // If a store deep-link was queued and the music-select menu is active, jump to the store
-    // button.
     if (scene && scene->GetState() == kGameSceneStateMusicSelect &&
         (self.packIDForOpenStore || self.campaignIDForOpenStore ||
          self.extendNotePIDForOpenStore)) {
         [self.viewController.musicMenuView SelectStoreButton];
     }
 
-    // A pending mandatory update prompts the "please update" alert on foreground.
     if (self.isUpdate && !self.isSkipUpdate) {
         [UIAlertView showAlertLatestApplication:self];
     }
@@ -579,7 +506,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 #pragma mark - Audio session
 
 - (void)audioSessionInterrupted:(NSNotification *)notification {
-    // The boxed value is unwrapped once per comparison, not held in a local.
     NSNumber *type = [notification.userInfo objectForKey:kAudioSessionInterruptionTypeKey];
     if (type.unsignedIntegerValue == AVAudioSessionInterruptionTypeBegan) {
         [AudioManager.sharedManager systemSuspend];
@@ -604,9 +530,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 #pragma mark - Remote and local notifications
 
 - (void)startRegisterForRemoteNotification {
-    // Registration is gated on a valid server-data pair; a missing or "null" placeholder aborts it.
     NSArray *serverData = [AppDelegate getServerData];
-    // The nil test is its own branch, so -count is never sent to nil.
     if (serverData == nil || serverData.count != kServerDataFieldCount) {
         return;
     }
@@ -619,8 +543,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         return;
     }
 
-    // Each arm fetches the shared application itself; in the newer arm that happens after the
-    // settings object is built, not before the branch.
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
         [UIApplication.sharedApplication
             registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge |
@@ -642,15 +564,12 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    // Hexadecimal token string: strip the "<", ">", and spaces from -[NSData description].
     NSString *token = [[[deviceToken.description stringByReplacingOccurrencesOfString:@"<"
                                                                            withString:@""]
         stringByReplacingOccurrencesOfString:@">"
                                   withString:@""] stringByReplacingOccurrencesOfString:@" "
                                                                             withString:@""];
 
-    // Upload the token with the region, bundle version, and the two server-data values as a JSON
-    // POST.
     NSArray *serverData = [AppDelegate getServerData];
     NSDictionary *payload = @{
         @"target" : GetRegionCode(),
@@ -668,7 +587,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     weakSelf.apnsUploader = [[Downloader alloc] initWithURL:[NetworkUtil tokenSetURL]
                                                        post:json
                                                 contentType:@"application/json"];
-    // The uploader is released once the request settles (success or failure); progress is ignored.
     [weakSelf.apnsUploader
         startDownloadingWithProceed:^(Downloader *downloader) {
         }
@@ -693,8 +611,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         @"url" : userInfo[@"url"],
     }];
 
-    // While the app is active on the music-select (or earlier) screen, surface the queued push
-    // view.
     GameSystem *gameSystem = GameSystem::GetGameSystem();
     rb::GameScene *scene = gameSystem->GetCurrentScene();
     if (scene && application.applicationState == UIApplicationStateActive &&
@@ -703,7 +619,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         [self.viewController.musicMenuView showPushNotificationView];
     }
 
-    // Route the payload URL only while foreground (active or inactive), never when backgrounded.
     if (userInfo && application.applicationState <= UIApplicationStateInactive) {
         id urlString = userInfo[@"url"];
         if (urlString) {
@@ -714,7 +629,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (void)application:(UIApplication *)application
     didReceiveLocalNotification:(UILocalNotification *)notification {
-    // The outer dictionary really is a literal here, but the userInfo lookup sends -objectForKey:.
+    // The userInfo lookup sends -objectForKey:, not the subscript form.
     [self.pushList addObject:@{
         @"body" : notification.alertBody,
         @"sound" : notification.soundName,
@@ -749,7 +664,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x53268 */
 + (void)launchAppStore {
-    // Mark an update as in progress on the shared delegate, then open the store product page.
     AppDelegate.appDelegate.isUpdate = YES;
     [UIApplication.sharedApplication openURL:[NSURL URLWithString:kAppStoreURLString]];
 }
@@ -758,7 +672,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x514c8 */
 + (BOOL)setServerData:(NSString *)p1 andB:(NSString *)p2 {
-    // Only persist the pair on first run, when no server-data item exists yet.
     if ([AppDelegate getServerData] != nil) {
         return NO;
     }
@@ -776,7 +689,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                                                           nil];
     if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForKeychainAccessible
                                               options:NSNumericSearch] != NSOrderedAscending) {
-        // -setObject:forKey:, not the subscript form, which sends -setObject:forKeyedSubscript:.
+        // The binary sends -setObject:forKey:, not the subscript form.
         [item setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlock
                  forKey:(__bridge id)kSecAttrAccessible];
     }
@@ -808,11 +721,8 @@ NSString *RBDeviceIdentityUUID(void) {
 #endif
 }
 
-// The per-install identifier kept in the keychain, generated on first use.
 static NSString *RBKeychainDeviceUUID(void) {
-    // Try to read the stored generic-password key for this app. The five pairs were read from the
-    // stack setup at 0x50d90-0x50da8, not from a decompile, which shows only the first of them.
-    // The bundle identifier is fetched again for the second dictionary further down, as here.
+    // The five pairs come from the stack setup at 0x50d90-0x50da8, not from the decompile.
     NSDictionary *attributeQuery =
         [NSDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
                                                    (__bridge id)kSecClass,
@@ -830,7 +740,7 @@ static NSString *RBKeychainDeviceUUID(void) {
         errSecSuccess) {
         NSMutableDictionary *dataQuery = [NSMutableDictionary
             dictionaryWithDictionary:(__bridge NSDictionary *)attributesResult];
-        // -setObject:forKey:, not the subscript form.
+        // The binary sends -setObject:forKey:, not the subscript form.
         [dataQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
         [dataQuery setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
         CFTypeRef dataResult = nullptr;
@@ -847,14 +757,13 @@ static NSString *RBKeychainDeviceUUID(void) {
         }
     }
 
-    // No key stored yet: generate a fresh UUID string and persist it as the generic password.
     CFUUIDRef uuid = CFUUIDCreate(nullptr);
     CFStringRef uuidString = CFUUIDCreateString(nullptr, uuid);
     NSString *key = [NSString stringWithString:(__bridge NSString *)uuidString];
     CFRelease(uuidString);
     CFRelease(uuid);
 
-    // The five pairs here were likewise read from the stack setup at 0x50f9c-0x50fc4.
+    // The five pairs here come from the stack setup at 0x50f9c-0x50fc4.
     NSMutableDictionary *item =
         [NSMutableDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
                                                           (__bridge id)kSecClass,
@@ -881,9 +790,7 @@ static NSString *RBKeychainDeviceUUID(void) {
 
 /** @ghidraAddress 0x50698 */
 + (void)ApplilinkInitialize {
-    // Only initialise when server data (a KONAMI ID login) is present; otherwise mark
-    // uninitialised. The binary re-sends +getServerData for the element read rather than holding
-    // the array in a local.
+    // The binary re-sends +getServerData for the element read rather than holding it in a local.
     if ([AppDelegate getServerData] != nil &&
         [AppDelegate getServerData][kServerDataUserIdIndex] != nil) {
         [ApplilinkNetwork
@@ -937,8 +844,6 @@ static NSString *RBKeychainDeviceUUID(void) {
     __weak AppDelegate *weakSelf = self;
     [self.viewController.musicMenuView hideAnimation:^{
       /** @ghidraAddress 0x51978 */
-      // Cycle the whole texture cache to reclaim GPU memory, then rebuild the title. Each use of
-      // weakSelf reloads the weak reference; the binary holds no strong local across the body.
       [UIImage clearImageCache];
       ne::C_TEXTURE::GetCacheList();
       ne::C_TEXTURE::ReleaseAllHandles();
@@ -968,13 +873,11 @@ static NSString *RBKeychainDeviceUUID(void) {
     }
     [self.viewController UpdateProjection];
 
-    // Reset the play-field effect sizes to their defaults and persist.
     RBUserSettingData.sharedInstance.explosionEffectSize = g_flDefaultExplosionEffectSize;
     RBUserSettingData.sharedInstance.boundsEffectSize = 1.0f;
     RBUserSettingData.sharedInstance.damageEffectSize = 1.0f;
     [RBUserSettingData.sharedInstance save];
 
-    // Build the theme title layer shortly after, then request the startup / web-info data.
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW, kTitleLayerBuildDelayNs), dispatch_get_main_queue(), ^{
           /** @ghidraAddress 0x4fa24 */
@@ -986,9 +889,8 @@ static NSString *RBKeychainDeviceUUID(void) {
 
 /** @ghidraAddress 0x4fb4c */
 - (void)startupRequest {
-    // The receiver comes from +appDelegate and is held weakly; the binary never touches self here.
+    // The receiver comes from +appDelegate; the binary never touches self here.
     __weak AppDelegate *weakSelf = AppDelegate.appDelegate;
-    // Cancel any in-flight startup download before issuing a fresh one.
     if (weakSelf.downloader) {
         [weakSelf.downloader cancel];
         weakSelf.downloader = nil;
@@ -997,7 +899,6 @@ static NSString *RBKeychainDeviceUUID(void) {
     [weakSelf.downloader
         startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x4fde8 */
-          // The proceed handler is empty.
         }
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0x4fdec */
@@ -1010,7 +911,6 @@ static NSString *RBKeychainDeviceUUID(void) {
           NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
           formatter.dateFormat = kWebInfoDateFormat;
           if (lastRead == nil) {
-              // No prior read: adopt the served info unconditionally.
               [weakSelf setWebInfoURL:url];
               weakSelf.infoLastUpdateTimeString = updateTime;
           } else {
@@ -1019,14 +919,12 @@ static NSString *RBKeychainDeviceUUID(void) {
                   last = [formatter dateFromString:kWebInfoEpochFallback];
               }
               NSDate *served = [formatter dateFromString:updateTime];
-              // Adopt the served info only when it is newer than what was last read.
               if ([last compare:served] == NSOrderedAscending) {
                   [weakSelf setWebInfoURL:url];
                   weakSelf.infoLastUpdateTimeString = updateTime;
               }
           }
 
-          // Rebuild the base web-info URL from the served URL's scheme, host, and path.
           NSURL *served = [NSURL URLWithString:url];
           NSString *base =
               [NSString stringWithFormat:@"%@://%@%@", served.scheme, served.host, served.path];
@@ -1034,7 +932,6 @@ static NSString *RBKeychainDeviceUUID(void) {
         }
         failure:^(Downloader *downloader){
             /** @ghidraAddress 0x50394 */
-            // The failure handler is empty.
         }];
 }
 
@@ -1080,7 +977,6 @@ static NSString *RBKeychainDeviceUUID(void) {
 /** @ghidraAddress 0x4ecfc */
 - (NSString *)getTermURLWithID:(NSString *)termID {
     if (termID == nil) {
-        // No id: the resolved terms URL is just the base terms URL.
         self->_urlTerm = self->_urlBaseTerm;
     } else {
         self->_urlTerm =
@@ -1096,8 +992,7 @@ static NSString *RBKeychainDeviceUUID(void) {
 
 /** @ghidraAddress 0x4f044 */
 - (void)setExtendNotePIDForOpenStore:(NSString *)extendNotePIDForOpenStore {
-    // Written out rather than synthesised, and it retains rather than copying, so the declared
-    // copy attribute does not apply here.
+    // The binary retains rather than copying, despite the declared copy attribute.
     self->_extendNotePIDForOpenStore = extendNotePIDForOpenStore;
 }
 
@@ -1109,21 +1004,18 @@ static NSString *RBKeychainDeviceUUID(void) {
 /** @ghidraAddress 0x4ee50 */
 - (BOOL)needUpdateTerms {
 #ifdef ENABLE_PATCHES
-    // Accepting the terms POSTs to a Konami endpoint that no longer answers, so the acceptance can
-    // never be recorded and the screen returns on every launch. All three title scenes gate on this
-    // one answer, so reporting no outstanding terms skips it everywhere, first install included.
+    // Accepting the terms POSTs to a Konami endpoint that no longer answers, so acceptance can
+    // never be recorded and the screen returns on every launch. All three title scenes gate on it.
     return NO;
 #else
     NSString *accepted = RBUserSettingData.sharedInstance.termVersion;
     NSString *latest = self.latestTermVer;
     if (accepted == nil) {
-        // No version accepted yet: an update is required.
         return YES;
     }
     if (latest == nil) {
         return NO;
     }
-    // The accepted version being older than the latest means a re-accept is needed.
     return [accepted compare:latest options:NSNumericSearch] == NSOrderedAscending;
 #endif
 }
@@ -1217,8 +1109,7 @@ static NSString *RBKeychainDeviceUUID(void) {
 
 /** @ghidraAddress 0x4ee08 */
 - (void)setTermLastUpdateTimeString:(NSString *)termLastUpdateTimeString {
-    // Written out rather than synthesised, and it retains rather than copying, so the declared
-    // copy attribute does not apply here.
+    // The binary retains rather than copying, despite the declared copy attribute.
     self->_termLastUpdateTimeString = termLastUpdateTimeString;
 }
 
@@ -1252,7 +1143,6 @@ static NSString *RBKeychainDeviceUUID(void) {
         g_pPlayTimer->SetOsVersionTier(PlayTimer::kOsVersionTier81OrLater);
     }
 
-    // Seed the delay-frame timing offset from the persisted user setting.
     PlayTimer::shared();
     g_pPlayTimer->SetDelayFrameOffset(RBUserSettingData.sharedInstance.delayFrame *
                                       g_flDelayFrameToSeconds);
@@ -1261,7 +1151,6 @@ static NSString *RBKeychainDeviceUUID(void) {
     switch ([DownloadResourceManager offlineCheck]) {
     case DownloadResourceManagerResultMissing:
     case DownloadResourceManagerResultOutdated:
-        // No usable bundle: the user must download the resources before playing.
         [UIAlertView showAlertNeedResourceUpdate:weakSelf];
         break;
     case DownloadResourceManagerResultUpdate:
@@ -1275,8 +1164,6 @@ static NSString *RBKeychainDeviceUUID(void) {
 
 /** @ghidraAddress 0x4da2c */
 - (void)requestResourceInfo {
-    // Build the identity payload. When server data is present its credentials are used; otherwise
-    // empty credentials are sent.
     NSArray *serverData = [AppDelegate getServerData];
     NSDictionary *payload;
     if (serverData) {
@@ -1298,7 +1185,6 @@ static NSString *RBKeychainDeviceUUID(void) {
     }
     NSData *json = [Downloader dictionaryToJsonData:payload];
 
-    // Replace any in-flight downloader with a fresh resource-info request.
     if (self.downloader) {
         [self.downloader cancel];
         self.downloader = nil;
@@ -1311,7 +1197,6 @@ static NSString *RBKeychainDeviceUUID(void) {
     [self.downloader startDownloadingWithProceed:nil
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0x4e01c */
-          // Apply the served configuration to the app-info fields, then route the startup flow.
           NSDictionary *response = [downloader getDataInJSON];
           weakSelf.version = response[kStartupKeyVersion];
           weakSelf.urlString = response[kStartupKeyItemURL];
@@ -1324,7 +1209,6 @@ static NSString *RBKeychainDeviceUUID(void) {
           NSString *userID = response[kStartupKeyUserID];
           NSString *passwd = response[kStartupKeyPasswd];
 
-          // Proceed when server data already exists, or when both credentials were returned.
           BOOL haveCredentials = (userID != nil && passwd != nil);
           if (serverData != nil || haveCredentials) {
               [AppDelegate setServerData:userID andB:passwd];
@@ -1339,7 +1223,6 @@ static NSString *RBKeychainDeviceUUID(void) {
               if (!weakSelf.isSkipUpdate &&
                   [GetBundleVersionString() compare:requiredAppVersion
                                             options:NSNumericSearch] == NSOrderedAscending) {
-                  // The installed app is older than the required version: prompt to update.
                   dispatch_async(dispatch_get_main_queue(), ^{
                     /** @ghidraAddress 0x4e774 */
                     [UIAlertView showAlertLatestApplication:weakSelf];
@@ -1378,7 +1261,6 @@ static NSString *RBKeychainDeviceUUID(void) {
               }
               }
           } else {
-              // Missing credentials: show the startup network-error alert (tag 10).
               dispatch_async(dispatch_get_main_queue(), ^{
                 /** @ghidraAddress 0x4e6cc */
                 UIAlertView *alert = [UIAlertView showNetworkErrorWithDelegate:weakSelf];
@@ -1388,8 +1270,6 @@ static NSString *RBKeychainDeviceUUID(void) {
         }
         failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x4e9c4 */
-          // Offline fallback: dispatch to the title screen when the file list is intact, otherwise
-          // to the download screen.
           if ([DownloadResourceManager fileListCheck]) {
               dispatch_async(dispatch_get_main_queue(), ^{
                 /** @ghidraAddress 0x4eaac */
@@ -1416,10 +1296,8 @@ static NSString *RBKeychainDeviceUUID(void) {
     self.resourceDownloadViewController = downloadViewController;
     downloadViewController.downloadPath = self.urlString;
     downloadViewController.version = self.version;
-    // Not in the binary, and not a deviation from it either: presenting a controller gave a
-    // full-screen canvas on the iOS this was built for, and since iOS 13 the default is an inset
-    // sheet instead. Without this the download screen lays out inside 704x944 of a 768x1024 screen.
-    // Stating the original's style restores the original's behaviour, so it is not gated.
+    // Not a deviation: presenting gave a full-screen canvas on the iOS this was built for, and
+    // since iOS 13 the default is an inset sheet, so stating the style restores the original.
     downloadViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.viewController presentViewController:downloadViewController animated:NO completion:nil];
 }

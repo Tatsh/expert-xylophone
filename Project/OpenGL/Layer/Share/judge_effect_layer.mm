@@ -11,27 +11,20 @@
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
 
-// The process-wide judge-effect layer, created lazily by shared().
 static JudgeEffectLayer *g_pJudgeEffectLayer = nullptr; // @ghidraAddress 0x3def28
 
 namespace {
 
-// The atlas the judge effect draws from (@ghidraAddress 0x3ceaa8).
+// @ghidraAddress 0x3ceaa8
 constexpr const char *kTextureName = "00_texture/gm_parts2";
 
-// The fade channel's fully-opaque and fully-transparent endpoints.
 constexpr float kFadeOpaque = 1.0f;
 constexpr float kFadeTransparent = 0.0f;
 
-// The scale pair the constructor seeds.
 constexpr float kInitialScale = 1.0f;
 
-// The maximum value of an opaque colour channel.
 constexpr unsigned int kColorMax = 255;
 
-// One judgement-glyph metrics record: the glyph's sprite anchor and pixel size, and the shared UV
-// atlas frame it draws from. The score digits, the JUST/JR labels, and the judgement labels are all
-// laid out through this table (the 20-byte stride matches the binary).
 struct JudgeGlyphMetrics {
     float flAnchorX;   // +0x00: the glyph's anchor X.
     float flAnchorY;   // +0x04: the glyph's anchor Y.
@@ -40,11 +33,8 @@ struct JudgeGlyphMetrics {
     int nUvFrameIndex; // +0x10: the frame into the shared sprite UV atlas.
 };
 
-// The number of glyph records in each platform's judgement-glyph table.
 constexpr int kJudgeGlyphCount = 26;
 
-// The judgement-glyph metrics tables, one per platform (the iPad set and the phone set), selected
-// at emit time by the hardware check. Read-only ROM data embedded in the binary.
 constexpr JudgeGlyphMetrics kJudgeGlyphMetricsPad[kJudgeGlyphCount] = {
     {0.0f, 0.0f, 102.0f, 8.0f, 0xda}, {0.0f, 0.0f, 102.0f, 8.0f, 0xdb},
     {0.0f, 0.0f, 75.0f, 8.0f, 0xdc},  {0.0f, 0.0f, 75.0f, 8.0f, 0xdd},
@@ -77,7 +67,6 @@ constexpr JudgeGlyphMetrics kJudgeGlyphMetricsPhone[kJudgeGlyphCount] = {
     {0.0f, 5.0f, 8.0f, 10.0f, 0x173},  {0.0f, 5.0f, 10.0f, 10.0f, 0x174},
 }; // @ghidraAddress 0x30e578
 
-// The judgement-glyph colour tints, selected by the emitted glyph's colour type.
 constexpr int kJudgeColorTypePink = 1; // JUST / JUST REFLEC.
 constexpr int kJudgeColorTypeCyan = 2;
 constexpr unsigned int kJudgePinkRed = 0xff;
@@ -87,32 +76,25 @@ constexpr unsigned int kJudgeCyanRed = 0xa8;
 constexpr unsigned int kJudgeCyanGreen = 0xfc;
 constexpr unsigned int kJudgeCyanBlue = 0xff;
 
-// The number of lanes the popup draws, and the maximum score-digit count.
 constexpr int kLaneCount = 2;
 constexpr int kMaxScoreDigits = 6;
 
-// The popup's lifetime, in frame-time; once a lane's timer passes this the popup clears.
 constexpr float kPopupLifetime = 3600.0f;
 
-// The alpha the emitted glyphs scale by (the fade times the alpha curve times full opacity).
 constexpr float kAlphaScale = 255.0f;
 
-// The per-game-type, per-lane pop-out direction table (@ghidraAddress 0x30e338): a non-zero entry
-// flips the pop-out to the left (and rotates the label a half turn).
+// A non-zero entry flips the pop-out to the left and rotates the label a half turn.
+// @ghidraAddress 0x30e338
 constexpr unsigned char kPopDirectionFlip[] = {0, 0, 1, 0, 0, 0, 0, 0};
 
-// The label pop-out rotation: a half turn (pi) when the direction is flipped, else none.
-constexpr float kLabelRotationFlipped = 3.1415927f; // pi.
+constexpr float kLabelRotationFlipped = 3.1415927f;
 
-// The two animation curves the popup eases through, each a run of {x, y} keyframes: the horizontal
-// pop-out offset slides 100 back to 0 over 300 ms, and the alpha envelope fades in over 300 ms,
-// holds opaque to 3300 ms, and fades out by the 3600 ms lifetime. @ghidraAddress 0x30e340 and
-// 0x30e350.
+// Each curve is a flat run of {x, y} keyframes.
+// @ghidraAddress 0x30e340
 constexpr float kPopOffsetCurve[] = {0.0f, 100.0f, 300.0f, 0.0f};
+// @ghidraAddress 0x30e350
 constexpr float kAlphaCurve[] = {0.0f, 0.0f, 300.0f, 1.0f, 3300.0f, 1.0f, 3600.0f, 0.0f};
 
-// The base-position layout constants (all in the shared atlas's pixel space). The iPad lane
-// positions are built per game type from these; the phone lanes use a fixed pair.
 constexpr float kLayoutInsetLeft = -384.0f; // 0x2f8568
 constexpr float kLayoutSpanTop = 1024.0f;   // 0x309164
 constexpr float kLayoutRowOffset = 54.0f;   // 0x30e334
@@ -123,13 +105,11 @@ constexpr float kLayoutBaseY = 590.0f;      // 0x3def34 (lazily seeded)
 constexpr float kPhoneLaneX = 106.0f;       // 0x42d40000
 constexpr int kPhoneLaneHalfSpan = 71;      // 0x47
 
-// The glyph-index bases: the fixed points/combo label per colour, the score-digit base per colour.
-constexpr unsigned int kPointsLabelGlyphColorA = 0xe;  // colour 0.
-constexpr unsigned int kPointsLabelGlyphColorB = 0x19; // colour 1.
-constexpr unsigned int kDigitGlyphBaseColorA = 4;      // colour 0.
-constexpr unsigned int kDigitGlyphBaseColorB = 0xf;    // colour 1.
+constexpr unsigned int kPointsLabelGlyphColorA = 0xe;
+constexpr unsigned int kPointsLabelGlyphColorB = 0x19;
+constexpr unsigned int kDigitGlyphBaseColorA = 4;
+constexpr unsigned int kDigitGlyphBaseColorB = 0xf;
 
-// The label colour types by resolved lane colour: colour 1 draws cyan, colour 0 draws pink.
 constexpr int kLabelColorTypeColorA = kJudgeColorTypePink;
 constexpr int kLabelColorTypeColorB = kJudgeColorTypeCyan;
 
@@ -137,8 +117,6 @@ constexpr int kLabelColorTypeColorB = kJudgeColorTypeCyan;
 
 /** @ghidraAddress 0x184bb0 */
 JudgeEffectLayer::JudgeEffectLayer() {
-    // The base constructor and the zero-initialised members clear the texture, sprite, fade
-    // channel, and per-lane records; the constructor then seeds the scale pair to one.
     m_flScaleX = kInitialScale;
     m_flScaleY = kInitialScale;
 }
@@ -146,8 +124,6 @@ JudgeEffectLayer::JudgeEffectLayer() {
 /** @ghidraAddress 0x184c28 */
 JudgeEffectLayer *JudgeEffectLayer::shared() {
     if (g_pJudgeEffectLayer == nullptr) {
-        // The binary allocates the raw 0x60-byte object and runs the constructor, which chains the
-        // base-layer constructor and seeds the layer's state (two scales to 1).
         g_pJudgeEffectLayer = new JudgeEffectLayer();
     }
     return g_pJudgeEffectLayer;
@@ -159,8 +135,6 @@ void JudgeEffectLayer::LoadJudgeEffectSprites() {
         return;
     }
 
-    // The sprite hangs beneath the shared background layer's render object rather than the global
-    // scene root.
     BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
     ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
 
@@ -192,7 +166,6 @@ void JudgeEffectLayer::EmitDigitSprite(unsigned int nGlyphIndex,
                                        unsigned int nAlpha,
                                        int nColorType,
                                        float flRotation) {
-    // The iPad and phone builds use different glyph metrics tables.
     const JudgeGlyphMetrics &glyph =
         IsPad() ? kJudgeGlyphMetricsPad[nGlyphIndex] : kJudgeGlyphMetricsPhone[nGlyphIndex];
     const SpriteUvEntry &uv = g_aSpriteUvTable[glyph.nUvFrameIndex];
@@ -204,7 +177,6 @@ void JudgeEffectLayer::EmitDigitSprite(unsigned int nGlyphIndex,
     m_pSprite->SetSpriteUvSize(m_nSpriteCount, S_VECTOR2{uv.flSizeU, uv.flSizeV});
     m_pSprite->SetSpriteRotation(m_nSpriteCount, flRotation);
 
-    // The JUST/JUST REFLEC label draws pink, the second special type cyan, everything else white.
     unsigned int nRed = kColorMax;
     unsigned int nGreen = kColorMax;
     unsigned int nBlue = kColorMax;
@@ -226,17 +198,15 @@ void JudgeEffectLayer::EmitDigitSprite(unsigned int nGlyphIndex,
 void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
     m_nSpriteCount = 0;
 
-    // Advance the layer fade channel toward its target for the frame.
     m_fadeChannel.Advance(flDelta);
     const float flFade = m_fadeChannel.GetCurrent();
 
-    // The playfield centre Y, rounding the signed full height toward zero before halving.
+    // The signed full height is rounded toward zero before halving.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
     const float flHalfHeight = static_cast<float>(nHalfHeight);
 
     for (int nLane = 0; nLane < kLaneCount; ++nLane) {
-        // Each lane's popup scales by the fade times its own axis scale.
         const float flLaneScale = nLane == 0 ? m_flScaleX : m_flScaleY;
         const float flFadeScale = flFade * flLaneScale;
 
@@ -250,27 +220,20 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
             continue;
         }
 
-        // The pop-out direction (and label half-turn) follow the game type and lane.
         const int nGameType = GameSystem::GetGameSystem()->GetGameType();
         const bool bFlip = kPopDirectionFlip[nLane + nGameType * kLaneCount] != 0;
         const float flLabelRotation = bFlip ? kLabelRotationFlipped : 0.0f;
         const float flDirection = bFlip ? -1.0f : 1.0f;
 
-        // Build both layouts' lane base positions. The iPad layout derives each game type's two
-        // lane positions from the shared layout constants and the playfield centre; the phone
-        // layout uses a fixed left column split above and below centre.
         const S_VECTOR2 aiPadBase[] = {
-            // Game type 0.
             {kLayoutBaseX + kLayoutInsetLeft,
              (kLayoutRowOffset - kLayoutBaseY) + kLayoutSpanTop + kLayoutInsetTop + flHalfHeight},
             {kLayoutBaseX + kLayoutInsetLeft, (kLayoutBaseY + kLayoutInsetTop) + flHalfHeight},
-            // Game type 1. These two hang off the playfield centre split, not off the half-height
-            // the other game types add.
+            // Game type 1 hangs off the playfield centre split, not the half-height.
             {(kLayoutMirrorSpan - kLayoutBaseX) + kLayoutInsetLeft,
              (kLayoutSpanTop - kLayoutBaseY) - static_cast<float>(g_nPlayfieldCentreSplit)},
             {kLayoutBaseX + kLayoutInsetLeft,
              kLayoutBaseY - static_cast<float>(g_nPlayfieldCentreSplit)},
-            // Game type 2.
             {kLayoutBaseX + kLayoutInsetLeft,
              (kLayoutRowOffset - kLayoutBaseY) + kLayoutSpanTop + kLayoutInsetTop + flHalfHeight},
             {kLayoutBaseX + kLayoutInsetLeft, (kLayoutBaseY + kLayoutInsetTop) + flHalfHeight},
@@ -282,24 +245,19 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
         const S_VECTOR2 &base =
             IsPad() ? aiPadBase[nGameType * kLaneCount + nLane] : aPhoneBase[nLane];
 
-        // Ease the label horizontally out of the base position and fade it by the alpha curve.
         const float flPopOffset = CalculateCurveInterpolation(kPopOffsetCurve, 2, record.m_flTimer);
         S_VECTOR2 pos{base.x + flDirection * flPopOffset, base.y};
         const float flAlphaCurve = CalculateCurveInterpolation(kAlphaCurve, 4, record.m_flTimer);
 
-        // Resolve the lane colour: the local lane takes the play colour, the other lane its
-        // inverse.
         const int nPlayColor = GameSystem::GetGameSystem()->GetPlayColor();
         const int nLaneColor = nLane == 1 ? nPlayColor : (nPlayColor == 0);
 
         const unsigned int nAlpha =
             static_cast<unsigned int>(static_cast<int>(flFadeScale * flAlphaCurve * kAlphaScale));
 
-        // Emit the judgement label, tinted pink or cyan by the lane colour, at the eased position.
         const int nLabelColorType = nLaneColor == 1 ? kLabelColorTypeColorB : kLabelColorTypeColorA;
         EmitDigitSprite(record.m_nJudgeType, &pos, nAlpha, nLabelColorType, flLabelRotation);
 
-        // Advance the pen past the label and emit the fixed points/combo label in white.
         const JudgeGlyphMetrics *pMetrics =
             IsPad() ? kJudgeGlyphMetricsPad : kJudgeGlyphMetricsPhone;
         pos.x += flDirection + flDirection + flDirection * pMetrics[record.m_nJudgeType].flSizeX;
@@ -307,8 +265,6 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
             nLaneColor == 0 ? kPointsLabelGlyphColorA : kPointsLabelGlyphColorB;
         EmitDigitSprite(nPointsLabel, &pos, nAlpha, 0, flLabelRotation);
 
-        // Advance past the points label and split the score into up to six decimal digits, tracking
-        // the most significant non-zero place.
         pMetrics = IsPad() ? kJudgeGlyphMetricsPad : kJudgeGlyphMetricsPhone;
         pos.x += flDirection + flDirection * pMetrics[nPointsLabel].flSizeX;
 
@@ -324,8 +280,7 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
             nRemaining /= 10;
         }
 
-        // Emit the digits from the most significant place down, advancing the pen by each glyph, so
-        // a zero score still shows a single zero digit.
+        // A zero score still shows a single zero digit.
         const unsigned int nDigitBase =
             nLaneColor == 1 ? kDigitGlyphBaseColorB : kDigitGlyphBaseColorA;
         int nPlace = nHighestPlace < 1 ? 1 : nHighestPlace;
@@ -337,7 +292,6 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
         }
     }
 
-    // Publish the frame's live sprite count to the instancer.
     m_pSprite->SetSpriteCount(m_nSpriteCount);
 }
 

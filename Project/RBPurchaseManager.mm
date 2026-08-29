@@ -1,20 +1,7 @@
-//
-//  RBPurchaseManager.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBPurchaseManager). Verified
-//  against the arm64 disassembly (the fast-enumeration loops, the variadic error-building message
-//  sends, and the receipt-verification response parsing are partly obscured by the decompiler).
-//
-
 #import "RBPurchaseManager.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 
-// Collaborator classes reached from these methods. Their headers are not all reconstructed in this
-// tree yet (the same speculative-import style AppDelegate.mm and RBMusicManager.m already use);
-// they resolve once those classes land. Downloader, StoreUtil, and BFCodec are committed;
-// PurchaseTransactionCache is not.
 #import "AppDelegate.h"
 #import "BFCodec.h"
 #import "NSData+RB.h"
@@ -24,25 +11,19 @@
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 
-// The filename the encrypted owned-product list is written to under Application Support.
 // @ghidraAddress 0x337b84 (the filename literal)
 static NSString *const kProductListFilename = @"prodlist";
 
-// The random header the saved product list is prefixed with, and the offset that skips it on load.
 constexpr NSUInteger kProductListSaltLength = 4;
 
-// The initial capacities the mutable arrays are created with.
 constexpr NSUInteger kSmallListCapacity = 0;
 constexpr NSUInteger kProductListCapacity = 32;
 constexpr NSUInteger kSavedListCapacity = 128;
 
-// The length of the receipt-verification nonce, in characters.
 constexpr NSUInteger kReceiptNonceLength = 32;
 
-// The text encoding the verification response body and its JSON request are (de)serialised with.
 constexpr NSStringEncoding kResponseEncoding = NSUTF8StringEncoding;
 
-// Keys read from the verification response JSON, and the response signature header.
 // @ghidraAddress 0x337b8d (@c "status"), 0x337b94 (@c "Products"), 0x337b9d (@c "error"),
 // 0x337ba3 (@c "MsgDev"), 0x337baa (@c "RB-RES-SIG-V2")
 static NSString *const kResponseStatusKey = @"status";
@@ -51,20 +32,16 @@ static NSString *const kResponseErrorKey = @"error";
 static NSString *const kResponseMessageKey = @"MsgDev";
 static NSString *const kResponseSignatureHeader = @"RB-RES-SIG-V2";
 
-// The status value that marks a successful verification response.
 constexpr int kResponseStatusOK = 0;
 
-// The empty string the failure @c NSError is built from (an empty domain, description, and code).
 // @ghidraAddress 0x32dca6 (the empty-string literal)
 static NSString *const kEmptyErrorText = @"";
 constexpr NSInteger kErrorCode = 0;
 
-// The Base64 alphabet shared by the encoders and the decoder.
 constexpr char kBase64Alphabet[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 constexpr char kBase64Pad = '=';
 
-// The number of input bytes and output characters a Base64 group spans.
 constexpr NSUInteger kBase64InputGroup = 3;
 constexpr NSUInteger kBase64OutputGroup = 4;
 
@@ -445,10 +422,8 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 
 #pragma mark - Helpers
 
-// Build the empty-domain, empty-description failure error the verification callbacks report. The
-// format takes no arguments: the stringWithFormat: at 0x6fe58 loads the empty string at 0x361a20
-// into x2 and writes no stack slots before the call, and the same constant is the error domain
-// below. It is the value kEmptyErrorText holds, spelled as a literal so it stays a format literal.
+// The stringWithFormat: at 0x6fe58 takes no arguments, loading the empty string at 0x361a20 into
+// x2 and writing no stack slots.
 - (NSError *)errorWithEmptyDescription {
     NSString *description = [NSString stringWithString:[NSString stringWithFormat:@""]];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObject:description
@@ -469,8 +444,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
         const char *end = bytes + length;
         char *cursor = out;
         do {
-            // The final partial group is signalled by a NUL byte in the second or third slot; the
-            // pad count then decides how many trailing '=' characters replace the encoded chars.
+            // The final partial group is signalled by a NUL byte in the second or third slot.
             char b1 = bytes[0];
             char b2 = bytes[1];
             BOOL secondIsNul = b2 == 0;
@@ -482,12 +456,8 @@ constexpr NSUInteger kBase64OutputGroup = 4;
                 next = nextAfterSecond + 1;
                 padCount = secondIsNul ? 1 : 0;
             }
-            // The bytes are loaded with ldrsb and shifted at register width, not byte width: the
-            // lsr at 0x6f484 and 0x6f498 shift the sign-extended value, so a byte with its high
-            // bit set carries ones down into the masked field. Narrowing to unsigned char first
-            // would zero those, which is a different character for any input above 0x7f. The
-            // combines are add at 0x6f488 and 0x6f49c, not or, and the two differ once those
-            // fields overlap.
+            // The lsr at 0x6f484 and 0x6f498 shifts the sign-extended byte, so a high bit carries
+            // ones into the masked field; the combines at 0x6f488 and 0x6f49c are add, not or.
             cursor[0] = kBase64Alphabet[b1 >> 2];
             cursor[1] = kBase64Alphabet[((b1 << 4) + (static_cast<unsigned int>(b2) >> 4)) & 0x3f];
             cursor[2] = kBase64Alphabet[((b2 << 2) + (static_cast<unsigned int>(b3) >> 6)) & 0x3f];
@@ -567,9 +537,8 @@ constexpr NSUInteger kBase64OutputGroup = 4;
             unsigned char values[kBase64OutputGroup];
             for (int slot = 0; slot < static_cast<int>(kBase64OutputGroup); ++slot) {
                 unsigned char value = 0xff;
-                // sizeof, not the 64 the alphabet holds: the search bounds itself at 0x41 and so
-                // reaches the NUL terminator too, mapping a NUL input byte to 64 rather than to
-                // the 0xff not-found value below. It reads as an off-by-one and is not one.
+                // The bound is 0x41, so the search reaches the NUL terminator and maps a NUL input
+                // byte to 64; it reads as an off-by-one and is not one.
                 for (int index = 0; index < static_cast<int>(sizeof(kBase64Alphabet)); ++index) {
                     if (kBase64Alphabet[index] == chars[slot]) {
                         value = static_cast<unsigned char>(index);

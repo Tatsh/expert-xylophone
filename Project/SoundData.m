@@ -1,13 +1,3 @@
-//
-//  SoundData.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class SoundData). Verified against the
-//  arm64 disassembly (the -prepare:Stream: file-search variadic format strings and the
-//  AudioBufferList and AudioStreamBasicDescription field arithmetic are dropped or garbled by the
-//  decompiler).
-//
-
 #import "SoundData.h"
 
 #include <stdlib.h>
@@ -17,39 +7,30 @@
 #import "RBMacros.h"
 #import "audioformat.h"
 
-// The sample rate the client PCM format is configured for.
 static const double kSoundDataSampleRate = 44100.0;
 
-// The @c ExtAudioFileGetProperty selectors used while preparing the asset.
 static const ExtAudioFilePropertyID kFileDataFormatProperty = kExtAudioFileProperty_FileDataFormat;
 static const ExtAudioFilePropertyID kClientDataFormatProperty =
     kExtAudioFileProperty_ClientDataFormat;
 static const ExtAudioFilePropertyID kFileLengthFramesProperty =
     kExtAudioFileProperty_FileLengthFrames;
 
-// The candidate file-name extensions searched, in order, when locating the backing file.
 static NSString *const kSoundDataExtensions[] = {@"mp3", @"wav", @"m4a"};
 static const NSUInteger kSoundDataExtensionCount = ARRAY_SIZE(kSoundDataExtensions);
 
-// The index of each candidate extension within kSoundDataExtensions.
 enum {
     kSoundExtensionMP3 = 0,
     kSoundExtensionWAV = 1,
     kSoundExtensionM4A = 2,
 };
 
-// The format string used to build a candidate path in a search directory: directory, name, and
-// extension.
 static NSString *const kSoundDataPathFormat = @"%@/%@.%@";
 
-// The byte stride the buffered wrap-around and silence paths apply to the already-copied frame
-// count when advancing each destination @c mData pointer. The original build hard-codes four bytes
-// per frame here rather than reusing @c mBytesPerFrame.
+// The original hard-codes four bytes per frame here rather than reusing mBytesPerFrame.
 static const long long kSoundDataWrapDestinationFrameStride = 4;
 
 @interface SoundData () {
-    // Internal fields populated by -prepare:Stream:. These are distinct from the read-only
-    // property backing ivars below, which the original build leaves unset.
+    // Distinct from the read-only property backing ivars, which the original leaves unset.
     unsigned int m_NumberOfChannels;
     long long m_TotalFrames;
     long long m_CurrentFrameCache;
@@ -136,8 +117,6 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
         return;
     }
 
-    // Buffered mode: decode the whole file into one contiguous buffer per channel and read it in a
-    // single ExtAudioFileRead.
     m_PlayBuffer = (void **)malloc((size_t)m_NumberOfChannels * sizeof(void *));
     unsigned int channelCount = m_NumberOfChannels;
     AudioBufferList *bufferList;
@@ -216,7 +195,6 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
         return NO;
     }
 
-    // Streaming mode: seek if necessary and read frames directly from the file.
     if (m_CurrentFrameCache != startFrame) {
         ExtAudioFileSeek(m_ExtAudioFile, startFrame);
         m_CurrentFrameCache = startFrame;

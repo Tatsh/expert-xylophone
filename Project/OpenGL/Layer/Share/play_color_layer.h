@@ -142,16 +142,11 @@ private:
     int m_aBatchBaseIndex[kBatchCount] = {};    // +0x20: unused per-batch base index.
     int m_aBatchCapacity[kBatchCount] = {};     // +0x28: each batch's sprite capacity.
     int m_aPartBaseIndex[kPartGroupCount] = {}; // +0x30: each part group's base index.
-    // +0x58..+0x63: the three across-field gauge X positions, re-synced from the game system's
-    // sheet-inset half-width each set-up.
-    float m_aGaugePosX[kGaugeLaneXCount] = {}; // +0x58
-    // +0x64..+0x6b: the two toward-edge gauge Y positions, re-synced from the sheet-inset
-    // half-height.
-    float m_aGaugePosY[kGaugeLaneYCount] = {}; // +0x64
-    float m_flGlowPhase = {};                  // +0x6c: the pulsing glow rotation phase.
-    bool m_bBuilt = {};                        // +0x70: set once the batches are built.
+    float m_aGaugePosX[kGaugeLaneXCount] = {};  // +0x58
+    float m_aGaugePosY[kGaugeLaneYCount] = {};  // +0x64
+    float m_flGlowPhase = {};                   // +0x6c: the pulsing glow rotation phase.
+    bool m_bBuilt = {};                         // +0x70: set once the batches are built.
     bool m_bGaugeColorDirty = {}; // +0x71: set when a gauge animation snaps or the fill is set.
-    // +0x72..+0x73 is alignment padding before the shrink-animation block.
     // unsigned char m_aPad72[2] = {}; // +0x72
     float m_flAnimFrom = {};        // +0x74: the shrink/grow animation's cached from-value.
     LinearTween m_shrinkChannel;    // +0x78: the shared gauge shrink/grow channel (fill at +0x88).

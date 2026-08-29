@@ -1,25 +1,10 @@
-//
-//  ApplilinkBundle.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkBundle). This is a plain
-//  Objective-C file: its only collaborator, ApplilinkCore, is reached through an ordinary class
-//  message send, with no C++.
-//
-//  The class has no instance state. Its single accessor lazily loads and caches the SDK's
-//  ApplilinkNetworkResources.bundle, preferring the device-language .lproj sub-bundle when
-//  ApplilinkCore prioritises the device languages.
-//
-
 #import "ApplilinkBundle.h"
 
 #import "ApplilinkCore.h"
 
-// The name and type of the SDK's localised resource bundle inside the main bundle.
 static NSString *const kResourceBundleName = @"ApplilinkNetworkResources";
 static NSString *const kResourceBundleType = @"bundle";
 
-// The format that builds the localised sub-bundle path from the resource path and language code.
 static NSString *const kLocalizedBundlePathFormat = @"%@/%@.lproj";
 
 @implementation ApplilinkBundle

@@ -1,6 +1,3 @@
-// The binary-resident part-layout and UV-rectangle tables for the theme-2 Colette title screen,
-// rb::TitleColetteScene.
-
 #include "sprite_uv_table.h"
 #include "titlecolettescene.h"
 
@@ -120,9 +117,8 @@ const TitlePartLayoutRecord g_aTitleCampaignLayoutAltFrame[] = {
 
 } // namespace rb
 
-// This one table is defined at global scope rather than in @c rb, because three Limelight layers
-// outside that namespace (the effect, theme, and full-combo layers) declare and index it there.
-// The remaining tables in this file are reached only from @c rb and stay inside it.
+// Defined at global scope rather than in @c rb because three Limelight layers outside that
+// namespace declare and index it there.
 /** @ghidraAddress 0x2f7908 */
 extern const SpriteUvEntry g_aTitlePartUvDefault[];
 const SpriteUvEntry g_aTitlePartUvDefault[] = {

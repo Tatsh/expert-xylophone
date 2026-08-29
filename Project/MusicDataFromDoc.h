@@ -15,8 +15,6 @@
 
 #import <Foundation/Foundation.h>
 
-// The superclass is not yet reconstructed in this tree; this speculative import resolves once the
-// MusicData class lands (the same approach ScoreData.m and AppDelegate.mm already use).
 #import "MusicData.h"
 
 NS_ASSUME_NONNULL_BEGIN

@@ -1,15 +1,3 @@
-//
-//  UIImage+RB.m
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (category UIImage(RB)). Verified against
-//  the arm64 disassembly: the CoreGraphics and CoreImage creators are variadic-shaped and their
-//  scalar arguments arrive in VFP registers, so the decompiler drops several float parameters
-//  (the crop scale, the reflection height, and the colour-matrix alpha) and lists the localised
-//  loaders as taking no arguments; the true signatures were recovered from the register and stack
-//  reads.
-//
-
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreImage/CoreImage.h>
 
@@ -17,60 +5,45 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The shared image directory tried after the current theme directory.
 static NSString *const kSharedImageDirectoryName = @"00_Share";
 
-// The Retina asset-name suffix appended before the file extension.
 static NSString *const kRetinaSuffixFormat = @"%@@2x";
 
-// The format that joins an lproj folder to an asset name for the imageNamed: fallback.
 static NSString *const kLprojPrefixedNameFormat = @"%@/%@";
 
-// The PNG file extension used for on-disk image assets.
 static NSString *const kImageFileExtension = @"png";
 
-// The device-and-scale asset-name suffixes chosen for imageNamedWithoutCache:, selected by the
-// iPad idiom (iPad) build flag and the Retina flag.
 static NSString *const kRetinaPadDeviceTag = @"@2x~ipad";
 static NSString *const kNonRetinaPadDeviceTag = @"~ipad";
 static NSString *const kRetinaPhoneDeviceTag = @"@2x~iphone";
 
-// The localised resource-name formats: name + device tag; name + language + device tag; and the
-// region-specific Japanese and English forms.
 static NSString *const kDeviceTaggedNameFormat = @"%@%@";
 static NSString *const kLanguageTaggedNameFormat = @"%@_%@%@";
 static NSString *const kJapaneseTaggedNameFormat = @"%@_ja%@";
 static NSString *const kEnglishTaggedNameFormat = @"%@_en%@";
 
-// The preferred-language and region codes recognised by the localised loader.
 static NSString *const kLanguageCodeJapanese = @"ja";
 static NSString *const kLanguageCodeEnglish = @"en";
 static NSString *const kLanguagePrefixJapanese = @"ja-";
 static NSString *const kLanguagePrefixEnglish = @"en-";
 static NSString *const kRegionCodeJapan = @"JP";
 
-// The Retina scale factors at which a crop rectangle is expressed in points rather than pixels.
 static const CGFloat kRetinaScale2x = 2.0;
 static const CGFloat kRetinaScale3x = 3.0;
 
-// The bits per component of the colour and grey bitmap contexts.
 static const size_t kBitsPerComponent = 8;
 
-// The number of stops in the reflection alpha-gradient mask.
 static const size_t kReflectionGradientStopCount = 2;
 
-// The Core Image colour-matrix filter and the per-channel vector keys it is built with.
 static NSString *const kColorMatrixFilterName = @"CIColorMatrix";
 static NSString *const kColorMatrixRedVectorKey = @"inputRVector";
 static NSString *const kColorMatrixGreenVectorKey = @"inputGVector";
 static NSString *const kColorMatrixBlueVectorKey = @"inputBVector";
 static NSString *const kColorMatrixAlphaVectorKey = @"inputAVector";
 
-// The lazily created, owned themed-image cache keyed by asset name.
 // @ghidraAddress 0x3df3d8 (g_pThemedImageCache)
 static NSCache *g_pThemedImageCache = nil;
 
-// Returns the shared themed-image cache, creating it on first use.
 static NSCache *RBThemedImageCache(void) {
     if (g_pThemedImageCache == nil) {
         g_pThemedImageCache = [[NSCache alloc] init];
@@ -78,18 +51,15 @@ static NSCache *RBThemedImageCache(void) {
     return g_pThemedImageCache;
 }
 
-// Loads a PNG resource of the given name from the main bundle.
 static UIImage *RBBundleImage(NSString *resourceName) {
     NSString *path = [[NSBundle mainBundle] pathForResource:resourceName
                                                      ofType:kImageFileExtension];
     return [UIImage imageWithContentsOfFile:path];
 }
 
-// Chooses the device-and-scale asset-name suffix for one lookup pass. On iPad the two passes use
-// opposite tags: the csel at 0x1a1fc0 loads its two candidates in the reverse order to the one at
-// 0x1a1b6c, so a Retina iPad tries "@2x~ipad" and then "~ipad". Only the second pass can find
-// dl_info, which is the one atlas shipping no "@2x~ipad" variant. On iPhone the retag is skipped
-// entirely (the cbz at 0x1a1fa0), so both passes use "@2x~iphone".
+// On iPad the two passes use opposite tags, so a Retina iPad tries "@2x~ipad" and then "~ipad";
+// only the second pass finds dl_info, the one atlas shipping no "@2x~ipad" variant.
+// @ghidraAddress 0x1a1fc0/0x1a1b6c/0x1a1fa0
 static NSString *RBDeviceAssetTag(BOOL secondPass) {
     if (!IsPad()) {
         return kRetinaPhoneDeviceTag;
@@ -101,8 +71,6 @@ static NSString *RBDeviceAssetTag(BOOL secondPass) {
     return retina ? kRetinaPadDeviceTag : kNonRetinaPadDeviceTag;
 }
 
-// Runs one localised bundle-image lookup pass for a base name and device tag: the plain
-// device-tagged name, then a preferred-language variant, then the region-specific variant.
 static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
     UIImage *image =
         RBBundleImage([NSString stringWithFormat:kDeviceTaggedNameFormat, name, deviceTag]);
@@ -223,17 +191,15 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
     if (components.count < 2) {
         return nil;
     }
-    // The binary re-reads the count after the insert and replaces at count - 1, which is the file
-    // name rather than the language component inserted above, so this last lookup asks for a
-    // directory and always fails. Faithful: 0x1a1898 counts again and 0x1a189c subtracts one.
+    // The binary re-reads the count after the insert and replaces the file name rather than the
+    // inserted language component, so this last lookup asks for a directory and always fails.
+    // @ghidraAddress 0x1a1898
     [components replaceObjectAtIndex:components.count - 1 withObject:GetFallbackLprojName()];
     return [UIImage imageWithContentsOfFile:[NSString pathWithComponents:components]];
 }
 
 + (UIImage *)imageNamedWithoutCache:(NSString *)name {
     /** @ghidraAddress 0x1a1b08 */
-    // The binary runs the localised lookup twice: once with the tag its screen scale calls for, and
-    // once with the other iPad tag, before falling back to the untagged resource name.
     UIImage *image = RBLocalizedBundleImage(name, RBDeviceAssetTag(NO));
     if (image != nil) {
         return image;
@@ -255,10 +221,8 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
 - (UIImage *)clipImageWithRect:(CGRect)rect {
     /** @ghidraAddress 0x1a2fa4 */
     @autoreleasepool {
-        // The binary keeps a weak reference to the receiver across the crop; it is never read, so
-        // the crop reads the receiver directly.
         __weak UIImage *weakSelf = self;
-        (void)weakSelf;
+        (void)weakSelf; // The binary takes this weak reference but never reads it.
         CGImageRef sourceImage = self.CGImage;
         CGFloat scale = self.scale;
         if (scale == kRetinaScale2x || scale == kRetinaScale3x) {
@@ -318,7 +282,6 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
     CGContextRef gradientContext = CGBitmapContextCreate(
         NULL, 1, (size_t)reflectionHeight, kBitsPerComponent, 0, graySpace, kCGImageAlphaNone);
     if (gradientContext != NULL) {
-        // Two gray/alpha pairs: opaque black at the start, opaque white at the end.
         // @ghidraAddress 0x310428
         CGFloat components[] = {0.0, 1.0, 1.0, 1.0};
         CGGradientRef gradient = CGGradientCreateWithColorComponents(

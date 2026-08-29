@@ -9,7 +9,6 @@
 #import "ApplilinkWebAPI.h"
 #import "NSStringURLEncoding.h"
 
-// Analytics action-type codes posted in the request's action_type parameter.
 enum {
     kAnalysisActionTypeNone = 0,
     kAnalysisActionTypeInitalize = 1,
@@ -18,21 +17,17 @@ enum {
     kAnalysisActionTypeSetUserID = 14,
 };
 
-// Applilink error codes forwarded to the caller's completion callback.
 enum {
-    kApplilinkErrorGeneric = 1000,          // Non-success server response.
-    kApplilinkErrorMissingParameter = 1001, // A required parameter was nil.
-    kApplilinkErrorUdidParameters = 1026,   // ApplilinkUdid could not supply UDID parameters.
-    kApplilinkErrorTrackingDisabled = 1028, // Advertising tracking is disabled.
+    kApplilinkErrorGeneric = 1000,
+    kApplilinkErrorMissingParameter = 1001,
+    kApplilinkErrorUdidParameters = 1026,
+    kApplilinkErrorTrackingDisabled = 1028,
 };
 
-// The server response is a success when its status is truthy and its error_code equals this value.
 static const int kApplilinkResponseSuccessCode = 100000000;
 
-// Request timeout, in seconds, for every analytics POST.
-static const float kAnalysisRequestTimeout = 10.0f;
+static const float kAnalysisRequestTimeoutSeconds = 10.0f;
 
-// Request parameter and NSUserDefaults key strings.
 static NSString *const kAnalysisParamActionType = @"action_type";
 static NSString *const kAnalysisParamResultId = @"result_id";
 static NSString *const kAnalysisParamUserId = @"user_id";
@@ -79,8 +74,7 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         formatter.timeStyle = NSDateFormatterNoStyle;
         NSString *persistedDay = [formatter stringFromDate:persisted];
         NSString *nowDay = [formatter stringFromDate:now];
-        // The persisted value is the previously formatted day string; comparing the two formatted
-        // day strings collapses any difference within the same day.
+        // Comparing the formatted day strings collapses any difference within the same day.
         if ([persistedDay compare:nowDay] != NSOrderedAscending) {
             return YES;
         }
@@ -137,7 +131,7 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
                                        userInfo:nil
                                             tag:0
                                     cachePolicy:nil
-                                        timeout:kAnalysisRequestTimeout
+                                        timeout:kAnalysisRequestTimeoutSeconds
                                           retry:NO
                                   finishedBlock:finishedBlock
                                     failedBlock:failedBlock];
@@ -329,7 +323,7 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         userInfo:nil
         tag:0
         cachePolicy:nil
-        timeout:kAnalysisRequestTimeout
+        timeout:kAnalysisRequestTimeoutSeconds
         retry:NO
         finishedBlock:^(id request, id result) {
           /** @ghidraAddress 0x20ed64 */
@@ -426,7 +420,7 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         userInfo:nil
         tag:0
         cachePolicy:nil
-        timeout:kAnalysisRequestTimeout
+        timeout:kAnalysisRequestTimeoutSeconds
         retry:NO
         finishedBlock:^(id request, id result) {
           /** @ghidraAddress 0x20f40c */
@@ -455,7 +449,6 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
       /** @ghidraAddress 0x20f7d8 */
       [self postDAUWithCallback:^(NSError *dauError) {
         /** @ghidraAddress 0x20f920 */
-        // Forward the initialisation error when it occurred, otherwise the DAU error.
         callback(initError ? initError : dauError);
       }];
     }];

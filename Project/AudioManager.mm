@@ -1,13 +1,3 @@
-//
-//  AudioManager.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class AudioManager). Verified against
-//  the arm64 disassembly (the soft-float -setVolume:/-playBgm: fade comparisons, the flat C-array
-//  ivar arithmetic over the instance and manage-id tables, and the tagged sound-effect handle bit
-//  fields are dropped or garbled by the decompiler).
-//
-
 #import "AudioManager.h"
 
 #include <new>

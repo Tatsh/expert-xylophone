@@ -1,20 +1,3 @@
-//
-//  RBViewController.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBViewController). This is the
-//  AppDelegate root view controller: it hosts the neGLView game surface and the RBMenuView
-//  music-select menu, runs the task/draw loop from a CADisplayLink, and owns the preview,
-//  gameplay, playlist-popover, corporate-button, Twitter, and iTunes-store flows. It is
-//  Objective-C++ because the loop, projection, and preview paths call directly into the C++ game
-//  engine (GetGameSystem, neGLESRenderer::GetShared, the projection-matrix helpers, and the media
-//  timers).
-//
-//  The heavy projection method (UpdateProjection) and the preview/gameplay setup follow the arm64
-//  disassembly; the field writes go through the engine bridge's named GameSystem accessors rather
-//  than raw 32-bit offsets.
-//
-
 #import "RBViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
@@ -28,13 +11,24 @@
 #import "GameSystem/src/OpenGL/neTexture.h"
 #import "MusicData.h"
 #import "NSFileManager+RB.h"
+#import "RBBGMManager.h"
 #import "RBCoreDataManager.h"
+#import "RBCorporateViewController.h"
+#import "RBErosionMarkUpdater.h"
 #import "RBExperienceData.h"
+#import "RBMenuButton.h"
+#import "RBMenuView.h"
 #import "RBMusicManager.h"
 #import "RBNavigationController.h"
+#import "RBPlaylistViewController.h"
+#import "RBPopoverBackgroundView.h"
+#import "RBTermAgreeView.h"
 #import "RBUserSettingData.h"
 #import "ScoreData.h"
+#import "StoreUtil.h"
+#import "TwitterImageCreater.h"
 #import "UIAlertView+RB.h"
+#import "UIImage+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
@@ -42,6 +36,7 @@
 #import "game_scene.h"
 #import "gamesystem.h"
 #import "matrixmath.h"
+#import "neGLView.h"
 #import "neRenderer.h"
 #import "ne_c_time.h"
 #import "s_vector2.h"
@@ -50,36 +45,15 @@
 #import "touchmanager.h"
 #import "vectormath.h"
 
-// Speculative imports for collaborators that are not yet reconstructed. They are messaged through
-// their recovered selectors below.
-#import "RBBGMManager.h"
-#import "RBCorporateViewController.h"
-#import "RBErosionMarkUpdater.h"
-#import "RBMenuButton.h"
-#import "RBMenuView.h"
-#import "RBPlaylistViewController.h"
-#import "RBPopoverBackgroundView.h"
-#import "RBTermAgreeView.h"
-#import "StoreUtil.h"
-#import "TwitterImageCreater.h"
-#import "UIImage+RB.h"
-#import "neGLView.h"
-
-// The music id the bundle preview song is registered under.
 constexpr int kPreviewMusicID = 999999999;
 
-// The HTTP status code (404) that aborts the Twitter reachability probe.
 constexpr NSInteger kHttpStatusNotFound = 404;
 
-// The number of attempts made to start the menu background music.
 constexpr int kMenuBgmPlayAttempts = 101;
 
-// The maximum stored speed type that still maps to a shaped sheet layer.
 constexpr int kMaxShapedSpeedType = 10;
 
-// The play difficulties. The public HistoryDifficulty enum covers only Basic, Medium, and Hard;
-// the fourth value is the special extend chart, which routes gameplay through the song's extend
-// note data.
+// The fourth difficulty is the extend chart, which the public HistoryDifficulty enum omits.
 enum {
     kDifficultyBasic = 0,
     kDifficultyMedium = 1,
@@ -87,124 +61,92 @@ enum {
     kDifficultyExtend = 3,
 };
 
-// The themed sound-effect identifier played when the playlist button is pushed.
 constexpr int kSoundEffectDecide = 1;
 
-// The corporate-button web destination.
 static NSString *const kCorporateURLString = @"https://www.konami.com/ja";
 
-// The camera pitch reference height used for the standard (non-variant) font layout, in points.
 constexpr float kStandardCameraPitchHeight = 25.0f;
 
-// The camera target y offset used for the standard (non-variant) font layout, in points.
 constexpr float kStandardCameraTargetY = 26.0f;
 
-// The delay before the preview scene enters its alternate mode, in nanoseconds. The movz/movk pair
-// builds 0x05f5e101 exactly, which is a tenth of a second computed in single precision and
-// truncated (0.1f is 0.100000001490116, and times a billion that is 100000001).
+// A tenth of a second computed in single precision and truncated, as the binary builds it.
 // @ghidraAddress 0x8c3f0
 constexpr int64_t kPreviewSceneDelayNanoseconds = 100000001LL;
 
-// The fade time passed to the menu music when the preview starts, in seconds. Its pool neighbour at
-// 0x2ec6b0 is 100.0f, the tilt near plane.
 // @ghidraAddress 0x2ec6b4
 constexpr float kPreviewBgmPauseTime = 0.2f;
 
-// The sheet height used while a preview/gameplay scene is on screen, in points.
 constexpr float kPreviewSheetHeight = 25.0f;
 
 // The GL clear masks (GL_COLOR_BUFFER_BIT and GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT).
 constexpr unsigned int kClearColor = 0x4000;
 constexpr unsigned int kClearColorAndDepth = 0x4100;
 
-// The render-elapsed cap that gates a Draw pass; the stored threshold is effectively always
-// satisfied.
+// The stored threshold is effectively always satisfied.
 // @ghidraAddress 0x2f8540
 constexpr float kMaxRenderFrameElapsed = 1000.0f;
 
-// The corporate-button fade duration, in seconds, shared with the audio resume fade. The pool holds
-// a float widened to double, so the literal keeps its suffix.
+// The pool holds a float widened to double, so the literal keeps its suffix.
 // @ghidraAddress 0x2ec718 (g_dAudioManagerResumeFadeInTime)
 constexpr double kCorporateFadeDuration = 0.3f;
 
-// The delay before the corporate-button fade begins, in seconds; an fmov immediate at 0x8e630.
+// @ghidraAddress 0x8e630
 constexpr double kCorporateFadeDelay = 0.5;
 
-// The unshaped play field's height, in points. The preview camera centres on however far the live
-// field height has been shaped away from this reference, so the two must be read together. It is
-// the `sub w9,w8,#0x400` immediate at 0x8bdd0 and 0x8c07c, not a global.
+// The `sub w9,w8,#0x400` immediate at 0x8bdd0 and 0x8c07c, not a global.
 constexpr int kReferencePlayfieldHeight = 1024;
 
-// The playlist popover content size, in points. The two values come from separate pool runs, and
-// each has a plausible neighbour: 0x2fedc8 holds 312.0 and 0x2ee920 holds 90.0.
 // @ghidraAddress 0x2ee918
 constexpr CGFloat kPopoverContentWidth = 320.0;
 // @ghidraAddress 0x2fedd0
 constexpr CGFloat kPopoverContentHeight = 480.0;
 
-// The dimming alpha of the tweet cover view, an fmov immediate rather than a pool load.
 // @ghidraAddress 0x89f28
 constexpr CGFloat kTweetCoverAlpha = 0.5;
 
-// The side length of the tweet cover's activity indicator, in points, also an fmov immediate.
 // @ghidraAddress 0x89fb4
 constexpr CGFloat kSpinnerSide = 20.0;
 
-// The corporate-button inset from the view's top-right corner, in points.
 constexpr CGFloat kCorporateButtonMargin = 10.0;
 
-// The themed voice identifier loaded and armed when a song begins. The call at 0x8bc08 is
-// LoadAndSetThemedVoice (0x1ccc18), not the themed sound-effect player.
+// The call at 0x8bc08 is LoadAndSetThemedVoice (0x1ccc18), not the themed sound-effect player.
 constexpr int kGameStartVoiceID = 17;
 
 #ifdef ENABLE_PATCHES
 // An empty arrow-direction set presents the pad popover centred and without a callout arrow.
 constexpr UIPopoverArrowDirection kNoPopoverArrow = static_cast<UIPopoverArrowDirection>(0);
 #else
-// The Twitter reachability-probe request timeout, in seconds; an fmov immediate at 0x8dd48.
+// @ghidraAddress 0x8dd48
 constexpr NSTimeInterval kTwitterProbeTimeout = 15.0;
 #endif
 
-// Projection constants used by -UpdateProjection.
-// The sheet field-of-view is (sheetWidth / 180) * pi, converting the sheet's angular width in
-// degrees to radians.
 // @ghidraAddress 0x2fd024
 constexpr float kSheetFovReferenceWidth = 180.0f;
 // @ghidraAddress 0x2f85a0
 constexpr double kSheetFovScale = 3.14159265358979323846;
-// The near and far plane distances for the portrait perspective, as multiples of the camera
-// distance.
 // @ghidraAddress 0x2fede0
 constexpr double kNearPlaneScale = 0.9;
 // @ghidraAddress 0x2f8588
 constexpr double kFarPlaneScale = 1.1;
-// The near and far plane distances, in points, for the landscape tilt perspective.
 // @ghidraAddress 0x2ec6b0
 constexpr float kTiltNearPlane = 100.0f;
 // @ghidraAddress 0x2fedf0
 constexpr float kTiltFarPlane = 5000.0f;
-// Half of pi, the level (untilted) reference pitch used by the tilt projection.
 // @ghidraAddress 0x2fedd8
 constexpr double kPiOverTwo = 1.5707963267948966;
-// The sheet centre used as the flat-landscape camera focus, in points.
 constexpr float kSheetCenterX = 384.0f;
 constexpr float kSheetCenterY = 512.0f;
 
-// The playlist view controller modes. Type "create" opens the playlist create and browse screen
-// from the playlist button; type "add to set" adds a music set to an existing playlist.
 enum {
     kPlaylistTypeCreate = 0,
     kPlaylistTypeAddToSet = 1,
 };
 
-// The terms-agreement document type shown by -showTermsWithDelegate:.
 constexpr int kTermTypeAgreement = 1;
 
-// The default play colour that the preview restores before showing the bundled preview song.
 constexpr int kDefaultPlayColor = 0;
 
-// Queues the share-image render. The binary inlines this at the end of the reachability probe; a
-// patched build skips that probe and needs the same tail.
+// The binary inlines this at the end of the reachability probe, which a patched build skips.
 static void EnqueueImageCreaterOperation(RBViewController *controller) {
     if (!controller.twitterImageCreaterQueue) {
         controller.twitterImageCreaterQueue = [[NSOperationQueue alloc] init];
@@ -221,14 +163,11 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
                                 RBPlaylistViewControllerDelegate,
                                 UIPopoverControllerDelegate>
 
-// The shared tail of -startPreview that copies the user settings into the game system.
 - (void)applyPreviewSettingsToGameSystem:(GameSystem *)gameSystem music:(MusicData *)music;
 
 @end
 
 @implementation RBViewController {
-    // The task and render media timers, each a C_TIME stored inline in the instance and stamped and
-    // read through its Start and GetElapsedMilliseconds members.
     float m_LoopTime;              // +0x08
     C_TIME m_TaskTime;             // +0x10
     C_TIME m_RenderTime;           // +0x18
@@ -244,8 +183,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
 + (BOOL)hasTwitterAPI {
     /** @ghidraAddress 0x8d540 */
 #ifdef ENABLE_PATCHES
-    // Twitter.framework is not linked, so the original probe can never resolve the class and the
-    // result screens hide their share button. The share sheet needs no framework of its own.
+    // Twitter.framework is not linked, so the original probe can never resolve the class.
     return YES;
 #else
     return NSClassFromString(@"TWTweetComposeViewController") != nil;
@@ -322,8 +260,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     /** @ghidraAddress 0x8af3c */
     float elapsed = m_TaskTime.GetElapsedMilliseconds();
     m_TaskTime.Start();
-    // The elapsed millisecond count is truncated toward zero and dispatched to every listener's
-    // per-frame callback (the binary's fcvtzs into w0).
     DispatchListenerList(static_cast<int>(elapsed));
     TouchManager::FetchSharedSingleton()->CompactTouchList();
 }
@@ -348,10 +284,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
 
 - (void)UpdateProjection {
     /** @ghidraAddress 0x8a800 */
-    // Rebuilds the viewport and camera for the current front-buffer size. First installs an
-    // orthographic viewport sized to the drawable, then a perspective (or 3D-tilt) projection for
-    // the note sheet, following the arm64 disassembly. The camera helpers take a viewport for the
-    // active-camera slot and an ne::CameraNode for the model node.
     neGLESRenderer *renderer = neGLESRenderer::GetShared();
     int viewW = [self.glView GetFrontBufferWidth];
     int viewH = [self.glView GetFrontBufferHeight];
@@ -366,7 +298,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
 
     ne::Viewport *orthoViewport =
         CreateOrthoViewport(scaledSize.x, scaledSize.y, 0, 0, viewW, viewH);
-    // The original's live ortho projection is 2/768, -2/1024, -1, +1 (m0, m5, m10, m14).
     const float *pOrtho = orthoViewport->GetProjectionMatrix();
     SetCurrentProjection(orthoViewport);
     orthoViewport->Release();
@@ -375,7 +306,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
         static_cast<float>(gameSystem->GetSheetWidth() / kSheetFovReferenceWidth * kSheetFovScale);
 
     if (viewW < viewH) {
-        // Portrait: a plain perspective looking straight down the note sheet.
         gameSystem->SetSheetLayerFlags(0);
         float sheetFarX = gameSystem->GetSheetFarX();
         float sheetFarY = gameSystem->GetSheetFarY() / gameSystem->GetPlayfieldScale();
@@ -384,8 +314,8 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
         if (sheetFarX / sheetFarY < aspect) {
             distance = sheetFarY * halfCot;
         }
-        // The width-fitted distance is forced on the phone, not the pad: the fcsel at 0x8a9c0 takes
-        // it on `eq`, which is IsPad() returning zero. On a pad the ratio test above stands.
+        // The fcsel at 0x8a9c0 forces the width-fitted distance on the phone; on a pad the ratio
+        // test above stands.
         if (!IsPad()) {
             distance = (sheetFarX / aspect) * halfCot;
         }
@@ -402,20 +332,14 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
         S_VECTOR3 target{gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
         S_VECTOR3 up{0.0f, -1.0f, 0.0f};
         ne::CameraNode *camera = CreateLookAtCamera(&eye, &target, &up);
-        // The original's live matrices, for a direct comparison: projection m0=1.90419734,
-        // m5=1.42814803, m10=10.0000038, m11=-1, m14=7238.99951; view m14=-731.211792.
         const float *pProj = viewport->GetProjectionMatrix();
         const float *pView = camera->GetViewMatrix();
         SetActiveViewCamera(viewport);
         SetCurrentModelNode(camera);
         viewport->Release();
     } else {
-        // Landscape: either a flat perspective or a 3D-tilt projection depending on whether the
-        // sheet still fits when tilted.
         float halfViewH = scaledSize.y * 0.5f;
-        // Both ratios are divided out up front by the fdiv pair at 0x8aa54 and 0x8aa58, and each is
-        // used more than once below. They are not interchangeable: the sheet ratio's register is
-        // reused for the pitch angle at 0x8ab64, so only the pitch ratio reaches the y offset.
+        // The fdiv pair at 0x8aa54 and 0x8aa58 divides both ratios out up front.
         float sheetRatio = gameSystem->GetSheetHeight() / halfViewH;
         float pitchRatio = gameSystem->GetCameraPitchHeight() / halfViewH;
         float sheetFarX = gameSystem->GetSheetFarX();
@@ -435,15 +359,10 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
         if (tilted) {
             gameSystem->SetSheetLayerFlags(1);
             float pitch = acosf(root);
-            // Build the tilted view matrix, following the arm64 SIMD sequence: look at the sheet
-            // mid-plane, rotate by the pitch about x, offset the sheet in y, and push it back in z.
-            // The four ComposeMatrices calls fold the look-at, rotation, y-offset, and z-offset
-            // matrices into the accumulator in that order (0x8ac80 through 0x8aca4); composition
-            // does not commute, so the rotation really does precede the offset.
+            // The four ComposeMatrices calls fold look-at, rotation, y-offset, and z-offset in that
+            // order (0x8ac80 through 0x8aca4), and composition does not commute.
             float sheetMidY = sheetFarY * 0.5f;
             float lookAt[16] = {};
-            // Eye and target verified against the binary call site (x1 = eye at z = 0, x2 = target
-            // at z = 1); the camera looks along +z, as in the portrait branch above.
             S_VECTOR3 lookEye{0.0f, sheetMidY, 0.0f};
             S_VECTOR3 lookTarget{0.0f, sheetMidY, 1.0f};
             S_VECTOR3 lookUp{0.0f, -1.0f, 0.0f};
@@ -452,14 +371,11 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
             MakeRotationMatrixX(-(static_cast<float>(kPiOverTwo) - pitch), rotation);
             float sheetHalfDepth = sheetFarX / (2.0f * aspect);
             float yOffset[16] = {};
-            // The y offset uses the camera-pitch ratio, not the sheet ratio: 0x8ac20 reads the
-            // register holding the pitch ratio, the sheet ratio's having been reused at 0x8ab64.
+            // 0x8ac20 reads the pitch ratio, not the sheet ratio, whose register 0x8ab64 reused.
             MakeTranslationMatrix(yOffset, 0.0f, -sheetHalfDepth * (1.0f - pitchRatio), 0.0f);
             float zOffset[16] = {};
             float pitchDepth = sheetHalfDepth / static_cast<float>(tanHalfFov);
             MakeTranslationMatrix(zOffset, 0.0f, 0.0f, -pitchDepth);
-            // The accumulator is seeded with the identity matrix (loaded as four constant vectors
-            // in the binary) before the composition chain.
             float viewMatrix[] = {1.0f,
                                   0.0f,
                                   0.0f,
@@ -569,8 +485,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     [self CreateTimer];
 }
 
-// The display-link callback that drives one loop iteration. Named mainLoop in the binary; it runs
-// the task and draw passes and is targeted by the CADisplayLink created above.
 - (void)mainLoop {
     /** @ghidraAddress 0x8b074 */
     [self Task];
@@ -677,9 +591,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     [self applyPreviewSettingsToGameSystem:gameSystem music:previewMusic];
 }
 
-// Shared tail of -startPreview, beginning at the cbz on the music at 0x8c01c: caches the difficulty
-// and play-colour, copies the user settings into the game system, reveals the loading cover, pauses
-// the menu BGM, starts the loop, and schedules the deferred scene-mode change.
+// Shared tail of -startPreview, beginning at the cbz on the music at 0x8c01c.
 - (void)applyPreviewSettingsToGameSystem:(GameSystem *)gameSystem music:(MusicData *)music {
     if (music) {
         [AppDelegate.appDelegate setMusicData:music];
@@ -729,7 +641,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     [self StartLoop];
     dispatch_after(dispatch_time(0, kPreviewSceneDelayNanoseconds), dispatch_get_main_queue(), ^{
       /** @ghidraAddress 0x8c884 */
-      // A global block: it captures nothing and never touches the view controller.
       rb::GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
       if (scene) {
           scene->EnterModeAlt();
@@ -827,8 +738,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
       /** @ghidraAddress 0x8bd9c */
       GameSystem *blockGameSystem = GameSystem::GetGameSystem();
       BOOL isPad = IsPad();
-      // The pair of fields is written by one 8-byte store at 0x8bdbc, so the pitch height is
-      // cleared in both arms.
+      // One 8-byte store at 0x8bdbc writes the pair, so the pitch height is cleared in both arms.
       blockGameSystem->SetSheetHeight(kPreviewSheetHeight);
       blockGameSystem->SetCameraPitchHeight(0.0f);
       blockGameSystem->SetCameraTargetX(0.0f);
@@ -1009,8 +919,8 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     /** @ghidraAddress 0x8e550 */
     __weak RBViewController *weakSelf = self;
     [self setupCorporateButton];
-    // w2 is 3 at 0x8e634, which is LayoutSubviews together with AllowUserInteraction; the ease
-    // curve is not requested at all (EaseInOut is zero and would not show up here).
+    // w2 is 3 at 0x8e634, which is LayoutSubviews together with AllowUserInteraction, with no ease
+    // curve requested.
     [UIView animateWithDuration:kCorporateFadeDuration
         delay:kCorporateFadeDelay
         options:UIViewAnimationOptionLayoutSubviews | UIViewAnimationOptionAllowUserInteraction
@@ -1127,7 +1037,6 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     m_Tweeting = YES;
 #ifdef ENABLE_PATCHES
     // iOS 11 removed the system Twitter account, so SLComposeViewController can no longer post.
-    // The share sheet reaches every installed target instead.
     NSMutableArray *items = [NSMutableArray array];
     if (text) {
         [items addObject:text];
@@ -1146,8 +1055,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     }
     UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items
                                                                         applicationActivities:nil];
-    // The share button is drawn by the GL scene, so there is no subview for the pad popover to
-    // point at; the centre of the game view is the anchor.
+    // The share button is drawn by the GL scene, so the centre of the game view is the anchor.
     UIPopoverPresentationController *popover = share.popoverPresentationController;
     popover.sourceView = self.view;
     popover.sourceRect =
@@ -1212,7 +1120,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     self.tweetText = text;
 #ifdef ENABLE_PATCHES
     // The probe requests http://twitter.com in the clear, which App Transport Security refuses, so
-    // it can only fail and take the share down with it. The share sheet needs no network.
+    // it can only fail and take the share down with it.
     EnqueueImageCreaterOperation(self);
 #else
     NSURL *url = [NSURL URLWithString:@"http://twitter.com"];

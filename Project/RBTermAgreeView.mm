@@ -1,14 +1,3 @@
-//
-//  RBTermAgreeView.mm
-//  REFLEC BEAT plus
-//
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBTermAgreeView). This is an
-//  Objective-C++ file because the send-agree completion reaches the C++ SoundEffectManager engine
-//  singleton. The frame geometry in -setupView, -layoutSubviews, and -scrollViewDidScroll: was
-//  recovered from the arm64 soft-float register moves that the decompiler folds into pseudo
-//  doubles; the theme and iPad idiom branches are de-inlined into helpers below.
-//
-
 #import "RBTermAgreeView.h"
 
 #import <math.h>
@@ -24,13 +13,10 @@
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
 
-// The themed sound-effect slot played once the acceptance has been submitted (the unlock chime).
 constexpr int kSoundEffectUnlocked = 9;
 
-// The terms version this build submits and stores on acceptance.
 static NSString *const kTermsVersion = @"1.0.0";
 
-// Keys carried in the fetch and agree request payloads.
 static NSString *const kParamUserID = @"user_id";
 static NSString *const kParamTarget = @"target";
 static NSString *const kParamTermsType = @"terms_type";
@@ -38,36 +24,28 @@ static NSString *const kParamTermsVersion = @"terms_version";
 static NSString *const kResponseStatusKey = @"status";
 static NSString *const kTermsContentsKey = @"contents";
 
-// The POST body content type used by both the fetch and the agree requests.
 // @ghidraAddress 0x364140
 static NSString *const kJSONContentType = @"application/json";
 
-// The alert tags that distinguish the two retry alerts in -alertView:clickedButtonAtIndex:.
 constexpr NSInteger kAlertTagTermsFetch = 0;
 constexpr NSInteger kAlertTagSendAgree = 1;
 
-// A server status of zero means the acceptance succeeded.
 constexpr int kServerStatusOK = 0;
 
-// The mascot artwork frames, animated in two-frame loops while the reader scrolls.
 static NSString *const kMascotFrame1Name = @"23_terms/as_mascot_01";
 static NSString *const kMascotFrame2Name = @"23_terms/as_mascot_02";
 static NSString *const kMascotFinishFrame1Name = @"23_terms/as_mascot_03";
 static NSString *const kMascotFinishFrame2Name = @"23_terms/as_mascot_04";
 
-// The scroll-progress track image, split into a track and a fill by -setupView.
 static NSString *const kProgressTrackName = @"dl_info";
 
-// The gradation overlay drawn over the content for the Limelight and Colette themes.
 static NSString *const kGradationImageName = @"23_terms/tos_grad";
 
-// Layout metrics recovered from the disassembly. The wide (default iPad idiom) and narrow
-// (compact iPad idiom) layouts use different values, matching the two branches in -setupView.
 constexpr CGFloat kMascotFrameDuration = 0.5;
 constexpr CGFloat kHalf = 0.5;
 constexpr CGFloat kButtonRowHeightWide = 40.0;
 constexpr CGFloat kButtonRowHeightNarrow = 30.0;
-// The fixed width of each button in that row. @ghidraAddress 0x2ec6f8
+// @ghidraAddress 0x2ec6f8
 constexpr CGFloat kButtonWidth = 100.0;
 constexpr CGFloat kPastelViewHeightWide = 96.0;    // @ghidraAddress 0x2ec6d8
 constexpr CGFloat kPastelViewHeightNarrow = 140.0; // @ghidraAddress 0x2ec6c0
@@ -85,56 +63,44 @@ constexpr CGFloat kPastelTopInset = 10.0;
 constexpr CGFloat kSixths = 6.0;
 constexpr CGFloat kProgressBarSegments = 4.0;
 
-// The dimmed alpha used for buttons and mascot artwork before the reader reaches the bottom.
 constexpr CGFloat kDimmedAlpha = 0.0;
 constexpr CGFloat kFullAlpha = 1.0;
 
-// The content-view background and popup background whites/alphas.
 constexpr CGFloat kPopupBackgroundAlpha = 0.5;
 
-// The terms text font sizes for the wide and narrow iPad idioms.
 constexpr CGFloat kTermsFontSizeWide = 16.0;
 constexpr CGFloat kTermsFontSizeNarrow = 15.0;
 
-// The text-container inset applied to the terms text view (top/left/bottom/right = 10/5/10/5).
 constexpr CGFloat kTermsTextInsetVertical = 10.0;
 constexpr CGFloat kTermsTextInsetHorizontal = 5.0;
 
-// The corner radius applied to the gradation overlay for each iPad idiom.
 constexpr CGFloat kGradationCornerRadiusWide = 10.0;
 constexpr CGFloat kGradationCornerRadiusNarrow = 5.0;
 
-// The inset applied to the gradation overlay on both edges, and the wide-variant title-bar drop.
 // @ghidraAddress 0x1c436c
 constexpr CGFloat kGradationOrigin = 2.0;
 constexpr CGFloat kGradationWideOriginYInset = 2.0;
 constexpr CGFloat kClassicTitleDrop = 16.0;
 
-// The show/hide transition durations. The show duration doubles as the show delay.
-// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant)
+// @ghidraAddress 0x2eedc0
 constexpr NSTimeInterval kShowTransitionDuration = 0.2;
 constexpr NSTimeInterval kHideTransitionDuration = 0.25;
 
-// The activity-indicator scale applied to the loading spinner.
 constexpr CGFloat kIndicatorScale = 1.5;
 
-// The white and alpha of the popup dimming background and the grey loading overlay.
 // @ghidraAddress 0x2eedc0 (background white), 0x2ec6f8 (grey-overlay white)
 constexpr CGFloat kPopupBackgroundWhite = 0.2;
 constexpr CGFloat kGrayViewWhite = 0.9;
 
-// The origin-y baseline the wide Classic layout shifts the content panel up to.
-// @ghidraAddress 0x2ec6f8 (g_dPopupWideContentOriginYBase)
+// @ghidraAddress 0x2ec6f8
 constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
-// The content offset the Classic theme uses on a phone, where the wide arithmetic does not apply.
 // @ghidraAddress 0x1c4198
 constexpr CGFloat kClassicNarrowContentTopOffset = 12.0;
-// The extra height taken off the terms text view on a phone. @ghidraAddress 0x1c5194
+// @ghidraAddress 0x1c5194
 constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 
 @interface RBTermAgreeView ()
 
-// Fade the popup out, tear it down, and clear the presenting controller's reference.
 // @ghidraAddress 0x1c6a3c
 - (void)_hideAnimation;
 
@@ -158,9 +124,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 
 #pragma mark Setup
 
-// The gradation overlay behind the terms content differs per theme: the Classic theme (theme 0)
-// creates a fresh overlay image view; the Limelight and Colette themes reuse the base overlay and
-// only re-clip it. Extracted from the two branches of -setupView.
 - (void)setupGradationOverlay {
     UIImage *gradation = [UIImage imageWithName:kGradationImageName];
     RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
@@ -170,9 +133,7 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
         self.gradationImageView.image = gradation;
         self.gradationImageView.layer.cornerRadius = cornerRadius;
         self.gradationImageView.layer.masksToBounds = YES;
-        // Both edges inset by kGradationOrigin, from the pair of 2.0 the setFrame: at 0x1c437c is
-        // handed. Insetting by the text inset instead left the bar short of the panel's top edge,
-        // and the terms text scrolled through the strip above it.
+        // @ghidraAddress 0x1c437c
         self.gradationImageView.frame = CGRectMake(
             kGradationOrigin, kGradationOrigin, gradation.size.width, gradation.size.height);
     } else if (theme == RBUserSettingDataThemeClassic) {
@@ -190,9 +151,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     }
 }
 
-// Builds the animated mascot, the scroll-progress track, and the progress fill inside pastelView.
-// The wide and narrow iPad idioms use different frame metrics; extracted from the two branches
-// of -setupView.
 - (void)setupPastelArtwork {
     BOOL narrow = !IsPad();
     CGFloat mascotXOffset = narrow ? kMascotXOffsetNarrow : kMascotXOffsetWide;
@@ -230,9 +188,7 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     UIImage *fillImage = [trackSource
         clipImageWithRect:CGRectMake(0.0, trackClipHeight, kTrackClipWidthWide, trackClipHeight)];
     if (!narrow) {
-        // The wide layout makes the fill resizable through -resizableImageWithCapInsets:. The exact
-        // cap insets are a disasm-level blocker: setupView is ~2548 instructions and the decompiler
-        // did not thread the inset arguments into this call, so they are not recovered here.
+        // The binary's cap insets were not recovered; zero stands in for them.
         fillImage = [fillImage resizableImageWithCapInsets:UIEdgeInsetsZero];
     }
 
@@ -254,11 +210,7 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 - (void)setupView {
     [super setupView];
 
-    // Shift the content and background panels up for the wide layout of the Classic theme so the
-    // taller terms text view fits; the other themes keep the base layout. The exact per-edge frame
-    // arithmetic below the offset is a soft-float pattern recovered from the disassembly.
-    // The branch at 0x1c3f20 has three arms, not two: a non-Classic theme takes no offset, Classic
-    // on a pad computes one and shifts the panels up by it, and Classic on a phone takes a flat 12.
+    // @ghidraAddress 0x1c3f20
     CGFloat contentTopOffset = 0.0;
     if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeClassic) {
         if (IsPad()) {
@@ -279,8 +231,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 
     [self setupGradationOverlay];
 
-    // Centre the title bar over the gradation overlay for the wide variant; the narrow variant only
-    // nudges it down for the Classic theme.
     if (IsPad()) {
         int centerX = static_cast<int>(self.gradationImageView.width - self.titleImageView.width);
         int centerY = static_cast<int>(self.gradationImageView.height - self.titleImageView.height);
@@ -303,7 +253,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
                                              alpha:kPopupBackgroundAlpha];
     self.contentView.backgroundColor = [UIColor colorWithWhite:kFullAlpha alpha:kFullAlpha];
 
-    // The scrolling terms text view fills the content view below the shifted top.
     UIView *termView =
         [[UIView alloc] initWithFrame:CGRectMake(0.0,
                                                  contentTopOffset,
@@ -313,7 +262,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     [self.contentView addSubview:termView];
     self.termView = termView;
 
-    // The grey loading overlay and the loading spinner span the whole popup.
     UIView *grayView = [[UIView alloc] initWithFrame:self.bounds];
     grayView.backgroundColor = [UIColor colorWithWhite:kGrayViewWhite alpha:kPopupBackgroundAlpha];
     grayView.hidden = YES;
@@ -332,13 +280,9 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 
     CGFloat buttonRowHeight = !IsPad() ? kButtonRowHeightNarrow : kButtonRowHeightWide;
 
-    // The row divides the content view's width into three equal gaps around the two fixed-width
-    // buttons, and sits flush with its bottom edge: Cancel on the left, Agree on the right.
     CGFloat buttonGap = (self.contentView.width - (kButtonWidth * 2)) / 3.0;
     CGFloat buttonY = self.contentView.height - buttonRowHeight;
 
-    // The Agree and Cancel buttons share a row along the bottom of the content view; the Agree
-    // button starts disabled and dimmed until the reader scrolls to the bottom.
     UIButton *agree = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     agree.frame =
         CGRectMake((buttonGap * 2) + kButtonWidth, buttonY, kButtonWidth, buttonRowHeight);
@@ -365,9 +309,7 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     [self.contentView addSubview:cancel];
     self.disAgreeButton = cancel;
 
-    // The terms text view fills the term view, leaving room for the button row and then for the
-    // content offset again on a pad, or a fixed 6 elsewhere (the fcsel at 0x1c519c). The offset is
-    // zero for every theme but Classic, so this only shortens the view where the panel was shifted.
+    // @ghidraAddress 0x1c519c
     CGFloat textViewInset = IsPad() ? contentTopOffset : kNarrowTextViewBottomInset;
     UITextView *textView = [[UITextView alloc]
         initWithFrame:CGRectMake(0.0,
@@ -380,15 +322,12 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
                                                    kTermsTextInsetHorizontal);
     textView.delegate = self;
 #ifdef ENABLE_PATCHES
-    // A UITextView is editable by default and the binary never clears that, so the shipped terms
-    // raise the keyboard on a screen meant only to be read and scrolled.
+    // The binary leaves the text view editable, so the shipped terms raise the keyboard.
     textView.editable = NO;
 #endif
     [self.termView addSubview:textView];
     self.termTextView = textView;
 
-    // The mascot and scroll-progress artwork live in pastelView, laid out only for the narrow
-    // iPad idiom.
     if (!IsPad()) {
         UIView *pastel = [[UIView alloc]
             initWithFrame:CGRectMake((self.contentView.width * kHalf) - self.width * kHalf,
@@ -418,8 +357,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 #pragma mark Layout
 
 - (void)layoutSubviews {
-    // Re-centre pastelView under the content view for the current iPad idiom, then fade it in
-    // when it fits above the popup bottom and keep the terms text scrolled to its saved offset.
     CGFloat pastelHeight = !IsPad() ? kPastelViewHeightNarrow : kPastelViewHeightWide;
     self.pastelView.frame =
         CGRectMake((self.width - self.contentView.width) * kHalf,
@@ -438,7 +375,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     CGFloat fontSize = !IsPad() ? kTermsFontSizeNarrow : kTermsFontSizeWide;
     weakSelf.termTextView.text = weakSelf.terms[kTermsContentsKey];
     weakSelf.termTextView.font = [UIFont systemFontOfSize:fontSize];
-    // The scrollable overflow: the text laid out at unbounded height, minus the visible height.
     weakSelf.termTextViewHeight = static_cast<float>(
         [weakSelf.termTextView sizeThatFits:CGSizeMake(weakSelf.termTextView.width, HUGE_VALF)]
             .height -
@@ -528,8 +464,7 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     NSDictionary *params = @{
         kParamUserID : [AppDelegate getServerData][0],
         kParamTarget : GetRegionCode(),
-        // Spelled out rather than boxed: the binary sends numberWithInteger:, which no boxed
-        // literal of an int-typed expression produces.
+        // Spelled out rather than boxed: the binary sends numberWithInteger:.
         kParamTermsType : [NSNumber numberWithInteger:self.type],
         kParamTermsVersion : kTermsVersion
     };
@@ -540,7 +475,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     [weakSelf.downloader
         startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x1c853c */
-          // Global no-op proceed block.
         }
         success:^(id response) {
           /** @ghidraAddress 0x1c8540 */
@@ -595,9 +529,7 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 
 #pragma mark Dismissal
 
-// The superclass hideAnimation is intentionally overridden to do nothing: the terms popup dismisses
-// itself through the private -_hideAnimation, which also tears down the parent controller's
-// reference.
+// Intentionally empty: the terms popup dismisses through -_hideAnimation instead.
 - (void)hideAnimation {
 }
 
@@ -622,7 +554,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 #pragma mark UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    // The scroll fraction (clamped to 0..1) drives the progress fill width and the mascot position.
     float fraction = static_cast<float>(scrollView.contentOffset.y / self.termTextViewHeight);
     if (fraction < 0.0f) {
         fraction = 0.0f;
@@ -648,9 +579,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     self.pastelImageFinishView.frame = CGRectMake(
         mascotX, self.pastelImageView.y, self.pastelImageView.width, self.pastelImageView.height);
 
-    // Enable the Agree button once the reader has scrolled to (or past) the bottom. The bottom test
-    // (contentOffset.y + visible height > contentSize.height) was recovered from the disassembly,
-    // where the decompiler folded the visible-height read into a duplicate contentSize term.
     if (!self.agreeButton.isEnabled) {
         if (scrollView.contentOffset.y + scrollView.frame.size.height >
             scrollView.contentSize.height) {
@@ -658,7 +586,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
         }
     }
 
-    // Cross-fade the scrolling mascot to the finished mascot at the bottom.
     if (fraction == 1.0f) {
         self.pastelImageView.alpha = kDimmedAlpha;
         self.pastelImageFinishView.alpha = kFullAlpha;

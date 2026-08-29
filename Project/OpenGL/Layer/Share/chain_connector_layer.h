@@ -113,8 +113,6 @@ private:
      */
     ChainConnectorLayer();
 
-    // One pooled chain-connector record (24 bytes): a colour and the two endpoints a connector
-    // spans.
     struct ChainRecord {
         bool bActive = {};   /*!< Set while the record holds a queued connector. +0x00 */
         int nColor = {};     /*!< The connector colour (0 or 1), selecting the sprite type. +0x04 */
@@ -124,12 +122,11 @@ private:
         float flEndY = {};   /*!< The end endpoint y. +0x14 */
     };
 
-    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the connector atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the connector sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
-    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10
+    int m_nSpriteCount = {};                    // +0x18
+    int m_nCapacity = {};                       // +0x1c
+    bool m_bLoaded = {};                        // +0x20
     // unsigned char m_aReserved21[3] = {};        // +0x21
-    ChainRecord m_aChains[kChainRecordCount] =
-        {}; // +0x24: the pooled connector records (to 0xc24).
+    ChainRecord m_aChains[kChainRecordCount] = {}; // +0x24
 };

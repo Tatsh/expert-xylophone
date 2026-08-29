@@ -158,7 +158,7 @@ public:
     void SetAllVolume(int volume);
 
 private:
-    // Returns the index of a free source slot, growing the array by a fixed step when none is free.
+    // Grows the source array by a fixed step when no slot is free.
     int FindFreeSlotIndex();
 
     AVSeMixer *m_pMixer = {};            // +0x00: the voice mixer.

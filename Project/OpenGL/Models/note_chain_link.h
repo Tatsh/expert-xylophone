@@ -110,7 +110,6 @@ public:
     }
 
 private:
-    // The chain-segment index marker for an absent (head or tail) link.
     static constexpr short kNone = -1;
 
     short m_nPrev = {};                  // +0x00: the previous chain-segment index / head chain id.

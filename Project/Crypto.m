@@ -3,8 +3,7 @@
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
 
-// The AES block size, in bytes. The output buffer is over-allocated by one block so that PKCS#7
-// padding added on encryption always fits.
+// The output buffer is over-allocated by one block so PKCS#7 padding always fits.
 static const NSUInteger kCryptoBlockPadding = kCCBlockSizeAES128;
 
 // The Applilink SDK always keys AES-128 with exactly the first 16 bytes of the supplied key data,
@@ -17,9 +16,7 @@ static const size_t kCryptoKeyLength = kCCKeySizeAES128;
 + (NSData *)cryptorToData:(unsigned int)mode value:(NSData *)value key:(NSData *)key {
     NSMutableData *output = [NSMutableData dataWithLength:value.length + kCryptoBlockPadding];
     size_t moved = 0;
-    // No initialisation vector is supplied, so CommonCrypto runs in ECB mode. The key length is
-    // fixed at 16 bytes and the SDK's mode value is used directly as the CommonCrypto operation
-    // (kCCEncrypt/kCCDecrypt).
+    // No initialisation vector is supplied, so CommonCrypto runs in ECB mode.
     CCCryptorStatus status = CCCrypt(mode,
                                      kCCAlgorithmAES128,
                                      kCCOptionPKCS7Padding,
@@ -46,8 +43,7 @@ static const size_t kCryptoKeyLength = kCCKeySizeAES128;
 
 /** @ghidraAddress 0x23496c */
 + (NSString *)sha1:(NSString *)string {
-    // The digest is taken over the UTF-8 C string, but the byte count passed is the string's
-    // -length (its character count, not the UTF-8 byte count) exactly as the binary does.
+    // The byte count passed is the string's -length, not its UTF-8 byte count, as the binary does.
     NSData *data = [NSData dataWithBytes:[string cStringUsingEncoding:NSUTF8StringEncoding]
                                   length:string.length];
     unsigned char digest[CC_SHA1_DIGEST_LENGTH];
@@ -61,8 +57,7 @@ static const size_t kCryptoKeyLength = kCCKeySizeAES128;
 
 /** @ghidraAddress 0x234af8 */
 + (NSString *)sha256:(NSString *)string {
-    // As with -sha1:, the digest is taken over the UTF-8 C string but the byte count passed is the
-    // string's -length (its character count, not the UTF-8 byte count) exactly as the binary does.
+    // As with +sha1:, the byte count passed is the string's -length, not its UTF-8 byte count.
     NSData *data = [NSData dataWithBytes:[string cStringUsingEncoding:NSUTF8StringEncoding]
                                   length:string.length];
     unsigned char digest[CC_SHA256_DIGEST_LENGTH];

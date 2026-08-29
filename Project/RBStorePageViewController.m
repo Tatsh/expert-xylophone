@@ -43,59 +43,49 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
-// Store-page subview tags. -viewWithTag: is the single source of truth for whether a subview has
-// already been built, so these are domain values rather than bare integers.
 enum {
-    kTagPackTable = 10000,        // The pack table view.
-    kTagLoadingLabel = 10001,     // The centred "Now Loading" label.
-    kTagFetchingLabel = 10002,    // The genre-fetching label.
-    kTagPromotionView = 10101,    // The promotion view.
-    kTagShowMoreOverlay = 100000, // The "show more" activity overlay inside the table.
-    kTagInfoLabel = 100000,       // The "no packs" information label inside the table.
-    kTagFunBanner = 100001,       // The "store fun" floating banner inside the table.
-    kTagCampaignBanner = 100002,  // The campaign floating banner inside the table.
+    kTagPackTable = 10000,
+    kTagLoadingLabel = 10001,
+    kTagFetchingLabel = 10002,
+    kTagPromotionView = 10101,
+    // kTagShowMoreOverlay and kTagInfoLabel share a tag, as the binary has them.
+    kTagShowMoreOverlay = 100000,
+    kTagInfoLabel = 100000,
+    kTagFunBanner = 100001,
+    kTagCampaignBanner = 100002,
 };
 
-// Table sections. The phone layout has three sections; the pad collapses to a single pack-list
-// section.
 enum {
-    kStoreSectionPromotion = 0,   // The promotion banner cell (phone).
-    kStoreSectionSampleLabel = 1, // The sample-play label and button cell (phone).
-    kStoreSectionPackList = 2,    // The scrolling list of packs (phone) and the whole pad table.
+    kStoreSectionPromotion = 0,
+    kStoreSectionSampleLabel = 1,
+    kStoreSectionPackList = 2,
     kStoreSectionCountPhone = 3,
     kStoreSectionCountPad = 1,
 };
 
-// The purchase-download / restore alert-view tags, matched in -alertView:clickedButtonAtIndex:.
 enum {
-    kAlertTagRestoreDownload = 30,         // Confirm downloading all restored musics.
-    kAlertTagRestore = 31,                 // Confirm beginning a restore.
-    kAlertTagPurchaseLimitTypeSelect = 32, // Choose a purchase-limit (age) tier.
-    kAlertTagDownloadRetry = 33,           // Retry a failed download.
-    kAlertTagUserAgeConfirm = 34,          // Confirm the entered user age.
+    kAlertTagRestoreDownload = 30,
+    kAlertTagRestore = 31,
+    kAlertTagPurchaseLimitTypeSelect = 32,
+    kAlertTagDownloadRetry = 33,
+    kAlertTagUserAgeConfirm = 34,
 };
 
-// Alert button indices. Index zero is always the cancel button.
 enum {
     kAlertButtonCancel = 0,
     kAlertButtonConfirm = 1,
-    // The purchase-limit sheet lists three age tiers at button indices one through three; index
-    // four and above opens the help page.
+    // Indices one through three are the age tiers; four and above opens the help page.
     kPurchaseLimitFirstHelpIndex = 4,
 };
 
-// The unset purchase-limit type, which triggers the age-selection sheet before a purchase.
 static const int kPurchaseLimitTypeUnset = 0;
 
-// The age-verify response reports success with a zero status.
 static const int kAgeVerifyStatusOK = 0;
 
-// Purchase-limit thresholds (yen) indexed by RBUserSettingData.purchaseLimitType; an index past the
-// end means no limit (the -1 sentinel).
+// Thresholds in yen indexed by purchaseLimitType; an index past the end means no limit.
 static const int kPurchaseLimitAmounts[] = {5000, 5000, 20000};
 static const int kPurchaseLimitNone = -1;
 
-// Reuse identifiers for the store's table cells.
 static NSString *const kStorePromotionCellID = @"StorePromotionCell";
 static NSString *const kStorePromotionSampleLabelCellID = @"StorePromotionSampleLabelCell";
 static NSString *const kStorePacklistCellID = @"StorePacklistCell";
@@ -103,7 +93,6 @@ static NSString *const kStorePacklistMoreCellID = @"StorePacklistMoreCell";
 static NSString *const kStorePacklistCellEvenID = @"StorePacklistCellEven";
 static NSString *const kStorePacklistCellOddID = @"StorePacklistCellOdd";
 
-// Image asset names.
 static NSString *const kStoreDefaultJacketImageName = @"09_store/store_jacket_64";
 static NSString *const kStoreIconImageName = @"09_store/icon_store";
 static NSString *const kStoreSampleBgPlayImageName = @"09_store/store_sample_bg_2";
@@ -114,25 +103,15 @@ static NSString *const kStorePackBg0ImageName = @"09_store/store_pack_bg_0";
 static NSString *const kStorePackBg1ImageName = @"09_store/store_pack_bg_1";
 static NSString *const kStoreRestoreImageName = @"09_store/store_restore";
 
-// Localised bar-button and status strings looked up through the main bundle.
 static NSString *const kStoreCategoryKey = @"Category";
 static NSString *const kStoreTopKey = @"TOP ";
 
-// The genre bar-button title is a prefix followed by the genre name, and the prefix differs by
-// idiom: the pad spells the word out, the phone uses a bullet.
 static NSString *const kGenreTitleFormat = @"%@%@";
 static NSString *const kGenreTitlePrefixPad = @"Category : ";
 static NSString *const kGenreTitlePrefixPhone = @"\u25cf";
 
-// The empty string used as the `value:` fallback of the bundle lookups below, and as the cleared
-// text of the sample label. The store-tab title and the pack-table title are not literals at all:
-// they are the shared localised globals g_pLocalizedMusicPacks (@0x3cfd90) and g_pLocalizedPacks
-// (@0x3cfce8), alongside g_pLocalizedShowMore (@0x3cfd70), g_pLocalizedLoadingMixed (@0x3cfca8),
-// g_pLocalizedPushUpToShowMore (@0x3cfd18), and the modal-dialog messages, all declared in
-// engineglobals.h.
 static NSString *const kStoreEmptyString = @"";
 
-// Font point sizes for the various labels and buttons.
 static const CGFloat kPackTableLabelFontSize = 18.0;
 static const CGFloat kSampleMusicLabelFontSizePhone = 12.0;
 static const CGFloat kSampleMusicLabelFontSizePad = 14.0;
@@ -144,64 +123,46 @@ static const CGFloat kMoreCellFontSizePhone = 15.0;
 static const CGFloat kMoreCellFontSizePad = 18.0;
 static const CGFloat kBarButtonTitleFontSize = 14.0;
 
-// Section heights (phone layout).
 static const CGFloat kPromotionSectionHeight = 102.0; // @ghidraAddress 0x3012a8
 static const CGFloat kSampleSectionHeight = 32.0;     // @ghidraAddress 0x2ee9b0
 
-// The phone promotion view's centre. The y sits one slot past 46.0 in the same pool run.
 static const CGFloat kPromotionCenterXPhone = 150.0; // @ghidraAddress 0x301028
 static const CGFloat kPromotionCenterYPhone = 61.0;  // @ghidraAddress 0x301038
 
-// Pack-list row heights: index one (a real pack row) is taller than index zero (the trailing "more"
-// row). The pad pairs are at 0x10030bed0 and the phone pairs at 0x10030bee0.
 static const CGFloat kPackRowHeightPhone = 80.0; // @ghidraAddress 0x30bee8
 static const CGFloat kMoreRowHeightPhone = 60.0; // @ghidraAddress 0x30bee0
 static const CGFloat kPackRowHeightPad = 140.0;  // @ghidraAddress 0x30bed8
 static const CGFloat kMoreRowHeightPad = 60.0;   // @ghidraAddress 0x30bed0
 
-// Alternating pack-row background tints (white component).
 static const CGFloat kPackRowTintEvenWhite = 0.8;
 static const CGFloat kPackRowTintOddWhite = 0.7568627450980392;
 static const CGFloat kPadPackRowTintWhite = 0.5;
 
-// The "load more" row text while loading; the idle colour is the shared g_dTranslucentAlpha.
-// This value and the idle shadow read the same pool slot, which carries no engine global.
+// Both read the same pool slot, which carries no engine global.
 static const CGFloat kMoreCellTextWhiteLoading = 0.4f; // @ghidraAddress 0x2ec720
 static const CGFloat kMoreCellShadowWhite = 0.4f;      // @ghidraAddress 0x2ec720
 
-// The sample-label cell layout metrics: the label is inset from both edges and the play button sits
-// at the trailing edge, both 32 points tall.
 static const CGFloat kSampleLabelInsetLeft = 46.0;
 static const CGFloat kSampleLabelInsetRight = 92.0;
 static const CGFloat kSamplePlayButtonWidth = 46.0;
 
-// The floating banner height (wider on the pad), used to keep the banner pinned to the viewport.
 static const CGFloat kBannerHeightPhone = 100.0;
 static const CGFloat kBannerHeightPad = 300.0;
 
-// The empty-state overlay is inset 50 points from the table's left edge, and the right overlay is
-// pulled a further 50 points in from the table's right edge; it drops below the taller of the
-// table's content or bounds by this much (three times as far on the pad).
-// The drop is an integer in the binary: it is selected between two integer immediates and widened
-// with scvtf, where a floating-point constant would have been a pool load.
+// The drop is an integer in the binary: two integer immediates widened with scvtf.
 static const CGFloat kEmptyStateSideInset = 50.0;
 static const int kEmptyStateDropPhone = 100;
 static const int kEmptyStateDropPad = 300;
 
-// The "show more" button is re-centred half-way across the table, 25 points below its content top.
 static const CGFloat kShowMoreCenterDrop = 25.0;
 
-// The pad table appearance.
 static const CGFloat kPadTableCornerRadius = 8.0;
 static const CGFloat kPadTableBorderWidth = 1.5;
 static const CGFloat kPadTableWidth = 726.0;
 static const CGFloat kPadTableScrollInset = 4.0;
 static const CGFloat kPadTitleLabelWidth = 720.0;
-static const CGFloat kPadContentTop = 331.0; // @ghidraAddress 0x3107e8
-// The pad promotion banner's height. 160.0 is a heavily pooled value and this slot is
-// also annotated for g_dPopupBaseOriginYWide, which is an origin rather than a height.
+static const CGFloat kPadContentTop = 331.0;      // @ghidraAddress 0x3107e8
 static const CGFloat kPadPromotionHeight = 160.0; // @ghidraAddress 0x2eea38
-// How far above the view's bottom edge the "show more" button sits.
 static const CGFloat kShowMoreBottomInset = 15.0;
 static const CGFloat kPadDetailWidth = 650.0;
 static const CGFloat kPadDetailHeight = 680.0; // @ghidraAddress 0x3013f8
@@ -212,79 +173,51 @@ static const CGFloat kPadSampleLabelX = 140.0;
 static const CGFloat kPadSampleLabelY = 217.0;
 static const CGFloat kPadSampleLabelWidth = 228.0;
 
-// The sample-play button is inset from the pad banner's bottom-right corner by (11, 13) points.
 static const CGFloat kSampleButtonInsetRight = 11.0;
 static const CGFloat kSampleButtonInsetBottom = 13.0;
 
-// Colour white components used for the various translucent fills. Each is a byte over 255 rounded
-// through a float, so the pool value is not the tidy decimal it looks like.
 static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0x2eef38
 static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f; // @ghidraAddress 0x2ec730
 static const CGFloat kLabelTextWhite = 158.0f / 255.0f;      // @ghidraAddress 0x2eecb8
 static const CGFloat kCoverPadAlpha = 0.5;
-// The loading label's text shadow alpha. It shares a slot with the audio-manager resume
-// fade, but a colour alpha and a duration are not the same constant.
 static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x2ec718
 
-// The default store-page background colour (shared with loadView). The pool holds 226, 227, and
-// 228 over 255, each rounded through a float on the way in.
 static const CGFloat kDefaultBackgroundRed = 226.0f / 255.0f;   // @ghidraAddress 0x30be90
 static const CGFloat kDefaultBackgroundGreen = 227.0f / 255.0f; // @ghidraAddress 0x30be98
 static const CGFloat kDefaultBackgroundBlue = 228.0f / 255.0f;  // @ghidraAddress 0x30bea0
 
-// The half-scale used to centre a view in its host's bounds.
 static const CGFloat kCenterScale = 0.5;
 
-// Alpha values used when fading the pad pack-detail panel in and out.
 static const CGFloat kDetailAlphaHidden = 0.0;
 static const CGFloat kDetailAlphaVisible = 1.0;
 
-// The pad pack-detail open/close animation fades over three tenths of a second.
 static const NSTimeInterval kDetailAnimDuration = 0.3; // @ghidraAddress 0x3010a0
 
-// The stretchable pack-cell background caps.
 static const int kPackBgStretchCap = 4;
 
-// The Retina spinner size.
 static const CGFloat kSpinnerSize = 24.0;
-// The "Packs" title sits 200 pt down, below the promotion strip. @ghidraAddress 0x2ee938
+// @ghidraAddress 0x2ee938
 static const CGFloat kPadPackTitleCenterBias = 200.0;
-// The promotion strip's own bias is an fmov immediate, so it carries no pool address.
+// An fmov immediate, so it carries no pool address.
 static const CGFloat kPadPromotionCenterYBias = 20.0;
-// The padding reserved above and below the "show more" button when sizing the pack table.
 static const CGFloat kShowMoreTablePadding = 16.0;
 
-// The currency code that counts towards the running purchase total.
 static NSString *const kCurrencyCodeJPY = @"JPY";
 
-// The KONAMI mobile help page opened from the purchase-limit sheet.
 static NSString *const kKonamiHelpURLString = @"http://www.konami.jp/";
 
-// The download-progress format (@0x3cfbd8) and the purchase-cancelled message (@0x3cfd08) are
-// shared localised globals from engineglobals.h, not local literals; both are used below.
-
-// The modal-dialog message shown while a pack's tunes download. The binary uses a short local
-// literal here rather than one of the shared store-message globals.
+// The binary uses a local literal here rather than a shared store-message global.
 static NSString *const kStoreDownloadDialogMessage = @"";
 
 @interface RBStorePageViewController () {
-    // Whether the wide (pad) iPad idiom is active; cached from IsPad().
     BOOL m_IsPad;
-    // Whether a "load more" page fetch is in flight.
     BOOL m_IsLoadingMoreList;
 }
 
-// Build the phone-layout promotion, sample controls, and pack table.
 - (void)buildPhoneLayout:(CGRect)bounds;
-// Build the pad-layout title, promotion banner, sample controls, pack table, cover, and detail
-// view.
 - (void)buildPadLayout:(CGRect)bounds;
-// Build the pack-table auxiliary views (info label, banners, loading and fetching labels, pack-cell
-// background images) shared by both layouts.
 - (void)buildTableAuxiliaryViews:(CGRect)bounds;
-// The trailing "load more" cell: idle "show more" text, or a spinner while a fetch is running.
 - (void)configureMoreCell:(UITableViewCell *)cell;
-// Look up (or lazily start) the artwork download for a pack, keyed by pack identifier.
 - (nullable UIImage *)artworkImageForPackInfo:(StorePackInfo *)packInfo
                                     indexPath:(NSIndexPath *)indexPath
                              forcingNonRetina:(BOOL)forcingNonRetina;
@@ -399,7 +332,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 }
 
 - (void)buildPadLayout:(CGRect)bounds {
-    // The pad layout lays its content below the rotating header bar.
     CGFloat headerHeight = self.tabBarController.rotatingHeaderView.frame.size.height;
     CGFloat contentTop = kPadContentTop - headerHeight;
 
@@ -421,9 +353,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [self.view addSubview:self.packTableLabel];
 
     if (self.promotionView == nil) {
-        // The width is the view frame's width, left in the register by the -frame send just above,
-        // and the centre's y is re-read from the promotion view's own bounds rather than from the
-        // height constant.
+        // The centre's y is re-read from the promotion view's own bounds, not the height constant.
         StorePromotionView *promotion = [[StorePromotionView alloc]
             initWithFrame:CGRectMake(0.0, 10.0, self.view.frame.size.width, kPadPromotionHeight)];
         self.promotionView = promotion;
@@ -485,7 +415,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [showMore setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
     [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
     [showMore sizeToFit];
-    // The height subtracted is the button's own, re-read by the -bounds send the binary makes here.
     showMore.center = CGPointMake(bounds.size.width * kCenterScale,
                                   bounds.size.height - showMore.bounds.size.height * kCenterScale -
                                       kShowMoreBottomInset);
@@ -515,8 +444,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     self.showMoreIndicator = indicator;
 
     if ([self.view viewWithTag:kTagPackTable] == nil) {
-        // The reservation is the show-more button's own fitted height plus 16 pt of padding above
-        // and below, narrowed through float exactly as the binary does.
+        // The sum is narrowed through float exactly as the binary does.
         CGFloat spinnerAndPadding =
             self.showMoreButton.bounds.size.height + kShowMoreTablePadding + kShowMoreTablePadding;
         CGFloat tableHeight =
@@ -783,8 +711,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 
 /** @ghidraAddress 0x1edb6c */
 - (void)dealloc {
-    // ARC synthesises the ivar releases and the destructor; only the non-generated teardown is
-    // reproduced here.
     if (self.storePackInfoDownloader != nil) {
         self.storePackInfoDownloader.delegate = nil;
         [self.storePackInfoDownloader cancel];
@@ -858,8 +784,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         barSubview.exclusiveTouch = YES;
     }
 
-    // Each banner drops below the taller of the table's content or bounds. The binary re-sends
-    // -contentSize and -bounds for each banner rather than sharing one value between them.
+    // The binary re-sends -contentSize and -bounds per banner rather than sharing one value.
     UIView *leftEmpty = [table viewWithTag:kTagFunBanner];
     int drop = m_IsPad ? kEmptyStateDropPad : kEmptyStateDropPhone;
     CGRect leftFrame = leftEmpty.frame;
@@ -875,8 +800,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     if (rightEmpty != nil) {
         drop = m_IsPad ? kEmptyStateDropPad : kEmptyStateDropPhone;
         CGRect rightFrame = rightEmpty.frame;
-        // The right edge comes from the table's frame width through the UIView+RB -width getter,
-        // not from its bounds.
+        // The right edge comes from the UIView+RB -width getter, not from the table's bounds.
         CGFloat rightX = table.width - rightFrame.size.width - kEmptyStateSideInset;
         rightEmpty.frame = CGRectMake(rightX,
                                       drop + (table.contentSize.height > table.bounds.size.height ?
@@ -1073,7 +997,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         return cell;
     }
 
-    // Pad layout: a single section, two packs per row.
     if (indexPath.row < [self numPackRows]) {
         NSString *reuseID =
             (indexPath.row & 1) ? kStorePacklistCellOddID : kStorePacklistCellEvenID;
@@ -1129,10 +1052,8 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 - (UIImage *)artworkImageForPackInfo:(StorePackInfo *)packInfo
                            indexPath:(NSIndexPath *)indexPath
                     forcingNonRetina:(BOOL)forcingNonRetina {
-    // The binary uses -objectForKey:/-setObject:forKey: throughout, never the subscripting
-    // variants. One of its three de-inlined copies of this lookup boxes the key with
-    // -numberWithInteger: (at 0x1ea800) while the other two use -numberWithInt:; a single helper
-    // cannot reproduce that split, so the majority form is used here.
+    // One of the binary's three copies of this lookup boxes the key with -numberWithInteger:
+    // (0x1ea800); the other two use -numberWithInt:, which is the form kept here.
     ImageDownloader *downloader = [self.artworkDownloaders objectForKey:@(packInfo.packID)];
     if (downloader != nil) {
         return [downloader getImage];
@@ -1160,8 +1081,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         cell.textLabel.shadowColor = [UIColor colorWithWhite:kMoreCellShadowWhite alpha:1.0];
         cell.textLabel.text = g_pLocalizedShowMore;
     } else {
-        // The frame is a square of the shared spinner size, not CGRectZero: d2 is 24.0 and
-        // `mov v3.16B,v2.16B` copies it into the height.
+        // The frame is a square of the shared spinner size, not CGRectZero.
         UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
             initWithFrame:CGRectMake(0.0, 0.0, kSpinnerSize, kSpinnerSize)];
         indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
@@ -1184,8 +1104,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 /** @ghidraAddress 0x1eb728 */
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (!m_IsPad) {
-        // The b.cc at 0x1eb7a8 is unsigned, so a negative section falls through to the pack-list
-        // arm rather than being treated as one of the two single-row sections.
+        // The compare at 0x1eb7a8 is unsigned, so a negative section falls to the pack-list arm.
         if ((NSUInteger)section < kStoreSectionPackList) {
             return 1;
         }
@@ -1278,7 +1197,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 
 /** @ghidraAddress 0x1ec5f0 */
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    // Kick off the next-page fetch once the visible bottom passes the content bottom.
     if (!m_IsLoadingMoreList && self.packListCtrl.packlistContinued) {
         CGFloat offsetY = scrollView.contentOffset.y;
         CGFloat boundsHeight = scrollView.bounds.size.height;
@@ -1287,9 +1205,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         }
     }
 
-    // Pin the "store fun" banner below the table's content as the user scrolls. The base the drop
-    // is added to is the scroll view's content height while the table can scroll, and its bounds
-    // height once it cannot.
+    // The base is the content height while the table can scroll, the bounds height otherwise.
     UIScrollView *table = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
     UIView *funBanner = [table viewWithTag:kTagFunBanner];
     CGFloat funDrop = m_IsPad ? kBannerHeightPad : kBannerHeightPhone;
@@ -1304,8 +1220,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     funFrame.origin.y = funY;
     funBanner.frame = funFrame;
 
-    // The campaign banner exists only during the March-2017 Hinabita campaign. It repeats the
-    // block above, except that it offsets by half its own height rather than the whole of it.
+    // Repeats the block above, except it offsets by half the banner's height rather than all of it.
     if (![RBCampaignData sharedInstance].isCampaignHinabita201703) {
         return;
     }
@@ -1580,8 +1495,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
             [self.packListCtrl startFetchGenre:self.currentGenre];
         } else {
             [tableView reloadData];
-            // Both dimensions come from -frame; the binary sends it twice and keeps the width from
-            // the first call and the height from the second.
+            // The binary sends -frame twice, taking width from one call and height from the other.
             CGRect tableFrame = tableView.frame;
             [tableView
                 scrollRectToVisible:CGRectMake(
@@ -1645,8 +1559,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     if (tableView != nil) {
         tableView.hidden = YES;
         tableView.allowsSelection = NO;
-        // As in -switchToGenre:, both dimensions come from -frame: the binary sends it twice and
-        // keeps the width from the first call and the height from the second.
+        // The binary sends -frame twice, taking width from one call and height from the other.
         CGRect tableFrame = tableView.frame;
         [tableView
             scrollRectToVisible:CGRectMake(0.0, 0.0, tableFrame.size.width, tableFrame.size.height)
@@ -1693,8 +1606,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 - (BOOL)checkAttainLimitPurchase:(SKProduct *)product {
     int total = [RBUserSettingData sharedInstance].totalPurchase;
     int limitType = [RBUserSettingData sharedInstance].purchaseLimitType;
-    // The bound is tested unsigned, so a negative type falls to the no-limit arm rather than
-    // indexing the table.
+    // The bound is tested unsigned, so a negative type falls to the no-limit arm.
     int limit = ((unsigned int)limitType < ARRAY_SIZE(kPurchaseLimitAmounts)) ?
                     kPurchaseLimitAmounts[limitType] :
                     kPurchaseLimitNone;
@@ -1721,9 +1633,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 - (void)detailViewStartPurchase:(StorePackInfo *)packInfo {
 #ifdef ENABLE_PATCHES
     // A pack the catalogue prices at nothing is granted without StoreKit, ahead of the guard below
-    // because a free pack need not have a StoreKit product at all. Nothing else here branches on
-    // price: the displayed price comes from the product rather than the catalogue, and
-    // -beginPurchase: gates on the product and on -canMakePayments, never on cost.
+    // because a free pack need not have a StoreKit product at all.
     if (RBStorePackIsFreeFromCatalog(packInfo.packID)) {
         self.purchasingPackInfo = packInfo;
         [self purchaseSucceeded:[StoreUtil productIDForPackID:packInfo.packID]];
@@ -1917,7 +1827,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 - (void)updatePurchasedTableCell:(StorePackInfo *)packInfo {
     NSArray<NSNumber *> *packIDList = self.currentGenre.packIDList;
     if (m_IsPad) {
-        // Pad: single-section pack table; two packs share a row, so row = packIndex / 2.
+        // Two packs share a row, so row = packIndex / 2.
         for (NSUInteger i = 0; i < packIDList.count; ++i) {
             if (packIDList[i].intValue == packInfo.packID) {
                 UITableView *table = (UITableView *)[self.view viewWithTag:kTagPackTable];
@@ -1979,9 +1889,8 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 
 /** @ghidraAddress 0x1e6860 */
 - (BOOL)nextRestorePackInfo {
-    // A snapshot of restoreProductID is iterated because the add… helpers below mutate the live
-    // array. YES is returned the moment an async detail download is started (or one entry is
-    // handled) so the caller stops and waits for the downloader callback.
+    // A snapshot is iterated because the add… helpers mutate the live array, and YES means the
+    // caller must stop and wait for a downloader callback.
     NSArray<NSString *> *productIDs = [NSArray arrayWithArray:self.restoreProductID];
     if (productIDs.count == 0) {
         return NO;
@@ -2041,7 +1950,6 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         [self updatePurchasedTableCell:packInfo];
     }
 
-    // Count how many restored files are still missing on disk (packs plus extend notes).
     NSInteger missingCount = 0;
     for (StorePackInfo *packInfo in self.restorePackInfo) {
         for (StoreMusicInfo *info in packInfo.musicInfos) {

@@ -1,11 +1,3 @@
-//
-//  note_lane_tracker.mm
-//  REFLEC BEAT plus
-//
-//  The chart lane-assignment tracker (NoteLaneTracker). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "note_lane_tracker.h"
 
 #include <cstdlib>
@@ -26,7 +18,6 @@ void NoteLaneTracker::ShuffleIndices(int *pArray, int nCount) {
 /** @ghidraAddress 0x148c78 */
 NoteLaneTracker::NoteLaneTracker() {
     m_pNoteData = nullptr;
-    // Every lane slot starts free: its six time fields hold the out-of-range sentinel.
     for (NoteLaneSlot &slot : m_aSlots) {
         slot.MarkFree();
     }
@@ -40,17 +31,13 @@ NoteLaneTracker::~NoteLaneTracker() {
 
 /** @ghidraAddress 0x148d78 */
 void NoteLaneTracker::SetNoteData(unsigned int dwSeed) {
-    // Attach a fresh generator and reseed it.
     m_pNoteData = new Random();
     m_pNoteData->SetSeed(dwSeed);
 }
 
 namespace {
-// The pair a lane's own occupancy uses (extended for neighbours and the tail), and the pair the
-// chosen lane's note span itself takes.
 constexpr int kNeighbourSpanPair = 1;
 constexpr int kChosenSpanPair = 2;
-// The chosen lane's trailing tail length: long by default, short for a short-tail note.
 constexpr int kLaneTailLong = 30;
 constexpr int kLaneTailShort = 10;
 } // namespace
@@ -64,13 +51,10 @@ int NoteLaneTracker::AssignNoteLane(
     const int nTimeEnd = nDuration + nTimeStart;
     NoteLaneSlot *pSlots = &m_aSlots[nPlayer * kLaneCount];
 
-    // Expire every lane's occupancy pairs whose end time has passed.
     for (int nLane = 0; nLane < kLaneCount; ++nLane) {
         pSlots[nLane].ExpireBefore(nTimeStart);
     }
 
-    // Bucket the lanes by the highest assignment pair (1 or 2) that overlaps the note's span; a
-    // lane that overlaps neither goes in bucket 0.
     int aBucketCount[NoteLaneSlot::kSpanPairCount] = {};
     int aBucketLanes[NoteLaneSlot::kSpanPairCount][kLaneCount] = {};
     for (int nLane = 0; nLane < kLaneCount; ++nLane) {
@@ -79,14 +63,11 @@ int NoteLaneTracker::AssignNoteLane(
         ++aBucketCount[nOverlap];
     }
 
-    // From the least-occupied bucket up, shuffle the candidates and pick the first lane the caller
-    // allows (a nonzero @c pLaneAllowed entry).
     for (int nBucket = 0; nBucket < NoteLaneSlot::kSpanPairCount; ++nBucket) {
         const int nCount = aBucketCount[nBucket];
         if (nCount <= 0) {
             continue;
         }
-        // Only enter this bucket when at least one candidate lane is allowed.
         bool bAnyAllowed = false;
         for (int k = 0; k < nCount; ++k) {
             if (pLaneAllowed[aBucketLanes[nBucket][k]] != 0) {
@@ -112,8 +93,6 @@ int NoteLaneTracker::AssignNoteLane(
         }
         delete[] pOrder;
 
-        // Reserve the chosen lane on pair 2, its neighbours on pair 1, then extend the chosen
-        // lane's pair-1 span by the tail.
         pSlots[nLane].ExtendSpanPair(kChosenSpanPair, nTimeStart, nTimeEnd);
         if (nLane >= 1) {
             pSlots[nLane - 1].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);
@@ -131,8 +110,7 @@ int NoteLaneTracker::AssignNoteLane(
 /** @ghidraAddress 0x149178 */
 void NoteLaneTracker::ReserveNoteLane(
     int nTimeStart, int nDuration, int nPlayer, int nLane, bool bSpread) {
-    // Only the first three lane groups are reservable; the binary's test is unsigned, so a
-    // negative colour tone is rejected here too (the b.hi at 0x14918c).
+    // The binary's test is unsigned, so a negative lane is rejected too (the b.hi at 0x14918c).
     if (static_cast<unsigned int>(nLane) > 2) {
         return;
     }
@@ -144,7 +122,6 @@ void NoteLaneTracker::ReserveNoteLane(
     if (!bSpread) {
         return;
     }
-    // Extend the adjacent lanes: the one before (when present) and the one after (within bounds).
     if (nLaneIndex > 0) {
         pPlayerSlots[nLaneIndex - 1].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);
     }

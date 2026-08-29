@@ -20,46 +20,37 @@
 #import "RecommendWebViewController.h"
 #import "RewardCore.h"
 
-// Applilink error codes reported to callers and delegates.
 typedef enum {
-    RecommendCoreErrorCodeParameter = 1001,          // 0x3e9
-    RecommendCoreErrorCodeNotInitialized = 1010,     // 0x3f2
-    RecommendCoreErrorCodeNoAdData = 1034,           // 0x40a
-    RecommendCoreErrorCodeCacheCreate = 1035,        // 0x40b
-    RecommendCoreErrorCodeAlreadyOpen = 1036,        // 0x40c
-    RecommendCoreErrorCodeNoBannerData = 1037,       // 0x40d
-    RecommendCoreErrorCodeAdTrackingDisabled = 1028, // 0x404
-    RecommendCoreErrorCodeNoAppliId = 1029,          // 0x405
+    RecommendCoreErrorCodeParameter = 1001,
+    RecommendCoreErrorCodeNotInitialized = 1010,
+    RecommendCoreErrorCodeNoAdData = 1034,
+    RecommendCoreErrorCodeCacheCreate = 1035,
+    RecommendCoreErrorCodeAlreadyOpen = 1036,
+    RecommendCoreErrorCodeNoBannerData = 1037,
+    RecommendCoreErrorCodeAdTrackingDisabled = 1028,
+    RecommendCoreErrorCodeNoAppliId = 1029,
 } RecommendCoreErrorCode;
 
-// Advert-model identifiers whose banner opens the advert area directly (100, 101) or the
-// interstitial (5) rather than gating on the installed-application list.
 typedef enum {
     RecommendCoreAdModelInterstitial = 5,
     RecommendCoreAdModelOwnAdBase = 100,
     RecommendCoreAdModelDirectRangeLength = 2,
 } RecommendCoreAdModel;
 
-// Advert types passed to the analytics registration.
 typedef enum {
     RecommendCoreAdTypeBanner = 2,
     RecommendCoreAdTypeIcon = 3,
     RecommendCoreAdTypeInterstitial = 5,
 } RecommendCoreAdType;
 
-// The cached-banner-status value that marks an advert as available.
 static const int kRecommendCoreBannerAvailable = 1;
 
-// The advert-status value that marks an advert model as available.
 static const int kRecommendCoreAdStatusAvailable = 1;
 
-// The recommend-login validity window, in seconds.
 static const NSTimeInterval kRecommendCoreLoginValiditySeconds = 60.0;
 
-// The install-post priority for the application-install registration.
 static const int kRecommendCoreInstallPriority = 1;
 
-// The Applilink deep-link scheme, host, and port that a redirect must match.
 static NSString *const kRecommendCoreApplilinkScheme = @"applilink";
 static NSString *const kRecommendCoreExtAppHost = @"ext-app";
 static const int kRecommendCoreExtAppPort = 80;
@@ -67,7 +58,6 @@ static NSString *const kRecommendCoreApplilinkExtAppUrl = @"applilink://ext-app:
 static NSString *const kRecommendCoreChangeDestSuffix = @"#changeDest";
 static NSString *const kRecommendCoreCloseHost = @"close";
 
-// The redirect query keys, each parsed from a `key=value` component.
 static NSString *const kRecommendCoreQueryDefaultScheme = @"default_scheme=";
 static NSString *const kRecommendCoreQueryAdIdFrom = @"ad_id_from=";
 static NSString *const kRecommendCoreQueryCountryCode = @"country_code=";
@@ -75,8 +65,7 @@ static NSString *const kRecommendCoreQueryCategoryId = @"category_id=";
 static NSString *const kRecommendCoreQueryAdType = @"ad_type=";
 static NSString *const kRecommendCoreQueryStoreId = @"store_id=";
 
-// The binary searches each query component for the bare key and then skips past the key with the
-// trailing "=" above, so the two spellings are kept apart.
+// The binary searches for the bare key, then skips past the key with the trailing "=" above.
 static NSString *const kRecommendCoreQueryKeyDefaultScheme = @"default_scheme";
 static NSString *const kRecommendCoreQueryKeyAdIdFrom = @"ad_id_from";
 static NSString *const kRecommendCoreQueryKeyCountryCode = @"country_code";
@@ -84,16 +73,13 @@ static NSString *const kRecommendCoreQueryKeyCategoryId = @"category_id";
 static NSString *const kRecommendCoreQueryKeyAdType = @"ad_type";
 static NSString *const kRecommendCoreQueryKeyStoreId = @"store_id";
 
-// The external advert index endpoint appended to the SSL base URL.
 static NSString *const kRecommendCoreAdExternalIndexPath = @"/ad/external/index.php";
 
-// NSUserDefaults keys owned by the recommend network.
 static NSString *const kRecommendCorePostInstalledKey = @"ApplilinkRecommend.postInstalled";
 static NSString *const kRecommendCoreBannerInfoKey = @"ApplilinkRecommend.bannerInfo";
 static NSString *const kRecommendCoreUniqueAdDataKey = @"UniqueAdData";
 static NSString *const kRecommendCoreAppliIdKey = @"ApplilinkNetwork.appliId";
 
-// Advert-record and cache dictionary keys.
 static NSString *const kRecommendCoreKeyAdId = @"ad_id";
 static NSString *const kRecommendCoreKeyAppliId = @"appli_id";
 static NSString *const kRecommendCoreKeyDefaultScheme = @"default_scheme";
@@ -109,14 +95,11 @@ static NSString *const kRecommendCoreKeyAdIdFrom = @"AdIdFrom";
 static NSString *const kRecommendCoreKeyAdType = @"AdType";
 static NSString *const kRecommendCoreKeyRewardNone = @"REWARD_NONE";
 
-// The install flag reported when the advert record carries none. +clearData compares the
-// configured server environment against the same literal: the disabled environment is "0", not the
-// empty string.
+// The disabled server environment is "0", not the empty string.
 static NSString *const kRecommendCoreInstallFlgNone = @"0";
 static NSString *const kRecommendCoreEnvServerDisabled = @"0";
 static NSString *const kRecommendCoreDisplayNumberDefault = @"1";
 
-// The request-parameter keys for the external advert index request.
 static NSString *const kRecommendCoreParamIsSdk = @"is_sdk";
 static NSString *const kRecommendCoreParamAdLocation = @"ad_location";
 static NSString *const kRecommendCoreParamAdModel = @"ad_model";
@@ -124,7 +107,6 @@ static NSString *const kRecommendCoreParamVerticalAlign = @"vertical_align";
 static NSString *const kRecommendCoreParamInstallAdIdList = @"install_ad_id_list";
 static NSString *const kRecommendCoreParamValueOne = @"1";
 
-// Format strings.
 static NSString *const kRecommendCoreFormatInteger = @"%d";
 static NSString *const kRecommendCoreFormatSchemeOnly = @"%@://";
 static NSString *const kRecommendCoreFormatQuery = @"?%@";
@@ -134,38 +116,26 @@ static NSString *const kRecommendCoreFormatBannerDisplayStatus =
 static NSString *const kRecommendCoreFormatAllAdDataMissing =
     @"allAdDataForDisplay fall in line with list by no appliId %@";
 
-// The user-info key these diagnostic messages are filed under.
 static NSString *const kErrorUserInfoKey = @"Error";
 
-// The web-load error codes that are silently ignored when they come from WebKit.
 static const NSInteger kRecommendCoreWebKitCancelledCode = -999;
-static const NSInteger kRecommendCoreWebKitFrameLoadInterruptedCode = 102; // 0x66
-static const NSInteger kRecommendCoreWebKitPlugInCancelledCode = 204;      // 0xcc
+static const NSInteger kRecommendCoreWebKitFrameLoadInterruptedCode = 102;
+static const NSInteger kRecommendCoreWebKitPlugInCancelledCode = 204;
 static NSString *const kRecommendCoreWebKitErrorDomain = @"WebKitErrorDomain";
 
-// The query-component separator and the deep-link path separator.
 static NSString *const kRecommendCoreQuerySeparator = @"&";
 static NSString *const kRecommendCorePathSeparator = @"/";
 
-// Whether an advert screen or advert view is currently open, guarding re-entry.
 static BOOL g_recommendCoreScreenOpen = NO;
 
-// The absolute time until which the recommend login remains valid; nil forces a re-login.
 static NSDate *g_recommendCoreLoginValidUntil = nil;
 
-// The singleton and its serial queue, allocated once through +allocWithZone: so that every
-// allocation of a RecommendCore yields the same object (Ghidra: DAT_1003df6c8 singleton,
-// DAT_1003df6d0 queue).
 static RecommendCore *g_recommendCoreInstance = nil;
 static dispatch_queue_t g_recommendCoreQueue = nil;
 
 @interface RecommendCore () <SdkViewDelegate>
 @end
 
-// The two block bodies below are de-inlined into file-private C functions rather than methods,
-// because the shipped class metadata carries no selector for either of them.
-
-// The installed-application-list callback body for the advert-screen presentation.
 static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
                                                id appliList,
                                                NSError *error,
@@ -174,7 +144,6 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
                                                int verticalAlign,
                                                id delegate);
 
-// The session-gated click-registration callback body for a first-party advert touch.
 static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
                                                  NSError *error,
                                                  NSString *adLocation,
@@ -216,9 +185,6 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
 
 - (instancetype)init {
     // @ghidraAddress 0x236978
-    // The super-init runs synchronously on the serial queue (dispatch_once body
-    // BlockInvokeInitRecommendCore at 0x236a88), so every initialisation of the singleton is
-    // serialised against its other work.
     __block RecommendCore *result = nil;
     dispatch_sync(g_recommendCoreQueue, ^{
       /** @ghidraAddress 0x236a88 */
@@ -247,8 +213,7 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
 
 - (void)startWithCallback:(void (^)(NSError *_Nullable error))callback {
     if ([ApplilinkConsts appliId] == nil) {
-        // Unguarded in the binary: unlike the other exits, this one calls the block without a nil
-        // test.
+        // Unguarded in the binary: this exit calls the block without a nil test.
         callback([ApplilinkNetworkError
             localizedApplilinkErrorWithCode:RecommendCoreErrorCodeNoAppliId]);
         return;
@@ -270,9 +235,7 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
     }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
       /** @ghidraAddress 0x237124 */
-      // The recommend API invokes this block with (categoryId, countryCode, error); the binary
-      // ignores the first two arguments here and re-reads them from ApplilinkConsts below, so they
-      // are left unnamed.
+      // The first two block arguments are unnamed: the binary re-reads them from ApplilinkConsts.
       [RecommendWebAPI getAdDetailWithCallback:^(id, id, NSError *error) {
         /** @ghidraAddress 0x2371bc */
         if (error != nil) {
@@ -351,8 +314,7 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
       }
       if (g_recommendCoreLoginValidUntil == nil || [ApplilinkConsts isNeedRecommendLogin] ||
           [g_recommendCoreLoginValidUntil timeIntervalSinceNow] < 0.0) {
-          // The recommend API invokes this block with (loginStatus, userIdPresent, error); the
-          // binary reads only the login status and the error, ignoring userIdPresent.
+          // The binary reads only the login status and the error, ignoring userIdPresent.
           [RecommendWebAPI
               checkLoginWithCallback:^(BOOL loggedIn, BOOL userIdPresent, NSError *checkError) {
                 /** @ghidraAddress 0x237960 */
@@ -591,8 +553,7 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
           adModel == RecommendCoreAdModelInterstitial) {
           UIView *baseView = self.adScreenViewController.baseView;
           CGRect baseFrame = baseView.frame;
-          // The rect is the base view's size placed at the origin, and the binary hands itself in
-          // as the delegate rather than the caller's.
+          // The binary hands itself in as the delegate rather than the caller's.
           [self openAdAreaWithParentView:baseView
                                     rect:CGRectMake(
                                              0.0, 0.0, baseFrame.size.width, baseFrame.size.height)
@@ -612,7 +573,6 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
     });
 }
 
-// The installed-application-list callback for the advert-screen presentation.
 /** @ghidraAddress 0x238e84 */
 static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
                                                id appliList,
@@ -930,8 +890,6 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
                 }
             }
         }
-        // Only an advert scheme that actually launched stops the redirect here; one that could not
-        // be opened falls through and the rest of the routine still runs.
         if (openedExternalApp) {
             return 0;
         }
@@ -982,8 +940,7 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
             [[UIApplication sharedApplication] openURL:destUrl];
             return 0;
         }
-        // A destination that is not the close host falls into the same tail as the guard failures
-        // above and reports 1, not 0.
+        // A destination that is not the close host reports 1, not 0.
         if ([destination isEqualToString:kRecommendCoreCloseHost]) {
             return 0;
         }
@@ -1058,9 +1015,7 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
                                  AdModel:(int)adModel
                               adLocation:(NSString *)adLocation
                             impressionId:(NSString *)impressionId {
-    // The binary builds a fifth array of ad_id values and never passes it to the post, so it is not
-    // built here. The four lists actually posted are appli_id, the creative URL file names,
-    // incentive types, and install flags.
+    // The binary builds a fifth array of ad_id values and never passes it to the post.
     NSMutableArray *appliIdList = [NSMutableArray array];
     NSMutableArray *creativeIdList = [NSMutableArray array];
     NSMutableArray *incentiveTypeList = [NSMutableArray array];
@@ -1198,7 +1153,6 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core,
     [ApplilinkCore toDelegateFailOpenWithError:error appParam:appParam delegate:delegate];
 }
 
-// The session-gated click-registration callback for a first-party advert touch.
 /** @ghidraAddress 0x23c934 */
 static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
                                                  NSError *error,
@@ -1568,8 +1522,7 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core,
 }
 
 - (void)appStoreFailLoadNoticeWithError:(NSError *)error appParam:(ApplilinkParameters *)appParam {
-    // The unique-advert path fails open; the advert-screen path fails the link. The appParam
-    // argument is unused.
+    // The appParam argument is unused.
     if (self.adScreenViewController == nil) {
         [ApplilinkCore toDelegateFailOpenWithError:error
                                           appParam:self.uniqueApplilinkParams

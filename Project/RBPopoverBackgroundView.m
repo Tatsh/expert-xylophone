@@ -6,48 +6,28 @@
 
 #import "UIImage+RB.h"
 
-// The popover's edge-to-content padding, returned uniformly on every edge by +contentViewInsets.
 static const CGFloat kContentViewInset = 8.0;
 
-// The reserved arrow height and full arrow base width, returned by +arrowHeight and +arrowBase.
 static const CGFloat kArrowHeight = 19.0;
 static const CGFloat kArrowBase = 37.0;
 
-// The margin the popover body is inset from the view bounds when the extents are recomputed each
-// layout pass.
 static const CGFloat kExtentsInset = 7.0;
 
-// The drop shadow applied to the background layer: fully-black colour, this opacity, radius, and
-// vertical offset. The opacity is the shared g_flDefaultExplosionEffectSize palette float (0.9).
 static const float kShadowOpacity = 0.9f;
 static const CGFloat kShadowRadius = 10.0;
 static const CGFloat kShadowOffsetY = 5.0;
 
-// The bezier shadow rect is inset by the arrow height on the leading edge, and shifted inward by
-// this amount when the arrow occupies that edge.
 static const CGFloat kShadowArrowInset = 19.0;
 static const CGFloat kShadowEdgeShift = 19.0;
 
-// The resizable-image cap insets used to build the arrow artwork. Several metrics are read from
-// shared constant-pool doubles that the decompiler names for unrelated call sites
-// (g_dCustomizeLayoutMetric41 = 41.0, g_dMenuButtonHeightNarrow = 42.0,
-// g_dMascotMessageBgCapInsetLeft = 47.0, and a 43.0 pool constant); they are cached here as
-// literals rather than re-declared as shared external constants until those globals are recovered.
-//
-// The up/down straight and up-right/down-right corner arrows share a top and bottom that depend on
-// whether the arrow points up: the up variant uses 41.0/9.0, the down variant uses 23.0/27.0.
 static const CGFloat kUpDownLeftInset = 9.0;
 static const CGFloat kUpArrowTop = 41.0;
 static const CGFloat kUpArrowBottom = 9.0;
 static const CGFloat kDownArrowTop = 23.0;
 static const CGFloat kDownArrowBottom = 27.0;
-// The straight up/down two-part image pins its right inset to 47.0; the corner variant to 42.0.
 static const CGFloat kUpDownStraightRightInset = 47.0;
 static const CGFloat kUpDownCornerRightInset = 42.0;
 
-// The side (left/right) top/bottom corner arrow: a fixed left and right, with a top and bottom that
-// depend on whether the arrow is at the top edge (top variant top 43.0/bottom 9.0, bottom variant
-// top 23.0/bottom 43.0).
 static const CGFloat kSideArrowLeftInset = 9.0;
 static const CGFloat kSideArrowRightInset = 27.0;
 static const CGFloat kSideTopArrowTop = 43.0;
@@ -55,24 +35,16 @@ static const CGFloat kSideTopArrowBottom = 9.0;
 static const CGFloat kSideBottomArrowTop = 23.0;
 static const CGFloat kSideBottomArrowBottom = 43.0;
 
-// The straight side two-part image insets.
 static const CGFloat kSideTwoPartTop = 24.0;
 static const CGFloat kSideTwoPartLeft = 9.0;
 static const CGFloat kSideTwoPartBottom = 47.0;
 static const CGFloat kSideTwoPartRight = 27.0;
 
-// The half-image split builds a second inset by shrinking the source dimension by this amount and
-// pinning the trailing inset to this value, leaving exactly one stretchable point in the middle of
-// the half image. Ghidra renders the two fmov immediates as -0x3fdc000000000000, which is the
-// two's complement of the bit pattern for -10.0, not a literal -0.4375.
 static const CGFloat kSecondHalfShrink = 10.0;
 static const CGFloat kSecondHalfTrailingInset = 9.0;
 
-// The first-half stretch centre is nudged by a one-point rounding correction (both cases) and, for
-// the side-arrow case, additionally by the body inset.
 static const CGFloat kFirstHalfRoundingNudge = 1.0;
 
-// The image names for each arrow orientation, drawn from the 01_music_select atlas.
 static NSString *const kImageNameUp = @"01_music_select/sel_popover_up";
 static NSString *const kImageNameDown = @"01_music_select/sel_popover_down";
 static NSString *const kImageNameUpRight = @"01_music_select/sel_popover_upright";
@@ -81,12 +53,9 @@ static NSString *const kImageNameSide = @"01_music_select/sel_popover_side";
 static NSString *const kImageNameTop = @"01_music_select/sel_popover_top";
 static NSString *const kImageNameBottom = @"01_music_select/sel_popover_bottom";
 
-// The layer animation key that carries the shadow-path change across a bounds animation.
 static NSString *const kShadowPathAnimationKey = @"shadowPath";
 static NSString *const kBoundsAnimationKey = @"bounds";
 
-// The private popover-body extents (the binary's GIKPopoverExtents struct): the inset left, right,
-// top, and bottom edges of the popover body in the view's coordinate space.
 typedef struct {
     CGFloat left;
     CGFloat right;
@@ -95,7 +64,6 @@ typedef struct {
 } GIKPopoverExtents;
 
 @interface RBPopoverBackgroundView () {
-    // Non-property ivars; the binary keeps these literal names (no property backing).
     GIKPopoverExtents _popoverExtents;
     CGFloat _halfBase;
     CGFloat _arrowCenter;
@@ -133,8 +101,7 @@ typedef struct {
 
 @implementation RBPopoverBackgroundView
 
-// The superclass's abstract accessors need explicit storage in the subclass; the binary keeps the
-// underscore-named ivars.
+// The superclass's abstract accessors need explicit storage in the subclass.
 @synthesize arrowOffset = _arrowOffset;
 @synthesize arrowDirection = _arrowDirection;
 
@@ -158,10 +125,8 @@ typedef struct {
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        // Only the origin comes from the zero constant: the load at 0xd7cc8 fills d0 and d1 alone,
-        // while d2 and d3 carry the incoming frame's size, saved at 0xd7c78 before the call to
-        // super clobbers them. The ivar is stored and read directly here; the accessors exist but
-        // the binary never sends them.
+        // @ghidraAddress 0xd7cc8
+        // @ghidraAddress 0xd7c78
         _popoverBackground = [[UIImageView alloc]
             initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, frame.size.height)];
         [self addSubview:_popoverBackground];
@@ -373,7 +338,6 @@ typedef struct {
     } else {
         amount = _arrowCenter + size.height * 0.5 - kFirstHalfRoundingNudge - kExtentsInset;
     }
-    // The binary rounds to the nearest whole point via a round-to-nearest float instruction.
     return (CGFloat)roundf((float)amount);
 }
 

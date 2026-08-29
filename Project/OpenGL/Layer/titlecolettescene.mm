@@ -1,11 +1,3 @@
-//
-//  titlecolettescene.mm
-//  REFLEC BEAT plus
-//
-//  The theme-2 (Colette) title-screen scene, rb::TitleColetteScene. Reconstructed from Ghidra
-//  project rb458, program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "titlecolettescene.h"
 
 #include <cmath>
@@ -30,66 +22,45 @@
 #include "touchmanager.h"
 
 namespace {
-// The dispatch states OnFrame selects between: load resources, start the music, run the main loop,
-// then finish and open the music list.
 constexpr int kStateLoad = 0;
 constexpr int kStateStartMusic = 1;
 constexpr int kStateMainLoop = 2;
 constexpr int kStateFinish = 3;
 
-// The scene starts fully hidden (fade value one, reveal zero), with no touch tracked.
 constexpr float kInitialFadeValue = 1.0f;
 constexpr int kNoTouchId = -1;
 
-// The three shared title texture base names; the fourth cached texture is the campaign-specific
-// one.
 constexpr const char *kTitleTextureNames[] = {
     "00_texture/ti_bg",
     "00_texture/ti_parts",
     "00_texture/ti_parts_eff",
 };
-// The fallback campaign texture name used when no campaign is active.
 static NSString *const kCampaignTextureFallback = @"00_texture/title_campaign";
-// The format building the campaign-specific texture path from the campaign name.
 static NSString *const kCampaignTextureFormat = @"%@/%@";
-// The layout texture index that marks a part binding no texture.
 constexpr int kNoTextureIndex = 5;
-// The voice bank the title screen loads.
 constexpr int kTitleVoiceId = 0;
-// The start ready-delay timer, in milliseconds.
-constexpr int kReadyDelay = 0x708;
-// The reveal cross-fade duration, in milliseconds.
-constexpr float kFadeDuration = 300.0f;
+constexpr int kReadyDelay = 0x708;      // Milliseconds.
+constexpr float kFadeDuration = 300.0f; // Milliseconds.
 
-// The theme sound-effect path format and its two components' file type.
 static NSString *const kTitleSeFormat = @"Sounds/%@/SE/SD_SE_%@";
 static NSString *const kTitleSeType = @"m4a";
-// The part name spliced into the theme sound-effect path (@ghidraAddress 0x35dca8).
+// @ghidraAddress 0x35dca8
 static NSString *const kTitleSePartName = @"JUMP";
 
-// The background part fills the screen from its texture.
 constexpr unsigned int kBackgroundPartId = 0;
-// The campaign-portrait parts (ids 0x62 to 0x67) are the only ones binding the campaign texture, in
-// both layout tables, and it doubles as their UV-table selector. The title letters bind texture 1,
-// so this index never selects them despite the name it used to carry.
+// The campaign texture index doubles as the campaign-portrait parts' UV-table selector.
 constexpr int kPartTextureIndexCampaign = 3;
 
-// The landscape layout recentres each part around the viewport: it offsets by half the design
-// resolution, scales to 0.8, halves, and adds the viewport centre.
 constexpr float kLandscapeOffsetX = -384.0f; // @ghidraAddress 0x2f8568
 constexpr float kLandscapeOffsetY = -512.0f; // @ghidraAddress 0x2f8570
 constexpr float kLandscapeScale = 0.8f;      // @ghidraAddress 0x2f856c
 constexpr float kHalf = 0.5f;
 
-// The corporate-logo part's landscape hit-box is nudged and grown relative to its sprite.
 constexpr float kCorporateHitOffsetX = -40.0f; // @ghidraAddress 0x2f8574
 constexpr float kCorporateHitOffsetY = -30.0f;
 constexpr float kCorporateHitGrowX = 80.0f; // @ghidraAddress 0x2f855c
 constexpr float kCorporateHitGrowY = 60.0f; // @ghidraAddress 0x2f8578
 
-// The part ids that carry a touch hit-box, and the hit-box slot each records into. The main loop's
-// hit-test cascade shows slot 0 (the corporate logo) starts the exit and slot 7 plays the
-// sound-effect jingle.
 enum TitlePartId {
     kPartCorporateLogo = 0x5d,
     kPartLetterF = 0x46,
@@ -106,29 +77,22 @@ enum TitleHitBoxSlot {
     kHitBoxLetterG = 3,
     kHitBoxLetterD = 4,
     kHitBoxLetterA = 5,
-    // Slot 6 is tested by the touch loop but never written by the emitter, so it stays a zero rect
-    // and its branch plays the themed voice cue.
+    // Never written by the emitter, so this slot stays a zero rect.
     kHitBoxVoiceCue = 6,
     kHitBoxSoundEffect = 7,
 };
 
-// The title-logo swing pivot the particle rest positions are measured against, and the screen
-// origin their rotated positions are offset back to.
 constexpr double kSwingPivotX = -384.0; // @ghidraAddress 0x2f8590
 constexpr double kSwingPivotY = -467.0; // @ghidraAddress 0x2f8598
 constexpr double kSwingOriginX = 384.0; // @ghidraAddress 0x2f85a8
 constexpr double kSwingOriginY = 467.0; // @ghidraAddress 0x2f85b0
-// The swing phase, in degrees, is scaled to radians before rotating.
 constexpr double kSwingPhaseRadiansPerDegree = M_PI / 180.0;
 
-// The themed sound-effect slots the completed gesture sequences fire.
 constexpr int kSoundEffectTitleSecret = 0xd;
 constexpr int kSoundEffectTitleSwing = 0xe;
-// The idle timer value a completed gesture rewinds to.
 constexpr int kReplayTimerValue = 0x24fa;
 
-// The directional gesture inputs the touch handling classifies from flick direction. The main
-// sequence is the Konami code; the alternate branch is left/right/left/right then B, A.
+// The main sequence is the Konami code; the alternate branch is left/right/left/right then B, A.
 enum TitleGestureInput {
     kGestureUp = 0,
     kGestureDown = 1,
@@ -140,7 +104,6 @@ enum TitleGestureInput {
     kGestureAltRight = 7,
 };
 
-// The progress steps through the gesture sequences.
 enum TitleGestureStep {
     kGestureStepNone = 0,
     kGestureStepUp1 = 1,
@@ -161,41 +124,29 @@ enum TitleGestureStep {
     kGestureStepAltComplete = 0x14,
 };
 
-// The idle timer caps at this value and flags attract mode once it passes the attract threshold.
 constexpr int kIdleTimerCap = 6000;
 constexpr int kAttractThreshold = 0x492d;
-// The sound-effect timer flags the sound-effect-ready state past this value.
 constexpr int kSeReadyThreshold = 5000;
-// Below this idle time the shot-sound plays its softer variant; at or past it the louder one.
 constexpr int kShotSoftThreshold = 0x360a;
 
-// The swing animation steps by the phase velocity, rewinds by a full turn past the squared limit,
-// and idles toward zero by the reciprocal decay when released.
 constexpr int kSwingFullTurn = 0x168;
 constexpr double kSwingPhaseSquaredLimit = 129600.0; // @ghidraAddress 0x2f8580
 constexpr double kSwingIdleDecay = 1.1;              // @ghidraAddress 0x2f8588
 
-// The cycling glow phase wraps within [0, kGlowPhaseWrap); the exit fade accelerates it fivefold.
 constexpr float kGlowPhaseWrap = 1000.0f;      // @ghidraAddress 0x2f8540
 constexpr float kGlowPhaseWrapStep = -1000.0f; // @ghidraAddress 0x2f8544
 constexpr int kExitPhaseBoost = 5;
 
-// The background/logo/glow draw uses fully opaque white; the glow's alpha comes from a curve.
 constexpr float kFullColor = 255.0f; // @ghidraAddress 0x2eed00
 constexpr float kOne = 1.0f;
 
-// The glow alpha curve (pairs of {phase, alpha}) and its pair count.
 constexpr int kGlowCurvePairCount = 3;
 
-// The glow and glow-overlay part ids drawn on top of the logo (kPartCorporateLogo).
 constexpr unsigned int kPartGlow = 0x5e;
 constexpr unsigned int kPartGlowOverlay = 0x5f;
 
-// The flick classification threshold, in pixels.
-constexpr float kFlickThreshold = 25.0f;
+constexpr float kFlickThreshold = 25.0f; // Pixels.
 
-// The Hinabita campaign portrait layer: the main portrait plus five sub-characters, fit-scaled to
-// the screen against a reference width, arranged on a row that rises with the fit.
 constexpr int kCampaignPortraitCount = 6;
 constexpr unsigned int kPartCampaignMain = 0x62;
 constexpr unsigned int kCampaignSubColor = 128;
@@ -205,35 +156,25 @@ constexpr float kPortraitBaseY = 1020.0f;       // @ghidraAddress 0x2f8560
 constexpr float kPortraitCentreX = 384.0f;      // @ghidraAddress 0x2f8550
 constexpr float kPortraitMainX = 389.0f;
 
-// The attract intro animation (window one): two sprites (part ids one and two) with six-knot scale
-// and alpha curves laid out twelve floats apart.
 constexpr int kAnim01Count = 2;
 constexpr int kAnim01Stride = 12;
 constexpr unsigned int kAnim01Base = 1;
-// The standalone attract-hint and title-logo sprite part ids.
 constexpr unsigned int kPartAttractHint = 0x4b;
 constexpr unsigned int kPartTitleLogo = 0x60;
 
-// The exit sound effect and the value the fade reaches to advance to the finish state.
 constexpr int kSoundEffectExit = 0x10;
 constexpr float kFadeComplete = 1.0f;
 
-// The fade-in duration, in seconds, the title BGM starts playing over. @ghidraAddress 0x2ee910
-constexpr float kTitleMusicFadeInDuration = 0.3f;
+// @ghidraAddress 0x2ee910
+constexpr float kTitleMusicFadeInDuration = 0.3f; // Seconds.
 
-// The sentinel that no touch is being tracked.
 constexpr int kNoTouch = -1;
 
-// The logo and glow draw position (seeded once through a guarded static in the binary).
 constexpr S_VECTOR2 kLogoPosition{389.0f, 823.0f};
 
-// The glow's alpha curve: a triangular pulse over the cycling phase, peaking at the midpoint.
 // @ghidraAddress 0x2f9940
 constexpr float kGlowAlphaCurve[] = {0.0f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f};
 
-// The exit cross-fade the corporate-logo tap starts: ease to fully hidden over its duration after a
-// start delay. Its four components come from a binary constant ({to, duration} then {elapsed,
-// start-delay} after a NEON lane swap).
 constexpr float kExitFadeTo = 1.0f;
 constexpr float kExitFadeDuration = 2700.0f;
 constexpr float kExitFadeElapsed = 0.0f;
@@ -260,10 +201,6 @@ const S_VECTOR2 g_aTitleCampaignPartAnchor[] = {
 
 /** @ghidraAddress 0x572e4 */
 TitleColetteScene::TitleColetteScene() {
-    // The UI-layer base constructor ran first and the compiler installed the title dispatch vtable;
-    // every presentation field is otherwise zeroed by its member initialiser. Seed the two non-zero
-    // scalars (the fade starts fully hidden and no touch is tracked) and copy the part anchor ring
-    // into place.
     m_flFadeValue = kInitialFadeValue;
     m_nActiveTouchId = kNoTouchId;
     for (int nPart = 0; nPart < kPartAnchorCount; ++nPart) {
@@ -276,8 +213,6 @@ void TitleColetteScene::LoadResources() {
     m_nIdleTimer = 0;
     m_nSeTimer = 0;
 
-    // Resolve the campaign-specific title texture name: when a campaign is active its name prefixes
-    // the base path, otherwise the bare fallback is used.
     NSString *campaignName = RBCampaignData.sharedInstance.campaignName;
     NSString *campaignTexture =
         (campaignName != nil) ?
@@ -285,15 +220,11 @@ void TitleColetteScene::LoadResources() {
                 stringWithFormat:kCampaignTextureFormat, campaignName, kCampaignTextureFallback] :
             kCampaignTextureFallback;
 
-    // Cache the four title textures: the three shared layers plus the campaign layer.
     m_apTextures[0] = ne::C_TEXTURE::FindOrLoadCached(kTitleTextureNames[0]);
     m_apTextures[1] = ne::C_TEXTURE::FindOrLoadCached(kTitleTextureNames[1]);
     m_apTextures[2] = ne::C_TEXTURE::FindOrLoadCached(kTitleTextureNames[2]);
     m_apTextures[3] = ne::C_TEXTURE::FindOrLoadCached(campaignTexture.UTF8String);
 
-    // Build the 104 part sprite instancers: register each in the global scene tree, make it
-    // visible, bind its texture from the layout table (unless the part binds none), and seed its
-    // sprite count.
     const TitlePartLayoutRecord *pLayout =
         IsPad() ? g_aTitleCampaignLayoutAltFrame : g_aTitleCampaignLayoutDefault;
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
@@ -307,21 +238,17 @@ void TitleColetteScene::LoadResources() {
         m_apSprites[nSlot] = pSprite;
     }
 
-    // Start the title BGM and load the title voice and shot-sound banks, then arm the ready-delay.
     [RBBGMManager.getInstance LoadMusicTitleWithLoop:NO];
     SoundEffectManager::GetInstance()->LoadThemedVoiceData(kTitleVoiceId);
     m_nReadyDelay = kReadyDelay;
     ShotSoundManager::GetInstance()->LoadSlotVariants(GameSystem::GetGameSystem()->GetShotType());
 
-    // Seed the reveal cross-fade: ease from the current value to zero (fully shown) over the fade
-    // duration, with no start delay.
     m_flFadeFrom = m_flFadeValue;
     m_flFadeTo = 0.0f;
     m_flFadeDuration = kFadeDuration;
     m_flFadeElapsed = 0.0f;
     m_flFadeStartDelay = 0.0f;
 
-    // Create the theme's sound-effect player from the theme-named SE path.
     const RBUserSettingDataTheme themaID = RBUserSettingData.sharedInstance.thema;
     NSString *seName = [NSString stringWithFormat:kTitleSeFormat,
                                                   [RBUserSettingData themaNameWithID:themaID],
@@ -335,7 +262,6 @@ void TitleColetteScene::LoadResources() {
 void TitleColetteScene::RecordPartHitBox(unsigned int nPartId,
                                          const S_VECTOR2 &drawPosition,
                                          const TitlePartLayoutRecord &layout) {
-    // The hit-box's top-left corner is the draw position offset back by the layout anchor.
     const float flLeft = drawPosition.x - layout.flPosX;
     const float flTop = drawPosition.y - layout.flPosY;
 
@@ -360,8 +286,6 @@ void TitleColetteScene::RecordPartHitBox(unsigned int nPartId,
         nSlot = kHitBoxSoundEffect;
         break;
     case kPartCorporateLogo:
-        // The corporate-logo part in the landscape layout uses a nudged, grown hit-box; the
-        // portrait layout uses the plain rectangle.
         if (!IsPad()) {
             m_aHitBox[kHitBoxCorporateLogo] = TitleHitRect{flLeft + kCorporateHitOffsetX,
                                                            flTop + kCorporateHitOffsetY,
@@ -372,7 +296,6 @@ void TitleColetteScene::RecordPartHitBox(unsigned int nPartId,
         nSlot = kHitBoxCorporateLogo;
         break;
     default:
-        // The remaining parts carry no hit-box.
         return;
     }
     m_aHitBox[nSlot] = TitleHitRect{flLeft, flTop, layout.flWidth, layout.flHeight};
@@ -395,9 +318,6 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
     }
 
     if (nPartId == kBackgroundPartId) {
-        // The background fills the screen from its texture: the quad is the image size divided by
-        // the texture scale, anchored at its centre, with the UV covering the image within its
-        // power-of-two allocation.
         const ne::C_TEXTURE *pTexture = pSprite->GetBoundTexture();
         const float flScale = pTexture->GetScale();
         const float flQuadWidth = static_cast<float>(pTexture->GetImageWidth()) / flScale;
@@ -412,8 +332,6 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
         pSprite->SetSpritePosition(nIndex, position);
         pSprite->SetSpriteScale(nIndex, flScale, flScale);
     } else {
-        // The other parts take their placement from the platform layout table and their UV
-        // rectangle from the type-specific atlas table.
         const bool bIsPad = IsPad();
         const TitlePartLayoutRecord &layout =
             (bIsPad ? g_aTitleCampaignLayoutAltFrame : g_aTitleCampaignLayoutDefault)[nPartId];
@@ -428,8 +346,6 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
         pSprite->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
         pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
 
-        // The landscape layout recentres the part around the viewport; the portrait layout draws it
-        // at the caller's position directly.
         S_VECTOR2 drawPosition = position;
         S_VECTOR2 drawScale = scale;
         if (!bIsPad) {
@@ -445,13 +361,10 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
         pSprite->SetSpriteSize(nIndex, S_VECTOR2{layout.flWidth, layout.flHeight});
         pSprite->SetSpriteScale(nIndex, drawScale.width, drawScale.height);
 
-        // The touchable parts record their hit-box (top-left corner and extent) for the main loop.
         RecordPartHitBox(nPartId, drawPosition, layout);
     }
 
     pSprite->SetSpriteRotation(nIndex, flRotation);
-    // The tint is scaled by the reveal (one minus the fade value): as the fade eases toward zero
-    // the parts brighten in and the alpha rises.
     const float flReveal = 1.0f - m_flFadeValue;
     pSprite->SetSpriteColor(nIndex,
                             static_cast<unsigned int>(flReveal * color.r),
@@ -498,7 +411,6 @@ unsigned int TitleColetteScene::AdvanceGestureState(int nInputCode) {
         break;
     case kGestureButtonA:
         if (m_nGestureState == kGestureStepAltButtonB) {
-            // Completing the alternate branch toggles the hidden Hinabita campaign mode.
             m_nGestureState = kGestureStepAltComplete;
             SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
             m_bGestureTriggered = true;
@@ -511,7 +423,6 @@ unsigned int TitleColetteScene::AdvanceGestureState(int nInputCode) {
             return 0;
         }
         if (m_nGestureState == kGestureStepButtonB) {
-            // Completing the main code toggles the swing direction and returns the sound handle.
             m_nGestureState = kGestureStepComplete;
             const unsigned int nHandle =
                 SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSwing);
@@ -548,9 +459,7 @@ unsigned int TitleColetteScene::AdvanceGestureState(int nInputCode) {
     default:
         break;
     }
-    // No sound handle was produced this step. (On these paths the binary leaves its object pointer
-    // in the return register; no caller reads it, so a plain 0 is faithful to observed behaviour.)
-    return 0;
+    return 0; // The binary leaves a stale object pointer here; no caller reads it.
 }
 
 /** @ghidraAddress 0x58570 */
@@ -573,14 +482,12 @@ float TitleColetteScene::ComputeSwingParticleY(float flBaseX, float flBaseY) con
 
 /** @ghidraAddress 0x586b0 */
 void TitleColetteScene::UpdateFadeProgress(int nDeltaMs) {
-    // Once the fade has run its full duration, hold the end value.
     if (m_flFadeElapsed >= m_flFadeDuration) {
         m_flFadeValue = m_flFadeTo;
         return;
     }
 
     m_flFadeElapsed += static_cast<float>(nDeltaMs);
-    // The fade only advances once the start delay has elapsed.
     if (m_flFadeElapsed < m_flFadeStartDelay) {
         return;
     }
@@ -588,7 +495,6 @@ void TitleColetteScene::UpdateFadeProgress(int nDeltaMs) {
         m_flFadeElapsed = m_flFadeDuration;
     }
 
-    // A zero duration snaps straight to the end; otherwise ease across the post-delay span.
     float flFraction;
     if (m_flFadeDuration == 0.0f) {
         flFraction = 1.0f;
@@ -607,7 +513,6 @@ bool TitleColetteScene::IsInsideHitBox(float flX, float flY, const TitleHitRect 
 void TitleColetteScene::RunMainLoop(int nElapsedMs) {
     const int nDeltaMs = nElapsedMs;
 
-    // Cache the viewport size and advance the idle timer, capping it and arming attract mode.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     m_flViewportWidth = pGameSystem->GetViewportWidth();
     m_flViewportHeight = pGameSystem->GetViewportHeight();
@@ -617,8 +522,6 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
         m_bAttractMode = true;
     }
 
-    // In the Hinabita campaign, advance the sound-effect timer (arming the ready flag), and once
-    // the sound effect has fired, accumulate the elapsed time since.
     if (m_bHinabitaMode) {
         m_nSeTimer += nDeltaMs;
         if (m_nSeTimer > kSeReadyThreshold) {
@@ -631,9 +534,6 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
         }
     }
 
-    // Drive the logo swing: while held (m_bSwingToggle) the phase steps by the velocity and rewinds
-    // a full turn past the squared limit; when released it idles back toward zero. A non-zero phase
-    // rotates each of the twelve swing particles into its animated position.
     if (m_bSwingToggle) {
         m_nSwingPhase += m_nSwingDelta;
         if (kSwingPhaseSquaredLimit <=
@@ -651,12 +551,10 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
         }
     }
 
-    // Clear every part instancer's sprite count before rebuilding this frame.
     for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
 
-    // Tick the intro/ready timer; when it expires, play the intro voice.
     if (m_nReadyDelay > 0) {
         m_nReadyDelay -= nDeltaMs;
         if (m_nReadyDelay < 1) {
@@ -664,8 +562,6 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
         }
     }
 
-    // Advance the reveal fade, then emit the background, the part sprites, the logo, the pulsing
-    // glow, and the glow overlay.
     UpdateFadeProgress(nDeltaMs);
     EmitPartSprite(kBackgroundPartId,
                    0xff,
@@ -681,7 +577,6 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
                    0.0f,
                    S_VECTOR3{kFullColor, kFullColor, kFullColor});
 
-    // Advance the cycling glow phase (fivefold while exiting), wrapping it into range.
     m_flGlowPhase += static_cast<float>(nDeltaMs);
     if (m_bExiting) {
         m_flGlowPhase += static_cast<float>(nDeltaMs * kExitPhaseBoost);
@@ -704,26 +599,21 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
                    0.0f,
                    S_VECTOR3{kFullColor, kFullColor, kFullColor});
 
-    // The Hinabita campaign draws an extra portrait layer in portrait orientation.
     if (m_bHinabitaMode && RBCampaignData.sharedInstance.isCampaignHinabita201703 &&
         m_flViewportWidth < m_flViewportHeight) {
         RenderCampaignPortrait();
     }
 
-    // Handle touch input unless the exit is already running.
     if (!m_bExiting) {
         ProcessTitleTouch();
     }
 
-    // Once the exit fade reaches fully hidden, advance to the finish state.
     if (m_bExiting && m_flFadeValue >= kFadeComplete) {
         m_nState = kStateFinish;
     }
 }
 
 void TitleColetteScene::BeginExit() {
-    // Seed the exit cross-fade from the current value, stop the music, mark the scene exiting, play
-    // the exit sound, and fade the corporate button in.
     m_flFadeFrom = m_flFadeValue;
     m_flFadeTo = kExitFadeTo;
     m_flFadeDuration = kExitFadeDuration;
@@ -739,8 +629,6 @@ void TitleColetteScene::ProcessTitleTouch() {
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
 
     if (m_nActiveTouchId != kNoTouch) {
-        // A touch is being tracked: on its release, classify the flick direction into the gesture
-        // state machine (a flick must exceed the pixel threshold on its dominant axis).
         TouchPoint *pTouch = pTouchManager->FindTouchById(m_nActiveTouchId);
         if (pTouch == nullptr) {
             m_nActiveTouchId = kNoTouch;
@@ -755,12 +643,9 @@ void TitleColetteScene::ProcessTitleTouch() {
         const float flAbsX = flDx <= 0.0f ? -flDx : flDx;
         const float flAbsY = flDy <= 0.0f ? -flDy : flDy;
 
-        // Classify the flick into the swipe sequence, advancing the gesture state to the next step.
-        // A flick under the pixel threshold on the dominant axis is ignored.
         int nNextStep;
         if (flAbsX <= flAbsY) {
             if (flDy <= kFlickThreshold) {
-                // Upward flick: advances the first up (from idle) then the second.
                 if (-kFlickThreshold <= flDy) {
                     return;
                 }
@@ -772,7 +657,6 @@ void TitleColetteScene::ProcessTitleTouch() {
                 }
                 nNextStep = kGestureStepUp2;
             } else {
-                // Downward flick: advances the first down (after the ups) then the second.
                 if (m_nGestureState != kGestureStepDown1) {
                     if (m_nGestureState != kGestureStepUp2) {
                         return;
@@ -785,7 +669,6 @@ void TitleColetteScene::ProcessTitleTouch() {
             if (-kFlickThreshold <= flDx) {
                 return;
             }
-            // Leftward flick: the second left (after a right) or the first left (after the downs).
             if (m_nGestureState == kGestureStepRight1) {
                 nNextStep = kGestureStepLeft2;
             } else {
@@ -795,10 +678,8 @@ void TitleColetteScene::ProcessTitleTouch() {
                 nNextStep = kGestureStepLeft1;
             }
         } else if (m_nGestureState == kGestureStepLeft2) {
-            // Rightward flick: the second right (after the second left).
             nNextStep = kGestureStepRight2;
         } else {
-            // Rightward flick: the first right (after the first left).
             if (m_nGestureState != kGestureStepLeft1) {
                 return;
             }
@@ -808,11 +689,9 @@ void TitleColetteScene::ProcessTitleTouch() {
         return;
     }
 
-    // No touch tracked: adopt the first fresh touch this frame and hit-test it against the menu.
     if (pTouchManager->GetActiveTouchCount() <= 0) {
         return;
     }
-    // A pending terms-of-service update pre-empts everything.
     if (AppDelegate.appDelegate.needUpdateTerms) {
         [AppDelegate.appDelegate showTerms];
         return;
@@ -826,7 +705,6 @@ void TitleColetteScene::ProcessTitleTouch() {
         const float flX = static_cast<float>(pTouch->nCurrentX);
         const float flY = static_cast<float>(pTouch->nCurrentY);
 
-        // The corporate-logo box (only while fully shown) starts the exit.
         if (m_flFadeValue == 0.0f && IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxCorporateLogo])) {
             BeginExit();
         } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxLetterD])) {
@@ -860,7 +738,6 @@ void TitleColetteScene::ProcessTitleTouch() {
         } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxVoiceCue])) {
             SoundEffectManager::GetInstance()->PlayThemedVoice(0);
         } else if (m_bSeReady && IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxSoundEffect])) {
-            // The sound-effect box (once ready) fires the SE jingle and resets the accumulator.
             m_bSeTriggered = true;
             m_nSeAccumulator = 0;
             [m_pSePlayer sePlay];
@@ -871,8 +748,6 @@ void TitleColetteScene::ProcessTitleTouch() {
 
 /** @ghidraAddress 0x59474 */
 void TitleColetteScene::RenderCampaignPortrait() {
-    // The characters fit-scale to the screen: full size on iPad, else the min screen dimension over
-    // the reference width.
     float flFit;
     if (IsPad()) {
         flFit = 1.0f;
@@ -882,8 +757,6 @@ void TitleColetteScene::RenderCampaignPortrait() {
         flFit = flMin / kPortraitFitReference;
     }
 
-    // Build the six character anchor positions. The iPad uses the fixed table; the phone places the
-    // main portrait at a scaled Y and eases each sub-character's X toward the screen centre.
     S_VECTOR2 aAnchor[kCampaignPortraitCount];
     if (IsPad()) {
         for (int nChar = 0; nChar < kCampaignPortraitCount; ++nChar) {
@@ -891,7 +764,6 @@ void TitleColetteScene::RenderCampaignPortrait() {
                                        g_aCampaignPortraitPadAnchor[nChar][1]};
         }
     } else {
-        // The shared row Y rises from the base by the fit scale; every character sits on it.
         const float flRowY = flFit * kPortraitRowRise + kPortraitBaseY;
         aAnchor[0] = S_VECTOR2{kPortraitMainX, flRowY};
         for (int nSub = 1; nSub < kCampaignPortraitCount; ++nSub) {
@@ -902,8 +774,6 @@ void TitleColetteScene::RenderCampaignPortrait() {
     }
 
     if (!m_bSeReady) {
-        // Entrance animation: the main portrait fades and pops in over the sound-effect timer, then
-        // the five sub-characters follow with their own staggered curves.
         const float flTime = static_cast<float>(m_nSeTimer);
         const int nMainAlpha = static_cast<int>(
             CalculateCurveInterpolation(g_aCampaignPortraitEntranceAlpha[0], 4, flTime) *
@@ -930,7 +800,6 @@ void TitleColetteScene::RenderCampaignPortrait() {
                            S_VECTOR3{kCampaignSubColor, kCampaignSubColor, kCampaignSubColor});
         }
     } else if (!m_bSeTriggered) {
-        // Shown and idle: the main portrait draws statically at full size.
         EmitPartSprite(kPartCampaignMain,
                        0xff,
                        aAnchor[0],
@@ -938,8 +807,6 @@ void TitleColetteScene::RenderCampaignPortrait() {
                        0.0f,
                        S_VECTOR3{kFullColor, kFullColor, kFullColor});
     } else {
-        // Shown and reacting to a sound-effect hit: the main portrait plays the reaction squash
-        // over the reaction timer; when it finishes the reaction flag and timer reset.
         const float flTime = static_cast<float>(m_nSeAccumulator);
         const float flScale = CalculateCurveInterpolation(g_aCampaignPortraitReaction, 6, flTime);
         EmitPartSprite(kPartCampaignMain,
@@ -961,8 +828,6 @@ void TitleColetteScene::EmitAnimatedPart(unsigned int nPartId,
                                          int nScaleKnots,
                                          const float *pAlphaTable,
                                          int nAlphaKnots) {
-    // While the logo swing is active the part follows its swung position, otherwise its anchor ring
-    // rest position.
     const S_VECTOR2 &position =
         m_nSwingPhase != 0 ? m_aSwingParticle[nPosIndex] : m_aPartAnchor[nPosIndex];
     const float flTime = static_cast<float>(m_nIdleTimer);
@@ -999,8 +864,6 @@ void TitleColetteScene::EmitTablePositionedPart(unsigned int nPartId,
 void TitleColetteScene::RenderSprites() {
     const int nClock = m_nIdleTimer;
 
-    // The attract intro plays only before attract mode latches: two sprites from a dedicated
-    // position table with six-knot scale and alpha curves.
     if (!m_bAttractMode) {
         for (int nSprite = 0; nSprite < kAnim01Count; ++nSprite) {
             const float flTime = static_cast<float>(m_nIdleTimer);
@@ -1019,8 +882,6 @@ void TitleColetteScene::RenderSprites() {
         }
     }
 
-    // The standard timeline windows: each spans a timer range and animates a run of parts through
-    // the shared per-sprite path.
     if (static_cast<unsigned int>(nClock - 0x353) < 0xa6a) {
         for (int i = 0; i < 12; ++i) {
             EmitAnimatedPart(
@@ -1039,14 +900,9 @@ void TitleColetteScene::RenderSprites() {
                 0x1b + i, i, &g_aTitleAnim04Scale[i * 6], 3, &g_aTitleAnim04Alpha[i * 4], 2);
         }
     }
-    // The counter starts at -9 and counts up to zero, with the increment at the top of the loop and
-    // skipped on entry, so the `add w1,w25,#0x4a` at 0x58be8 makes 0x4a the last part id and 0x41
-    // the first. These ten are the logo's letters.
+    // @ghidraAddress 0x58be8
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 10; ++i) {
-            // The positions come from the letters' own table, read at 0x58bac and 0x58bb0 from the
-            // pointer set up at 0x58b84. This loop has no swing-phase test and no anchor selection,
-            // unlike the standard windows, so the letters keep these positions throughout.
             EmitTablePositionedPart(0x41 + static_cast<unsigned int>(i),
                                     S_VECTOR2{g_aTitleLetterPos[i][0], g_aTitleLetterPos[i][1]},
                                     &g_aTitleAnim05Scale[i * 0x3a],
@@ -1056,16 +912,10 @@ void TitleColetteScene::RenderSprites() {
         }
     }
 
-    // Window 6: six parts with a single seven-knot scale curve, from a dedicated position table.
-    // The `add w1,w22,#0x55` at 0x58c8c makes 0x55 the last id, so these run 0x50 to 0x55, and the
-    // start prompt is the first of them rather than one past the end. The position pointer starts
-    // at the table plus twelve (0x58c4c) and is read eight back, so the first pair is skipped.
+    // @ghidraAddress 0x58c8c
     if (static_cast<unsigned int>(m_nIdleTimer - 0xa7) < 0x1a0b) {
         for (int i = 0; i < 6; ++i) {
-            // Both this window's curve and position tables hold seven rows, and the pre-header
-            // advances one row before the loop starts (0x58c40), so rows one through six are read
-            // and row zero is dead data. The position table already carried that offset; the curve
-            // never did.
+            // Row zero is dead data; the binary reads rows one through six.
             const int nRow = i + 1;
             const float flScale = CalculateCurveInterpolation(
                 &g_aTitleAnim06Curve[nRow * 0xe], 7, static_cast<float>(m_nIdleTimer));
@@ -1078,15 +928,10 @@ void TitleColetteScene::RenderSprites() {
         }
     }
 
-    // Same shape again: the `add w1,w25,#0x5c` at 0x58d64 makes 0x5c the last id, so these six run
-    // 0x57 to 0x5c. Emitting 0x5c to 0x61 instead reached part 0x61, a full-screen quad over a
-    // single solid texel, which is the white box that appeared beside the logo.
+    // @ghidraAddress 0x58d64
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 6; ++i) {
-            // Seven-row tables read from row one, as in window 6: the pre-header advances both
-            // pointers a row before the loop (0x58cf0 and 0x58cf4). This window shares window 6's
-            // position table too — both compute the same base at 0x58c4c and 0x58d00 — and likewise
-            // performs no swing selection.
+            // Row zero is dead data here too, and the position table above is shared.
             const int nRow = i + 1;
             EmitTablePositionedPart(
                 0x57 + static_cast<unsigned int>(i),
@@ -1098,10 +943,7 @@ void TitleColetteScene::RenderSprites() {
         }
     }
 
-    // Window 8 and the attract hint are the two arms of one split, at 0x58d90: past the intro the
-    // four idle extras animate their own position, and in attract mode the single hint sprite
-    // replaces them. Each extra interpolates its x, its y and its alpha from a three-knot curve and
-    // its scale from a two-knot one, so unlike the standard windows it consults no position table.
+    // @ghidraAddress 0x58d90
     if (m_nIdleTimer > 0xa6 && !m_bAttractMode) {
         for (int i = 0; i < 4; ++i) {
             const float flTime = static_cast<float>(m_nIdleTimer);
@@ -1126,7 +968,6 @@ void TitleColetteScene::RenderSprites() {
                        S_VECTOR3{kFullColor, kFullColor, kFullColor});
     }
 
-    // Window 9 through 12: further standard windows over their own timer ranges.
     if (static_cast<unsigned int>(m_nIdleTimer - 0x353) < 0x127d) {
         for (int i = 0; i < 12; ++i) {
             EmitAnimatedPart(
@@ -1152,15 +993,11 @@ void TitleColetteScene::RenderSprites() {
         }
     }
 
-    // Window 13: two sprites from a dedicated position table, drawn at fixed scale with a rotation
-    // curve and a shared two-knot alpha curve.
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 2; ++i) {
             const float flTime = static_cast<float>(m_nIdleTimer);
             const float flRotation =
-                // Both sprites share row zero: the memcpy at 0x5932c copies 0x50 bytes, one
-                // ten-knot curve, and 0x59378 recomputes the pointer every iteration with no
-                // stride. Indexing by the sprite read twenty floats past the end of the array.
+                // Both sprites share row zero; the binary applies no per-sprite stride here.
                 CalculateCurveInterpolation(g_aTitleAnim13Rotation, 0xa, flTime);
             const int nAlpha = static_cast<int>(
                 CalculateCurveInterpolation(g_aTitleAnim13Alpha, 2, flTime) * kFullColor);
@@ -1173,7 +1010,6 @@ void TitleColetteScene::RenderSprites() {
         }
     }
 
-    // The standalone logo sprite (window 14), always drawn, with a two-knot alpha curve.
     const int nLogoAlpha = static_cast<int>(
         CalculateCurveInterpolation(g_aTitleAnim14, 2, static_cast<float>(m_nIdleTimer)) *
         kFullColor);
@@ -1194,21 +1030,19 @@ void TitleColetteScene::StartMusic() {
 
 /** @ghidraAddress 0x57440 */
 void TitleColetteScene::ReleaseResources() {
-    // Release and null each cached texture.
     for (ne::C_TEXTURE *&pTexture : m_apTextures) {
         if (pTexture != nullptr) {
             pTexture->Release();
             pTexture = nullptr;
         }
     }
-    // The part sprites are owned by the scene graph; flag each for the scene walker and null it.
+    // The scene graph owns the part sprites, so they are flagged rather than deleted.
     for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
             pSprite = nullptr;
         }
     }
-    // Terminate and release the theme sound-effect player.
     if (m_pSePlayer != nil) {
         [m_pSePlayer terminate];
         m_pSePlayer = nil;
@@ -1245,13 +1079,10 @@ void TitleColetteScene::OnFrame(int nElapsedMs) {
 
 /** @ghidraAddress 0x58478 */
 void TitleColetteScene::FinishAndOpenList() {
-    // Wait until the fade-out audio has fully stopped before tearing down.
     if (![AudioManager.sharedManager isStart]) {
         return;
     }
     ReleaseResources();
-    // Construct the gameplay scene into the game system's leading scene slot, then open the music
-    // list through the app's root view controller.
     rb::GameScene::GetInstance(GameSystem::GetGameSystem()->GetCurrentSceneSlot());
     [AppDelegate.appDelegate.viewController showMusicListView];
     MarkDead();

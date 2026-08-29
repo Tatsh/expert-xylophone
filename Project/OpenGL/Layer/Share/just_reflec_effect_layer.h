@@ -116,7 +116,6 @@ private:
      */
     JustReflecEffectLayer();
 
-    // One pooled charge record (24 bytes): its colour, position, and geometry.
     struct ChargeRecord {
         bool bActive = {};       /*!< Whether the slot holds a live charge. +0x00 */
         int nColor = {};         /*!< The player colour. +0x04 */
@@ -125,8 +124,6 @@ private:
         float flB = {};          /*!< The alpha-weight geometry parameter. +0x14 */
     };
 
-    // One pooled burst particle (24 bytes): its colour, lifetime-slot sprite type, position, and
-    // age.
     struct BurstParticle {
         bool bActive = {}; /*!< Whether the slot holds a live particle. +0x00 */
         int nColor = {};   /*!< The player colour. +0x04 */

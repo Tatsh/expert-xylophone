@@ -9,9 +9,8 @@
 #import "RecommendCore.h"
 #import "RewardCore.h"
 
-// The advert-delegate callbacks the fan-out methods dispatch through respondsToSelector:. In the
-// binary the delegate is an id<ApplilinkViewDelegate>; the protocol is only forward declared in the
-// shared headers, so the selectors are gathered here so the messages type-check.
+// ApplilinkViewDelegate is only forward declared in the shared headers, so its selectors are
+// gathered here for the fan-out messages to type-check.
 @protocol ApplilinkCoreAdDelegate <NSObject>
 @optional
 - (void)appListDidStart;
@@ -34,57 +33,44 @@
          withApplilinkParameters:(nullable ApplilinkParameters *)appParam;
 @end
 
-// Localised-error codes passed to +[ApplilinkNetworkError localizedApplilinkErrorWithCode:]. These
-// mirror the file-local enumeration in ApplilinkNetworkError.m.
 static const NSInteger kApplilinkErrorCodeParameter = 0x3e9;
 static const NSInteger kApplilinkErrorCodeSdkVersionNotSupported = 0x401;
 static const NSInteger kApplilinkErrorCodeInitializingError = 0x408;
 static const NSInteger kApplilinkErrorCodeResumeExecutingError = 0x409;
 static const NSInteger kApplilinkErrorCodeSession = 0x40e;
 
-// The response status flag and success sentinel returned by the session-regenerate endpoint.
 static const int kApplilinkSessionSuccessCode = 100000000;
 
-// How long, in seconds, a regenerated authentication session stays valid.
 static const NSTimeInterval kApplilinkSessionValidDuration = 60.0;
 
-// NSUserDefaults keys shared with ApplilinkConsts.
 static NSString *const kApplilinkAppliIdKey = @"ApplilinkNetwork.appliId";
 static NSString *const kApplilinkEnvKey = @"ApplilinkNetwork.env";
 static NSString *const kApplilinkRewardReLoginFlgKey = @"ApplilinkReward.reLoginFlg";
 static NSString *const kApplilinkRecommendReLoginFlgKey = @"ApplilinkRecommend.reLoginFlg";
 static NSString *const kApplilinkRewardStorageIndexKey = @"ApplilinkReward.storageIndex";
 
-// Keys read out of the SDK's UDID and session-response dictionaries.
 static NSString *const kApplilinkUdidValueKey = @"Value";
 static NSString *const kApplilinkResponseStatusKey = @"status";
 static NSString *const kApplilinkResponseErrorCodeKey = @"error_code";
 
-// The keychain service and storage index the advertising-UDID records are reset to on clear.
 static NSString *const kApplilinkAdStorageService = @"adStorageIndex";
 static NSString *const kApplilinkAdStorageIndex = @"0";
 
-// The default environment string. It is both the value substituted when no environment is supplied
-// and the sentinel the clear methods compare against to decide whether a non-default environment is
-// configured. The binary uses one shared literal at 0x3641a0 for both roles.
+// Both the substituted default and the sentinel the clear methods compare against.
+// @ghidraAddress 0x3641a0
 static NSString *const kApplilinkDefaultEnv = @"0";
 
-// The path appended to the SSL base URL for the session-regenerate request.
 static NSString *const kApplilinkSessionRegeneratePath = @"/app/auth/sessionRegenerate.php";
 static NSString *const kApplilinkHTTPMethodGet = @"GET";
 static const float kApplilinkSessionRequestTimeout = 10.0f;
 
-// The Applilink SDK development version components. versionDev renders "<version>.<build>".
 static NSString *const kApplilinkVersion = @"2.2.2";
 static NSString *const kApplilinkVersionBuild = @"5";
 
-// The Applilink SDK signature key.
 static NSString *const kApplilinkSignatureKey =
     @"KyqFp6lHYuAnAuVdfzhtlZ5VCMYL5aK4MpMpKjJSB5eDEyPO1vYMHRTT0sVVLQTo5R5QmMVE0wbpIwkopMERdOg5HDw24"
     @"zvAZN54sax9b3YObo07DG71L1encpL08qeV";
 
-// The class carries no instance ivars: the whole SDK state is file scope. Each static keeps its
-// original 32-bit contiguous block offset from 0x3df630 as a documentation comment.
 static BOOL sInitializingFlg;               // 0x3df630
 static BOOL sInitializeStatusFlg;           // 0x3df631
 static BOOL sSessionValid;                  // 0x3df632
@@ -167,8 +153,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
             [[RecommendCore sharedInstance]
                 getAllAdStatusWithCallback:^(NSError *_Nullable adStatusError) {
                   /** @ghidraAddress 0x214a44 */
-                  // After the ad-status refresh, prefetch the installed-application list (its
-                  // result is discarded — a warm-up of the appli-list cache).
+                  // The prefetched list is discarded; it only warms the appli-list cache.
                   [[RecommendCore sharedInstance]
                       appliListWithCallBack:^(id _Nullable list, NSError *_Nullable listError){
                           /** @ghidraAddress 0x214a9c */
@@ -196,8 +181,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
 
 + (void)appAuthSessionRegenerateWithBlock:(void (^)(NSError *_Nullable error))block {
     if (sSessionValid) {
-        // Unlike initializeWithAppliId:…:callback:, this method invokes its block without a nil
-        // check, so a nil block is a caller error rather than a no-op.
+        // This method invokes its block without a nil check, unlike the initialize methods.
         block(nil);
         return;
     }
