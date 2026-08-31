@@ -656,47 +656,47 @@ constexpr int kOffsetFinish = 3;
 constexpr float kHandScaleInCurve[] = {0.0f, 0.0f, 166.66667f, 1.0f}; // 0x302128 (n=2)
 constexpr float kHandAlphaInCurve[] = {0.0f, 0.0f, 166.66667f, 1.0f}; // 0x302118 (n=2)
 constexpr float kPhraseScaleCurve[] = {                               // 0x302138 (n=5)
-    0.0f,
-    0.0f,
-    150.0f,
-    1.1f,
-    200.0f,
-    1.0f,
-    233.33333f,
-    1.05f,
-    266.66667f,
-    1.0f};
-constexpr float kPhraseScaleHeldCurve[] = { // 0x302160 (n=5)
-    0.0f,
-    1.0f,
-    150.0f,
-    1.1f,
-    200.0f,
-    1.0f,
-    233.33333f,
-    1.05f,
-    266.66667f,
-    1.0f};
+                                       0.0f,
+                                       0.0f,
+                                       150.0f,
+                                       1.1f,
+                                       200.0f,
+                                       1.0f,
+                                       233.33333f,
+                                       1.05f,
+                                       266.66667f,
+                                       1.0f};
+constexpr float kPhraseScaleHeldCurve[] = {// 0x302160 (n=5)
+                                           0.0f,
+                                           1.0f,
+                                           150.0f,
+                                           1.1f,
+                                           200.0f,
+                                           1.0f,
+                                           233.33333f,
+                                           1.05f,
+                                           266.66667f,
+                                           1.0f};
 constexpr float kFinishAlphaCurve[] = {
     0.0f, 0.0f, 166.66667f, 0.0f, 250.0f, 1.0f}; // 0x302188 (n=3)
 constexpr float kHandSweepCurve[] = {            // 0x3021a0 (n=4)
-    0.0f,
-    0.8f,
-    166.66667f,
-    0.8f,
-    1500.0f,
-    0.2f,
-    1666.6667f,
-    0.2f};
-constexpr float kFinishSweepCurve[] = { // 0x3021c0 (n=4)
-    0.0f,
-    0.0f,
-    166.66667f,
-    1.0f,
-    1500.0f,
-    1.0f,
-    1666.6667f,
-    0.0f};
+                                     0.0f,
+                                     0.8f,
+                                     166.66667f,
+                                     0.8f,
+                                     1500.0f,
+                                     0.2f,
+                                     1666.6667f,
+                                     0.2f};
+constexpr float kFinishSweepCurve[] = {// 0x3021c0 (n=4)
+                                       0.0f,
+                                       0.0f,
+                                       166.66667f,
+                                       1.0f,
+                                       1500.0f,
+                                       1.0f,
+                                       1666.6667f,
+                                       0.0f};
 
 // @ghidraAddress 0x2eed00
 constexpr float kAlphaScale = 255.0f;
