@@ -784,7 +784,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** The per-music search-term expansion list. */
 @property(strong, nonatomic, nullable) NSMutableArray *expandDictionary;
 /** The pastel search-mascot frames. */
-@property(strong, nonatomic, nullable) NSMutableArray *searchMascotImages;
+@property(strong, nonatomic, nullable) NSMutableArray<UIImage *> *searchMascotImages;
 /** The pastel search-mascot image view. */
 @property(strong, nonatomic, nullable) UIImageView *searchMascot;
 /** The push-notification banner view. */

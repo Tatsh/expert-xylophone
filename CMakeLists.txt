@@ -154,9 +154,8 @@ target_compile_options(rbplus PRIVATE
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-fno-char8_t>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-fobjc-arc>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-fobjc-arc-exceptions>
-    # The CI toolchain's libc++ predates _LIBCPP_HARDENING_MODE, so assertions are the effective
-    # knob; newer libc++ still honours it.
-    $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-D_LIBCPP_ENABLE_ASSERTIONS=1>
+    # libc++ hardening (Xcode's CLANG_CXX_STANDARD_LIBRARY_HARDENING "fast").
+    $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST>
     -ftrivial-auto-var-init=zero)
 
 # Warnings only -- there is no -Werror, so the build stays green. The conversion, cast, and pedantic

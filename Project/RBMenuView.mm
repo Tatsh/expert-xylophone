@@ -848,7 +848,7 @@ static BOOL g_bRandamIntSeeded = NO;
         return YES;
     }
 
-    NSMutableArray *shuffled = [NSMutableArray arrayWithCapacity:images.count];
+    NSMutableArray<UIImage *> *shuffled = [NSMutableArray arrayWithCapacity:images.count];
     for (UIImage *image in images) {
         NSUInteger index = arc4random() % (shuffled.count + 1);
         [shuffled insertObject:image atIndex:index];
