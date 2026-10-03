@@ -19,6 +19,7 @@
 *.mm
 *.rb
 *.strings
+*.tsbuildinfo
 *~
 .*.swp
 .*_cache/

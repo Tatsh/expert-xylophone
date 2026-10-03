@@ -3,6 +3,7 @@
 *.kate-swp
 *.log
 *.rb
+*.tsbuildinfo
 *~
 .*.swp
 .*_cache/
