@@ -126,6 +126,7 @@ endforeach
 enginecrypto
 engineglobals
 engineruntime
+esac
 esbenp
 exprosion
 extern
@@ -370,6 +371,7 @@ titleclassicscene
 titlecolettescene
 titlelimelightscene
 tomosuke
+tostring
 totalscorephone
 totto
 touchmanager
