@@ -325,6 +325,7 @@ ripgreprc
 roundf
 rtti
 rturl
+sbclaude
 schemafile
 scorefor
 screenview
