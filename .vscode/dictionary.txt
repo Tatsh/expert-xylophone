@@ -272,6 +272,7 @@ pastelkun
 pastelout
 pawapuro
 pbxproj
+pipx
 pkcrypt
 playerfieldlayer
 playfieldlayerbase
