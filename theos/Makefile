@@ -72,9 +72,9 @@ ReflecBeatPlus_FILES = $(shell find $(PROJECT_ROOT)/Project \
 ReflecBeatPlus_WARNINGS = -Wall -Wextra -Wshadow -Wcomma -Wnewline-eof -Wpointer-arith \
                           -Wimplicit-fallthrough -Wunreachable-code -Wconditional-uninitialized \
                           -Winfinite-recursion \
-                          -Wundeclared-selector -Wblock-capture-autoreleasing \
+                          -Wno-undeclared-selector -Wblock-capture-autoreleasing \
                           -Wobjc-literal-conversion -Wduplicate-method-match \
-                          -Wimplicit-retain-self
+                          -Wno-implicit-retain-self -Wno-gnu-folding-constant -Wno-int-conversion
 ReflecBeatPlus_CFLAGS  = -std=gnu2x -ftrivial-auto-var-init=zero -fobjc-arc -fobjc-exceptions \
                          -DGLES_SILENCE_DEPRECATION \
                          $(API_DEFINES) $(PATCH_DEFINES) $(DEBUG_DEFINES) $(DEBUG_INFO_FLAGS) \

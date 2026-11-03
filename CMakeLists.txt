@@ -166,6 +166,8 @@ target_compile_options(rbplus PRIVATE
 target_compile_options(rbplus PRIVATE
     -Wall
     -Wextra
+    -Wno-gnu-folding-constant
+    -Wno-int-conversion
     -Wshadow
     -Wcomma
     -Wnewline-eof
@@ -179,11 +181,11 @@ target_compile_options(rbplus PRIVATE
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Wdelete-non-abstract-non-virtual-dtor>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Wrange-loop-analysis>
     $<$<COMPILE_LANGUAGE:CXX,OBJCXX>:-Wextra-semi>
-    $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wundeclared-selector>
+    $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wno-undeclared-selector>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wblock-capture-autoreleasing>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wobjc-literal-conversion>
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wduplicate-method-match>
-    $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wimplicit-retain-self>)
+    $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-Wno-implicit-retain-self>)
 
 # The reconstruction faithfully uses OpenGL ES 1.1, which iOS 12 deprecated wholesale with no
 # in-place replacement.

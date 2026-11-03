@@ -92,7 +92,7 @@
 - (void)loadData:(AudioBufferList *)buffer Frames:(unsigned int)frames {
     /** @ghidraAddress 0x35620 */
     if (m_SoundData != nil) {
-        NSInteger nextFrame = 0;
+        long long nextFrame = 0;
         BOOL exhausted = [m_SoundData getData:m_CurrentFrame
                                        Frames:frames
                                          Loop:m_IsLoop
