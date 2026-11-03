@@ -267,7 +267,7 @@ foreach(_fw ${SYS_FRAMEWORKS})
         target_link_libraries(rbplus PRIVATE "-framework ${_fw}")
     endif()
 endforeach()
-target_link_libraries(rbplus PRIVATE z)   # CommonCrypto is in libSystem; zlib for minizip
+target_link_libraries(rbplus PRIVATE z iconv)
 
 if(RESOURCES_DIR AND EXISTS "${RESOURCES_DIR}")
     file(GLOB RES_ENTRIES "${RESOURCES_DIR}/*")

@@ -209,6 +209,7 @@ libc
 libcpp
 libera
 libsonnet
+liconv
 limepoint
 longrate
 lpcm
@@ -276,6 +277,7 @@ pastelout
 pathlib
 pawapuro
 pbxproj
+pipefail
 pipx
 pkcrypt
 playerfieldlayer
@@ -433,6 +435,7 @@ wshadow
 wundeclared
 wunreachable
 wzaes
+xcrun
 xorshift
 yarnrc
 yomi

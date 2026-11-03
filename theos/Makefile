@@ -99,7 +99,7 @@ $(PROJECT_ROOT)/3rdparty/ziparchive/UnZipArchive.mm_CFLAGS = $(MINIZIP_DEFINES) 
 ReflecBeatPlus_FRAMEWORKS = UIKit Foundation CoreFoundation CoreGraphics CoreImage QuartzCore \
                             OpenGLES AudioToolbox AVFoundation OpenAL CoreData StoreKit Social \
                             SafariServices GameKit CoreLocation MapKit AdSupport
-ReflecBeatPlus_LDFLAGS    = -framework Security -lz $(DEBUG_INFO_FLAGS)
+ReflecBeatPlus_LDFLAGS    = -framework Security -lz -liconv $(DEBUG_INFO_FLAGS)
 
 include $(THEOS)/makefiles/application.mk
 
