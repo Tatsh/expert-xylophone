@@ -9,6 +9,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
+### Security
+
+- Fixed PBKDF2 counter overflow and rejected invalid lengths and iteration counts in patched builds.
+
 ### Changed
 
 - The result screen's share button now opens the iOS share sheet, carrying the rendered score card

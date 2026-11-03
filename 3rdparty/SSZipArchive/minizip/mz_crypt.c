@@ -115,16 +115,28 @@ int32_t  mz_crypt_pbkdf2(uint8_t *password, int32_t password_length, uint8_t *sa
     void *hmac2 = NULL;
     void *hmac3 = NULL;
     int32_t err = MZ_OK;
+#ifdef ENABLE_PATCHES
+    int32_t i = 0;
+    int32_t j = 0;
+    int32_t k = 0;
+    int32_t block_count = 0;
+#else
     uint16_t i = 0;
     uint16_t j = 0;
     uint16_t k = 0;
     uint16_t block_count = 0;
+#endif
     uint8_t uu[MZ_HASH_SHA1_SIZE];
     uint8_t ux[MZ_HASH_SHA1_SIZE];
 
     if (password == NULL || salt == NULL || key == NULL)
         return MZ_PARAM_ERROR;
 
+#ifdef ENABLE_PATCHES
+    if (password_length < 0 || salt_length < 0 || iteration_count <= 0 || key_length <= 0) {
+        return MZ_PARAM_ERROR;
+    }
+#endif
     memset(key, 0, key_length);
 
     mz_crypt_hmac_create(&hmac1);
@@ -141,7 +153,11 @@ int32_t  mz_crypt_pbkdf2(uint8_t *password, int32_t password_length, uint8_t *sa
     if (err == MZ_OK)
         err = mz_crypt_hmac_update(hmac2, salt, salt_length);
 
+#ifdef ENABLE_PATCHES
+    block_count = 1 + (key_length - 1) / MZ_HASH_SHA1_SIZE;
+#else
     block_count = 1 + ((uint16_t)key_length - 1) / MZ_HASH_SHA1_SIZE;
+#endif
 
     for (i = 0; (err == MZ_OK) && (i < block_count); i += 1)
     {

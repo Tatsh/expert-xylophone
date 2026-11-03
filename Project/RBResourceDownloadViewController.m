@@ -68,8 +68,8 @@ static const CGFloat kDownloadProgressScale = 0.5;
 static const CGFloat kUnzipProgressScale = 0.5;
 
 enum {
-    kOrientationMaskWideVariant =
-        UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown,
+    kOrientationMaskWideVariant = UIInterfaceOrientationMaskPortrait |
+        UIInterfaceOrientationMaskPortraitUpsideDown,
     kOrientationMaskDefault = UIInterfaceOrientationMaskAll,
 };
 
