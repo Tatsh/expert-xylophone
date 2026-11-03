@@ -5,7 +5,7 @@
   security_policy_supported_versions: { '2.0.x': ':white_check_mark:' },
   description: 'Expert xylophone.',
   keywords: ['decompilation', 'game', 'ios', 'reverse engineering', 'reflec beat'],
-  want_codeql: false,
+  want_codeql: true,
   want_tests: false,
   project_type: 'other',
   want_clang_format: true,
@@ -156,6 +156,11 @@
     ],
   },
   github+: {
+    codeql+: {
+      languages: ['actions'],
+      runs_on: 'ubuntu-latest',
+      workflow_file: 'codeql-actions.yml',
+    },
     zizmor+: {
       rules+: {
         // The API reference build installs a pinned Scalar release outside the lockfile.
