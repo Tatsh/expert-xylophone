@@ -121,6 +121,7 @@ dresources
 dskip
 dsym
 eagl
+elif
 encp
 endforeach
 enginecrypto
@@ -184,6 +185,7 @@ interitem
 inttypes
 iphoneos
 ishot
+iterdir
 ithm
 ivar
 ivars
@@ -238,6 +240,7 @@ musicselect
 mypy
 nbobhfs
 nekomata
+nojekyll
 nolist
 nonatomic
 nonlocalized
@@ -270,6 +273,7 @@ parameteriv
 pastelin
 pastelkun
 pastelout
+pathlib
 pawapuro
 pbxproj
 pipx
