@@ -79,6 +79,7 @@ conn
 constexpr
 contoller
 copysign
+copytree
 coveragerc
 cplusplus
 creater
@@ -185,7 +186,6 @@ interitem
 inttypes
 iphoneos
 ishot
-iterdir
 ithm
 ivar
 ivars
@@ -328,6 +328,7 @@ resoure
 rgba
 ringanimation
 ripgreprc
+rmtree
 roundf
 rtti
 rturl
@@ -342,6 +343,7 @@ sheetlayer
 shellcheck
 shellformat
 shotsoundmanager
+shutil
 signedness
 snapcraft
 sota
@@ -432,7 +434,6 @@ wpointer
 wrange
 writable
 wshadow
-wundeclared
 wunreachable
 wzaes
 xcrun
