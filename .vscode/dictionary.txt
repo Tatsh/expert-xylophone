@@ -332,6 +332,7 @@ rmtree
 roundf
 rtti
 rturl
+sarif
 sbclaude
 schemafile
 scorefor
