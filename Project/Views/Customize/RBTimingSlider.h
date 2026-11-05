@@ -98,11 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(assign, nonatomic) float step;
 
-/**
- * A per-step value declared alongside @c step; the binary never messages its accessors.
- */
-@property(assign, nonatomic) float stepValue;
-
 @end
 
 NS_ASSUME_NONNULL_END

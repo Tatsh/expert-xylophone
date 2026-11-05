@@ -40,12 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Whether this cell's item is the current selection. Setting it shows or hides
- *        @c selectedImageView and starts or clears its flash effect. The binary's accessors are
- *        @c isSelected and @c setIsSelected:, distinct from @c UICollectionViewCell's own
- *        @c selected pair.
+ *        @c selectedImageView and starts or clears its flash effect.
  * @ghidraAddress 0x16e680
  */
-@property(nonatomic, assign, getter=isSelected, setter=setIsSelected:) BOOL itemSelected;
+@property(nonatomic, assign) BOOL isSelected;
 
 @end
 

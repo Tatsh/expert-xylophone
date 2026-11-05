@@ -48,7 +48,7 @@ static NSString *const kSelectedOverlayImageName = @"04_customize/cus_sel_1";
 - (void)prepareForReuse {
     [super prepareForReuse];
     [self.itemButton setImage:nil forState:UIControlStateNormal];
-    self.itemSelected = NO;
+    self.isSelected = NO;
 }
 
 #pragma mark State
@@ -59,7 +59,7 @@ static NSString *const kSelectedOverlayImageName = @"04_customize/cus_sel_1";
 }
 
 - (void)setIsSelected:(BOOL)isSelected {
-    _itemSelected = isSelected;
+    _isSelected = isSelected;
     if (isSelected) {
         self.selectedImageView.hidden = NO;
         [self.selectedImageView SetFlashEffectFast];

@@ -700,11 +700,11 @@ constexpr long kPageControlMinPageCount = 2;
 - (void)collectionView:(UICollectionView *)collectionView
     didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     for (RBCustomSelectCollectionCell *cell in collectionView.visibleCells) {
-        cell.itemSelected = NO;
+        cell.isSelected = NO;
     }
     RBCustomSelectCollectionCell *cell = static_cast<RBCustomSelectCollectionCell *>(
         [collectionView cellForItemAtIndexPath:indexPath]);
-    cell.itemSelected = YES;
+    cell.isSelected = YES;
     int tappedType = static_cast<int>(cell.tag);
 
     switch (self.customizeType) {
@@ -786,7 +786,7 @@ constexpr long kPageControlMinPageCount = 2;
         selectedType = 0;
         break;
     }
-    cell.itemSelected = (selectedType == itemID);
+    cell.isSelected = (selectedType == itemID);
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
       /** @ghidraAddress 0x1596dc */
