@@ -1,7 +1,7 @@
 #import "RBCustomSelectCollectionCell.h"
 
 #import "UIImage+RB.h"
-#import "UIImageView+RB.h"
+#import "UIView+RB.h"
 
 static NSString *const kSelectedOverlayImageName = @"04_customize/cus_sel_1";
 

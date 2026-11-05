@@ -5,7 +5,7 @@
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "UIImageView+RB.h"
+#import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 #import "soundeffectmanager.h"

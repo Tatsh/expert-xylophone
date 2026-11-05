@@ -44,7 +44,6 @@
 #import "RBViewController.h"
 #import "ScoreData.h"
 #import "UIImage+RB.h"
-#import "UIImageView+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"

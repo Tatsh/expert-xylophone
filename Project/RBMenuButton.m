@@ -2,7 +2,7 @@
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "UIImageView+RB.h"
+#import "UIView+RB.h"
 #import "deviceenvironment.h"
 
 static const CGFloat kMenuButtonWidthNarrow = 30.0;

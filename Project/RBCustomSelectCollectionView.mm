@@ -11,7 +11,6 @@
 #import "RBUserSettingData.h"
 #import "RBVolumeSlider.h"
 #import "UIImage+RB.h"
-#import "UIImageView+RB.h"
 #import "UIView+RB.h"
 #import "customize_variant_tables.h"
 #import "deviceenvironment.h"

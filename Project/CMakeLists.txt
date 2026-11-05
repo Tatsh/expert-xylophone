@@ -209,7 +209,6 @@ target_sources(rbplus PRIVATE
     UIAlertView+RB.m
     UIColor+RB.m
     UIImage+RB.m
-    UIImageView+RB.m
     UITextView+RB.m
     UIView+RB.m
     main.m
@@ -430,7 +429,6 @@ target_sources(rbplus PRIVATE
     UIAlertView+RB.h
     UIColor+RB.h
     UIImage+RB.h
-    UIImageView+RB.h
     UITextView+RB.h
     UIView+RB.h
     neGLView.h
