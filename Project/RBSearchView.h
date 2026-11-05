@@ -71,6 +71,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didChangeUserTracking:(BOOL)tracking;
 
 /**
+ * The owning settings view, if this popup was presented from settings.
+ */
+@property(weak, nonatomic, nullable) RBSettingView *settingView;
+
+/**
  * The embedded map view, created lazily by @c setupView.
  */
 @property(strong, nonatomic, nullable) RBSearchMapView *map;
@@ -79,11 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
  * The button that recentres the map on the user's current position.
  */
 @property(strong, nonatomic, nullable) UIButton *currentPositionButton;
-
-/**
- * The owning settings view, if this popup was presented from settings.
- */
-@property(weak, nonatomic, nullable) RBSettingView *settingView;
 
 @end
 

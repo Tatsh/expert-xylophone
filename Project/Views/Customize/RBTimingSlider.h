@@ -69,14 +69,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) UIImageView *gripView;
 
 /**
- * The digit glyph images (@c cus_nms_0 ... @c cus_nms_9 followed by @c cus_nms_minus).
- */
-@property(strong, nonatomic, nullable) NSMutableArray<UIImage *> *numImages;
-
-/**
  * The digit-place image views that make up the readout, most significant first.
  */
 @property(strong, nonatomic, nullable) NSMutableArray<UIImageView *> *numImageViews;
+
+/**
+ * The digit glyph images (@c cus_nms_0 ... @c cus_nms_9 followed by @c cus_nms_minus).
+ */
+@property(strong, nonatomic, nullable) NSMutableArray<UIImage *> *numImages;
 
 /**
  * The rectangle within the track along which the grip travels.
