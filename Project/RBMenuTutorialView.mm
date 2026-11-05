@@ -695,7 +695,8 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
         CGFloat spotBottom = spot.origin.y + spot.size.height;
         placed = content;
         if (self.height * 0.5 <= (spot.origin.y + spotBottom) * 0.5) {
-            placed.origin.y = (spot.origin.y - content.size.height) - kContentViewSpotlightGap;
+            // The original placement subtracts the panel's current y.
+            placed.origin.y = (spot.origin.y - content.origin.y) - kContentViewSpotlightGap;
             if (placed.origin.y < 0.0) {
                 placed.origin.y = 0.0;
             }

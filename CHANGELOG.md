@@ -23,6 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Corrected the tutorial message panel's position above highlighted controls on iPhone.
 - Restored theme-specific text colours for rank, name, and score in ranking rows.
 - Restored the music menu page slider label with up to three reading characters or `#` when empty.
 - Restored left and right end caps on the iPad terms agreement progress bar.
