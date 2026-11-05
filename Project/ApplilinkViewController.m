@@ -35,7 +35,9 @@
 
 // @ghidraAddress 0x2137d0
 - (void)viewDidDisappear:(BOOL)animated {
+#ifdef ENABLE_PATCHES
     [super viewDidDisappear:animated];
+#endif
 }
 
 // @ghidraAddress 0x2137d4
