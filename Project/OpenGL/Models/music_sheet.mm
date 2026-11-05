@@ -182,8 +182,9 @@ constexpr float kTargetScale = 1000.0f;
 // @ghidraAddress 0x308afc
 constexpr int kSlideLaneRemap[] = {6, 5, 4, 3, 2, 1, 0, 9, 8, 7};
 
-// @ghidraAddress 0x308ac8
-constexpr int kNoteColorTable[] = {0, 1, 2, 3, 4, 5, 6, 3, 3, 3};
+// @ghidraAddress 0x308ab8; the binary's lookup base is four words into this region at 0x308ac8.
+constexpr int kNoteColorTable[] = {0, 2, 0, 1, 0, 1, 2, 3, 4, 5, 6, 3, 3, 3};
+constexpr int kNoteColorTableBase = 4;
 
 constexpr int kSideScanSlotCount = 3;
 
@@ -1037,8 +1038,7 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
             } else {
                 nRemapped = -2;
             }
-            // The binary indexes the table with a negative selector, reading the words before it.
-            const int nTableColour = kNoteColorTable[nRemapped];
+            const int nTableColour = kNoteColorTable[nRemapped + kNoteColorTableBase];
             nColour = static_cast<unsigned int>(nTableColour - 1) < 6 ? 6 - nTableColour : 6;
         }
         record.SetColor(nColour);
