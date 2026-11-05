@@ -52,7 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) UILabel *labelScore;
 /** The fill colour of the row background columns. */
 @property(strong, nonatomic, nullable) UIColor *fillColor;
-/** The stroke colour of the row background outline. */
+/**
+ * The stroke colour of the row outline and all three labels.
+ * @ghidraAddress 0xd9d0c (setter)
+ */
 @property(strong, nonatomic, nullable) UIColor *strokeColor;
 /** Whether the row is the first (top) row, which rounds its top corners. */
 @property(nonatomic, assign) BOOL isTop;

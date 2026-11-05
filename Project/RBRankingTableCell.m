@@ -125,6 +125,13 @@ static const CGFloat kHalfScale = 0.5;
 - (void)dealloc {
 }
 
+- (void)setStrokeColor:(UIColor *)strokeColor {
+    _strokeColor = strokeColor;
+    self.labelRank.textColor = strokeColor;
+    self.labelName.textColor = strokeColor;
+    self.labelScore.textColor = strokeColor;
+}
+
 #pragma mark - Drawing
 
 - (void)drawRect:(CGRect)rect {
