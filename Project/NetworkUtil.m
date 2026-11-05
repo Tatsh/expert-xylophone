@@ -155,12 +155,14 @@ static NSString *const kNonceCharFormat = @"%c";
 }
 
 /**
- * The reward-check endpoint. The binary references this selector but ships no implementation for
- * it, so it resolves to @c nil at runtime; kept to match the declared interface.
+ * The binary references this missing selector. Patched builds return nil instead of raising an
+ * unrecognized-selector exception.
  */
+#ifdef ENABLE_PATCHES
 + (NSURL *)rewardCheckURL {
     return nil;
 }
+#endif
 
 /** @ghidraAddress 0x32610 */
 + (NSString *)createNonce:(NSUInteger)length {
@@ -209,13 +211,14 @@ static NSString *const kNonceCharFormat = @"%c";
 }
 
 /**
- * The legacy play-log endpoint. The binary references this selector but ships no implementation for
- * it (the version 2 endpoint superseded it), so it resolves to @c nil at runtime; kept to match the
- * declared interface.
+ * The binary references this missing legacy selector. Patched builds return nil instead of raising
+ * an unrecognized-selector exception.
  */
+#ifdef ENABLE_PATCHES
 + (NSURL *)playedURL {
     return nil;
 }
+#endif
 
 /** @ghidraAddress 0x3365c */
 + (NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit {

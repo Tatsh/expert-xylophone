@@ -169,9 +169,6 @@ static NSString *const kDisableTouchCalloutScript =
 - (void)alertViewCancel:(UIAlertView *)alertView {
 }
 
-- (void)didPresentAlertView:(UIAlertView *)alertView {
-}
-
 #pragma mark Orientation
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

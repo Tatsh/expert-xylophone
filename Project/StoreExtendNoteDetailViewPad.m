@@ -281,10 +281,6 @@ typedef enum {
     return self;
 }
 
-/** @ghidraAddress 0x271bc */
-- (void)dealloc {
-}
-
 #pragma mark - Note loading
 
 /** @ghidraAddress 0x2600c */

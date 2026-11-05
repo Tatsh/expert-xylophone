@@ -64,12 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, nullable) NSString *name;
 
-/**
- * Clears the tune name back to @c nil.
- * @ghidraAddress 0x87770
- */
-- (void)reset;
-
 @end
 
 NS_ASSUME_NONNULL_END
