@@ -41,6 +41,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
 {
     /// path for zip file
     NSString *_path;
+    NSString *_filename;
     zipFile _zip;
 }
 
@@ -855,6 +856,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
 - (instancetype)initWithPath:(NSString *)path
 {
     if ((self = [super init])) {
+        (void)_filename;
         _path = [path copy];
     }
     return self;
