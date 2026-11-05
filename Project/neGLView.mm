@@ -17,13 +17,13 @@ static neGLView *g_pGLView = nil;
 @end
 
 @implementation neGLView {
-    neGLESRenderer *m_GLInterface;
+    GLint m_FrontBufferWidth;
+    GLint m_FrontBufferHeight;
     GLuint m_DefaultFramebuffer;
     GLuint m_ColorRenderbuffer;
     // The GL_RENDERBUFFER_OES bind target constant, despite the name.
     GLuint m_RenderBufferID;
-    GLint m_FrontBufferWidth;
-    GLint m_FrontBufferHeight;
+    neGLESRenderer *m_GLInterface;
 }
 
 + (Class)layerClass {

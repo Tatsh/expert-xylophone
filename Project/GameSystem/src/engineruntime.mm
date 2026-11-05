@@ -119,12 +119,12 @@ NSString *_Nullable GetCustomizeFrameImagePath(int kind) {
 
 /** @ghidraAddress 0x366f8 */
 void C_TIME::Start() {
-    m_flTime = CACurrentMediaTime();
+    m_Time = CACurrentMediaTime();
 }
 
 /** @ghidraAddress 0x3671c */
 float C_TIME::GetElapsedMilliseconds() const {
-    return static_cast<float>((CACurrentMediaTime() - m_flTime) * kMediaTimeMsScale);
+    return static_cast<float>((CACurrentMediaTime() - m_Time) * kMediaTimeMsScale);
 }
 
 /** @ghidraAddress 0x4fa24 */

@@ -24,7 +24,6 @@
 @class NSOperationQueue;
 @class NSURLConnection;
 @class NSURLRequest;
-@class RBCorporateViewController;
 @class RBMenuView;
 @class RBPlaylistViewController;
 @class RBTermAgreeView;
@@ -38,8 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Root view controller that hosts the game GL view and music-select menu and runs the
  * display-link game loop.
  */
-@interface RBViewController :
-    RBBaseViewController <UINavigationControllerDelegate, neGLViewDelegate>
+@interface RBViewController : RBBaseViewController <UINavigationControllerDelegate, GLViewDelegate>
 
 #pragma mark - Class helpers
 
@@ -481,7 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** The corporate web view controller.
  * @ghidraAddress 0x8ee24
  */
-@property(nonatomic, strong, nullable) RBCorporateViewController *corporateViewCtrl;
+@property(nonatomic, assign, nullable) RBBaseViewController *corporateViewCtrl;
 
 @end
 

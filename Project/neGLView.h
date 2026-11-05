@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Receives layout notifications from a @c neGLView. The view checks each callback with
  * @c -respondsToSelector: before invoking it, so conformance is informal.
  */
-@protocol neGLViewDelegate <NSObject>
+@protocol GLViewDelegate <NSObject>
 
 @optional
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface neGLView : UIView
 
 /** The delegate notified of layout changes. */
-@property(nonatomic, weak, nullable) id<neGLViewDelegate> delegate;
+@property(nonatomic, weak, nullable) id<GLViewDelegate> delegate;
 
 /**
  * Returns the most recently created GL view, or @c nil when none exists.
