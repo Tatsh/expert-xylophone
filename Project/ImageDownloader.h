@@ -104,17 +104,17 @@ typedef void (^ImageDownloaderBlock)(ImageDownloader *downloader);
  */
 @property(nonatomic, strong, nullable) UIImage *downloadedImage;
 /**
- * Invoked on incremental progress; takes precedence over the delegate.
- * @ghidraAddress 0x85710 (getter)
- * @ghidraAddress 0x85720 (setter)
- */
-@property(nonatomic, copy, nullable) ImageDownloaderBlock proceedBlock;
-/**
  * Invoked on successful completion; takes precedence over the delegate.
  * @ghidraAddress 0x856f4 (getter)
  * @ghidraAddress 0x85704 (setter)
  */
 @property(nonatomic, copy, nullable) ImageDownloaderBlock successBlock;
+/**
+ * Invoked on incremental progress; takes precedence over the delegate.
+ * @ghidraAddress 0x85710 (getter)
+ * @ghidraAddress 0x85720 (setter)
+ */
+@property(nonatomic, copy, nullable) ImageDownloaderBlock proceedBlock;
 /**
  * Invoked on failure; takes precedence over the delegate.
  * @ghidraAddress 0x8572c (getter)
