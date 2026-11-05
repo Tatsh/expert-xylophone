@@ -810,6 +810,11 @@ bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
 
 /** @ghidraAddress 0x1309a8 */
 void CMusicSheet2::ResolveNoteScrollSpeeds() {
+#ifdef ENABLE_PATCHES
+    if (m_pRecords == nullptr) {
+        return;
+    }
+#endif
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         record.SetScrollStartSpeed(GetFirstPathSpeed());

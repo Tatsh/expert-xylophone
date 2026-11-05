@@ -119,15 +119,22 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
         return;
     }
     sInitializingFlg = YES;
+#ifdef ENABLE_PATCHES
+    if (env == nil) {
+        env = kApplilinkDefaultEnv;
+    }
+#endif
     if (!resume) {
         [[NSUserDefaults standardUserDefaults] setObject:appliId forKey:kApplilinkAppliIdKey];
         [[NSUserDefaults standardUserDefaults] setObject:env forKey:kApplilinkEnvKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
         sInitializeStatusFlg = YES;
     }
+#ifndef ENABLE_PATCHES
     if (!env) {
         env = [NSString stringWithString:kApplilinkDefaultEnv];
     }
+#endif
     [self appAuthSessionRegenerateWithBlock:^(NSError *_Nullable error) {
       /** @ghidraAddress 0x214754 */
       [[RewardCore sharedInstance] startWithCallback:^(NSError *_Nullable rewardError) {

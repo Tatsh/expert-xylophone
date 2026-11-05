@@ -177,7 +177,11 @@ enum {
     NSDictionary *record = [NSKeyedUnarchiver unarchiveObjectWithData:archive];
     NSError *validateError = nil;
     if (![ApplilinkPasteBoard validate:record error:&validateError]) {
+#ifdef ENABLE_PATCHES
+        [UIPasteboard removePasteboardWithName:name];
+#else
         [pasteboard setData:nil forPasteboardType:kApplilinkUdidPasteboardType];
+#endif
         if (error != NULL) {
             *error = [ApplilinkNetworkError
                 localizedApplilinkErrorWithCode:kApplilinkPasteBoardErrorValidateError];
@@ -294,7 +298,9 @@ enum {
         }
         return NO;
     }
+#ifndef ENABLE_PATCHES
     [pasteboard setData:nil forPasteboardType:kApplilinkUdidPasteboardType];
+#endif
     [UIPasteboard removePasteboardWithName:name];
     return YES;
 }

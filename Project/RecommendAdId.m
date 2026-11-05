@@ -101,12 +101,12 @@ enum {
  * @param error On failure, the localised error; may be @c NULL.
  * @ghidraAddress 0x20498c
  */
-- (void)setPasteboardWithUdid:(nullable NSString *)udid
-                  countryCode:(nullable NSString *)countryCode
-                   categoryId:(nullable NSString *)categoryId
-                     adIdFrom:(nullable NSString *)adIdFrom
-                       adType:(nullable NSString *)adType
-                        error:(NSError *_Nullable *_Nullable)error;
+- (RecommendAdMutationResult)setPasteboardWithUdid:(nullable NSString *)udid
+                                       countryCode:(nullable NSString *)countryCode
+                                        categoryId:(nullable NSString *)categoryId
+                                          adIdFrom:(nullable NSString *)adIdFrom
+                                            adType:(nullable NSString *)adType
+                                             error:(NSError *_Nullable *_Nullable)error;
 
 /**
  * Delete the record for a udid through the pasteboard web API.
@@ -116,10 +116,10 @@ enum {
  * @param error On failure, the localised error; may be @c NULL.
  * @ghidraAddress 0x204ed8
  */
-- (void)deletePasteboardWithUdid:(nullable NSString *)udid
-                     countryCode:(nullable NSString *)countryCode
-                      categoryId:(nullable NSString *)categoryId
-                           error:(NSError *_Nullable *_Nullable)error;
+- (RecommendAdMutationResult)deletePasteboardWithUdid:(nullable NSString *)udid
+                                          countryCode:(nullable NSString *)countryCode
+                                           categoryId:(nullable NSString *)categoryId
+                                                error:(NSError *_Nullable *_Nullable)error;
 
 @end
 
@@ -190,11 +190,11 @@ enum {
 }
 
 /** @ghidraAddress 0x2035f4 */
-- (void)setWithAdIdFrom:(NSString *)adIdFrom
-            countryCode:(NSString *)countryCode
-             categoryId:(NSString *)categoryId
-                 adType:(NSString *)adType
-                  error:(NSError *_Nullable *)error {
+- (RecommendAdMutationResult)setWithAdIdFrom:(NSString *)adIdFrom
+                                 countryCode:(NSString *)countryCode
+                                  categoryId:(NSString *)categoryId
+                                      adType:(NSString *)adType
+                                       error:(NSError *_Nullable *)error {
     if ([UIDevice currentDevice].systemVersion.floatValue >=
         kRecommendAdIdServerStorageMinimumSystemVersion) {
         NSString *udid = [ApplilinkUdid getAdUdid];
@@ -203,7 +203,11 @@ enum {
                 *error = [ApplilinkNetworkError
                     localizedApplilinkErrorWithCode:kRecommendAdIdErrorUdidUnavailable];
             }
+#ifdef ENABLE_PATCHES
+            return NO;
+#else
             return;
+#endif
         }
         NSString *hashedUdid = [Crypto sha1:udid];
         NSError *requestError = nil;
@@ -217,7 +221,11 @@ enum {
             if (error != NULL) {
                 *error = requestError;
             }
+#ifdef ENABLE_PATCHES
+            return NO;
+#else
             return;
+#endif
         }
         NSMutableDictionary *record = [NSMutableDictionary dictionaryWithCapacity:4];
         if (countryCode != nil) {
@@ -232,7 +240,11 @@ enum {
         if (adType != nil) {
             [record setValue:adType forKey:kRecommendAdIdKeyAdType];
         }
+#ifdef ENABLE_PATCHES
+        return YES;
+#else
         return;
+#endif
     }
     NSData *keyData = [_serviceName dataUsingEncoding:kRecommendAdIdStringEncoding];
     NSData *key = [Crypto createHash:keyData];
@@ -279,18 +291,25 @@ enum {
             *error = [ApplilinkNetworkError
                 localizedApplilinkErrorWithCode:kRecommendAdIdErrorPasteboardUnavailable];
         }
+#ifdef ENABLE_PATCHES
+        return NO;
+#else
         return;
+#endif
     }
     pasteboard.persistent = YES;
     NSData *archived = [NSKeyedArchiver archivedDataWithRootObject:record];
     [pasteboard setData:archived forPasteboardType:kRecommendAdIdPasteboardType];
     [self convertToData:record]; // Yes, the binary discards this decrypted round-trip.
+#ifdef ENABLE_PATCHES
+    return YES;
+#endif
 }
 
 /** @ghidraAddress 0x203cfc */
-- (void)deleteWithCountryCode:(NSString *)countryCode
-                   categoryId:(NSString *)categoryId
-                        error:(NSError *_Nullable *)error {
+- (RecommendAdMutationResult)deleteWithCountryCode:(NSString *)countryCode
+                                        categoryId:(NSString *)categoryId
+                                             error:(NSError *_Nullable *)error {
     if ([UIDevice currentDevice].systemVersion.floatValue >=
         kRecommendAdIdServerStorageMinimumSystemVersion) {
         NSString *udid = [ApplilinkUdid getAdUdid];
@@ -299,7 +318,11 @@ enum {
                 *error = [ApplilinkNetworkError
                     localizedApplilinkErrorWithCode:kRecommendAdIdErrorUdidUnavailable];
             }
+#ifdef ENABLE_PATCHES
+            return NO;
+#else
             return;
+#endif
         }
         NSString *hashedUdid = [Crypto sha1:udid];
         NSError *requestError = nil;
@@ -310,7 +333,11 @@ enum {
         if (requestError != nil && error != NULL) {
             *error = requestError;
         }
+#ifdef ENABLE_PATCHES
+        return requestError == nil;
+#else
         return;
+#endif
     }
     UIPasteboard *pasteboard = [UIPasteboard pasteboardWithName:_serviceName create:NO];
     if (pasteboard == nil) {
@@ -318,10 +345,19 @@ enum {
             *error = [ApplilinkNetworkError
                 localizedApplilinkErrorWithCode:kRecommendAdIdErrorPasteboardUnavailable];
         }
+#ifdef ENABLE_PATCHES
+        return NO;
+#else
         return;
+#endif
     }
+#ifndef ENABLE_PATCHES
     [pasteboard setData:nil forPasteboardType:kRecommendAdIdPasteboardType];
+#endif
     [UIPasteboard removePasteboardWithName:_serviceName];
+#ifdef ENABLE_PATCHES
+    return YES;
+#endif
 }
 
 #pragma mark - Local record decryption
@@ -474,12 +510,12 @@ static NSInteger RecommendAdIdErrorCodeForResponse(NSDictionary *response) {
 }
 
 /** @ghidraAddress 0x20498c */
-- (void)setPasteboardWithUdid:(NSString *)udid
-                  countryCode:(NSString *)countryCode
-                   categoryId:(NSString *)categoryId
-                     adIdFrom:(NSString *)adIdFrom
-                       adType:(NSString *)adType
-                        error:(NSError *_Nullable *)error {
+- (RecommendAdMutationResult)setPasteboardWithUdid:(NSString *)udid
+                                       countryCode:(NSString *)countryCode
+                                        categoryId:(NSString *)categoryId
+                                          adIdFrom:(NSString *)adIdFrom
+                                            adType:(NSString *)adType
+                                             error:(NSError *_Nullable *)error {
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:5];
     if (udid != nil) {
         [body setValue:udid forKey:kRecommendAdIdRequestKeyUdid];
@@ -507,7 +543,11 @@ static NSInteger RecommendAdIdErrorCodeForResponse(NSDictionary *response) {
         if (error != NULL) {
             *error = requestError;
         }
+#ifdef ENABLE_PATCHES
+        return NO;
+#else
         return;
+#endif
     }
     if (response == nil) {
         if (error != NULL) {
@@ -515,20 +555,27 @@ static NSInteger RecommendAdIdErrorCodeForResponse(NSDictionary *response) {
                 localizedApplilinkErrorWithCode:kRecommendAdIdErrorRequestFailed
                                        userInfo:nil];
         }
+#ifdef ENABLE_PATCHES
+        return NO;
+#else
         return;
+#endif
     }
     NSInteger errorCode = RecommendAdIdErrorCodeForResponse(response);
     if (errorCode != 0 && error != NULL) {
         *error = [ApplilinkNetworkError localizedApplilinkErrorWithCode:errorCode
                                                                userInfo:response];
     }
+#ifdef ENABLE_PATCHES
+    return errorCode == 0;
+#endif
 }
 
 /** @ghidraAddress 0x204ed8 */
-- (void)deletePasteboardWithUdid:(NSString *)udid
-                     countryCode:(NSString *)countryCode
-                      categoryId:(NSString *)categoryId
-                           error:(NSError *_Nullable *)error {
+- (RecommendAdMutationResult)deletePasteboardWithUdid:(NSString *)udid
+                                          countryCode:(NSString *)countryCode
+                                           categoryId:(NSString *)categoryId
+                                                error:(NSError *_Nullable *)error {
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:3];
     if (udid != nil) {
         [body setValue:udid forKey:kRecommendAdIdRequestKeyUdid];
@@ -550,7 +597,11 @@ static NSInteger RecommendAdIdErrorCodeForResponse(NSDictionary *response) {
         if (error != NULL) {
             *error = requestError;
         }
+#ifdef ENABLE_PATCHES
+        return NO;
+#else
         return;
+#endif
     }
     if (response == nil) {
         if (error != NULL) {
@@ -558,13 +609,20 @@ static NSInteger RecommendAdIdErrorCodeForResponse(NSDictionary *response) {
                 localizedApplilinkErrorWithCode:kRecommendAdIdErrorRequestFailed
                                        userInfo:nil];
         }
+#ifdef ENABLE_PATCHES
+        return NO;
+#else
         return;
+#endif
     }
     NSInteger errorCode = RecommendAdIdErrorCodeForResponse(response);
     if (errorCode != 0 && error != NULL) {
         *error = [ApplilinkNetworkError localizedApplilinkErrorWithCode:errorCode
                                                                userInfo:response];
     }
+#ifdef ENABLE_PATCHES
+    return errorCode == 0;
+#endif
 }
 
 @end

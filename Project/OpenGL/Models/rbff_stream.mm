@@ -9,6 +9,11 @@ constexpr unsigned int kRbffMagic = 0x46464252;
 
 /** @ghidraAddress 0x12e918 */
 void InitRbffStreamCursor(RbffStreamCursor *pCursor) {
+#ifdef ENABLE_PATCHES
+    if (pCursor == nullptr) {
+        return;
+    }
+#endif
     if (pCursor != nullptr) {
         pCursor->nField0 = 0;
     }

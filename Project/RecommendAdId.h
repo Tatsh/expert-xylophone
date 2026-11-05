@@ -11,6 +11,12 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef ENABLE_PATCHES
+typedef BOOL RecommendAdMutationResult;
+#else
+typedef void RecommendAdMutationResult;
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -46,11 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @param adType The advert-type string.
  * @param error On failure, the localised error; may be @c NULL.
  */
-- (void)setWithAdIdFrom:(nullable NSString *)adIdFrom
-            countryCode:(nullable NSString *)countryCode
-             categoryId:(nullable NSString *)categoryId
-                 adType:(nullable NSString *)adType
-                  error:(NSError *_Nullable *_Nullable)error;
+- (RecommendAdMutationResult)setWithAdIdFrom:(nullable NSString *)adIdFrom
+                                 countryCode:(nullable NSString *)countryCode
+                                  categoryId:(nullable NSString *)categoryId
+                                      adType:(nullable NSString *)adType
+                                       error:(NSError *_Nullable *_Nullable)error;
 
 /**
  * Delete the stored advertising identifier for a country code and category id.
@@ -58,9 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @param categoryId The advert category identifier.
  * @param error On failure, the localised error; may be @c NULL.
  */
-- (void)deleteWithCountryCode:(nullable NSString *)countryCode
-                   categoryId:(nullable NSString *)categoryId
-                        error:(NSError *_Nullable *_Nullable)error;
+- (RecommendAdMutationResult)deleteWithCountryCode:(nullable NSString *)countryCode
+                                        categoryId:(nullable NSString *)categoryId
+                                             error:(NSError *_Nullable *_Nullable)error;
 
 @end
 

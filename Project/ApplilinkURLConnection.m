@@ -62,7 +62,11 @@
         if ([delegate respondsToSelector:@selector(finishLoadWithResponse:)]) {
             [delegate finishLoadWithResponse:nil];
         }
+#ifdef ENABLE_PATCHES
+        return nil;
+#else
         request = nil; // Returning nil cancels the redirect.
+#endif
     }
     return request;
 }

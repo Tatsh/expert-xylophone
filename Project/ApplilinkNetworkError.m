@@ -180,7 +180,12 @@ static NSMutableDictionary *gApplilinkErrorMessages = nil;
             gApplilinkErrorMessages[@(entry->code)] = message;
         }
     }
+#ifdef ENABLE_PATCHES
+    NSMutableDictionary *mergedUserInfo =
+        [NSMutableDictionary dictionaryWithDictionary:userInfo ?: @{}];
+#else
     NSMutableDictionary *mergedUserInfo = [NSMutableDictionary dictionaryWithDictionary:userInfo];
+#endif
     if (gApplilinkErrorMessages != nil) {
         // The binary keys the dictionary by a 32-bit int number.
         NSString *message = gApplilinkErrorMessages[@((int)code)];

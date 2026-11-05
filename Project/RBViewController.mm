@@ -297,7 +297,7 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
 
     ne::Viewport *orthoViewport =
         CreateOrthoViewport(scaledSize.x, scaledSize.y, 0, 0, viewW, viewH);
-    const float *pOrtho = orthoViewport->GetProjectionMatrix();
+    (void)orthoViewport->GetProjectionMatrix();
     SetCurrentProjection(orthoViewport);
     orthoViewport->Release();
 
@@ -331,8 +331,8 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
         S_VECTOR3 target{gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
         S_VECTOR3 up{0.0f, -1.0f, 0.0f};
         ne::CameraNode *camera = CreateLookAtCamera(&eye, &target, &up);
-        const float *pProj = viewport->GetProjectionMatrix();
-        const float *pView = camera->GetViewMatrix();
+        (void)viewport->GetProjectionMatrix();
+        (void)camera->GetViewMatrix();
         SetActiveViewCamera(viewport);
         SetCurrentModelNode(camera);
         viewport->Release();

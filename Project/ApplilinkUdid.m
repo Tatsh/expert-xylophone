@@ -225,7 +225,9 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         [[ApplilinkUdid sharedInstance].pasteBoard deleteWithStorageIndex:storageIndex
                                                                     error:&deleteError];
         if (deleteError != nil) {
-            *error = deleteError;
+            if (error != NULL) {
+                *error = deleteError;
+            }
             return NO;
         }
     }
@@ -278,7 +280,9 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
                                    rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeAdvertising
                                                    error:&readError];
     if (readError != nil || record == nil) {
-        *error = readError;
+        if (error != NULL) {
+            *error = readError;
+        }
         return [ApplilinkUdid getAdvertisingUdid];
     }
     return record;
@@ -302,8 +306,10 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         NSError *setError = readError;
         [ApplilinkUdid setNewUdid:newUdid error:&setError];
         if (setError != nil) {
-            *error = [ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkUdidErrorWriteFailed];
+            if (error != NULL) {
+                *error = [ApplilinkNetworkError
+                    localizedApplilinkErrorWithCode:kApplilinkUdidErrorWriteFailed];
+            }
         }
         [ApplilinkCore clearInitialize];
         return newUdid;
@@ -314,7 +320,9 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         NSError *newError = oldError;
         [ApplilinkUdid setNewUdid:newUdid error:&newError];
         [ApplilinkCore clearInitialize];
-        *error = nil;
+        if (error != NULL) {
+            *error = nil;
+        }
         return newUdid;
     }
     return storedUdid;
@@ -686,7 +694,7 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         } else {
             secondaryUdid = nil;
         }
-        if (![adUdid isEqualToString:secondaryUdid]) {
+        if (secondaryUdid != nil && ![adUdid isEqualToString:secondaryUdid]) {
             [udidParameters setValue:secondaryUdid forKey:kApplilinkUdidParamKeyOldUdid];
         }
         return YES;

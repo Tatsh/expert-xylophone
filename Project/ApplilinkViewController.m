@@ -35,6 +35,7 @@
 
 // @ghidraAddress 0x2137d0
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
 }
 
 // @ghidraAddress 0x2137d4

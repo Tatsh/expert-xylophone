@@ -566,9 +566,23 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                                                                             withString:@""];
 
     NSArray *serverData = [AppDelegate getServerData];
+#ifdef ENABLE_PATCHES
+    NSString *region = GetRegionCode();
+    NSString *version = GetBundleVersionString();
+    if (serverData.count < kServerDataFieldCount || region == nil || version == nil ||
+        serverData[kServerDataUserIdIndex] == nil || serverData[kServerDataTokenIndex] == nil ||
+        token == nil) {
+        return;
+    }
+#endif
     NSDictionary *payload = @{
+#ifdef ENABLE_PATCHES
+        @"target" : region,
+        @"version" : version,
+#else
         @"target" : GetRegionCode(),
         @"version" : GetBundleVersionString(),
+#endif
         @"p1" : serverData[kServerDataUserIdIndex],
         @"p2" : serverData[kServerDataTokenIndex],
         @"p3" : token,

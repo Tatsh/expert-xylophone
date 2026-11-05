@@ -165,7 +165,7 @@ constexpr long kPageControlMinPageCount = 2;
     CGFloat buttonX[] = {center - spread, center, center + spread};
 
     int selectedNoteType = [RBUserSettingData sharedInstance].noteType;
-    for (NSUInteger i = 0; i < self.items.count; ++i) {
+    for (NSUInteger i = 0; i < self.items.count && i < ARRAY_SIZE(buttonX); ++i) {
         int itemID = self.items[i].intValue;
         NSString *imageName = [NSString
             stringWithFormat:kNoteItemImageNameFormat, g_aCustomizeObjectVariants[itemID]];

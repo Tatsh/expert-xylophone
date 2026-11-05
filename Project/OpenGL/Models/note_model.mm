@@ -2302,6 +2302,11 @@ inline void BuildActivationLaneFractions(float (&aFractions)[kActivationLaneCoun
 
 /** @ghidraAddress 0x134128 */
 void NoteModel::Init() {
+#ifdef ENABLE_PATCHES
+    if (m_pRecord == nullptr) {
+        return;
+    }
+#endif
     RbffNoteRecord *pRecord = m_pRecord;
     NoteModel *pMirrorSource = nullptr;
     bool bBasePosSet = false;

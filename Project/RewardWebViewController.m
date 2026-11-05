@@ -165,6 +165,7 @@ enum {
 
 // @ 0x21d1a8
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
     _viewCloseFlg = YES;
 }
 
@@ -313,8 +314,8 @@ enum {
     }
     self.view.frame = CGRectMake(originX, originY, viewWidth, viewHeight);
 
-    CGFloat baseInset = statusInset;
-    CGRect baseFrame = self.baseView.frame;
+    CGFloat baseInset;
+    CGRect baseFrame;
     if (self.isNavigationBarHidden) {
         [self.navigationBar removeFromSuperview];
         baseFrame = self.baseView.frame;
