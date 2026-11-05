@@ -79,7 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) RBMenuPageSlider *slider;
 
 /**
- * The floating index-label text shown while paging.
+ * Set the floating page label, showing at most three characters or a placeholder for empty text.
+ * @ghidraAddress 0x1c07bc (setter)
  */
 @property(strong, nonatomic, nullable) NSString *indexLabel;
 

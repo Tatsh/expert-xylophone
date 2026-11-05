@@ -12,6 +12,15 @@ static const NSTimeInterval kSliderRotationFadeDuration = 0.3;
 
 @implementation RBMenuPageSliderView
 
+@dynamic indexLabel;
+@synthesize animating = _animating;
+
+- (void)setIndexLabel:(NSString *)indexLabel {
+    self.slider.indexLabel.text = indexLabel.length == 0 ? @"#" :
+                                  indexLabel.length >= 3 ? [indexLabel substringToIndex:3] :
+                                                           indexLabel;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame delegate:(id<RBMenuPageSliderDelegate>)delegate {
     self = [super initWithFrame:frame];
     if (self) {
