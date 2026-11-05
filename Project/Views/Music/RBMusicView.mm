@@ -280,6 +280,13 @@ static NSString *const kDetDecSingleTable[] = {
 static NSString *const kDetDecSingleColette =
     @"02_music_detail/det_dec_s"; // @ghidraAddress 0x35b028
 
+// @ghidraAddress 0x35b050
+static NSString *const kDetDecPhoneTable[] = {
+    @"02_music_detail/det_dec_d",
+    @"02_music_detail/det_dec_g",
+    @"02_music_detail/det_dec_p",
+};
+
 // @ghidraAddress 0x35b030
 static NSString *const kDetDecDoubleTable[] = {
     @"02_music_detail/det_dec_dd",
@@ -309,8 +316,11 @@ struct DetailGeometry {
 };
 } // namespace
 
-static const CGFloat kDecideX = 44.0;
-static const CGFloat kDecideY = 546.0;
+static const CGFloat kDecidePadX = 44.0;           // @ghidraAddress 0x2eec40
+static const CGFloat kDecidePadY = 546.0;          // @ghidraAddress 0x3013d0
+static const CGFloat kDecidePhoneCenterX = 160.0;  // @ghidraAddress 0x2eea38
+static const CGFloat kDecidePhoneYColette = 297.0; // @ghidraAddress 0x3013c0
+static const CGFloat kDecidePhoneYOther = 287.0;   // @ghidraAddress 0x3013b8
 static const CGFloat kWhitePastelCenterX = 160.0;
 static const CGFloat kWhitePastelCenterY = 297.0;
 static const CGFloat kBlackPastelCenterX = 160.0;
@@ -822,11 +832,23 @@ constexpr int kDetMbgPlainIndex = 3;
 
     UIButton *decideButton = [UIButton buttonWithType:UIButtonTypeCustom];
     int decideThema = [RBUserSettingData sharedInstance].thema;
-    UIImage *decideImage = decideThema == RBUserSettingDataThemeColette ?
-                               [UIImage imageWithName:kDetDecSingleColette] :
-                               [UIImage imageWithName:kDetDecSingleTable[frameBonusType]];
+    BOOL decidePad = IsPad();
+    UIImage *decideImage = decidePad ?
+                               [UIImage imageWithName:decideThema == RBUserSettingDataThemeColette ?
+                                                          kDetDecSingleColette :
+                                                          kDetDecSingleTable[frameBonusType]] :
+                               [UIImage imageWithName:kDetDecPhoneTable[frameBonusType]];
     CGSize decideSize = decideImage.size;
-    decideButton.frame = CGRectMake(kDecideX, kDecideY, decideSize.width, decideSize.height);
+    if (decidePad) {
+        decideButton.frame =
+            CGRectMake(kDecidePadX, kDecidePadY, decideSize.width, decideSize.height);
+    } else {
+        decideButton.bounds = CGRectMake(0.0, 0.0, decideSize.width, decideSize.height);
+        decideButton.center =
+            CGPointMake(kDecidePhoneCenterX,
+                        decideThema == RBUserSettingDataThemeColette ? kDecidePhoneYColette :
+                                                                       kDecidePhoneYOther);
+    }
     decideButton.exclusiveTouch = YES;
     [decideButton setBackgroundImage:decideImage forState:UIControlStateNormal];
     [decideButton addTarget:self

@@ -23,6 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Corrected the iPhone music detail Decide button artwork and placement used by the tutorial.
 - The share image draws its MAX COMBO value again. `-[TwitterImageCreater drawScore:Pos:Dot:]` was
   missing the last of the binary's eight `drawNumber` calls, so the row's label and dotted leader
   came from the background artwork with no number over them.
