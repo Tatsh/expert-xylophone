@@ -99,31 +99,19 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1bd1dc (getter)
  * @ghidraAddress 0x1bd1ec (setter)
  */
-#ifdef ENABLE_PATCHES
-@property(nonatomic, strong, nullable) NSMutableData *pointData;
-#else
 @property(nonatomic, copy, nullable) NSMutableData *pointData;
-#endif
 /**
  * The enciphered on-disk form of @c pointB, produced by @c encodePoint:.
  * @ghidraAddress 0x1bd1f8 (getter)
  * @ghidraAddress 0x1bd208 (setter)
  */
-#ifdef ENABLE_PATCHES
-@property(nonatomic, strong, nullable) NSMutableData *pointDataB;
-#else
 @property(nonatomic, copy, nullable) NSMutableData *pointDataB;
-#endif
 /**
  * The enciphered on-disk form of @c pointC.
  * @ghidraAddress 0x1bd214 (getter)
  * @ghidraAddress 0x1bd224 (setter)
  */
-#ifdef ENABLE_PATCHES
-@property(nonatomic, strong, nullable) NSMutableData *pointDataC;
-#else
 @property(nonatomic, copy, nullable) NSMutableData *pointDataC;
-#endif
 /**
  * The set of unlocked background-music item identifiers.
  * @ghidraAddress 0x1bd230 (getter)
