@@ -23,6 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Restored left and right end caps on the iPad terms agreement progress bar.
 - In patched builds, push-token upload skips missing account or device-token data.
 - In patched builds, reward setup uses a default environment and removes invalid stored IDs.
 - Reward ID storage errors no longer crash the app when callers omit the optional error output.

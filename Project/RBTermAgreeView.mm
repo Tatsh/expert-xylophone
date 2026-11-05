@@ -188,8 +188,7 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     UIImage *fillImage = [trackSource
         clipImageWithRect:CGRectMake(0.0, trackClipHeight, kTrackClipWidthWide, trackClipHeight)];
     if (!narrow) {
-        // The binary's cap insets were not recovered; zero stands in for them.
-        fillImage = [fillImage resizableImageWithCapInsets:UIEdgeInsetsZero];
+        fillImage = [fillImage resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 7.0, 0.0, 7.0)];
     }
 
     UIImageView *track = [[UIImageView alloc] initWithImage:trackImage];
