@@ -29,68 +29,46 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This flag is carried verbatim from the host panel's layout and is not read by any of the view's
  * own methods; it is retained to match the binary's ivar and property layout.
- * @ghidraAddress 0x7214 (getter)
- * @ghidraAddress 0x7224 (setter)
  */
 @property(nonatomic, assign) BOOL m_IsAnimation;
 /**
  * The plotted values, each a boxed @c float, ordered left to right.
- * @ghidraAddress 0x107234 (getter)
- * @ghidraAddress 0x7244 (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *dataArray;
 /**
  * The per-point overlay views. Allocated on initialisation and cleared on reset.
- * @ghidraAddress 0x727c (getter)
- * @ghidraAddress 0x728c (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *pointArray;
 /**
  * The origin of the first plotted point, in the view's coordinate space.
- * @ghidraAddress 0x72c4 (getter)
- * @ghidraAddress 0x72d8 (setter)
  */
 @property(nonatomic, assign) CGPoint startPos;
 /**
  * The horizontal spacing between adjacent plotted points.
- * @ghidraAddress 0x72ec (getter)
- * @ghidraAddress 0x72fc (setter)
  */
 @property(nonatomic, assign) float dotIntervalX;
 /**
  * The value mapped to the top of the plot.
- * @ghidraAddress 0x730c (getter)
- * @ghidraAddress 0x731c (setter)
  */
 @property(nonatomic, assign) float maxValue;
 /**
  * The value mapped to the bottom of the plot.
- * @ghidraAddress 0x732c (getter)
- * @ghidraAddress 0x733c (setter)
  */
 @property(nonatomic, assign) float minValue;
 /**
  * The colour of the filled per-point dots.
- * @ghidraAddress 0x734c (getter)
- * @ghidraAddress 0x735c (setter)
  */
 @property(nonatomic, strong, nullable) UIColor *dotColor;
 /**
  * The stroke width used to draw each per-point dot.
- * @ghidraAddress 0x7394 (getter)
- * @ghidraAddress 0x73a4 (setter)
  */
 @property(nonatomic, assign) float dotSize;
 /**
  * The colour of the connecting polyline.
- * @ghidraAddress 0x73b4 (getter)
- * @ghidraAddress 0x73c4 (setter)
  */
 @property(nonatomic, strong, nullable) UIColor *lineColor;
 /**
  * The stroke width of the connecting polyline.
- * @ghidraAddress 0x73fc (getter)
- * @ghidraAddress 0x740c (setter)
  */
 @property(nonatomic, assign) float lineSize;
 

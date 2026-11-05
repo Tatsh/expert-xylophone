@@ -69,64 +69,46 @@ NS_ASSUME_NONNULL_BEGIN
  * artwork and frame views by device idiom, and sets @c pointLabel to the item's point cost. For a
  * music item the placeholder artwork is shown immediately and the cover is downloaded through
  * @c imageDownloader.
- * @ghidraAddress 0x192640 (getter)
- * @ghidraAddress 0x190448 (setter)
  */
 @property(strong, nonatomic, nullable) RBUnlockPackageItemData *itemData;
 
 /**
  * The cell's artwork image view.
- * @ghidraAddress 0x192558 (getter)
- * @ghidraAddress 0x192568 (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *imageView;
 
 /**
  * The lock/unlock frame overlay drawn over the artwork.
- * @ghidraAddress 0x1925a0 (getter)
- * @ghidraAddress 0x1925b0 (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *frameImageView;
 
 /**
  * The point-cost label, drawn with the lime digit-glyph style.
- * @ghidraAddress 0x1925f8 (getter)
- * @ghidraAddress 0x192608 (setter)
  */
 @property(strong, nonatomic, nullable) RBNumberLabel *pointLabel;
 
 /**
  * The "new" badge overlay, shown while an unlocked music track is still un-downloaded.
- * @ghidraAddress 0x192650 (getter)
- * @ghidraAddress 0x192660 (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *badgeView;
 
 /**
  * The overlay revealed once the item has been unlocked.
- * @ghidraAddress 0x192698 (getter)
- * @ghidraAddress 0x1926a8 (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *unlockView;
 
 /**
  * The black rounded dimming view whose alpha reflects the interactive state.
- * @ghidraAddress 0x1926e0 (getter)
- * @ghidraAddress 0x1926f0 (setter)
  */
 @property(strong, nonatomic, nullable) UIView *disableView;
 
 /**
  * The downloader that fetches a music item's cover artwork.
- * @ghidraAddress 0x192728 (getter)
- * @ghidraAddress 0x192738 (setter)
  */
 @property(strong, nonatomic, nullable) ImageDownloader *imageDownloader;
 
 /**
  * The index path the cell is currently laid out at.
- * @ghidraAddress 0x192510 (getter)
- * @ghidraAddress 0x192520 (setter)
  */
 @property(strong, nonatomic, nullable) NSIndexPath *indexPath;
 
@@ -135,8 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Setting the value dims the interactive overlay and mirrors the flag onto
  * @c userInteractionEnabled.
- * @ghidraAddress 0x1925e8 (getter)
- * @ghidraAddress 0x1903b0 (setter)
  */
 @property(nonatomic, assign) BOOL enabled;
 

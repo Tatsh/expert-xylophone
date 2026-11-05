@@ -66,63 +66,44 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The delegate notified as the catalogue loads.
- * @ghidraAddress 0xc11c4 (getter)
- * @ghidraAddress 0xc11a4 (setter)
  */
 @property(nonatomic, weak, nullable) id<StoreExtendNoteListDelegate> delegate;
 /**
  * The parsed extend-note records loaded so far.
- * @ghidraAddress 0xc11f8 (getter)
- * @ghidraAddress 0xc1208 (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray<StoreExtendNoteInfo *> *arrayExtendNoteInfo;
 /**
  * The ordered product identifiers currently loaded, as boxed integers.
- * @ghidraAddress 0xc1240 (getter)
- * @ghidraAddress 0xc1250 (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray<NSNumber *> *listProductID;
 /**
  * The in-flight catalogue-page downloader, when a page fetch is active.
- * @ghidraAddress 0xc1288 (getter)
- * @ghidraAddress 0xc1298 (setter)
  */
 @property(nonatomic, strong, nullable) Downloader *extendNotelistDownloader;
 /**
  * The server catalogue dictionary held while its StoreKit products are being resolved.
- * @ghidraAddress 0xc12d0 (getter)
- * @ghidraAddress 0xc12e0 (setter)
  */
 @property(nonatomic, strong, nullable) NSDictionary *tempExtendNoteList;
 /**
  * The in-flight StoreKit products request, when one is active.
- * @ghidraAddress 0xc1318 (getter)
- * @ghidraAddress 0xc1328 (setter)
  */
 @property(nonatomic, strong, nullable) SKProductsRequest *productsRequest;
 /**
  * The number of catalogue items already fetched (the paging cursor).
- * @ghidraAddress 0xc1360 (getter)
- * @ghidraAddress 0xc1370 (setter)
  */
 @property(nonatomic, assign) unsigned int fetchedExtendNoteNum;
 /**
  * Whether the current products request is the single-pack optional-products request.
- * @ghidraAddress 0xc1380 (getter)
- * @ghidraAddress 0xc1390 (setter)
  */
 @property(nonatomic, assign) BOOL isOptionalProductRequest;
 /**
  * Whether the catalogue has further pages to load.
- * @ghidraAddress 0xc11d8 (getter)
- * @ghidraAddress 0xc11e8 (setter)
  */
 @property(nonatomic, assign) BOOL extendNoteListContinued;
 
 /**
  * Whether a catalogue fetch (page download or products request) is currently in flight.
  * @return @c YES while a page downloader or a StoreKit products request is active.
- * @ghidraAddress 0xbf488
  */
 @property(nonatomic, readonly) BOOL isFetching;
 

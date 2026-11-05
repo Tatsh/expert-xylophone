@@ -30,56 +30,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The tune artwork image view.
- * @ghidraAddress 0x4d058 (getter)
- * @ghidraAddress 0x4d068 (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *artworkImageView;
 /**
  * The shadowed backing plate shown behind the artwork.
- * @ghidraAddress 0x4d0a0 (getter)
- * @ghidraAddress 0x4d0b0 (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *artworkBackImageView;
 /**
  * The tune name label.
- * @ghidraAddress 0x4d0e8 (getter)
- * @ghidraAddress 0x4d0f8 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *nameLabel;
 /**
  * The tune artist label.
- * @ghidraAddress 0x4d130 (getter)
- * @ghidraAddress 0x4d140 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *artistLabel;
 /**
  * The tune comment label.
- * @ghidraAddress 0x4d158 (getter)
- * @ghidraAddress 0x4d188 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *commentLabel;
 /**
  * The difficulty-level label.
- * @ghidraAddress 0x4d1a0 (getter)
- * @ghidraAddress 0x4d1d0 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *levelLabel;
 /**
  * The purchased/price overlay label.
- * @ghidraAddress 0x4d1d8 (getter)
- * @ghidraAddress 0x4d208 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *purchasedLabel;
 /**
  * An informational deep link associated with the item, when present.
- * @ghidraAddress 0x4d250 (getter)
- * @ghidraAddress 0x4d260 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *linkURL;
 /**
  * Whether the extend note is purchased, derived from the purchased-label visibility.
- * @ghidraAddress 0x4cb68 (getter)
- * @ghidraAddress 0x4cbc8 (setter)
  */
 @property(nonatomic, assign) BOOL isPurchased;
 

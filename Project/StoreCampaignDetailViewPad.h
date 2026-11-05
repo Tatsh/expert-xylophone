@@ -32,107 +32,86 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The bound campaign item currently displayed.
- * @ghidraAddress 0x474d0 (getter), 0x474e0 (setter)
  */
 @property(nonatomic, strong, nullable) StoreCampaignItemInfo *itemInfo;
 /**
  * The list page that receives the overlay's close and button callbacks.
- * @ghidraAddress 0x47518 (getter), 0x47538 (setter)
  */
 @property(nonatomic, weak, nullable) id delegate;
 /**
  * The campaign identifier of the bound item.
- * @ghidraAddress 0x4781c (getter), 0x4782c (setter)
  */
 @property(nonatomic, assign) int campaignID;
 /**
  * The container that holds the artwork, labels, and acquisition buttons.
- * @ghidraAddress 0x4754c (getter), 0x4755c (setter)
  */
 @property(nonatomic, strong, nullable) UIView *itemView;
 /**
  * The artwork tile.
- * @ghidraAddress 0x475dc (getter), 0x475ec (setter)
  */
 @property(nonatomic, strong, nullable) StoreImageView *artworkView;
 /**
  * The campaign-title label at the top of the item container.
- * @ghidraAddress 0x47624 (getter), 0x47634 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *labelTitle;
 /**
  * The item-name label.
- * @ghidraAddress 0x4766c (getter), 0x4767c (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *labelItemName;
 /**
  * The artist-name label.
- * @ghidraAddress 0x476b4 (getter), 0x476c4 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *labelArtistName;
 /**
  * The difficulty-levels label.
- * @ghidraAddress 0x476fc (getter), 0x4770c (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *labelLevels;
 /**
  * The item-identifier label.
- * @ghidraAddress 0x47744 (getter), 0x47754 (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *labelID;
 /**
  * The primary acquisition button.
- * @ghidraAddress 0x4778c (getter), 0x4779c (setter)
  */
 @property(nonatomic, strong, nullable) StoreButtonView *downloadBtn;
 /**
  * The external-link button.
- * @ghidraAddress 0x477d4 (getter), 0x477e4 (setter)
  */
 @property(nonatomic, strong, nullable) StoreButtonView *linkBtn;
 /**
  * The audio-sample play/stop button.
- * @ghidraAddress 0x47914 (getter), 0x47924 (setter)
  */
 @property(nonatomic, strong, nullable) UIButton *sampleBtn;
 /**
  * The downloader driving the audio sample fetch.
- * @ghidraAddress 0x4783c (getter), 0x4784c (setter)
  */
 @property(nonatomic, strong, nullable) Downloader *sampleDownloader;
 /**
  * The loading indicator shown while the detail pane populates.
- * @ghidraAddress 0x47884 (getter), 0x47894 (setter)
  */
 @property(nonatomic, strong, nullable) UIActivityIndicatorView *indicator;
 /**
  * The activity indicator overlaid on the sample button while it downloads.
- * @ghidraAddress 0x47a7c (getter), 0x47a8c (setter)
  */
 @property(nonatomic, strong, nullable) UIActivityIndicatorView *indicatorSample;
 /**
  * The playing-state glyph shown on the sample button.
- * @ghidraAddress 0x4795c (getter), 0x4796c (setter)
  */
 @property(nonatomic, strong, nullable) UIImageView *playingView;
 /**
  * The loading label shown while the detail pane populates.
- * @ghidraAddress 0x478cc (getter), 0x478dc (setter)
  */
 @property(nonatomic, strong, nullable) UILabel *labelLoading;
 /**
  * The scrolling detail pane holding the banner, description, and copyright.
- * @ghidraAddress 0x479a4 (getter), 0x479b4 (setter)
  */
 @property(nonatomic, strong, nullable) UIScrollView *detailView;
 /**
  * The campaign banner tile inside the detail pane.
- * @ghidraAddress 0x479ec (getter), 0x479fc (setter)
  */
 @property(nonatomic, strong, nullable) StoreImageView *bannerView;
 /**
  * The campaign description text view inside the detail pane.
- * @ghidraAddress 0x47a34 (getter), 0x47a44 (setter)
  */
 @property(nonatomic, strong, nullable) UITextView *descriptionTextView;
 /**

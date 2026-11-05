@@ -92,36 +92,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The resolution-dependent layout scale: half on the compact iPad idiom, unity otherwise.
- * @ghidraAddress 0x1b8170 (getter)
- * @ghidraAddress 0x1b8160 (setter)
  */
 @property(nonatomic, assign) float displayRate;
 
 /**
  * The head child layer, held weakly (retained by its superlayer).
- * @ghidraAddress 0x1b80c4 (getter)
- * @ghidraAddress 0x1b80e4 (setter)
  */
 @property(nonatomic, weak, nullable) CALayer *headLayer;
 
 /**
  * The body child layer, held weakly (retained by its superlayer).
- * @ghidraAddress 0x1b812c (getter)
- * @ghidraAddress 0x1b814c (setter)
  */
 @property(nonatomic, weak, nullable) CALayer *bodyLayer;
 
 /**
  * The right-tail child layer, held weakly (retained by its superlayer).
- * @ghidraAddress 0x1b8090 (getter)
- * @ghidraAddress 0x1b80b0 (setter)
  */
 @property(nonatomic, weak, nullable) CALayer *rightLayer;
 
 /**
  * The left-tail child layer, held weakly (retained by its superlayer).
- * @ghidraAddress 0x1b80f8 (getter)
- * @ghidraAddress 0x1b8118 (setter)
  */
 @property(nonatomic, weak, nullable) CALayer *leftLayer;
 
