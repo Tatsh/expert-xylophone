@@ -734,13 +734,6 @@ private:
      */
     ResultWindowClassicLayer();
 
-    /**
-     * Begins loading the customize-character main asset for the result screen.
-     * Reconstruction pending.
-     * @ghidraAddress 0x11c66c
-     */
-    void BeginCustomizeMainAsset();
-
     // @ghidraAddress 0x1171a0
     void UpdateGestureTouchTracking();
 
