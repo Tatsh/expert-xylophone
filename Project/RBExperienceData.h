@@ -291,20 +291,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Unlocks a tune item.
  * @param musicID The tune item identifier.
- * @ghidraAddress 0x1bad00
  */
 - (void)addMusicID:(int)musicID;
 /**
  * Unlocks a theme item.
  * @param themaID The theme item identifier.
- * @ghidraAddress 0x1bad80
  */
 - (void)addThemaID:(int)themaID;
 /**
  * Unlocks an item of a given category.
  * @param type The item category, an @c RBExperienceItemType raw value.
  * @param ID The item identifier within that category.
- * @ghidraAddress 0x1bae00
  */
 - (void)addItem:(int)type ID:(int)ID;
 

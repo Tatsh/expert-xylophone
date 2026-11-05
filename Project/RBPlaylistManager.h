@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The shared playlist-manager instance, loaded from the @c Documents/playlist archive on
  *        first use.
- * @ghidraAddress 0x71060
  * @return The shared @c RBPlaylistManager.
  */
 + (instancetype)sharedInstance;

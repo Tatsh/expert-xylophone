@@ -119,7 +119,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @param packID The pack identifier.
  * @param userOpen Whether the request is on behalf of a user-initiated open.
  * @return The pack-detail info endpoint URL.
- * @ghidraAddress 0x85964
  */
 + (nullable NSURL *)packInfoURL:(unsigned int)packID UserOpen:(BOOL)userOpen;
 
@@ -153,7 +152,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @param offset The one-based catalogue offset of the first item to fetch.
  * @param limit The maximum number of items to fetch.
  * @return The extend-note list endpoint URL.
- * @ghidraAddress 0x187484
  */
 + (nullable NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit;
 
@@ -174,7 +172,6 @@ NS_ASSUME_NONNULL_BEGIN
  * Map an App Store product identifier to its numeric pack identifier.
  * @param productID The product identifier string.
  * @return The numeric pack identifier, or @c -1 when it is not a pack product.
- * @ghidraAddress 0x1e66f8 (caller reference)
  */
 + (int)packIDForProductID:(nullable NSString *)productID;
 

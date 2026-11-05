@@ -156,7 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The display-link callback that runs one task and draw pass.
- * @ghidraAddress 0x8b3a8
  */
 - (void)mainLoop;
 

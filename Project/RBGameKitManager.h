@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The shared Game Center manager, created once on first use.
- * @ghidraAddress 0x202c30
  * @return The shared @c RBGameKitManager.
  */
 + (instancetype)sharedInstance;

@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
                      MusicSelectedBase:(nullable RBMusicView *)MusicSelectedBase;
 
 /**
- * Builds the bar, marker, and tap recogniser. @ghidraAddress 0xe158
+ * Builds the bar, marker, and tap recogniser.
  */
 - (void)SetupView;
 

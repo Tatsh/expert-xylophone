@@ -76,14 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
  * Initialises the plot, allocates its point overlay array, and applies the default layout.
  * @param frame The view frame.
  * @return The initialised plot.
- * @ghidraAddress 0x5ce8
  */
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * Applies the default plot layout: the starting point, hidden state, and translucent
  * background.
- * @ghidraAddress 0x5dc0
  */
 - (void)CreateView;
 
@@ -94,7 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @param dotSize The dot stroke width.
  * @param lineColor The polyline colour.
  * @param lineSize The polyline stroke width.
- * @ghidraAddress 0x5e84
  */
 - (void)setOption:(nullable UIColor *)option
           dotSize:(float)dotSize
@@ -105,7 +102,6 @@ NS_ASSUME_NONNULL_BEGIN
  * Replaces the plotted data and rescales the plot, with the minimum line pinned to zero.
  * @param data The boxed @c float values to plot.
  * @param maxValue The value mapped to the top of the plot.
- * @ghidraAddress 0x6004
  */
 - (void)setData:(nullable NSArray *)data maxValue:(float)maxValue;
 
@@ -120,7 +116,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @param data The boxed @c float values to plot.
  * @param maxValue The value mapped to the top of the plot.
  * @param isMovableMinLine Whether the minimum line may drop below zero to fit the data.
- * @ghidraAddress 0x6024
  */
 - (void)setData:(nullable NSArray *)data
             maxValue:(float)maxValue
@@ -129,7 +124,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Clears the plotted data and overlay points and returns the plot to its empty default
  * state, then requests a redraw.
- * @ghidraAddress 0x702c
  */
 - (void)reset;
 
