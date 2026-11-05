@@ -791,9 +791,9 @@ void TutorialGuideLayer::RenderResultOverlay(float flDeltaTime) {
     EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindBoxBottomLeft, &boxBottomLeft.x, kHalfAlpha);
     EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindBoxBottomRight, &boxBottomRight.x, kHalfAlpha);
 
-    const int nPhaseNow = pGameSystem->GetTutorialPhase();
+    const unsigned int nPhaseNow = static_cast<unsigned int>(pGameSystem->GetTutorialPhase());
     if (nPhaseNow < 6) {
-        if ((1 << nPhaseNow) & kPhaseMaskAnimatedHand) {
+        if ((1u << nPhaseNow) & kPhaseMaskAnimatedHand) {
             const float flHandScale =
                 CalculateCurveInterpolation(kHandScaleInCurve, 2, m_flStateTimer);
             const float flHandScaleY =
@@ -814,7 +814,7 @@ void TutorialGuideLayer::RenderResultOverlay(float flDeltaTime) {
                                    kSpriteKindPhrasePrimary,
                                    &phrasePrimary.x,
                                    kFullAlpha);
-        } else if ((1 << nPhaseNow) & kPhaseMaskStaticHand) {
+        } else if ((1u << nPhaseNow) & kPhaseMaskStaticHand) {
             EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindPhraseHand, &phraseHand.x, kFullAlpha);
             const float flPhraseScale =
                 CalculateCurveInterpolation(kPhraseScaleHeldCurve, 5, m_flStateTimer);
