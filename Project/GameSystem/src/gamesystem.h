@@ -178,21 +178,6 @@ public:
         return m_flSheetRadius;
     }
     /**
-     * Stores the note sheet's corner radius and recomputes everything derived from it.
-     * @param fRadius The corner radius.
-     * @ghidraAddress 0x12f3c4
-     */
-    void SetSheetLayerRadius(float fRadius);
-    /**
-     * Stores the note sheet's margins and recomputes the far corner.
-     * @param fLeft The left margin.
-     * @param fTop The top margin.
-     * @param fRight The right margin.
-     * @param fBottom The bottom margin.
-     * @ghidraAddress 0x12f394
-     */
-    void SetSheetLayerMargins(float fLeft, float fTop, float fRight, float fBottom);
-    /**
      * Returns the note sheet's half radius, the off-screen cull margin below the field.
      * @return The note sheet's half radius.
      */

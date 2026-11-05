@@ -13,7 +13,6 @@ target_sources(rbplus PRIVATE
     number_effect_layer.mm
     pause_gauge_layer.mm
     playtimer.mm
-    sheetlayer.cpp
     sprite_uv_table.cpp
     touchmanager.cpp
     ctask.h
@@ -33,7 +32,6 @@ target_sources(rbplus PRIVATE
     number_effect_layer.h
     pause_gauge_layer.h
     playtimer.h
-    sheetlayer.h
     sprite_uv_table.h
     texture_cache_control.h
     touch_point.h

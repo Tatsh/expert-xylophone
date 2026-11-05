@@ -40,7 +40,6 @@
 #import "neWindow.h"
 #import "playtimer.h"
 #import "s_vector2.h"
-#import "sheetlayer.h"
 #import "touchmanager.h"
 
 @interface AppDelegate ()
