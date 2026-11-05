@@ -23,6 +23,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Failed texture loads no longer leak memory when a missing image is requested again. Patched
+  builds only.
 - Restored note colours for special chart lanes whose selectors precede the normal lookup range.
 - Corrected the iPhone music detail Decide button artwork and placement used by the tutorial.
 - The share image draws its MAX COMBO value again. `-[TwitterImageCreater drawScore:Pos:Dot:]` was

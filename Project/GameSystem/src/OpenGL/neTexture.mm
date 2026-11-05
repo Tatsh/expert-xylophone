@@ -74,9 +74,13 @@ C_TEXTURE *C_TEXTURE::FindOrLoadCached(const char *pszName) {
         }
     }
 
-    // On a load failure the binary abandons the entry without freeing it.
     auto *pNewEntry = new C_TEXTURE();
     if (pNewEntry->LoadFromUIImage(pszName) == 0) {
+#ifdef ENABLE_PATCHES
+        delete pNewEntry;
+#else
+        // The binary abandons the failed entry.
+#endif
         return nullptr;
     }
 
