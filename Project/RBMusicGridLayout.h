@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x16e298 (getter)
  * @ghidraAddress 0x16e2a8 (setter)
  */
-@property(nonatomic, strong, nullable) NSMutableArray<UICollectionViewLayoutAttributes *> *layouts;
+@property(nonatomic, strong, nullable) NSArray<UICollectionViewLayoutAttributes *> *layouts;
 
 @end
 

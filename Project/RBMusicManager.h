@@ -214,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x6d100 (getter)
  * @ghidraAddress 0x6d110 (setter)
  */
-@property(nonatomic, strong) NSMutableArray *preinstallMusicIDs;
+@property(nonatomic, strong) NSArray *preinstallMusicIDs;
 /**
  * The purchased-music dictionaries decoded from the @c mulist file.
  * @ghidraAddress 0x6d148 (getter)
