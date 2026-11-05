@@ -101,29 +101,29 @@ public:
         m_flScreenScale = value;
     }
     /**
-     * Returns the GL viewport width, in pixels.
-     * @return The GL viewport width, in pixels.
+     * Returns the logical viewport width, in points.
+     * @return The logical viewport width, in points.
      */
     float GetViewportWidth() const {
         return m_flViewportWidth;
     }
     /**
-     * Stores the GL viewport width, in pixels.
-     * @param value The GL viewport width, in pixels.
+     * Stores the logical viewport width, in points.
+     * @param value The logical viewport width, in points.
      */
     void SetViewportWidth(float value) {
         m_flViewportWidth = value;
     }
     /**
-     * Returns the GL viewport height, in pixels.
-     * @return The GL viewport height, in pixels.
+     * Returns the logical viewport height, in points.
+     * @return The logical viewport height, in points.
      */
     float GetViewportHeight() const {
         return m_flViewportHeight;
     }
     /**
-     * Stores the GL viewport height, in pixels.
-     * @param value The GL viewport height, in pixels.
+     * Stores the logical viewport height, in points.
+     * @param value The logical viewport height, in points.
      */
     void SetViewportHeight(float value) {
         m_flViewportHeight = value;
