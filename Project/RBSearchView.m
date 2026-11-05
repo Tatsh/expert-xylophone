@@ -20,6 +20,7 @@ static const CGFloat kMapTopInsetThemed = 50.0;  // @ghidraAddress 0x2ec6e0
 static const CGFloat kMapTopInsetDefault = 35.0; // @ghidraAddress 0x2eeca8
 
 @implementation RBSearchView {
+    BOOL m_Animating;
     RBUserSettingDataTheme _thema;
 }
 
@@ -28,6 +29,7 @@ static const CGFloat kMapTopInsetDefault = 35.0; // @ghidraAddress 0x2eeca8
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        (void)m_Animating;
         self.musicMenuPopupViewType = RBMusicMenuPopupViewTypeSearch;
         [self setupView];
     }
