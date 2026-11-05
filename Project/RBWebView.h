@@ -95,7 +95,11 @@ NS_ASSUME_NONNULL_BEGIN
  * The recognised @c reflecbeat scheme host keywords, in priority order
  * (@c link, @c store, @c openurl, and @c twitter).
  */
+#ifdef ENABLE_PATCHES
+@property(strong, nonatomic, nullable) NSMutableArray *urlList;
+#else
 @property(copy, nonatomic, nullable) NSMutableArray *urlList;
+#endif
 
 @end
 

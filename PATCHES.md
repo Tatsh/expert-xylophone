@@ -20,6 +20,19 @@ Each section below is kept to two paragraphs.
 
 ## `ENABLE_PATCHES`
 
+### Mutable property ownership
+
+**Files:** `Project/RBExperienceData.h` — `pointData`, `pointDataB`, and `pointDataC`;
+`Project/RBWebView.h` — `urlList`
+
+The binary declares these mutable collection and data properties with `copy` ownership. Copying a
+mutable Foundation object stores an immutable instance, despite the declared mutable type. Clang's
+property checker reports all four declarations.
+
+Patched builds use `strong` ownership to retain the declared mutable type. The current consumers
+only read or encode the values after assignment. Unpatched builds retain the binary's `copy`
+attributes.
+
 ### Image download cancellation
 
 **File:** `Project/ImageDownloader.m` — `-cancelDownload` (0x84900)
