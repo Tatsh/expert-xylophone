@@ -155,6 +155,10 @@ static const UIImageOrientation kRetinaImageOrientation = UIImageOrientationUp;
     self.imageTask = nil;
     [self.imageTaskRetina cancel];
     self.imageTaskRetina = nil;
+#ifdef ENABLE_PATCHES
+    [self.conn cancel];
+    self.conn = nil;
+#endif
 }
 
 #pragma mark - Completion dispatch

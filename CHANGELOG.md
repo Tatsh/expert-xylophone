@@ -23,6 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- In patched builds, cancelling an image download now stops its active network request.
 - Corrected the tutorial message panel's position above highlighted controls on iPhone.
 - Restored theme-specific text colours for rank, name, and score in ranking rows.
 - Restored the music menu page slider label with up to three reading characters or `#` when empty.

@@ -20,6 +20,17 @@ Each section below is kept to two paragraphs.
 
 ## `ENABLE_PATCHES`
 
+### Image download cancellation
+
+**File:** `Project/ImageDownloader.m` — `-cancelDownload` (0x84900)
+
+The original start methods discard the task returned by `RBHttpUtil`, leaving `imageTask` and
+`imageTaskRetina` unset. The original cancellation method cancels only those two task properties, so
+the active connection continues after a view requests cancellation.
+
+The patch cancels `conn` and clears its reference. `RBHttpUtil` also clears its completion blocks
+when cancelled. An unpatched build retains the original cancellation behaviour.
+
 ### Runtime strings passed as format strings
 
 **Files:** `Project/RBStoreExtendNoteList.m` — `-parseDictionary:`,

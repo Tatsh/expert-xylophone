@@ -90,13 +90,13 @@ typedef void (^ImageDownloaderBlock)(ImageDownloader *downloader);
  * @ghidraAddress 0x8561c (getter)
  * @ghidraAddress 0x8562c (setter)
  */
-@property(nonatomic, strong, nullable) RBHttpUtil *imageTask;
+@property(nonatomic, strong, nullable) NSURLSessionDataTask *imageTask;
 /**
  * A cancellable download handle for the Retina request.
  * @ghidraAddress 0x85664 (getter)
  * @ghidraAddress 0x85674 (setter)
  */
-@property(nonatomic, strong, nullable) RBHttpUtil *imageTaskRetina;
+@property(nonatomic, strong, nullable) NSURLSessionDataTask *imageTaskRetina;
 /**
  * The decoded image once the download finishes, or @c nil while pending.
  * @ghidraAddress 0x856ac (getter)
