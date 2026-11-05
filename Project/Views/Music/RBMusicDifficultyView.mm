@@ -39,7 +39,7 @@ static const CGFloat kExtendedCenterXDefault = 255.0; // DAT_100300f98
 static const CGFloat kExtendedCenterYDefault = 43.0;  // DAT_1002eeee8
 
 // Indexed by whether the song lacks an extended chart: 0 four-button, 1 three-button.
-static const CGFloat kHardCenterXDefault[] = {185.0, 245.0};   // DAT_1003011d0
+static const CGFloat kHardCenterXDefault[] = {185.0, 246.0};   // DAT_1003011d0
 static const CGFloat kMediumCenterXDefault[] = {115.0, 150.0}; // DAT_1003011e0
 static const CGFloat kBasicCenterXDefault[] = {45.0, 54.0};    // DAT_1003011f0
 
