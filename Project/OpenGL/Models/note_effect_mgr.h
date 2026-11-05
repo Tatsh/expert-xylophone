@@ -44,8 +44,7 @@ public:
     }
 
     /**
-     * Resets the per-note position cache: sets every render entry's cached position to the
-     *        -1 empty marker.
+     * Resets the per-note position cache by marking every render entry's key as empty.
      * @ghidraAddress 0x1373a0
      */
     void ClearNotePositionCache();
@@ -54,10 +53,10 @@ public:
      * Returns a touch's projected note-field position, computing and caching it on first use
      * this frame.
      *
-     * Returns the cached position when the touch id is already cached; otherwise claims the first
-     * empty cache slot, finds the live touch, normalises its position by the view size it began in,
-     * projects it into note-field space, and caches it. Returns @c nullptr when the cache is full
-     * or no live touch matches.
+     * Returns the cached position when the touch id is already cached. Otherwise, selects the
+     * highest-index empty cache slot, finds the live touch, normalises its position by the view
+     * size it began in, projects it into note-field space, and caches it. Returns @c nullptr when
+     * the cache is full or no live touch matches.
      * @param nTouchId The touch id to resolve.
      * @return The cached note-field position, or @c nullptr when the cache is full or no live
      *         touch matches.
