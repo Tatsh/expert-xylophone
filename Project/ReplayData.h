@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x106758 (getter)
  * @ghidraAddress 0x106768 (setter)
  */
-@property(nonatomic, strong, nullable) id user;
+@property(nonatomic, strong, nullable) NSString *user;
 /**
  * The tamper-detection hash over the score values.
  * @ghidraAddress 0x1067a0 (getter)
@@ -126,12 +126,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, nullable) NSArray<ReplayNote *> *replay;
 /**
- * A secondary per-note replay array. Declared by the shipped class but never populated,
+ * Secondary replay data. Declared by the shipped class but never populated,
  * archived, or reset.
  * @ghidraAddress 0x106830 (getter)
  * @ghidraAddress 0x106840 (setter)
  */
-@property(nonatomic, strong, nullable) NSArray<ReplayNote *> *replay2;
+@property(nonatomic, strong, nullable) NSData *replay2;
 
 /**
  * Whether a saved replay exists on disk for a tune and difficulty.
