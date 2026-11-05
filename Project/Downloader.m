@@ -2,6 +2,9 @@
 
 #import "RBHttpUtil.h"
 
+@interface Downloader () <RBHttpUtilDelegate>
+@end
+
 @implementation Downloader
 
 #pragma mark - Body serialisation
@@ -109,7 +112,8 @@
 
 #pragma mark - RBHttpUtil delegate callbacks
 
-- (void)downloaderProceed:(Downloader *)downloader {
+- (void)downloaderProceed:(RBHttpUtil *)connection {
+    (void)connection;
     if (self.proceedBlock) {
         self.proceedBlock(self);
     } else if ([self.delegate respondsToSelector:@selector(downloaderProceed:)]) {
@@ -119,7 +123,8 @@
     }
 }
 
-- (void)downloaderFinished:(Downloader *)downloader {
+- (void)downloaderFinished:(RBHttpUtil *)connection {
+    (void)connection;
     if (self.successBlock) {
         self.successBlock(self);
     } else if ([self.delegate respondsToSelector:@selector(downloaderFinished:)]) {
@@ -129,7 +134,8 @@
     }
 }
 
-- (void)downloaderError:(Downloader *)downloader {
+- (void)downloaderError:(RBHttpUtil *)connection {
+    (void)connection;
     if (self.failureBlock) {
         self.failureBlock(self);
     } else if ([self.delegate respondsToSelector:@selector(downloaderError:)]) {
