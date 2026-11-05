@@ -185,7 +185,6 @@ static const CGFloat kClassicHighlightBlue = 79.0 / kColorScale;
     }
 }
 
-// @ghidraAddress 0xdc3a8 (HandleLeaderboardLoadCompletionBlockInvoke)
 - (void)handleFriendsLoaded:(NSArray *)friendIDs error:(nullable NSError *)error {
     if (error == nil) {
         self.arrayScore = nil;
@@ -214,7 +213,6 @@ static const CGFloat kClassicHighlightBlue = 79.0 / kColorScale;
     }];
 }
 
-// @ghidraAddress 0xdb7ec (HandleScoreLoadCompletionBlockInvoke)
 - (void)handleScoresLoaded:(NSArray<GKScore *> *)scores
                     source:(GKLeaderboard *)source
                      error:(nullable NSError *)error {
@@ -242,7 +240,6 @@ static const CGFloat kClassicHighlightBlue = 79.0 / kColorScale;
     }
 }
 
-// @ghidraAddress 0xdbb84 (HandleLoadPlayersCompletionBlockInvoke)
 - (void)handlePlayersLoaded:(NSArray<GKPlayer *> *)players
                      scores:(NSArray<GKScore *> *)scores
                      source:(GKLeaderboard *)source

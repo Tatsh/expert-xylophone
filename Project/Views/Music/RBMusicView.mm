@@ -1013,7 +1013,6 @@ constexpr int kDetMbgPlainIndex = 3;
     [self updateDecideButton];
 }
 
-// @ghidraAddress 0xcd744
 - (void)buildBpmImageForMin:(int)bpmMin max:(int)bpmMax {
     UIImage *bpmImage = [self bpmImageForMin:bpmMin max:bpmMax];
     self.bpmImageView = [[UIImageView alloc] initWithImage:bpmImage];

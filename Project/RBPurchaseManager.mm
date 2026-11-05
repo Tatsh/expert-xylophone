@@ -422,7 +422,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 
 #pragma mark - Helpers
 
-// The stringWithFormat: takes no arguments. @ghidraAddress 0x6fe58, 0x361a20
+// The stringWithFormat: takes no arguments.
 - (NSError *)errorWithEmptyDescription {
     NSString *description = [NSString stringWithString:[NSString stringWithFormat:@""]];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObject:description

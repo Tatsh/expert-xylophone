@@ -805,7 +805,6 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)buildHeaderAndFooter:(NSInteger)thema {
-    /** @ghidraAddress 0xa5040 */
     self.headerView = [[UIImageView alloc] initWithImage:[UIImage imageWithName:kHeaderImageName]];
     self.headerView.frame =
         CGRectMake(0, 0, self.frame.size.width, self.headerView.frame.size.height);
@@ -829,7 +828,6 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (BOOL)buildCampaignBackground:(BOOL)isPad {
-    /** @ghidraAddress 0xa4f58 */
     NSMutableArray *images = [NSMutableArray array];
     for (int i = 1; i <= kCampaignBackgroundMaxImages; ++i) {
         NSString *name = [NSString stringWithFormat:@"%@/%@%d",
@@ -899,7 +897,6 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)buildMenuBarWithThema:(NSInteger)thema
                         isPad:(BOOL)isPad
      backgroundUsesEffectView:(BOOL)bgUsesEffectView {
-    /** @ghidraAddress 0xa5380 */
     for (NSInteger type = 0; type < 6; ++type) {
         RBMenuButton *menuButton = [[RBMenuButton alloc] initWithType:(RBMenuButtonType)type];
         CGRect buttonFrame = menuButton.frame;

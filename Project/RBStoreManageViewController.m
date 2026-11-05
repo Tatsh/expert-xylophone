@@ -356,8 +356,6 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
 // Both sorts test a_yomi when re-bucketing a "#" entry, even the title sort, which otherwise
 // collates on m_yomi.
-// @ghidraAddress 0x1d0484
-// @ghidraAddress 0x1d0494
 - (NSArray *)collatedListForSort:(NSArray *)list collationSelector:(SEL)collationSelector {
     NSArray *entries = [list copy];
     UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
