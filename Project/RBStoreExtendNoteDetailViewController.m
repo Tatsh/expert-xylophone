@@ -91,6 +91,9 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;
     int sampleStatus;
     BOOL isDownloadingSample; // The shipped build never reads it.
     BOOL downloadFlag;
+    int buttonType;
+    BOOL bUnlock;
+    int hideType;
 }
 @end
 
@@ -101,6 +104,9 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;
 - (instancetype)initWithExtendNoteInfo:(StoreExtendNoteInfo *)info {
     self = [super init];
     if (self != nil) {
+        (void)buttonType;
+        (void)bUnlock;
+        (void)hideType;
         [self.navigationItem setTitle:kDetailNavigationTitle];
         self.info = info;
         if (self.info.name != nil) {

@@ -58,8 +58,9 @@ typedef enum {
 } StoreSampleStatus;
 
 @implementation StoreExtendNoteDetailViewPad {
-    // buttonType, bUnlock, and hideType are unused.
+    // These flags are unused by the reconstructed methods but present in the original layout.
     StoreSampleStatus sampleStatus;
+    BOOL downloadFlag;
     int buttonType;
     BOOL bUnlock;
     int hideType;
@@ -73,6 +74,7 @@ typedef enum {
     if (!self) {
         return self;
     }
+    (void)downloadFlag;
 
     if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] &&
         [self respondsToSelector:@selector(contentScaleFactor)]) {
