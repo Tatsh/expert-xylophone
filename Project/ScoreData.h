@@ -16,7 +16,7 @@
  * The frame-bonus tier awarded on the music-select screen for a tune, derived from its
  * full-combo flags and clear ranks.
  */
-typedef NS_ENUM(NSInteger, ScoreDataFrameBonusType) {
+typedef NS_ENUM(int, ScoreDataFrameBonusType) {
     ScoreDataFrameBonusTypeNone = 0,   /*!< No frame bonus. */
     ScoreDataFrameBonusTypeBronze = 1, /*!< The first (lower) frame-bonus tier. */
     ScoreDataFrameBonusTypeGold = 2,   /*!< The second (higher) frame-bonus tier. */
