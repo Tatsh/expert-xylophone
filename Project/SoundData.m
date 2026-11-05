@@ -36,7 +36,7 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
     long long m_CurrentFrameCache;
     ExtAudioFileRef m_ExtAudioFile;
     AudioStreamBasicDescription m_Format;
-    void **m_PlayBuffer;
+    char **m_PlayBuffer;
     NSString *m_FileName;
     BOOL m_Stream;
 }
@@ -117,7 +117,7 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
         return;
     }
 
-    m_PlayBuffer = (void **)malloc((size_t)m_NumberOfChannels * sizeof(void *));
+    m_PlayBuffer = (char **)malloc((size_t)m_NumberOfChannels * sizeof(char *));
     unsigned int channelCount = m_NumberOfChannels;
     AudioBufferList *bufferList;
     if (channelCount == 0) {

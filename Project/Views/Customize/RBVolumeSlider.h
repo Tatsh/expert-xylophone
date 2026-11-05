@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The track sprite the gauge fills over.
  */
-@property(strong, nonatomic, nullable) UIView *baseView;
+@property(strong, nonatomic, nullable) UIImageView *baseView;
 
 /**
  * The gauge sprite whose width is the value's fraction of the bar rectangle.

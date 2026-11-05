@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1f87e8 (getter)
  * @ghidraAddress 0x1f87f8 (setter)
  */
-@property(nonatomic, strong) NSArray *customizeItems;
+@property(nonatomic, strong) NSMutableArray *customizeItems;
 
 #pragma mark Play options
 
