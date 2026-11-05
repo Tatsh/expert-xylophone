@@ -175,6 +175,19 @@ static void EnqueueImageCreaterOperation(RBViewController *controller) {
     BOOL m_Tweeting;
     int m_PreviewGrageCache;
     int m_PreviewPlayerColorCache;
+    RBMenuView *_musicMenuView;
+    UIPopoverController *_playlistPopoverController;
+    RBTermAgreeView *_termAgreeView;
+    NSString *_tweetText;
+    UIImage *_tweetImage;
+    TwitterImageCreater *_twitterImageCreater;
+    neGLView *_glView;
+    CADisplayLink *_displayLink;
+    UIView *_tweetCoverView;
+    NSOperationQueue *_twitterImageCreaterQueue;
+    NSURLRequest *_twitterRequestTest;
+    NSURLConnection *_twitterConnectionTest;
+    RBPlaylistViewController *_playlistViewController;
 }
 
 #pragma mark - Class helpers
