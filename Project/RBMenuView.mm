@@ -234,8 +234,8 @@ static const CGFloat kLayoutWideThemaClassicSettingX = 20.0;
 // @ghidraAddress 0xa2e20
 static const CGFloat kLayoutWideWhiteCollectionOriginX = 22.0;
 
-static const CGFloat kLayoutTallRowHalfHeightFactor = -0.5;
-static const CGFloat kLayoutTallRowBaseBias = -4.0;
+static const CGFloat kLayoutTallRowButtonHeightFactor = -8.0;
+static const CGFloat kLayoutTallRowBaseBias = -1.0;
 static const CGFloat kLayoutTallCol2BiasClassic = -4.0;
 static const CGFloat kLayoutTallCol2BiasWhite = -12.0;
 static const int kLayoutTallPlaylistXBiasClassic = -11;
@@ -486,9 +486,10 @@ static BOOL g_bRandamIntSeeded = NO;
                 settingColX = kLayoutTallSettingXClassicPastel;
                 collectionOriginX = 0.0;
             }
-            pageLabelInnerY = static_cast<int>((static_cast<double>(rowBase) +
-                                                bounds.height * kLayoutTallRowHalfHeightFactor +
-                                                kLayoutTallRowBaseBias));
+            pageLabelInnerY = static_cast<int>(static_cast<double>(rowBase) +
+                                               self.settingButton.frame.size.height *
+                                                   kLayoutTallRowButtonHeightFactor +
+                                               kLayoutTallRowBaseBias);
             if (editMode == kMenuModePlaylistFinished) {
                 settingRowY = rowBase;
                 sideButtonRowY = static_cast<double>(pageLabelInnerY);
@@ -522,9 +523,10 @@ static BOOL g_bRandamIntSeeded = NO;
                        kLayoutTallBaseInsetPastel;
             int rowBase = static_cast<int>(
                 (bounds.height + kLayoutTallHeightExtra64 + kLayoutTallThemaWhiteFooterYExtra));
-            pageLabelInnerY = static_cast<int>((static_cast<double>(rowBase) +
-                                                bounds.height * kLayoutTallRowHalfHeightFactor +
-                                                kLayoutTallRowBaseBias));
+            pageLabelInnerY = static_cast<int>(static_cast<double>(rowBase) +
+                                               self.settingButton.frame.size.height *
+                                                   kLayoutTallRowButtonHeightFactor +
+                                               kLayoutTallRowBaseBias);
             if (editMode == kMenuModePlaylistFinished) {
                 settingRowY = rowBase;
                 sideButtonRowY = static_cast<double>(pageLabelInnerY);
