@@ -2,12 +2,12 @@
 
 #import "UIImage+RB.h"
 
-static const CGFloat kPanelCornerRadius = 8.0; // @ghidraAddress 0x4020000000000000
-static const CGFloat kPanelShadowRadius = 8.0; // @ghidraAddress 0x4020000000000000
+static const CGFloat kPanelCornerRadius = 8.0;
+static const CGFloat kPanelShadowRadius = 8.0;
 
-static const CGFloat kPanelBorderWidth = 2.0; // @ghidraAddress 0x4000000000000000
+static const CGFloat kPanelBorderWidth = 2.0;
 
-static const float kPanelShadowOpacity = 0.5f; // @ghidraAddress 0x3f000000
+static const float kPanelShadowOpacity = 0.5f;
 
 static const CGFloat kPanelBackgroundWhite = 0.0;
 static const CGFloat kPanelBackgroundAlpha = 0.7; // @ghidraAddress 0x2ec750
@@ -21,30 +21,30 @@ static const CGFloat kIndicatorSize = 40.0; // @ghidraAddress 0x2ee950
 
 static const CGFloat kIndicatorCenterYRatio = 0.2; // @ghidraAddress 0x2eedc0
 
-static const CGFloat kLabelWidthInset = 30.0; // @ghidraAddress -0x3fc2000000000000
-static const CGFloat kLabelHeight = 24.0;     // @ghidraAddress 0x4038000000000000
+static const CGFloat kLabelWidthInset = 30.0;
+static const CGFloat kLabelHeight = 24.0;
 
-static const CGFloat kLabelFontSize = 18.0; // @ghidraAddress 0x4032000000000000
+static const CGFloat kLabelFontSize = 18.0;
 
-static const CGFloat kProgressLeft = 30.0;        // @ghidraAddress 0x403e000000000000
-static const CGFloat kProgressHeight = 11.0;      // @ghidraAddress 0x4026000000000000
+static const CGFloat kProgressLeft = 30.0;
+static const CGFloat kProgressHeight = 11.0;
 static const CGFloat kProgressWidthInset = -60.0; // @ghidraAddress 0x300fc8
 static const CGFloat kProgressCenterYOffset = 10.0;
 
-static const NSInteger kAbortButtonCapWidth = 6;      // @ghidraAddress 0x6
-static const NSInteger kAbortButtonCapHeight = 6;     // @ghidraAddress 0x6
+static const NSInteger kAbortButtonCapWidth = 6;
+static const NSInteger kAbortButtonCapHeight = 6;
 static const CGFloat kAbortButtonWidth = 140.0;       // @ghidraAddress 0x2ec6c0 (140.0)
 static const CGFloat kAbortButtonCenterYRatio = 0.83; // @ghidraAddress 0x301818 (0.83)
 
-static const CGFloat kAbortButtonFontSize = 20.0; // @ghidraAddress 0x4034000000000000
+static const CGFloat kAbortButtonFontSize = 20.0;
 
-static const CGFloat kAbortTitleShadowOffsetY = -1.0; // @ghidraAddress -0x4010000000000000
+static const CGFloat kAbortTitleShadowOffsetY = -1.0;
 static const CGFloat kAbortTitleShadowWhite = 0.0;
 static const CGFloat kAbortTitleShadowAlpha = 0.6; // @ghidraAddress 0x2ec708 (0.6)
 
 static NSString *const kAbortButtonImageName = @"09_store/store_btn_abort";
 
-static const CGFloat kHalfScale = 0.5; // @ghidraAddress 0x3fe0000000000000
+static const CGFloat kHalfScale = 0.5;
 
 static const float kProgressReset = 0.0f;
 

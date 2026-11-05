@@ -1320,7 +1320,6 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
 
 namespace {
 constexpr float kPhoneOverlaySlideDuration = 300.0f; // @ghidraAddress 0x2eedcc
-// @ghidraAddress 0xc1a00000
 constexpr float kPhoneOverlaySlideOffsetY = -20.0f;
 constexpr unsigned int kPhoneOverlaySlot = 7;
 constexpr unsigned int kPhoneOverlayCharCode = 0x64;
@@ -1388,7 +1387,6 @@ void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
 
 namespace {
 constexpr float kNameplateSlideDuration = 500.0f; // @ghidraAddress 0x2feff4
-// @ghidraAddress 0xc1a00000
 constexpr float kNameplateSlideOffsetY = -20.0f;
 constexpr int kNameplateRevealSoundSlot = 9;
 constexpr int kNameplateRevealVoiceId = 0xe;

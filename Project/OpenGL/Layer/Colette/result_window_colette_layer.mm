@@ -759,7 +759,6 @@ enum AnchorMode {
 
 constexpr float kShowTweenTarget = 1.0f;
 // Milliseconds; the paired 1.0 target is the low word of the same 64-bit store.
-// @ghidraAddress 0x439600003f800000 (high word)
 constexpr float kShowTweenChannelDuration = 300.0f;
 constexpr float kShowStagger0 = -100.0f; // @ghidraAddress 0x2fcfec
 constexpr float kShowStagger1 = 700.0f;  // @ghidraAddress 0x2fcff0

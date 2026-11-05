@@ -517,7 +517,7 @@ void NoteModel::UpdateStepApproach() {
 
 namespace {
 constexpr float kHoldReleaseGrace = 153.0f; // @ghidraAddress 0x308b64
-constexpr float kMissPenaltyScale = 3.0f;   // @ghidraAddress 0x40400000
+constexpr float kMissPenaltyScale = 3.0f;
 constexpr int kMissScoreDelta = -3;
 constexpr int kRivalModeGhost = 2;
 constexpr int kRivalModeSpectate = 3;

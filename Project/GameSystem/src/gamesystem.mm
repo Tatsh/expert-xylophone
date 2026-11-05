@@ -27,11 +27,11 @@ constexpr float kDefaultPlayfieldScale = 2.0f;
 
 constexpr double kTabletScaleStep = 0.1; // @ghidraAddress 0x2ec778
 
-constexpr float kPhoneSheetMarginX = 24.0f;  // @ghidraAddress 0x41c00000
+constexpr float kPhoneSheetMarginX = 24.0f;
 constexpr float kTabletSheetMarginX = 64.0f; // @ghidraAddress 0x2ef184
-constexpr float kSheetMarginY = 22.0f;       // @ghidraAddress 0x41b00000
+constexpr float kSheetMarginY = 22.0f;
 
-constexpr float kTabletSheetPosX = 640.0f;  // @ghidraAddress 0x44200000
+constexpr float kTabletSheetPosX = 640.0f;
 constexpr int kTabletSheetPosYInset = 0x2c; // 44 points.
 
 constexpr int kScreenTall = 0x238;   // 568.

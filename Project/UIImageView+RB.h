@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
  * Convenience that starts the opacity pulse with the shorter "fast" period; equivalent to
  * @c SetFlashEffectDuration:Start:End: with the fast duration and the standard full-to-dim opacity
  * endpoints.
- * @ghidraAddress 0x41830a
  */
 - (void)SetFlashEffectFast;
 
@@ -55,7 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @param duration The one-way pulse duration, in seconds.
  * @param start The opacity at the start of each pulse.
  * @param end The opacity at the end of each pulse.
- * @ghidraAddress 0x41831d
  */
 - (void)SetFlashEffectDuration:(CGFloat)duration Start:(CGFloat)start End:(CGFloat)end;
 

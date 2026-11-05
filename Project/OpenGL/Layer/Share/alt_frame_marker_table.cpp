@@ -79,7 +79,6 @@ const SpriteUvEntry g_aAltFrameMeshUvHigh[kAltFrameMeshUvCountHigh] = {
 
 namespace {
 
-// @ghidraAddress 0x3fc90fdb
 constexpr float kColLeftEdge = -384.0f;
 constexpr float kColRightEdge = 364.0f;
 constexpr float kColLeftInner = -311.0f;
