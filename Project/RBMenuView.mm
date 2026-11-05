@@ -1461,7 +1461,6 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)RemoveStoreViewController {
     self.storeViewController = nil;
     if ([[RBBGMManager getInstance] isPushMusic]) {
-        // @ghidraAddress 0x2ec6b4
         [[RBBGMManager getInstance] StopMusic:0.2f];
         [[RBBGMManager getInstance] popMusic];
     }

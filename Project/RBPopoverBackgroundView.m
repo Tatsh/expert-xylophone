@@ -125,8 +125,6 @@ typedef struct {
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        // @ghidraAddress 0xd7cc8
-        // @ghidraAddress 0xd7c78
         _popoverBackground = [[UIImageView alloc]
             initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, frame.size.height)];
         [self addSubview:_popoverBackground];

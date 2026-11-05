@@ -365,7 +365,6 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {
     // The range test is unsigned (`cset w0,cc`), so an unknown orientation reports NO.
-    // @ghidraAddress 0x1a9308
     return (NSUInteger)(orientation - kFirstSupportedOrientation) <
            (NSUInteger)kSupportedOrientationCount;
 }

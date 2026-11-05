@@ -210,7 +210,6 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 - (void)setupView {
     [super setupView];
 
-    // @ghidraAddress 0x1c3f20
     CGFloat contentTopOffset = 0.0;
     if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeClassic) {
         if (IsPad()) {

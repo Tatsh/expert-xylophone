@@ -19,7 +19,6 @@ constexpr UIViewAutoresizing kAutoresizingFull =
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        // @ghidraAddress 0x3cff88
         self.backgroundColor = g_pPaletteDimmingCoverColor;
         self.autoresizingMask = kAutoresizingFull;
         [self addTarget:self action:@selector(tap:) forControlEvents:UIControlEventTouchUpInside];
