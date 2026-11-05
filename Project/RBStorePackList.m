@@ -8,6 +8,9 @@
 #import "StoreUtil.h"
 #import "engineglobals.h"
 
+@interface RBStorePackList () <DownloaderDelegate>
+@end
+
 // "ALL" is a length-matching guess: the literal's __cstring data is not mapped in the image.
 static NSString *const kStoreDefaultGenreName = @"ALL"; // @ghidraAddress 0x36eee0
 static const int kStoreDefaultGenreID = 0;

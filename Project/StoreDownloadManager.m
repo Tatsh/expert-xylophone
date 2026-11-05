@@ -7,7 +7,7 @@
 #import "RBMusicManager.h"
 #import "StoreDownloadTask.h"
 
-@interface StoreDownloadManager () {
+@interface StoreDownloadManager () <DownloaderDelegate> {
     // Reached as ivars: a property setter would add a selector the shipped class does not carry.
     BOOL m_IsStarted;
     unsigned int _currentIndex;
