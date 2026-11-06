@@ -589,6 +589,13 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 }
 
 - (void)downloaderError:(Downloader *)downloader {
+    [self.progressOverlayView displayOperationDidFinishAnimation];
+    [self.progressOverlayView removeFromSuperview];
+    [UIAlertView showNetworkErrorWithDelegate:nil];
+    self.selectedCell.enabled = YES;
+    self.dlMusicName = nil;
+    [self.selectedView configureCell:self.selectedCell];
+    [self reloadData];
 }
 
 - (void)downloaderFinished:(Downloader *)downloader {
