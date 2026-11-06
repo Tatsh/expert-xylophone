@@ -554,10 +554,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Present the page slider over the search bar area when nothing else is shown.
- * @param showPageSlider Unused; the presentation is gated by the search-bar position.
+ * @param gesture The triggering long-press recognizer; unused by the original method.
  * @ghidraAddress 0xb8b90
  */
-- (void)showPageSlider:(BOOL)showPageSlider;
+- (void)showPageSlider:(UILongPressGestureRecognizer *)gesture;
 
 /**
  * Page-slider delegate callback: page the grid to the requested page and update the

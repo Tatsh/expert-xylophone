@@ -2734,8 +2734,7 @@ static BOOL g_bRandamIntSeeded = NO;
 
 #pragma mark - Page slider
 
-- (void)showPageSlider:(BOOL)showPageSlider {
-    // The BOOL argument is accepted but never read; the guard is the search-bar position.
+- (void)showPageSlider:(UILongPressGestureRecognizer *)gesture {
     if (self.tutorialView != nil || self.showView != nil || self.selectedView != nil ||
         self.settingView != nil) {
         return;
