@@ -5,6 +5,7 @@
 #import "ApplilinkCore.h"
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkParameters.h"
+#import "ApplilinkViewDelegate.h"
 #import "RecommendAdAreaView.h"
 #import "RecommendAdCache.h"
 #import "ShadeView.h"
@@ -32,9 +33,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown |
     UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
 
-// ApplilinkViewDelegate is only forward-declared in this tree, so its callbacks are implemented
-// here and dispatched dynamically rather than adopted formally.
-@interface RecommendFullScreenController () <ShadeViewDelegate>
+@interface RecommendFullScreenController () <ApplilinkViewDelegate, ShadeViewDelegate>
 
 @property(nonatomic, strong, nullable) UIView *baseView;
 @property(nonatomic, strong, nullable) ShadeView *shadeView;
