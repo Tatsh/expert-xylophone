@@ -23,6 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Corrected the iPhone music menu's bottom button row and kept the song grid from covering SETTING.
 - Restored the unlock screen and network error alert after a music download fails.
 - Restored original flash timing for menu and music selection images.
 - In patched builds, cancelling an image download now stops its active network request.

@@ -233,8 +233,8 @@ static const CGFloat kLayoutWideThemaClassicSettingX = 20.0;
 // @ghidraAddress 0xa2e20
 static const CGFloat kLayoutWideWhiteCollectionOriginX = 22.0;
 
-static const CGFloat kLayoutTallRowButtonHeightFactor = -8.0;
-static const CGFloat kLayoutTallRowBaseBias = -1.0;
+static const CGFloat kLayoutTallRowButtonHeightFactor = -0.5;
+static const CGFloat kLayoutTallRowBaseBias = -4.0;
 static const CGFloat kLayoutTallCol2BiasClassic = -4.0;
 static const CGFloat kLayoutTallCol2BiasWhite = -12.0;
 static const int kLayoutTallPlaylistXBiasClassic = -11;
@@ -489,6 +489,8 @@ static BOOL g_bRandamIntSeeded = NO;
                                                self.settingButton.frame.size.height *
                                                    kLayoutTallRowButtonHeightFactor +
                                                kLayoutTallRowBaseBias);
+            collectionWidth = bounds.width;
+            collectionHeight = pageLabelInnerY;
             if (editMode == kMenuModePlaylistFinished) {
                 settingRowY = rowBase;
                 sideButtonRowY = static_cast<double>(pageLabelInnerY);
@@ -526,6 +528,8 @@ static BOOL g_bRandamIntSeeded = NO;
                                                self.settingButton.frame.size.height *
                                                    kLayoutTallRowButtonHeightFactor +
                                                kLayoutTallRowBaseBias);
+            collectionWidth = bounds.width - kLayoutTallWhiteCollectionOriginXExtra;
+            collectionHeight = pageLabelInnerY;
             if (editMode == kMenuModePlaylistFinished) {
                 settingRowY = rowBase;
                 sideButtonRowY = static_cast<double>(pageLabelInnerY);
