@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <initializer_list>
 
 #include "../Classic/classic_parts_data_table.h"
 #include "../Limelight/limelight_parts_data_table.h"
@@ -10510,13 +10511,21 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aColettePartsPhone[60].flX = g_aColettePartsPhone[47].flX;
         g_aColettePartsPhone[60].flWidth = g_aColettePartsPhone[47].flWidth;
         g_aColettePartsPhone[68].flX = g_aColettePartsPhone[67].flX;
+        g_aColettePartsPhone[68].flY = g_aColettePartsPhone[67].flY;
         g_aColettePartsPhone[68].flWidth = g_aColettePartsPhone[67].flWidth;
+        g_aColettePartsPhone[68].flHeight = g_aColettePartsPhone[67].flHeight;
         g_aColettePartsPhone[70].flX = g_aColettePartsPhone[67].flX;
+        g_aColettePartsPhone[70].flY = g_aColettePartsPhone[67].flY;
         g_aColettePartsPhone[70].flWidth = g_aColettePartsPhone[67].flWidth;
+        g_aColettePartsPhone[70].flHeight = g_aColettePartsPhone[67].flHeight;
         g_aColettePartsPhone[71].flX = g_aColettePartsPhone[67].flX;
+        g_aColettePartsPhone[71].flY = g_aColettePartsPhone[67].flY;
         g_aColettePartsPhone[71].flWidth = g_aColettePartsPhone[67].flWidth;
+        g_aColettePartsPhone[71].flHeight = g_aColettePartsPhone[67].flHeight;
         g_aColettePartsPhone[72].flX = g_aColettePartsPhone[67].flX;
+        g_aColettePartsPhone[72].flY = g_aColettePartsPhone[67].flY;
         g_aColettePartsPhone[72].flWidth = g_aColettePartsPhone[67].flWidth;
+        g_aColettePartsPhone[72].flHeight = g_aColettePartsPhone[67].flHeight;
         g_aColettePartsPhone[79].flX = g_aColettePartsPad[272].flX;
         g_aColettePartsPhone[79].flWidth = g_aColettePartsPad[272].flWidth;
         g_aColettePartsPhone[80].flX = g_aColettePartsPad[272].flX;
@@ -10955,5 +10964,65 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aAnchorBoxDefault[2].flY = g_aAnchorBoxPad[2].flY;
         g_aAnchorBoxDefault[2].flWidth = g_aAnchorBoxPad[2].flWidth;
         g_aAnchorBoxDefault[2].flHeight = g_aAnchorBoxPad[2].flHeight;
+        // The original initializer writes both vertical fields for these repeated phone parts.
+        for (int index : {3,  4,   8,   9,   14,  79,  80,  84,  86,  88,  89,  94,  95,  97,
+                          99, 102, 103, 104, 156, 332, 334, 335, 336, 337, 339, 342, 343, 344}) {
+            g_aColettePartsPhone[index].flY = 8.0f;
+            g_aColettePartsPhone[index].flHeight = 16.0f;
+        }
+        for (int index : {7,   83,  87,  91,  92,  96,  100, 105, 108, 110, 111, 112, 113, 115,
+                          116, 118, 119, 120, 121, 124, 126, 127, 128, 129, 132, 134, 135, 136,
+                          137, 139, 140, 142, 143, 144, 145, 148, 150, 151, 152, 153, 340, 345}) {
+            g_aColettePartsPhone[index].flY = 0.5f;
+            g_aColettePartsPhone[index].flHeight = 1.0f;
+        }
+        for (int index : {16, 17}) {
+            g_aColettePartsPhone[index].flY = 43.5f;
+            g_aColettePartsPhone[index].flHeight = 87.0f;
+        }
+        for (int index : {23, 24, 367, 368, 369, 371}) {
+            g_aColettePartsPhone[index].flY = 5.0f;
+            g_aColettePartsPhone[index].flHeight = 10.0f;
+        }
+        for (int index : {27, 28, 295, 296, 297, 299, 300, 302, 303, 304, 305}) {
+            g_aColettePartsPhone[index].flY = 4.5f;
+            g_aColettePartsPhone[index].flHeight = 9.0f;
+        }
+        for (int index : {35, 41, 44}) {
+            g_aColettePartsPhone[index].flY = 13.5f;
+            g_aColettePartsPhone[index].flHeight = 27.0f;
+        }
+        for (int index : {48, 49, 51, 52, 54, 55, 56, 57, 59, 60}) {
+            g_aColettePartsPhone[index].flY = 3.5f;
+            g_aColettePartsPhone[index].flHeight = 7.0f;
+        }
+        for (int index : {159, 160}) {
+            g_aColettePartsPhone[index].flY = 9.0f;
+            g_aColettePartsPhone[index].flHeight = 18.0f;
+        }
+        for (int index : {171, 172, 174, 175, 176, 177, 179, 180, 182, 183, 184, 185, 187, 188, 190,
+                          191, 192, 193, 195, 196, 198, 199, 200, 201, 203, 204, 206, 207, 208, 209,
+                          211, 212, 214, 215, 216, 217, 219, 220, 222, 223, 224, 225, 227, 228, 231,
+                          232, 233, 235, 236, 238, 239, 240, 241, 243, 244, 246, 247, 248, 380, 382,
+                          383, 384, 385, 387, 388, 391, 392, 393, 395, 396, 398}) {
+            g_aColettePartsPhone[index].flY = 10.0f;
+            g_aColettePartsPhone[index].flHeight = 20.0f;
+        }
+        for (int index : {251, 252, 254, 255, 256, 257, 260, 262, 263, 264, 265, 267, 268, 270}) {
+            g_aColettePartsPhone[index].flY = 6.0f;
+            g_aColettePartsPhone[index].flHeight = 12.0f;
+        }
+        for (int index : {272, 273, 275, 276, 278, 279, 280, 283, 284, 286, 287, 288, 289, 291}) {
+            g_aColettePartsPhone[index].flY = 4.25f;
+            g_aColettePartsPhone[index].flHeight = 8.5f;
+        }
+        for (int index : {310, 311, 312, 313, 315, 316, 320, 323, 324, 326, 327, 328, 329, 331}) {
+            g_aColettePartsPhone[index].flY = 4.0f;
+            g_aColettePartsPhone[index].flHeight = 8.0f;
+        }
+        for (int index : {350, 351, 352, 353, 355, 356, 358, 359, 360, 361, 363, 364}) {
+            g_aColettePartsPhone[index].flY = 9.5f;
+            g_aColettePartsPhone[index].flHeight = 19.0f;
+        }
     }
 }
