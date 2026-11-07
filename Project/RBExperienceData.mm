@@ -8,6 +8,7 @@
 #import "RBCoreDataManager.h"
 #import "RBMacros.h"
 #import "RBMusicManager.h"
+#import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "ScoreData.h"
 #import "deviceenvironment.h"
@@ -638,9 +639,14 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 - (float)getPoint {
     /** @ghidraAddress 0x1bb2fc */
 #ifdef ENABLE_PATCHES
-    // Report a full purse on every theme; the binary reads a per-theme balance. See PATCHES.md.
+#ifdef SKIP_TUTORIAL
     return kPatchedMaxPoint;
 #else
+    if ([RBTutorialManager getStatus:RBTutorialStatusCustomizeEnd] == 1) {
+        return kPatchedMaxPoint;
+    }
+#endif
+#endif
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     if (thema == RBUserSettingDataThemeLimelight) {
         return self.point;
@@ -649,7 +655,6 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
         return self.pointB;
     }
     return 0.0f;
-#endif
 }
 
 - (void)resetPoint:(int)thema {
