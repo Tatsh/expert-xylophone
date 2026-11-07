@@ -2,7 +2,7 @@
   uses_user_defaults: true,
   project_name: 'expert-xylophone',
   version: '4.5.8',
-  security_policy_supported_versions: { '2.0.x': ':white_check_mark:' },
+  security_policy_supported_versions: { '4.5.x': ':white_check_mark:' },
   description: 'Expert xylophone.',
   keywords: ['decompilation', 'game', 'ios', 'reverse engineering', 'reflec beat'],
   want_codeql: true,
