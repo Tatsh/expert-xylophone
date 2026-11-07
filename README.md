@@ -1,4 +1,4 @@
-# REFLEC BEAT plus — source reconstruction
+# REFLEC BEAT plus source reconstruction
 
 <!-- WISWA-GENERATED-README:START -->
 
@@ -23,31 +23,29 @@ Reconstructed source of **REFLEC BEAT plus** 4.5.8 (`jp.konami.rbplus`).
 No copyrighted material is in this repository. You must provide your own IPA with the game assets.
 Building this source alone will not result in a playable game.
 
-The reconstruction is complete in the sense that every routine the application defines has source
-here. It stays faithful to the shipped binary by default; the deliberate deviations are gated
-behind the `ENABLE_PATCHES` flag and documented in [PATCHES.md](PATCHES.md).
+Every routine defined by the application has source in this repository. The reconstruction follows
+the shipped binary by default. Deliberate deviations require `ENABLE_PATCHES` and are documented in
+[PATCHES.md](PATCHES.md).
 
-The server API the app speaks is described in [openapi.yaml](openapi.yaml). It was recovered from
-the client rather than from any server or published document, so it records what the app sends and
-what it reads back; a response schema there is a lower bound, since the client ignores any field it
-does not need. It is browsable at
-[tatsh.github.io/expert-xylophone/api/](https://tatsh.github.io/expert-xylophone/api/), which shows
-each endpoint as a cURL, fetch, or other client call and can send the request.
+The client API is documented in [openapi.yaml](openapi.yaml). The specification was recovered from
+client requests and responses, without server source or published documentation. Response schemas
+list only fields the client reads. Browse the specification at
+[tatsh.github.io/expert-xylophone/api/](https://tatsh.github.io/expert-xylophone/api/) to view and
+send example requests.
 
 ## Bundled third-party libraries
 
-| Import as                         | Library                                     | How identified                                                               |
-| --------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
-| `SSZipArchive.h`, `SSZipCommon.h` | **SSZipArchive** (minizip wrapper)          | `SSZipArchive` class name and its delegate protocol, plus `zlib` linkage.    |
-| `UnZipArchive.h`                  | **ZipArchive** (the older minizip wrapper)  | `UnZipArchive` class name; kept alongside SSZipArchive, as the original did. |
-| `DAProgressOverlayView.h`         | **DAProgressOverlayView** (Daria Kopaliani) | `DAProgressOverlayView` class name and its exact public property set.        |
+| Import as                         | Library                                     | How identified                                                                  |
+| --------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------- |
+| `SSZipArchive.h`, `SSZipCommon.h` | **SSZipArchive** (minizip wrapper)          | `SSZipArchive` class name and its delegate protocol, plus `zlib` linkage.       |
+| `UnZipArchive.h`                  | **ZipArchive** (the older minizip wrapper)  | `UnZipArchive` class name; included alongside SSZipArchive, as in the original. |
+| `DAProgressOverlayView.h`         | **DAProgressOverlayView** (Daria Kopaliani) | `DAProgressOverlayView` class name and its exact public property set.           |
 
 ## Layout
 
-This tree mimics the original source layout recovered from the `__FILE__` paths embedded in the
-binary's `assert` strings, with two elisions: the
-`/Users/.../Program/Games/REFLECBEAT/` prefix is dropped, and so is the `Classess/` path segment (a
-typo in the shipped tree). The original file names are kept verbatim.
+The directory tree follows the original source paths embedded in the binary's `assert` strings.
+The `/Users/.../Program/Games/REFLECBEAT/` prefix and misspelled `Classess/` path segment are
+omitted. Original file names remain unchanged.
 
 ```plain
 Project/
@@ -72,25 +70,24 @@ Project/
   Util/
 ```
 
-Naming follows the original: engine and layer sources are `snake_case` with the lowercase `ne`
-prefix on the System layer (`neGLES`, `neTextTexture`), while the view and UI classes keep their
-`RB` CamelCase names. Identifiers come from the Objective-C runtime metadata, C++ RTTI, and
-embedded `__func__` strings wherever possible.
+Engine and layer sources use the original `snake_case` names and the lowercase `ne` prefix on the
+System layer (`neGLES`, `neTextTexture`). View and UI classes retain their `RB` CamelCase names.
+Identifiers come from Objective-C runtime metadata, C++ RTTI, and embedded `__func__` strings where
+available.
 
 ## Building
 
-Both build paths need **macOS with Xcode installed**, and an iOS toolchain installed within it (open
-Xcode once so it finishes installing its components, and run `xcode-select --install`). Neither path
-builds on Linux: the app links UIKit, OpenGL ES, CoreData, StoreKit, and the rest of the iOS
-frameworks.
+Both build paths require **macOS with Xcode installed** and an iOS toolchain. Open Xcode once to
+install its components, and run `xcode-select --install`. The app links UIKit, OpenGL ES, CoreData,
+StoreKit, and other iOS frameworks. Neither path builds on Linux.
 
-Neither path signs anything for you. The result is an unsigned `.app`; sign it ad hoc, then re-sign
-the packaged `.ipa` with your own certificate before it will run on a device.
+Neither path signs the app. Sign the resulting `.app` ad hoc, then sign the packaged `.ipa` with
+your certificate before installing it on a device.
 
 ### CMake and Xcode
 
-This path also needs **CMake 3.14 or newer** (`sudo port install cmake`, `brew install cmake`, or
-the official installer — Xcode does not bring its own). It drives the Xcode generator, and needs the
+CMake builds also require **CMake 3.14 or newer** (`sudo port install cmake`,
+`brew install cmake`, or the official installer). Xcode does not include CMake. The build uses the
 [leetal/ios-cmake](https://github.com/leetal/ios-cmake) toolchain file:
 
 ```shell
@@ -105,73 +102,63 @@ cmake -B build -G Xcode \
 cmake --build build --config Debug
 ```
 
-Every knob is a cache entry, so all of them are overridable with `-D<name>=...`:
+Every option is a cache entry that can be overridden with `-D<name>=...`:
 
-| Option                      | Default                        | Effect                                                                                                                                                           |
-| --------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `API_BASE_PATH`             | `/akx/main/cgi/`               | CGI base path every endpoint is built under. The companion to `API_HOST`: an endpoint is scheme + host + this + the per-endpoint leaf.                           |
-| `API_HOST`                  | `akx.s.konaminet.jp`           | Hostname every secure API request is built against. Point it at a private or replacement server. With `ENABLE_PATCHES` it also joins the in-app link allow-list. |
-| `API_SCHEME`                | `https`                        | URL scheme of the secure API. Only worth changing for a plaintext test server.                                                                                   |
-| `APPLILINK_APP_ID`          | `10`                           | Application identifier passed to Konami's Applilink SDK.                                                                                                         |
-| `APPLILINK_ENV`             | `0`                            | Applilink environment: `0` production, `1` staging, `2`/`3` sandbox, `4` development. Selects one of the four `APPLILINK_URL_*` entries.                         |
-| `APPLILINK_URL_DEVELOPMENT` | `https://dev.es.i-revoinf.jp`  | Applilink base URL for environment `4`.                                                                                                                          |
-| `APPLILINK_URL_PRODUCTION`  | `https://www.applilink.jp`     | Applilink base URL for environment `0`.                                                                                                                          |
-| `APPLILINK_URL_SANDBOX`     | `https://sandbox.applilink.jp` | Applilink base URL for environments `2` and `3`.                                                                                                                 |
-| `APPLILINK_URL_STAGING`     | `https://st.es.i-revoinf.jp`   | Applilink base URL for environment `1`.                                                                                                                          |
-| `APP_BUNDLE_ID`             | `jp.konami.rbplus`             | `CFBundleIdentifier`.                                                                                                                                            |
-| `BUILD_DOCS`                | `OFF`                          | Build the Doxygen documentation alongside the app.                                                                                                               |
-| `ENABLE_PATCHES`            | `OFF`                          | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                                                 |
-| `IOS_ARCHS`                 | `arm64`                        | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                                                 |
-| `IOS_DEPLOYMENT_TARGET`     | `12.0`                         | Minimum iOS version.                                                                                                                                             |
-| `RBPDBGINFO`                | `OFF`                          | Emit DWARF without altering the optimisation level.                                                                                                              |
-| `RBPDBG`                    | `OFF`                          | Compile in the `os_log` runtime diagnostics.                                                                                                                     |
-| `RESOURCES_DIR`             | empty                          | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts.                              |
-| `SKIP_TUTORIAL`             | `OFF`                          | Never start the first-run walkthroughs. Only takes effect alongside `ENABLE_PATCHES`.                                                                            |
+| Option                      | Default                        | Effect                                                                                                                                   |
+| --------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `API_BASE_PATH`             | `/akx/main/cgi/`               | CGI base path for every endpoint. Requests use the scheme, host, base path, and endpoint path.                                           |
+| `API_HOST`                  | `akx.s.konaminet.jp`           | Host for every secure API request. Set it to a private or replacement server. Patched builds also allow `API_HOST` for in-app links.     |
+| `API_SCHEME`                | `https`                        | URL scheme of the secure API. Change only for a plaintext test server.                                                                   |
+| `APPLILINK_APP_ID`          | `10`                           | Application identifier passed to Konami's Applilink SDK.                                                                                 |
+| `APPLILINK_ENV`             | `0`                            | Applilink environment. Values are `0` production, `1` staging, `2`/`3` sandbox, and `4` development. Selects an `APPLILINK_URL_*` entry. |
+| `APPLILINK_URL_DEVELOPMENT` | `https://dev.es.i-revoinf.jp`  | Applilink base URL for environment `4`.                                                                                                  |
+| `APPLILINK_URL_PRODUCTION`  | `https://www.applilink.jp`     | Applilink base URL for environment `0`.                                                                                                  |
+| `APPLILINK_URL_SANDBOX`     | `https://sandbox.applilink.jp` | Applilink base URL for environments `2` and `3`.                                                                                         |
+| `APPLILINK_URL_STAGING`     | `https://st.es.i-revoinf.jp`   | Applilink base URL for environment `1`.                                                                                                  |
+| `APP_BUNDLE_ID`             | `jp.konami.rbplus`             | `CFBundleIdentifier`.                                                                                                                    |
+| `BUILD_DOCS`                | `OFF`                          | Build the Doxygen documentation alongside the app.                                                                                       |
+| `ENABLE_PATCHES`            | `OFF`                          | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                         |
+| `IOS_ARCHS`                 | `arm64`                        | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                         |
+| `IOS_DEPLOYMENT_TARGET`     | `12.0`                         | Minimum iOS version.                                                                                                                     |
+| `RBPDBGINFO`                | `OFF`                          | Emit DWARF without altering the optimisation level.                                                                                      |
+| `RBPDBG`                    | `OFF`                          | Compile in the `os_log` runtime diagnostics.                                                                                             |
+| `RESOURCES_DIR`             | empty                          | Directory of the original extracted `.app` whose assets to bundle. Without assets, the build lacks artwork, audio, and charts.           |
+| `SKIP_TUTORIAL`             | `OFF`                          | Never start the first-run walkthroughs. Only takes effect alongside `ENABLE_PATCHES`.                                                    |
 
-`RESOURCES_DIR` is the one that matters most: the repository contains no game assets, so a build
-without it produces an app that launches into nothing.
+The repository includes no game assets. A build without `RESOURCES_DIR` lacks artwork, audio, and
+charts.
 
 ### Theos
 
 Theos is supported. See `theos/`. The `Makefile` builds arm64 and arm64e against
-`iphone:clang:latest:12.0`. Set `$THEOS` to your Theos installation first;
-on macOS it uses Xcode's SDK.
+`iphone:clang:latest:12.0`. Set `$THEOS` to your Theos installation first. On macOS, Theos uses
+Xcode's SDK.
 
 ```shell
 make -C theos ENABLE_PATCHES=1
 make -C theos ENABLE_PATCHES=1 package
 ```
 
-`ENABLE_PATCHES`, `RBPDBG`, and `RBPDBGINFO` mirror the CMake options of the same name and are all
-off by default. The endpoint and Applilink cache entries are mirrored as `Makefile` variables under
-the same names, so `make -C theos API_HOST=my.server.example API_BASE_PATH=/cgi/` works the way the
-`-D` equivalents do. Theos has no `RESOURCES_DIR` equivalent: copy the
-original `.app`'s resources into
-`theos/Resources/` yourself, or add them to the staged bundle after packaging.
+`ENABLE_PATCHES`, `RBPDBG`, and `RBPDBGINFO` match the CMake options and default to off. Endpoint and
+Applilink cache entries also have matching `Makefile` variables. For example,
+`make -C theos API_HOST=my.server.example API_BASE_PATH=/cgi/` uses the same values as the CMake
+options. Theos does not provide a `RESOURCES_DIR` equivalent. Copy the original `.app` resources into
+`theos/Resources/` or add them to the staged bundle after packaging.
 
 ## Status
 
-Some of Konami's services are still up and some are gone, so online behaviour is mixed rather than
-uniformly dead. The initial asset download works, and it is **required**: the game will not run
-without it, so let it finish on first launch. The store is largely broken as a result of the parts
-that are gone.
+Some Konami services remain available, but online behaviour varies by service. The initial asset
+download works and is **required**. Let the download finish on first launch. The store depends on
+services that are no longer available.
 
-The Terms of Service screen is patched out, which is why a patched build never shows it. It is not
-a launch-time screen: the title scene's touch handler checks for outstanding terms and pre-empts the
-first tap with it. Acceptance is only recorded when the agree POST comes back OK, so with that
-endpoint unavailable the screen cannot be cleared and the title screen cannot be passed.
+Patched builds skip the Terms of Service screen. The title scene checks for outstanding terms on
+the first tap and opens the screen when acceptance is required. Acceptance requires a successful
+agreement request. Without the agreement endpoint, the title screen cannot be passed.
 
-The **Colette** theme is the one that is actively maintained and tested, on iPad.
-
-### iPhone support
-
-Not well-tested. The reconstruction targets the pad, and the phone paths — which the binary splits
-on at nearly every layout site — have had far less time on real hardware. Expect layout problems
-there, and note that some phone-only code paths (a third play-button image table, for one) were
-left as the binary has them rather than guessed at.
+The **Colette** theme is supported and actively maintained.
 
 ### Classic and Limelight themes
 
-**Please do not file bugs about the Classic or Limelight themes.** They work: both were audited
-against the binary, their crashes are fixed, and they play. They will not be supported going
-forward, so known cosmetic differences in those themes are being left as they are.
+**Please do not file bugs about the Classic or Limelight themes.** Both were audited against the
+binary, their crashes were fixed, and they play. Maintenance focuses on Colette; known cosmetic
+differences in Classic and Limelight remain.
