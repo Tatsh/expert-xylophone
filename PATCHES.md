@@ -221,12 +221,13 @@ download button into a crash. An unpatched build lists only what was bought.
 `-bUnlock`, `-termCheck`, `-checkNewUnlock`, `-checkExistPackList:packID:`
 
 The `unlockWith…` methods are queries, not actions: each walks the matching item set and reports
-whether it is there. They all report `YES` now, so every BGM, shot, explosion, frame, background,
-tune, and theme reads as owned. Nothing outside the class touches those sets, so the patch answers
-the question without writing to saved data. `-getPoint` reports the earned balance until the
-customise tutorial reaches its final step, then reports a full purse. Builds with `SKIP_TUTORIAL`
-report a full purse immediately. Every unlock item prices at nothing. The balance and price checks
-are separate:
+whether it is there. Until the customise tutorial reaches its final step, they inspect the saved
+item sets so the walkthrough can unlock an item. After that step, they report `YES`, so every BGM,
+shot, explosion, frame, background, tune, and theme reads as owned. Nothing outside the class
+touches those sets, so the patch does not change saved ownership. `-getPoint` reports the earned
+balance until the same step, then reports a full purse. Unlock items retain their listed prices
+until that step, then cost nothing. Builds with `SKIP_TUTORIAL` grant these benefits immediately.
+The balance and price checks are separate:
 `-[RBUnlockView yesButtonTap:]` compares cost against balance, and the balance is also what the
 point label draws. `-getPoint` is the right place for the balance rather than the raw `point`
 property, because the binary reads a different field per theme and answers zero on Classic — so

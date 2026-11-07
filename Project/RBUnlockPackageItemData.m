@@ -1,5 +1,7 @@
 #import "RBUnlockPackageItemData.h"
 
+#import "RBTutorialManager.h"
+
 static NSString *const kIdentityDictionaryKey = @"ID";
 static NSString *const kNameDictionaryKey = @"Name";
 static NSString *const kPathDictionaryKey = @"Path";
@@ -12,9 +14,17 @@ static NSString *const kDescriptionFormat =
 @implementation RBUnlockPackageItemData
 
 #ifdef ENABLE_PATCHES
-// Price every item at nothing so the affordability test in -[RBUnlockView yesButtonTap:] passes.
+@synthesize point = _point;
+
 - (int)point {
+#ifdef SKIP_TUTORIAL
     return 0;
+#else
+    if ([RBTutorialManager getStatus:RBTutorialStatusCustomizeEnd] == 1) {
+        return 0;
+    }
+    return _point;
+#endif
 }
 #endif
 
