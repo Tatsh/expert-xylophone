@@ -79,7 +79,6 @@ conn
 constexpr
 contoller
 copysign
-copytree
 coveragerc
 cplusplus
 creater
@@ -122,7 +121,6 @@ dresources
 dskip
 dsym
 eagl
-elif
 encp
 endforeach
 enginecrypto
@@ -274,10 +272,8 @@ parameteriv
 pastelin
 pastelkun
 pastelout
-pathlib
 pawapuro
 pbxproj
-pipefail
 pipx
 pkcrypt
 playerfieldlayer
@@ -328,7 +324,6 @@ resoure
 rgba
 ringanimation
 ripgreprc
-rmtree
 roundf
 rtti
 rturl
@@ -344,7 +339,6 @@ sheetlayer
 shellcheck
 shellformat
 shotsoundmanager
-shutil
 signedness
 snapcraft
 sota
@@ -403,7 +397,6 @@ unprojection
 unretained
 unrotated
 unsuffixed
-valf
 varargs
 vars
 vartical
@@ -437,7 +430,6 @@ writable
 wshadow
 wunreachable
 wzaes
-xcrun
 xorshift
 yarnrc
 yomi
